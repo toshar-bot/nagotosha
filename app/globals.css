@@ -638,3 +638,82 @@ button:active {
 .spark-a { --spark-x: -54px; --spark-y: -58px; }
 .spark-b { --spark-x: 62px; --spark-y: -28px; }
 .spark-c { --spark-x: 12px; --spark-y: 62px; }
+
+/* ── カードフリップ ── */
+
+.card-flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 176px;
+  height: 252px;
+}
+
+.card-flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-flip-back-face,
+.card-flip-front-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.card-flip-front-face {
+  transform: rotateY(180deg);
+}
+
+/* 裏面レアリティ発光 */
+.back-r   { box-shadow: 0 0 28px #3b82f6, 0 0 60px #3b82f644; animation: back-r-pulse 0.55s ease-in-out infinite alternate; }
+.back-sr  { box-shadow: 0 0 40px #a855f7, 0 0 90px #a855f755; animation: back-sr-pulse 0.35s ease-in-out infinite alternate; }
+.back-ssr { box-shadow: 0 0 60px #f59e0b, 0 0 140px #f59e0b55; animation: back-ssr-pulse 0.45s ease-in-out infinite alternate; }
+.back-ur  { animation: back-ur-rainbow 1.2s linear infinite; }
+
+@keyframes back-r-pulse {
+  from { box-shadow: 0 0 18px #3b82f6; }
+  to   { box-shadow: 0 0 48px #3b82f6, 0 0 90px #3b82f633; }
+}
+@keyframes back-sr-pulse {
+  from { box-shadow: 0 0 30px #a855f7; }
+  to   { box-shadow: 0 0 65px #a855f7, 0 0 110px #a855f744; }
+}
+@keyframes back-ssr-pulse {
+  from { box-shadow: 0 0 50px #f59e0b; }
+  to   { box-shadow: 0 0 110px #f59e0b, 0 0 220px #f59e0b33; }
+}
+@keyframes back-ur-rainbow {
+  0%   { box-shadow: 0 0 60px #ef4444, 0 0 130px #ef444444; }
+  25%  { box-shadow: 0 0 60px #f59e0b, 0 0 130px #f59e0b44; }
+  50%  { box-shadow: 0 0 60px #a855f7, 0 0 130px #a855f744; }
+  75%  { box-shadow: 0 0 60px #3b82f6, 0 0 130px #3b82f644; }
+  100% { box-shadow: 0 0 60px #ef4444, 0 0 130px #ef444444; }
+}
+
+/* SR シェイク */
+@keyframes sr-shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-5px); }
+  75%       { transform: translateX(5px); }
+}
+.animate-sr-shake { animation: sr-shake 0.11s ease-in-out infinite; }
+
+/* SSR 溜め (スケール+輝き) */
+@keyframes ssr-pulse {
+  from { transform: scale(1); filter: brightness(1); }
+  to   { transform: scale(1.07); filter: brightness(1.35); }
+}
+.animate-ssr-buildup { animation: ssr-pulse 0.42s ease-in-out infinite alternate; }
+
+/* UR 虹テキスト */
+@keyframes ur-text-rainbow {
+  0%   { color: #ef4444; text-shadow: 0 0 20px #ef4444; }
+  25%  { color: #f59e0b; text-shadow: 0 0 20px #f59e0b; }
+  50%  { color: #a855f7; text-shadow: 0 0 20px #a855f7; }
+  75%  { color: #3b82f6; text-shadow: 0 0 20px #3b82f6; }
+  100% { color: #ef4444; text-shadow: 0 0 20px #ef4444; }
+}
+.ur-rainbow-text { animation: ur-text-rainbow 1.4s linear infinite; }
