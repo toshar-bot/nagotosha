@@ -47,6 +47,7 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
           style={{
             background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
             border: `3px solid ${pack.borderColor}`,
+            ['--pack-image' as string]: `url(${pack.imageUrl})`,
             boxShadow: phase === 'READY'
               ? `0 0 30px ${pack.color}55, 0 0 60px ${cfg.glowColor}`
               : `0 0 50px ${cfg.glowStrong}, 0 0 100px ${pack.color}55`,

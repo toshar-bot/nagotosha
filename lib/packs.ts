@@ -7,6 +7,7 @@ export interface PackConfig {
   name: string;
   shortName: string;
   catchCopy: string;
+  imageUrl: string;
   color: string;
   borderColor: string;
   bgFrom: string;
@@ -20,6 +21,7 @@ export const PACKS: PackConfig[] = [
     name: 'モーニングパック',
     shortName: 'Morning',
     catchCopy: '喫茶店と朝の名古屋メシが出やすい',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%82%BB%E3%83%83%E3%83%88%E3%81%AE%E5%B0%8F%E5%80%89%E3%83%88%E3%83%BC%E3%82%B9%E3%83%88_(8923375578).jpg?width=900',
     color: '#b8872f',
     borderColor: '#d9a441',
     bgFrom: '#fff4d7',
@@ -31,6 +33,7 @@ export const PACKS: PackConfig[] = [
     name: 'ランチパック',
     shortName: 'Lunch',
     catchCopy: '定番名古屋メシを集めやすい',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Miso-Katsu-Teishoku-1.jpg?width=900',
     color: '#c9412d',
     borderColor: '#e85d3f',
     bgFrom: '#ffd9ca',
@@ -42,6 +45,7 @@ export const PACKS: PackConfig[] = [
     name: 'ディナーパック',
     shortName: 'Dinner',
     catchCopy: '夜のごちそうと高レアに少し期待',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hitsumabushi1.jpg?width=900',
     color: '#7c3aed',
     borderColor: '#a78bfa',
     bgFrom: '#eee6ff',

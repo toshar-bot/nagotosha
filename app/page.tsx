@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { CARDS, TOTAL_CARDS } from '@/data/cards';
 import { loadCollection, saveCollection, todayStr, yesterdayStr, CollectionState } from '@/lib/storage';
 import { drawPack } from '@/lib/draw';
 import { RARITY_CONFIG, buildShareUrl } from '@/lib/rarity';
-import { DEFAULT_PACK, PACKS, PackId, getPack } from '@/lib/packs';
+import { DEFAULT_PACK, PACKS, PackConfig, PackId, getPack } from '@/lib/packs';
 import { Card } from '@/types/card';
 import PackOpening from '@/components/PackOpening';
 import CardVisual from '@/components/CardVisual';
@@ -17,9 +17,21 @@ type HomePhase = 'idle' | 'tutorial' | 'drawing' | 'result';
 type TutorialStep = 0 | 1 | 2;
 
 const TUTORIAL_STEPS = [
-  { title: 'トーシャー博士です', body: 'ここは名古屋メシ図鑑 NAGOTOSHA。名古屋の美食カードを集めていきます。', cta: '次へ' },
-  { title: '1日1パック開封', body: '1パックには5枚のカードが入っています。かぶりもありますが、未発見カードを集める楽しさがあります。', cta: '次へ' },
-  { title: 'パックを選ぼう', body: 'パックをスライドして選び、開封します。高レアカードは最後に出ます。', cta: '始める' },
+  {
+    title: 'わしはトーシャー博士じゃ！',
+    body: 'ここは名古屋メシ図鑑 NAGOTOSHA。\n名古屋の美食カードを集めるのじゃ！\n集めるほど、次に行きたいお店リストが育っていくぞ。',
+    cta: '次へ',
+  },
+  {
+    title: '1日1パック開封じゃ',
+    body: '1パックには5枚入り。\nかぶりもあるが、所持数が増えるのもコレクションの味じゃ。\n高レアは最後に出るから、めくる時間も楽しむのじゃ。',
+    cta: '次へ',
+  },
+  {
+    title: '旅先の候補も増えるぞ',
+    body: 'カードには店名とエリアも記録される。\n図鑑が埋まるほど、名古屋で食べたい一皿が見つかるのじゃ。',
+    cta: '始める',
+  },
 ];
 
 export default function HomePage() {
@@ -97,7 +109,7 @@ export default function HomePage() {
   };
 
   if (!col) {
-    return <div className="min-h-dvh flex items-center justify-center"><div className="game-icon animate-toshar-float" /></div>;
+    return <div className="min-h-dvh flex items-center justify-center"><div className="toshar-avatar animate-toshar-float" /></div>;
   }
 
   const ownedCount = col.ownedCardIds.length;
@@ -141,23 +153,23 @@ export default function HomePage() {
 
         {phase === 'idle' && (
           <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={canDraw ? 'パックを横にスライドして選びましょう。開封すると5枚のカードが出ます。' : '今日は開封済みです。結果を見返すか、図鑑を確認できます。'} />
+            <TosharBubble text={canDraw ? '開封したいパックをスライドで選ぶのじゃ。\n右端まで行くと、また最初のパックへ戻るぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
-              <PackPicker selectedPackId={selectedPackId} onSelect={setSelectedPackId} />
+              <>
+                <PackPicker selectedPackId={selectedPackId} onSelect={setSelectedPackId} />
+                <button
+                  onClick={handleStartDraw}
+                  className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
+                  style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgTo})`, boxShadow: `0 0 30px ${selectedPack.color}55` }}
+                >
+                  <span className="relative">5枚入りパックを開封する</span>
+                </button>
+              </>
             ) : (
               <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-[#2b2118] text-lg text-center block active:scale-95 transition-transform bg-white border border-border shadow-sm">
                 図鑑を見る
               </Link>
-            )}
-            {canDraw && (
-              <button
-                onClick={handleStartDraw}
-                className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
-                style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgFrom})`, boxShadow: `0 0 30px ${selectedPack.color}66` }}
-              >
-                <span className="relative">5枚入りパックを開封する</span>
-              </button>
             )}
           </div>
         )}
@@ -169,11 +181,7 @@ export default function HomePage() {
         )}
 
         {phase === 'result' && pendingCards.length > 0 && (
-          <PackResult
-            cards={pendingCards}
-            collection={col}
-            isNewDraw={isNewDraw}
-          />
+          <PackResult cards={pendingCards} collection={col} isNewDraw={isNewDraw} />
         )}
       </main>
 
@@ -187,6 +195,31 @@ export default function HomePage() {
 }
 
 function PackPicker({ selectedPackId, onSelect }: { selectedPackId: PackId; onSelect: (id: PackId) => void }) {
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const slides = useMemo(() => [PACKS[PACKS.length - 1], ...PACKS, PACKS[0]], []);
+  const realIndex = PACKS.findIndex(pack => pack.id === selectedPackId);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const slide = 232;
+    el.scrollLeft = slide * (realIndex + 1);
+  }, [realIndex]);
+
+  const normalize = (virtualIndex: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const slide = 232;
+    if (virtualIndex === 0) {
+      el.scrollTo({ left: slide * PACKS.length, behavior: 'auto' });
+      onSelect(PACKS[PACKS.length - 1].id);
+    } else if (virtualIndex === slides.length - 1) {
+      el.scrollTo({ left: slide, behavior: 'auto' });
+      onSelect(PACKS[0].id);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="mx-auto w-fit rounded-full border border-gold/70 bg-white/75 px-5 py-2 text-center shadow-[0_0_24px_rgba(184,135,47,0.22)]">
@@ -195,42 +228,23 @@ function PackPicker({ selectedPackId, onSelect }: { selectedPackId: PackId; onSe
       </div>
 
       <div
-        className="-mx-4 flex gap-5 overflow-x-auto snap-x snap-mandatory px-[calc(50%-104px)] py-3"
+        ref={scrollerRef}
+        className="-mx-4 flex gap-6 overflow-x-auto snap-x snap-mandatory px-[calc(50%-104px)] py-5"
         onScroll={event => {
           const el = event.currentTarget;
-          const packWidth = 208 + 20;
-          const index = Math.round(el.scrollLeft / packWidth);
-          const pack = PACKS[Math.max(0, Math.min(PACKS.length - 1, index))];
+          const slide = 232;
+          const virtualIndex = Math.round(el.scrollLeft / slide);
+          const normalizedIndex = (virtualIndex - 1 + PACKS.length) % PACKS.length;
+          const pack = PACKS[normalizedIndex];
           if (pack && pack.id !== selectedPackId) onSelect(pack.id);
+          if (timerRef.current) window.clearTimeout(timerRef.current);
+          timerRef.current = window.setTimeout(() => normalize(virtualIndex), 120);
         }}
       >
-        {PACKS.map(pack => {
-          const active = selectedPackId === pack.id;
+        {slides.map((pack, index) => {
+          const active = pack.id === selectedPackId;
           return (
-            <button
-              key={pack.id}
-              onClick={() => onSelect(pack.id)}
-              className={`booster-pack relative h-[316px] w-52 flex-shrink-0 snap-center border-2 text-left transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-90 opacity-55'}`}
-              style={{
-                background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
-                borderColor: pack.borderColor,
-                boxShadow: active ? `0 0 38px ${pack.color}66, 0 24px 48px rgba(92,62,27,0.28)` : '0 12px 22px rgba(92,62,27,0.12)',
-              }}
-            >
-              <div className="absolute inset-0 pack-metal" />
-              <div className="absolute inset-x-5 top-9 rounded-full border border-white/35 bg-white/20 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/85">
-                NAGOTOSHA
-              </div>
-              <div className="absolute inset-x-4 top-20 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
-                <div className="h-full w-full pack-food-collage" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-white/20" />
-              </div>
-              <div className="absolute inset-x-5 bottom-8 text-center">
-                <p className="text-[10px] font-black tracking-[0.22em] text-white/65">{pack.shortName.toUpperCase()} BOOSTER</p>
-                <p className="mt-1 text-xl font-black leading-tight text-white drop-shadow">{pack.name}</p>
-                <p className="mt-2 text-[10px] font-bold leading-snug text-white/72">{pack.catchCopy}</p>
-              </div>
-            </button>
+            <PackSlide key={`${pack.id}-${index}`} pack={pack} active={active} onClick={() => onSelect(pack.id)} />
           );
         })}
       </div>
@@ -238,33 +252,105 @@ function PackPicker({ selectedPackId, onSelect }: { selectedPackId: PackId; onSe
   );
 }
 
+function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`booster-pack premium-pack relative h-[326px] w-52 flex-shrink-0 snap-center border-2 text-left transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-90 opacity-55'}`}
+      style={{
+        background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
+        borderColor: pack.borderColor,
+        boxShadow: active ? `0 0 38px ${pack.color}66, 0 24px 48px rgba(92,62,27,0.28)` : '0 12px 22px rgba(92,62,27,0.12)',
+        ['--pack-image' as string]: `url(${pack.imageUrl})`,
+      }}
+    >
+      <div className="absolute inset-0 pack-metal" />
+      <div className="absolute inset-x-5 top-8 rounded-full border border-white/40 bg-white/22 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/90">
+        NAGOTOSHA
+      </div>
+      <div className="absolute inset-x-4 top-18 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
+        <div className="h-full w-full pack-food-collage" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-transparent to-white/20" />
+      </div>
+      <div className="absolute inset-x-5 bottom-8 text-center">
+        <p className="text-[10px] font-black tracking-[0.22em] text-white/70">{pack.shortName.toUpperCase()} BOOSTER</p>
+        <p className="mt-1 text-xl font-black leading-tight text-white drop-shadow">{pack.name}</p>
+        <p className="mt-2 text-[10px] font-bold leading-snug text-white/78">{pack.catchCopy}</p>
+      </div>
+    </button>
+  );
+}
+
 function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collection: CollectionState; isNewDraw: boolean }) {
+  const [current, setCurrent] = useState(0);
+  const touchStart = useRef<number | null>(null);
   const bestCard = cards[cards.length - 1];
   const bestCfg = RARITY_CONFIG[bestCard.rarity];
   const shareUrl = buildShareUrl(bestCard, collection.streak);
 
+  const move = (delta: number) => {
+    setCurrent(index => (index + delta + cards.length) % cards.length);
+  };
+
   return (
     <div className="flex flex-col items-center gap-5 animate-fade-up">
-      <TosharBubble text="開封結果です。横にスライドして5枚を確認できます。高レアは最後に並びます。" />
-      <div className="-mx-4 w-[calc(100%+2rem)] overflow-x-auto snap-x snap-mandatory px-[calc(50%-88px)] py-3">
-        <div className="flex gap-5">
-          {cards.map((card, index) => {
-            const count = collection.cardCounts[card.id] ?? 0;
-            const duplicate = count > 1;
-            return (
-              <div key={`${card.id}-${index}`} className="snap-center flex-shrink-0 flex flex-col items-center gap-3">
-                <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} />
-                <div className="text-center">
-                  <p className="text-xs font-black tracking-widest" style={{ color: RARITY_CONFIG[card.rarity].color }}>
-                    {index + 1} / {cards.length} ・ {card.rarity}
+      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\n高レアカードは最後に控えておるぞ。" />
+
+      <div className="w-full flex items-center justify-center gap-4">
+        <button className="w-11 h-11 rounded-full bg-white border border-border shadow-sm font-black text-[#2b2118]" onClick={() => move(-1)}>
+          &lt;
+        </button>
+        <span className="text-[#8a7864] text-sm font-black">{current + 1} / {cards.length}</span>
+        <button className="w-11 h-11 rounded-full bg-white border border-border shadow-sm font-black text-[#2b2118]" onClick={() => move(1)}>
+          &gt;
+        </button>
+      </div>
+
+      <div
+        className="relative h-[318px] w-full overflow-hidden"
+        onTouchStart={event => {
+          touchStart.current = event.touches[0].clientX;
+        }}
+        onTouchEnd={event => {
+          if (touchStart.current === null) return;
+          const dx = event.changedTouches[0].clientX - touchStart.current;
+          if (Math.abs(dx) > 40) move(dx < 0 ? 1 : -1);
+          touchStart.current = null;
+        }}
+      >
+        {cards.map((card, index) => {
+          let delta = index - current;
+          if (delta > cards.length / 2) delta -= cards.length;
+          if (delta < -cards.length / 2) delta += cards.length;
+          const visible = Math.abs(delta) <= 2;
+          const cfg = RARITY_CONFIG[card.rarity];
+          const count = collection.cardCounts[card.id] ?? 0;
+          const duplicate = count > 1;
+
+          return (
+            <div
+              key={`${card.id}-${index}`}
+              className={`absolute left-1/2 top-3 transition-all duration-300 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+              style={{
+                transform: `translateX(calc(-50% + ${delta * 34}px)) rotate(${delta * 5}deg) scale(${delta === 0 ? 1 : 0.92})`,
+                zIndex: 20 - Math.abs(delta),
+                filter: delta === 0 ? 'none' : 'brightness(0.78)',
+              }}
+              onClick={() => setCurrent(index)}
+            >
+              <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} />
+              {delta === 0 && (
+                <div className="mt-3 text-center">
+                  <p className="text-xs font-black tracking-widest" style={{ color: cfg.color }}>
+                    {card.rarity} ・ {cfg.label}
                   </p>
                   <p className="text-[#2b2118] font-black text-base">{card.shopName}の{card.name}</p>
                   {duplicate && <p className="text-[#9b8261] text-xs">所持数 {count}枚</p>}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="text-center space-y-1">

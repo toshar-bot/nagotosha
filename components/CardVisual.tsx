@@ -33,13 +33,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
 
   return (
     <div
-      className={`
-        relative ${s.w} ${s.h} rounded-xl flex flex-col
-        ${onClick ? 'cursor-pointer' : ''}
-        ${isUR && owned ? 'ur-glow' : ''}
-        transition-transform duration-150 active:scale-95
-        overflow-hidden select-none card-plate
-      `}
+      className={`relative ${s.w} ${s.h} rounded-xl flex flex-col ${onClick ? 'cursor-pointer' : ''} ${isUR && owned ? 'ur-glow' : ''} transition-transform duration-150 active:scale-95 overflow-hidden select-none card-plate`}
       style={{
         border: `2px solid ${owned ? cfg.borderColor : '#4a3428'}`,
         ...glowStyle,
@@ -87,7 +81,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
               boxShadow: `0 0 14px ${cfg.glowColor}`,
             }}
           >
-            ✦ {cfg.label} ✦
+            {cfg.label}
           </span>
         </div>
       )}
@@ -109,7 +103,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
         ) : (
           <>
             <p className={`${s.shop} font-bold text-white/30`}>未発見</p>
-            <p className={`${s.name} font-black text-gray-600 tracking-widest`}>？？？？？</p>
+            <p className={`${s.name} font-black text-gray-600 tracking-widest`}>?????</p>
           </>
         )}
       </div>
