@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CARDS, TOTAL_CARDS } from '@/data/cards';
 import { loadCollection, saveCollection, todayStr, yesterdayStr, CollectionState } from '@/lib/storage';
 import { drawPack } from '@/lib/draw';
 import { RARITY_CONFIG, buildShareUrl } from '@/lib/rarity';
 import { DEFAULT_PACK, PACKS, PackConfig, PackId, getPack } from '@/lib/packs';
-import { Card } from '@/types/card';
+import { Card, Rarity } from '@/types/card';
 import PackOpening from '@/components/PackOpening';
 import CardVisual from '@/components/CardVisual';
 import TosharBubble from '@/components/TosharBubble';
@@ -33,6 +33,8 @@ const TUTORIAL_STEPS = [
     cta: '始める',
   },
 ];
+
+const HIGH_RARITIES: Rarity[] = ['SR', 'SSR', 'UR'];
 
 export default function HomePage() {
   const [col, setCol] = useState<CollectionState | null>(null);
@@ -241,12 +243,9 @@ function PackPicker({ selectedPackId, onSelect }: { selectedPackId: PackId; onSe
           timerRef.current = window.setTimeout(() => normalize(virtualIndex), 120);
         }}
       >
-        {slides.map((pack, index) => {
-          const active = pack.id === selectedPackId;
-          return (
-            <PackSlide key={`${pack.id}-${index}`} pack={pack} active={active} onClick={() => onSelect(pack.id)} />
-          );
-        })}
+        {slides.map((pack, index) => (
+          <PackSlide key={`${pack.id}-${index}`} pack={pack} active={pack.id === selectedPackId} onClick={() => onSelect(pack.id)} />
+        ))}
       </div>
     </div>
   );
@@ -283,10 +282,21 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
 
 function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collection: CollectionState; isNewDraw: boolean }) {
   const [current, setCurrent] = useState(0);
+  const [revealedHighRare, setRevealedHighRare] = useState<Record<number, boolean>>({});
   const touchStart = useRef<number | null>(null);
-  const bestCard = cards[cards.length - 1];
-  const bestCfg = RARITY_CONFIG[bestCard.rarity];
-  const shareUrl = buildShareUrl(bestCard, collection.streak);
+  const currentCard = cards[current];
+  const currentCfg = RARITY_CONFIG[currentCard.rarity];
+  const shareUrl = buildShareUrl(currentCard, collection.streak);
+  const isCurrentHighRare = HIGH_RARITIES.includes(currentCard.rarity);
+  const shouldCelebrate = isCurrentHighRare && !!revealedHighRare[current];
+
+  useEffect(() => {
+    if (!isCurrentHighRare || revealedHighRare[current]) return;
+    const timer = window.setTimeout(() => {
+      setRevealedHighRare(prev => ({ ...prev, [current]: true }));
+    }, 260);
+    return () => window.clearTimeout(timer);
+  }, [current, isCurrentHighRare, revealedHighRare]);
 
   const move = (delta: number) => {
     setCurrent(index => (index + delta + cards.length) % cards.length);
@@ -294,7 +304,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
 
   return (
     <div className="flex flex-col items-center gap-5 animate-fade-up">
-      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\n高レアカードは最後に控えておるぞ。" />
+      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\nカードが見えた瞬間にだけ、レア演出が走るぞ。" />
 
       <div className="w-full flex items-center justify-center gap-4">
         <button className="w-11 h-11 rounded-full bg-white border border-border shadow-sm font-black text-[#2b2118]" onClick={() => move(-1)}>
@@ -307,7 +317,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
       </div>
 
       <div
-        className="relative h-[318px] w-full overflow-hidden"
+        className="relative h-[356px] w-full overflow-hidden"
         onTouchStart={event => {
           touchStart.current = event.touches[0].clientX;
         }}
@@ -318,6 +328,12 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
           touchStart.current = null;
         }}
       >
+        {shouldCelebrate && (
+          <div className="rare-reveal-burst pointer-events-none" style={{ ['--rare-color' as string]: currentCfg.color }}>
+            <span>{currentCard.rarity}</span>
+          </div>
+        )}
+
         {cards.map((card, index) => {
           let delta = index - current;
           if (delta > cards.length / 2) delta -= cards.length;
@@ -353,11 +369,6 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
         })}
       </div>
 
-      <div className="text-center space-y-1">
-        <p className="text-xs font-black tracking-widest" style={{ color: bestCfg.color }}>BEST PULL ・ {bestCfg.label}</p>
-        <p className="text-[#2b2118] font-black text-xl">{bestCard.name}</p>
-      </div>
-
       <div className="flex gap-3 w-full">
         <a href={shareUrl} target="_blank" rel="noopener noreferrer" className="flex-1 py-3.5 rounded-2xl font-black text-[#2b2118] text-sm text-center active:scale-95 bg-white border border-border shadow-sm">
           Xでシェア
@@ -366,8 +377,8 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
           図鑑を見る
         </Link>
       </div>
-      <Link href={`/card/${bestCard.id}`} className="text-[#8a7864] text-xs underline underline-offset-2">
-        ベストカード詳細を見る
+      <Link href={`/card/${currentCard.id}`} className="text-[#8a7864] text-xs underline underline-offset-2">
+        このカードの詳細を見る
       </Link>
     </div>
   );
