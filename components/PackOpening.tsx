@@ -45,7 +45,7 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
 
   function handlePointerEnd() {
     if (phase !== 'CUTTING') return;
-    if (cutPct > 55) openPack();
+    if (cutPct <= 12 || cutPct > 55) openPack();
     else {
       setPhase('READY');
       setCutPct(0);
@@ -79,7 +79,7 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
               NAGOTOSHA
             </div>
             <div className="absolute inset-x-4 top-20 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
-              <div className="h-full w-full pack-food-collage" />
+              <div className={`h-full w-full pack-food-collage pack-food-${pack.accentFood}`} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-transparent to-white/20" />
             </div>
             <div className="absolute inset-x-5 bottom-8 text-center">

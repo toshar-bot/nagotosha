@@ -115,15 +115,44 @@ body::before {
 
 .pack-food-collage {
   background:
-    radial-gradient(ellipse at 22% 22%, rgba(90,48,24,0.78) 0 12%, transparent 13%),
-    radial-gradient(circle at 72% 20%, rgba(255,238,198,0.94) 0 10%, transparent 11%),
-    radial-gradient(circle at 82% 72%, rgba(139,92,246,0.82) 0 9%, transparent 10%),
-    radial-gradient(circle at 22% 75%, rgba(101,209,142,0.82) 0 8%, transparent 9%),
     linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.03) 40%, rgba(0,0,0,0.34)),
     var(--pack-image, url("https://commons.wikimedia.org/wiki/Special:FilePath/Hitsumabushi1.jpg?width=900"));
-  background-size: auto, auto, auto, auto, auto, cover;
+  background-size: auto, cover;
   background-position: center;
   filter: saturate(1.18) contrast(1.05);
+}
+
+.pack-food-morning {
+  background:
+    radial-gradient(ellipse at 23% 25%, rgba(88,45,24,0.92) 0 13%, rgba(128,68,34,0.90) 14% 19%, transparent 20%),
+    radial-gradient(circle at 73% 25%, #fff6dc 0 10%, #f1d69b 11% 16%, transparent 17%),
+    radial-gradient(ellipse at 70% 70%, rgba(72,44,28,0.86) 0 11%, transparent 12%),
+    linear-gradient(135deg, rgba(255,255,255,0.34), rgba(255,255,255,0.03) 42%, rgba(0,0,0,0.36)),
+    var(--pack-image);
+  background-size: auto, auto, auto, auto, cover;
+  background-position: center;
+}
+
+.pack-food-lunch {
+  background:
+    radial-gradient(circle at 78% 22%, rgba(204,47,33,0.92) 0 10%, transparent 11%),
+    radial-gradient(ellipse at 24% 72%, rgba(246,175,62,0.90) 0 10%, transparent 11%),
+    radial-gradient(circle at 72% 72%, rgba(43,139,79,0.82) 0 8%, transparent 9%),
+    linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.02) 38%, rgba(0,0,0,0.36)),
+    var(--pack-image);
+  background-size: auto, auto, auto, auto, cover;
+  background-position: center;
+}
+
+.pack-food-dinner {
+  background:
+    radial-gradient(circle at 78% 23%, rgba(124,58,237,0.78) 0 9%, transparent 10%),
+    radial-gradient(ellipse at 25% 74%, rgba(214,171,74,0.88) 0 12%, transparent 13%),
+    radial-gradient(circle at 25% 25%, rgba(28,96,74,0.74) 0 8%, transparent 9%),
+    linear-gradient(135deg, rgba(255,255,255,0.26), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.42)),
+    var(--pack-image);
+  background-size: auto, auto, auto, auto, cover;
+  background-position: center;
 }
 
 .booster-pack {

@@ -19,12 +19,12 @@ type TutorialStep = 0 | 1 | 2;
 const TUTORIAL_STEPS = [
   {
     title: 'わしはトーシャー博士じゃ！',
-    body: 'ここは名古屋メシ図鑑 NAGOTOSHA。\n名古屋の美食カードを集めるのじゃ！\n集めるほど、次に行きたいお店リストが育っていくぞ。',
+    body: 'ここは名古屋メシ図鑑 NAGOTOSHA。\n名古屋の美食カードを集めるのじゃ。\n集めるほど、次に行きたいお店リストが育っていくぞ。',
     cta: '次へ',
   },
   {
     title: '1日1パック開封じゃ',
-    body: '1パックには5枚入り。\nかぶりもあるが、所持数が増えるのもコレクションの味じゃ。\n高レアは最後に出るから、めくる時間も楽しむのじゃ。',
+    body: '1パックには5枚入り。\nかぶりもあるが、所持数が増えるのもコレクションの味じゃ。\n高レアは最後に出るから、めくる瞬間まで楽しむのじゃ。',
     cta: '次へ',
   },
   {
@@ -155,7 +155,7 @@ export default function HomePage() {
 
         {phase === 'idle' && (
           <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={canDraw ? '開封したいパックをスライドで選ぶのじゃ。\n右端まで行くと、また最初のパックへ戻るぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
+            <TosharBubble text={canDraw ? '開封したいパックを横にスライドして選ぶのじゃ。\n右端まで行くと、また最初のパックへ戻るぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
               <>
@@ -267,8 +267,8 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
       <div className="absolute inset-x-5 top-8 rounded-full border border-white/40 bg-white/22 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/90">
         NAGOTOSHA
       </div>
-      <div className="absolute inset-x-4 top-18 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
-        <div className="h-full w-full pack-food-collage" />
+      <div className="absolute inset-x-4 top-20 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
+        <div className={`h-full w-full pack-food-collage pack-food-${pack.accentFood}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-transparent to-white/20" />
       </div>
       <div className="absolute inset-x-5 bottom-8 text-center">
@@ -294,7 +294,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
     if (!isCurrentHighRare || revealedHighRare[current]) return;
     const timer = window.setTimeout(() => {
       setRevealedHighRare(prev => ({ ...prev, [current]: true }));
-    }, 260);
+    }, 420);
     return () => window.clearTimeout(timer);
   }, [current, isCurrentHighRare, revealedHighRare]);
 
@@ -304,7 +304,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
 
   return (
     <div className="flex flex-col items-center gap-5 animate-fade-up">
-      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\nカードが見えた瞬間にだけ、レア演出が走るぞ。" />
+      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\n高レアはカードが見えた瞬間にだけ演出が走るぞ。" />
 
       <div className="w-full flex items-center justify-center gap-4">
         <button className="w-11 h-11 rounded-full bg-white border border-border shadow-sm font-black text-[#2b2118]" onClick={() => move(-1)}>
@@ -358,7 +358,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
               {delta === 0 && (
                 <div className="mt-3 text-center">
                   <p className="text-xs font-black tracking-widest" style={{ color: cfg.color }}>
-                    {card.rarity} ・ {cfg.label}
+                    {card.rarity} / {cfg.label}
                   </p>
                   <p className="text-[#2b2118] font-black text-base">{card.shopName}の{card.name}</p>
                   {duplicate && <p className="text-[#9b8261] text-xs">所持数 {count}枚</p>}

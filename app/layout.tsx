@@ -1,11 +1,10 @@
-
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
 
 export const metadata: Metadata = {
-  title: 'NAGOTOSHA — 名古屋メシ図鑑',
-  description: '名古屋メシをカードで集めるゲーム。今日の1枚を引こう。',
+  title: 'NAGOTOSHA - 名古屋メシ図鑑',
+  description: '名古屋メシをカードで集めるスマホWeb図鑑ゲーム。今日の1パックを開封しよう。',
 };
 
 export const viewport: Viewport = {
