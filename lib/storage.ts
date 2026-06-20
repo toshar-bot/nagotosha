@@ -3,8 +3,10 @@ const KEY = 'nagotosha:v2';
 export interface CollectionState {
   version: 2;
   ownedCardIds: string[];
+  cardCounts: Record<string, number>;
   lastDrawDate: string | null;
   lastDrawnCardId: string | null;
+  lastDrawnCardIds: string[];
   streak: number;
   bestStreak: number;
   tutorialDone: boolean;
@@ -14,8 +16,10 @@ export interface CollectionState {
 const INITIAL: CollectionState = {
   version: 2,
   ownedCardIds: [],
+  cardCounts: {},
   lastDrawDate: null,
   lastDrawnCardId: null,
+  lastDrawnCardIds: [],
   streak: 0,
   bestStreak: 0,
   tutorialDone: false,
@@ -27,7 +31,13 @@ export function loadCollection(): CollectionState {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { ...INITIAL };
-    return { ...INITIAL, ...JSON.parse(raw) };
+    const parsed = { ...INITIAL, ...JSON.parse(raw) };
+    const fallbackIds = parsed.lastDrawnCardId ? [parsed.lastDrawnCardId] : [];
+    return {
+      ...parsed,
+      cardCounts: parsed.cardCounts ?? {},
+      lastDrawnCardIds: parsed.lastDrawnCardIds?.length ? parsed.lastDrawnCardIds : fallbackIds,
+    };
   } catch {
     return { ...INITIAL };
   }

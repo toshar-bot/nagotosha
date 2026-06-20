@@ -7,7 +7,6 @@ export interface PackConfig {
   name: string;
   shortName: string;
   catchCopy: string;
-  emoji: string;
   color: string;
   borderColor: string;
   bgFrom: string;
@@ -21,11 +20,10 @@ export const PACKS: PackConfig[] = [
     name: 'モーニングパック',
     shortName: 'Morning',
     catchCopy: '喫茶店と朝の名古屋メシが出やすい',
-    emoji: '☕',
-    color: '#f2b84b',
-    borderColor: '#d99a2b',
-    bgFrom: '#5a3518',
-    bgTo: '#19100b',
+    color: '#b8872f',
+    borderColor: '#d9a441',
+    bgFrom: '#fff4d7',
+    bgTo: '#8a5a1f',
     weights: { N: 58, R: 28, SR: 10, SSR: 3, UR: 1 },
   },
   {
@@ -33,11 +31,10 @@ export const PACKS: PackConfig[] = [
     name: 'ランチパック',
     shortName: 'Lunch',
     catchCopy: '定番名古屋メシを集めやすい',
-    emoji: '🍜',
-    color: '#ef6f4d',
+    color: '#c9412d',
     borderColor: '#e85d3f',
-    bgFrom: '#6f2218',
-    bgTo: '#1b1010',
+    bgFrom: '#ffd9ca',
+    bgTo: '#7a1f17',
     weights: { N: 44, R: 33, SR: 16, SSR: 6, UR: 1 },
   },
   {
@@ -45,11 +42,10 @@ export const PACKS: PackConfig[] = [
     name: 'ディナーパック',
     shortName: 'Dinner',
     catchCopy: '夜のごちそうと高レアに少し期待',
-    emoji: '🌙',
-    color: '#c084fc',
-    borderColor: '#8b5cf6',
-    bgFrom: '#43216d',
-    bgTo: '#100b1b',
+    color: '#7c3aed',
+    borderColor: '#a78bfa',
+    bgFrom: '#eee6ff',
+    bgTo: '#35145f',
     weights: { N: 36, R: 30, SR: 21, SSR: 10, UR: 3 },
   },
 ];

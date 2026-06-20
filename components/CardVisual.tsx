@@ -64,7 +64,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
         </div>
       ) : (
         <div className="absolute inset-x-2 top-10 bottom-14 rounded-lg flex items-center justify-center bg-black/25 border border-white/10">
-          <span className={owned ? 'text-4xl' : 'text-3xl opacity-25'}>{owned ? card.emoji : '？'}</span>
+          <span className="game-icon opacity-60" />
         </div>
       )}
 

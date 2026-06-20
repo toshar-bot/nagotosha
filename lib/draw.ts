@@ -23,3 +23,10 @@ export function drawCard(allCards: Card[], ownedIds: string[], packId: PackId = 
   if (pool.length === 0) pool = allCards;
   return pool[Math.floor(Math.random() * pool.length)];
 }
+
+const RARITY_RANK: Record<Rarity, number> = { N: 1, R: 2, SR: 3, SSR: 4, UR: 5 };
+
+export function drawPack(allCards: Card[], ownedIds: string[], packId: PackId = DEFAULT_PACK.id, count = 5): Card[] {
+  const cards = Array.from({ length: count }, () => drawCard(allCards, ownedIds, packId));
+  return cards.sort((a, b) => RARITY_RANK[a.rarity] - RARITY_RANK[b.rarity]);
+}

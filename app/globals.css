@@ -8,15 +8,15 @@
 }
 
 html {
-  background: #15110d;
+  background: #f7f1e7;
 }
 
 body {
   background:
-    radial-gradient(circle at 50% -10%, rgba(232, 93, 63, 0.18), transparent 34rem),
-    radial-gradient(circle at 12% 18%, rgba(242, 184, 75, 0.12), transparent 18rem),
-    linear-gradient(180deg, #211711 0%, #15110d 48%, #0f0c0a 100%);
-  color: #ffffff;
+    radial-gradient(circle at 50% -12%, rgba(255, 255, 255, 0.98), transparent 30rem),
+    radial-gradient(circle at 12% 16%, rgba(184, 135, 47, 0.16), transparent 18rem),
+    linear-gradient(180deg, #fffaf1 0%, #f7f1e7 52%, #eadcc8 100%);
+  color: #2b2118;
   min-height: 100dvh;
   overscroll-behavior: none;
 }
@@ -27,16 +27,16 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent 72%);
+    linear-gradient(rgba(105,72,38,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105,72,38,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 76%);
 }
 
 .app-shell {
   background:
-    linear-gradient(180deg, rgba(255, 248, 232, 0.035), transparent 28rem),
-    radial-gradient(circle at 50% 0%, rgba(232, 93, 63, 0.12), transparent 22rem);
+    linear-gradient(180deg, rgba(255,255,255,0.76), rgba(255,255,255,0.18) 22rem, transparent),
+    radial-gradient(circle at 50% 0%, rgba(184, 135, 47, 0.12), transparent 22rem);
 }
 
 ::-webkit-scrollbar { display: none; }
@@ -121,6 +121,66 @@ body::before {
   background-size: auto, auto, auto, auto, auto, cover;
   background-position: center;
   filter: saturate(1.18) contrast(1.05);
+}
+
+.booster-pack {
+  position: relative;
+  isolation: isolate;
+  border-radius: 1.55rem;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.booster-pack::before,
+.booster-pack::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 22px;
+  z-index: 8;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.42), transparent 42%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 8px, rgba(0,0,0,0.16) 8px 16px);
+  border-color: rgba(255,255,255,0.34);
+}
+
+.booster-pack::before {
+  top: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.28);
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 96% 100%, 92% 72%, 88% 100%, 84% 72%, 80% 100%, 76% 72%, 72% 100%, 68% 72%, 64% 100%, 60% 72%, 56% 100%, 52% 72%, 48% 100%, 44% 72%, 40% 100%, 36% 72%, 32% 100%, 28% 72%, 24% 100%, 20% 72%, 16% 100%, 12% 72%, 8% 100%, 4% 72%, 0 100%);
+}
+
+.booster-pack::after {
+  bottom: 0;
+  border-top: 1px solid rgba(255,255,255,0.28);
+  clip-path: polygon(0 0, 4% 28%, 8% 0, 12% 28%, 16% 0, 20% 28%, 24% 0, 28% 28%, 32% 0, 36% 28%, 40% 0, 44% 28%, 48% 0, 52% 28%, 56% 0, 60% 28%, 64% 0, 68% 28%, 72% 0, 76% 28%, 80% 0, 84% 28%, 88% 0, 92% 28%, 96% 0, 100% 28%, 100% 100%, 0 100%);
+}
+
+.pack-metal {
+  background:
+    linear-gradient(118deg, rgba(255,255,255,0.04) 0 20%, rgba(255,255,255,0.42) 34%, rgba(255,255,255,0.06) 48%, rgba(0,0,0,0.16) 75%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.10) 0 2px, transparent 2px 13px);
+  mix-blend-mode: screen;
+}
+
+.game-icon {
+  display: inline-block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.45rem;
+  background: linear-gradient(145deg, #fff6d8, #c6902d 50%, #6b3c18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), 0 3px 8px rgba(84,49,17,0.22);
+  vertical-align: middle;
+}
+
+.game-icon.book {
+  border-radius: 0.28rem;
+  background: linear-gradient(90deg, #1d5b73 0 16%, #f7f1e7 16% 22%, #c9412d 22% 100%);
+}
+
+.game-icon.home {
+  clip-path: polygon(50% 4%, 96% 38%, 86% 38%, 86% 94%, 18% 94%, 18% 38%, 4% 38%);
 }
 
 .spark {

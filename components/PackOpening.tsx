@@ -94,7 +94,7 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
             className="absolute -top-3 -right-3 w-9 h-9 rounded-full flex items-center justify-center text-base font-black text-white"
             style={{ background: pack.borderColor }}
           >
-            {pack.emoji}
+            <span className="game-icon" />
           </div>
 
           {phase === 'READY' && (

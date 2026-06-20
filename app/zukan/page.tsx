@@ -31,7 +31,7 @@ export default function ZukanPage() {
   if (!col) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
-        <div className="text-4xl animate-toshar-float">📚</div>
+        <div className="game-icon book animate-toshar-float" />
       </div>
     );
   }

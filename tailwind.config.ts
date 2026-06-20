@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#15110d',
-        surface: '#211915',
-        raised: '#2c211b',
-        border: '#4a3428',
-        accent: '#e85d3f',
-        gold: '#f2b84b',
+        bg: '#f7f1e7',
+        surface: '#fffaf1',
+        raised: '#ffffff',
+        border: '#e4d4bd',
+        accent: '#c9412d',
+        gold: '#b8872f',
       },
       fontFamily: {
         sans: ['-apple-system','BlinkMacSystemFont','"Hiragino Sans"','"Noto Sans JP"','sans-serif'],
