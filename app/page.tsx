@@ -13,26 +13,7 @@ import CardVisual from '@/components/CardVisual';
 import TosharBubble from '@/components/TosharBubble';
 import DiscoveryBar from '@/components/DiscoveryBar';
 
-type HomePhase = 'idle' | 'tutorial' | 'drawing' | 'result';
-type TutorialStep = 0 | 1 | 2;
-
-const TUTORIAL_STEPS = [
-  {
-    title: 'わしはトーシャー博士じゃ！',
-    body: 'ここは名古屋メシ図鑑 NAGOTOSHA。\n名古屋の美食カードを集めるのじゃ。\n集めるほど、次に行きたいお店リストが育っていくぞ。',
-    cta: '次へ',
-  },
-  {
-    title: '1日1パック開封じゃ',
-    body: '1パックには5枚入り。\nかぶりもあるが、所持数が増えるのもコレクションの味じゃ。\n高レアは最後に出るから、めくる瞬間まで楽しむのじゃ。',
-    cta: '次へ',
-  },
-  {
-    title: '旅先の候補も増えるぞ',
-    body: 'カードには店名とエリアも記録される。\n図鑑が埋まるほど、名古屋で食べたい一皿が見つかるのじゃ。',
-    cta: '始める',
-  },
-];
+type HomePhase = 'idle' | 'drawing' | 'result';
 
 const HIGH_RARITIES: Rarity[] = ['SR', 'SSR', 'UR'];
 
@@ -42,14 +23,17 @@ export default function HomePage() {
   const [pendingCards, setPendingCards] = useState<Card[]>([]);
   const [isNewDraw, setIsNewDraw] = useState(false);
   const [selectedPackId, setSelectedPackId] = useState<PackId>(DEFAULT_PACK.id);
-  const [tutStep, setTutStep] = useState<TutorialStep>(0);
+  const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
     const c = loadCollection();
-    setCol(c);
+    /* チュートリアルは廃止 — 未完了でも即プレイ開始 */
     if (!c.tutorialDone) {
-      setPhase('tutorial');
-      return;
+      const updated = { ...c, tutorialDone: true };
+      saveCollection(updated);
+      setCol(updated);
+    } else {
+      setCol(c);
     }
     if (c.lastDrawDate === todayStr() && c.lastDrawnCardIds.length) {
       setPendingCards(c.lastDrawnCardIds.map(id => CARDS.find(card => card.id === id)).filter(Boolean) as Card[]);
@@ -59,17 +43,6 @@ export default function HomePage() {
   }, []);
 
   const canDraw = col ? col.lastDrawDate !== todayStr() : false;
-
-  const handleTutorialNext = () => {
-    if (tutStep < 2) {
-      setTutStep((tutStep + 1) as TutorialStep);
-      return;
-    }
-    const updated = { ...col!, tutorialDone: true };
-    setCol(updated);
-    saveCollection(updated);
-    setPhase('idle');
-  };
 
   const handleStartDraw = useCallback(() => {
     if (!col || !canDraw) return;
@@ -138,27 +111,26 @@ export default function HomePage() {
       </header>
 
       <main className="flex-1 flex flex-col justify-center px-4 gap-6">
-        {phase === 'tutorial' && (
-          <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={`【${tutStep + 1}/3】 ${TUTORIAL_STEPS[tutStep].title}\n${TUTORIAL_STEPS[tutStep].body}`} />
-            <div className="flex justify-end">
-              <button
-                onClick={handleTutorialNext}
-                className="bg-accent text-white font-black px-8 py-3 rounded-2xl text-base active:scale-95 transition-transform"
-                style={{ boxShadow: '0 0 20px rgba(201,65,45,0.28)' }}
-              >
-                {TUTORIAL_STEPS[tutStep].cta}
-              </button>
-            </div>
-          </div>
-        )}
-
         {phase === 'idle' && (
-          <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={canDraw ? '開封したいパックを選ぶのじゃ。\nどのパックにするか、吟味するのじゃぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
+          <div className="flex flex-col gap-5 animate-fade-up">
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
               <>
+                {/* 折りたたみヒント */}
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    onClick={() => setShowHint(h => !h)}
+                    className="flex items-center gap-2 text-[#8a7864] text-xs active:scale-95 transition-transform"
+                  >
+                    <div className="toshar-avatar" style={{ width: '1.6rem', height: '1.6rem', borderRadius: '0.5rem' }} />
+                    <span className="underline underline-offset-2">{showHint ? '閉じる' : 'トーシャー博士の話を聞く'}</span>
+                  </button>
+                  {showHint && (
+                    <div className="w-full animate-fade-up">
+                      <TosharBubble text={'1日1パック開封して名古屋メシカードを集めるのじゃ。\n5枚入りで、高レアは最後に来るぞ。\n図鑑が埋まるほど、行きたいお店が増えていくのじゃ。'} />
+                    </div>
+                  )}
+                </div>
                 <PackPicker selectedPackId={selectedPackId} onSelect={setSelectedPackId} />
                 <button
                   onClick={handleStartDraw}
@@ -169,9 +141,12 @@ export default function HomePage() {
                 </button>
               </>
             ) : (
-              <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-[#2b2118] text-lg text-center block active:scale-95 transition-transform bg-white border border-border shadow-sm">
-                図鑑を見る
-              </Link>
+              <>
+                <TosharBubble text={'今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
+                <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-[#2b2118] text-lg text-center block active:scale-95 transition-transform bg-white border border-border shadow-sm">
+                  図鑑を見る
+                </Link>
+              </>
             )}
           </div>
         )}
