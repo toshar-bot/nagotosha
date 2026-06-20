@@ -38,8 +38,9 @@ export default function PackOpening({ card, onComplete }: Props) {
         <div
           className={`
             relative flex flex-col items-center justify-center
-            w-48 h-64 rounded-2xl cursor-pointer
+            w-48 h-64 rounded-2xl cursor-pointer overflow-hidden
             ${phase === 'SHAKING' ? 'animate-shake' : ''}
+            ${phase === 'FLASH' ? 'animate-pack-burst' : ''}
           `}
           style={{
             background: 'linear-gradient(145deg, #1a0505, #0a0a0a)',
@@ -54,6 +55,25 @@ export default function PackOpening({ card, onComplete }: Props) {
             className="absolute inset-[6px] rounded-xl opacity-30"
             style={{ border: `1px solid ${cfg.borderColor}` }}
           />
+
+          <div className="absolute inset-0 pack-foil pointer-events-none" />
+          <div
+            className={`absolute left-5 right-5 top-1/2 h-[2px] rounded-full transition-all duration-500 ${
+              phase === 'READY' ? 'opacity-50 scale-x-75' : 'opacity-100 scale-x-125'
+            }`}
+            style={{
+              background: `linear-gradient(90deg, transparent, ${cfg.color}, transparent)`,
+              boxShadow: `0 0 18px ${cfg.color}`,
+            }}
+          />
+
+          {phase !== 'READY' && (
+            <div className="absolute inset-0 pointer-events-none">
+              <span className="spark spark-a" style={{ background: cfg.color }} />
+              <span className="spark spark-b" style={{ background: cfg.borderColor }} />
+              <span className="spark spark-c" style={{ background: '#ffffff' }} />
+            </div>
+          )}
 
           <div className="text-center space-y-1 z-10">
             <p className="text-[10px] tracking-[0.3em] font-black" style={{ color: cfg.color }}>

@@ -48,6 +48,31 @@ body {
   background: linear-gradient(135deg, #7f1d1d 0%, #3b0764 50%, #1e1b4b 100%);
 }
 
+.pack-foil {
+  background:
+    linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.16) 45%, transparent 62%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 12px);
+  background-size: 220% 100%, 100% 100%;
+  animation: pack-foil 2.2s linear infinite;
+  opacity: 0.8;
+}
+
+.spark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  left: 50%;
+  top: 50%;
+  filter: blur(0.2px);
+  box-shadow: 0 0 18px currentColor;
+  animation: spark-pop 0.75s ease-out infinite;
+}
+
+.spark-a { transform: translate(-50%, -50%); animation-delay: 0s; }
+.spark-b { transform: translate(-50%, -50%); animation-delay: 0.12s; }
+.spark-c { transform: translate(-50%, -50%); animation-delay: 0.24s; }
+
 button:active {
   transform: scale(0.96);
   transition: transform 0.08s ease;
@@ -56,3 +81,18 @@ button:active {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+@keyframes pack-foil {
+  0% { background-position: 180% 0, 0 0; }
+  100% { background-position: -80% 0, 0 0; }
+}
+
+@keyframes spark-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--spark-x, 34px)), calc(-50% + var(--spark-y, -46px))) scale(1); }
+}
+
+.spark-a { --spark-x: -54px; --spark-y: -58px; }
+.spark-b { --spark-x: 62px; --spark-y: -28px; }
+.spark-c { --spark-x: 12px; --spark-y: 62px; }
