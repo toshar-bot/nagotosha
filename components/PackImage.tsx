@@ -31,11 +31,11 @@ export default function PackImage({ src, alt, className = '', style, draggable =
 
       for (let i = 0; i < d.length; i += 4) {
         const r = d[i], g = d[i + 1], b = d[i + 2];
-        // 白〜薄いグレーを透明にする
-        if (r > 230 && g > 225 && b > 215) {
-          // エッジを滑らかにするためアルファを段階的に
-          const brightness = (r + g + b) / 3;
-          d[i + 3] = brightness > 242 ? 0 : Math.round((255 - brightness) * 6);
+        const brightness = (r + g + b) / 3;
+        // 明るい部分を広めに透明化（パック商品写真の白背景除去）
+        if (brightness > 200 && r > 185 && g > 185 && b > 175) {
+          const alpha = brightness > 230 ? 0 : Math.round((230 - brightness) * 8);
+          d[i + 3] = Math.min(d[i + 3], alpha);
         }
       }
 
