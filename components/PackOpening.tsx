@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Card } from '@/types/card';
 import { DEFAULT_PACK, PackConfig } from '@/lib/packs';
 import CardVisual from './CardVisual';
+import PackImage from './PackImage';
 
 type Phase = 'READY' | 'CUTTING' | 'OPENING' | 'BURST';
 
@@ -89,11 +90,10 @@ export default function PackOpening({ cards, pack = DEFAULT_PACK, onComplete }: 
           onTouchMove={e => { e.preventDefault(); handlePointerMove(e.touches[0].clientX); }}
           onTouchEnd={handlePointerEnd}
         >
-          <img
+          <PackImage
             src={pack.imageUrl}
             alt={pack.name}
-            className="pack-img w-full h-auto object-contain"
-            draggable={false}
+            className="w-full object-contain"
             style={{ filter: `drop-shadow(0 0 40px ${pack.color}bb) drop-shadow(0 28px 56px rgba(0,0,0,0.75))` }}
           />
           <div className="absolute left-3 right-3 z-10" style={{ top: `calc(${TEAR_Y}% - 14px)` }}>
@@ -123,12 +123,12 @@ export default function PackOpening({ cards, pack = DEFAULT_PACK, onComplete }: 
       {phase === 'OPENING' && (
         <div className="relative" style={{ width: PACK_W }}>
           <div style={{ clipPath: `polygon(0 ${TEAR_Y}%, 100% ${TEAR_Y}%, 100% 100%, 0 100%)` }}>
-            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto" draggable={false}
+            <PackImage src={pack.imageUrl} alt="" className="w-full"
               style={{ filter: `drop-shadow(0 0 28px ${pack.color}88)` }} />
           </div>
           <div className="absolute top-0 left-0 right-0 pack-top-fly"
             style={{ clipPath: `polygon(0 0, 100% 0, 100% ${TEAR_Y}%, 0 ${TEAR_Y}%)` }}>
-            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto" draggable={false} />
+            <PackImage src={pack.imageUrl} alt="" className="w-full" />
           </div>
         </div>
       )}
