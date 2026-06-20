@@ -1,5 +1,4 @@
 import { Card, Rarity } from '@/types/card';
-import { RARITY_WEIGHTS } from '@/lib/rarity';
 
 function pickRarity(): Rarity {
   const rarities: Rarity[] = ['N', 'R', 'SR', 'SSR', 'UR'];

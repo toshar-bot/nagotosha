@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card } from '@/types/card';
 import { RARITY_CONFIG } from '@/lib/rarity';
 import CardVisual from './CardVisual';
