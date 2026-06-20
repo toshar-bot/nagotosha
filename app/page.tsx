@@ -91,21 +91,23 @@ export default function HomePage() {
   const selectedPack = getPack(selectedPackId);
   const featureCard = pendingCards[pendingCards.length - 1] ?? CARDS[0];
 
+  const isDark = phase === 'idle';
+
   return (
-    <div className="flex flex-col min-h-dvh pb-20">
+    <div className={`flex flex-col min-h-dvh pb-20 transition-colors duration-700 ${isDark ? 'bg-[#0c0804]' : ''}`}>
       <header className="flex items-center justify-between px-4 pt-5 pb-4 flex-shrink-0">
-        <div className="flex items-center gap-1.5 bg-white/80 border border-border rounded-full px-3 py-1.5 shadow-sm">
+        <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 ${isDark ? 'bg-white/10 border border-white/15' : 'bg-white/80 border border-border shadow-sm'}`}>
           <span className="game-icon" />
-          <span className="text-[#2b2118] font-black text-sm">{col.streak}日</span>
-          <span className="text-[#8a7864] text-xs">連続</span>
+          <span className={`font-black text-sm ${isDark ? 'text-white/90' : 'text-[#2b2118]'}`}>{col.streak}日</span>
+          <span className={`text-xs ${isDark ? 'text-white/50' : 'text-[#8a7864]'}`}>連続</span>
         </div>
         <div className="text-center">
-          <p className="text-[9px] tracking-[0.18em] text-[#9b8261] font-bold">今日のご飯が決まる</p>
-          <p className="text-[#2b2118] font-black text-sm tracking-widest">名古屋メシ図鑑</p>
+          <p className={`text-[9px] tracking-[0.18em] font-bold ${isDark ? 'text-white/40' : 'text-[#9b8261]'}`}>今日のご飯が決まる</p>
+          <p className={`font-black text-sm tracking-widest ${isDark ? 'text-white/90' : 'text-[#2b2118]'}`}>名古屋メシ図鑑</p>
         </div>
-        <div className="flex items-center gap-1 bg-white/80 border border-border rounded-full px-3 py-1.5 shadow-sm">
-          <span className="text-[#2b2118] font-black text-sm">{ownedCount}</span>
-          <span className="text-[#8a7864] text-xs">/ {TOTAL_CARDS}</span>
+        <div className={`flex items-center gap-1 rounded-full px-3 py-1.5 ${isDark ? 'bg-white/10 border border-white/15' : 'bg-white/80 border border-border shadow-sm'}`}>
+          <span className={`font-black text-sm ${isDark ? 'text-white/90' : 'text-[#2b2118]'}`}>{ownedCount}</span>
+          <span className={`text-xs ${isDark ? 'text-white/50' : 'text-[#8a7864]'}`}>/ {TOTAL_CARDS}</span>
           <span className="game-icon book ml-1" />
         </div>
       </header>
@@ -113,29 +115,13 @@ export default function HomePage() {
       <main className="flex-1 flex flex-col justify-center px-4 gap-6">
         {phase === 'idle' && (
           <div className="flex flex-col gap-5 animate-fade-up">
-            <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
               <>
-                {/* 折りたたみヒント */}
-                <div className="flex flex-col items-center gap-2">
-                  <button
-                    onClick={() => setShowHint(h => !h)}
-                    className="flex items-center gap-2 text-[#8a7864] text-xs active:scale-95 transition-transform"
-                  >
-                    <div className="toshar-avatar" style={{ width: '1.6rem', height: '1.6rem', borderRadius: '0.5rem' }} />
-                    <span className="underline underline-offset-2">{showHint ? '閉じる' : 'トーシャー博士の話を聞く'}</span>
-                  </button>
-                  {showHint && (
-                    <div className="w-full animate-fade-up">
-                      <TosharBubble text={'1日1パック開封して名古屋メシカードを集めるのじゃ。\n5枚入りで、高レアは最後に来るぞ。\n図鑑が埋まるほど、行きたいお店が増えていくのじゃ。'} />
-                    </div>
-                  )}
-                </div>
                 <PackPicker selectedPackId={selectedPackId} onSelect={setSelectedPackId} />
                 <button
                   onClick={handleStartDraw}
                   className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
-                  style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgTo})`, boxShadow: `0 0 30px ${selectedPack.color}55` }}
+                  style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgTo})`, boxShadow: `0 0 40px ${selectedPack.color}66` }}
                 >
                   <span className="relative">5枚入りパックを開封する</span>
                 </button>
@@ -143,10 +129,10 @@ export default function HomePage() {
             ) : (
               <>
                 <div className="text-center py-2">
-                  <p className="text-[#9b8261] text-sm font-bold">今日の開封は済んでいます</p>
-                  <p className="text-[#c4a87a] text-xs mt-1">また明日、新しい名古屋メシと出会おう</p>
+                  <p className="text-white/60 text-sm font-bold">今日の開封は済んでいます</p>
+                  <p className="text-white/35 text-xs mt-1">また明日、新しい名古屋メシと出会おう</p>
                 </div>
-                <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-[#2b2118] text-lg text-center block active:scale-95 transition-transform bg-white border border-border shadow-sm">
+                <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-white text-lg text-center block active:scale-95 transition-transform bg-white/10 border border-white/20">
                   図鑑を見る
                 </Link>
               </>
