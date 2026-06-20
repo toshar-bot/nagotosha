@@ -365,13 +365,20 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
               className={`absolute left-1/2 top-3 transition-all duration-300 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               style={{
                 transform: `translateX(calc(-50% + ${delta * 34}px)) rotate(${delta * 5}deg) scale(${delta === 0 ? 1 : 0.92})`,
-                zIndex: 20 - Math.abs(delta),
+                /* レア演出中はオーバーレイ(z:60)より上に出す */
+                zIndex: delta === 0 && shouldCelebrate && index === current ? 65 : 20 - Math.abs(delta),
                 filter: delta === 0 ? 'none' : 'brightness(0.78)',
               }}
               onClick={() => setCurrent(index)}
             >
               <div className={delta === 0 && shouldCelebrate && index === current ? 'card-rare-zoom' : ''}>
-                <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} rarityRevealed={!isHiddenHighRare} />
+                <CardVisual
+                  card={card}
+                  size={delta === 0 && shouldCelebrate && index === current ? 'lg' : 'md'}
+                  owned
+                  isNew={isNewDraw && !duplicate}
+                  rarityRevealed={!isHiddenHighRare}
+                />
               </div>
               {delta === 0 && (
                 <div className="mt-3 text-center">
