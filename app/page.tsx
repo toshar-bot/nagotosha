@@ -5,6 +5,7 @@ import { CARDS, TOTAL_CARDS } from '@/data/cards';
 import { loadCollection, saveCollection, todayStr, yesterdayStr, CollectionState } from '@/lib/storage';
 import { drawCard } from '@/lib/draw';
 import { RARITY_CONFIG, buildShareUrl } from '@/lib/rarity';
+import { DEFAULT_PACK, PACKS, PackId, getPack } from '@/lib/packs';
 import { Card } from '@/types/card';
 import PackOpening from '@/components/PackOpening';
 import CardVisual from '@/components/CardVisual';
@@ -25,6 +26,7 @@ export default function HomePage() {
   const [phase, setPhase] = useState<HomePhase>('idle');
   const [pendingCard, setPendingCard] = useState<Card | null>(null);
   const [isNewDraw, setIsNewDraw] = useState(false);
+  const [selectedPackId, setSelectedPackId] = useState<PackId>(DEFAULT_PACK.id);
   const [tutStep, setTutStep] = useState<TutorialStep>(0);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function HomePage() {
 
   const handleStartDraw = useCallback(() => {
     if (!col || !canDraw) return;
-    const card = drawCard(CARDS, col.ownedCardIds);
+    const card = drawCard(CARDS, col.ownedCardIds, selectedPackId);
     const today = todayStr();
     const yesterday = yesterdayStr();
     const newStreak = col.lastDrawDate === yesterday ? col.streak + 1 : 1;
@@ -64,7 +66,7 @@ export default function HomePage() {
     };
     setCol(updated); saveCollection(updated);
     setPendingCard(card); setIsNewDraw(true); setPhase('drawing');
-  }, [col, canDraw]);
+  }, [col, canDraw, selectedPackId]);
 
   const handleDevReset = () => {
     const reset = { ...col!, lastDrawDate: null, lastDrawnCardId: null };
@@ -76,6 +78,7 @@ export default function HomePage() {
   const ownedCount = col.ownedCardIds.length;
   const shareUrl = pendingCard ? buildShareUrl(pendingCard, col.streak) : '';
   const cardCfg = pendingCard ? RARITY_CONFIG[pendingCard.rarity] : null;
+  const selectedPack = getPack(selectedPackId);
 
   return (
     <div className="flex flex-col min-h-dvh pb-20">
@@ -112,14 +115,40 @@ export default function HomePage() {
 
         {phase === 'idle' && (
           <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={canDraw ? '今日の1枚を引くんじゃ！パックをタップして開封！🎴' : '今日はもう引いたぞ！明日もまた来るんじゃ🐻'} />
+            <TosharBubble text={canDraw ? '今日はどのパックにするんじゃ？時間帯で出やすい名古屋メシが少し変わるぞ！' : '今日はもう引いたぞ！明日もまた来るんじゃ🐻'} />
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
-              <button onClick={handleStartDraw}
-                className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
-                style={{ background: 'linear-gradient(135deg, #e63946, #c2112a)', boxShadow: '0 0 30px rgba(230,57,70,0.5)' }}>
-                <span className="relative">🎴 今日の1枚を引く！</span>
-              </button>
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-2">
+                  {PACKS.map(pack => {
+                    const active = selectedPackId === pack.id;
+                    return (
+                      <button
+                        key={pack.id}
+                        onClick={() => setSelectedPackId(pack.id)}
+                        className={`relative min-h-[116px] rounded-2xl border p-2 text-left overflow-hidden active:scale-95 transition-all ${
+                          active ? 'scale-[1.02]' : 'opacity-70'
+                        }`}
+                        style={{
+                          background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
+                          borderColor: active ? pack.borderColor : '#333',
+                          boxShadow: active ? `0 0 24px ${pack.color}55` : 'none',
+                        }}
+                      >
+                        <span className="absolute -right-3 -top-3 text-5xl opacity-20">{pack.emoji}</span>
+                        <span className="relative block text-3xl mb-2">{pack.emoji}</span>
+                        <span className="relative block text-white text-[11px] font-black leading-tight">{pack.name}</span>
+                        <span className="relative block text-[9px] text-white/55 mt-1 leading-snug">{pack.catchCopy}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button onClick={handleStartDraw}
+                  className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
+                  style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgFrom})`, boxShadow: `0 0 30px ${selectedPack.color}66` }}>
+                  <span className="relative">{selectedPack.emoji} {selectedPack.name}を開ける</span>
+                </button>
+              </div>
             ) : (
               <Link href="/zukan"
                 className="w-full py-5 rounded-2xl font-black text-white text-lg text-center block active:scale-95 transition-transform"
@@ -132,7 +161,7 @@ export default function HomePage() {
 
         {phase === 'drawing' && pendingCard && (
           <div className="flex-1 flex flex-col justify-center">
-            <PackOpening card={pendingCard} onComplete={() => setPhase('result')} />
+            <PackOpening card={pendingCard} pack={selectedPack} onComplete={() => setPhase('result')} />
           </div>
         )}
 

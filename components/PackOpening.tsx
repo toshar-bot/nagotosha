@@ -1,17 +1,20 @@
 'use client';
+
 import { useState } from 'react';
 import { Card } from '@/types/card';
 import { RARITY_CONFIG } from '@/lib/rarity';
+import { DEFAULT_PACK, PackConfig } from '@/lib/packs';
 import CardVisual from './CardVisual';
 
 type Phase = 'READY' | 'SHAKING' | 'FLASH' | 'REVEAL';
 
 interface Props {
   card: Card;
+  pack?: PackConfig;
   onComplete: () => void;
 }
 
-export default function PackOpening({ card, onComplete }: Props) {
+export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('READY');
   const cfg = RARITY_CONFIG[card.rarity];
   const isHighRare = card.rarity === 'SSR' || card.rarity === 'UR';
@@ -26,11 +29,10 @@ export default function PackOpening({ card, onComplete }: Props) {
 
   return (
     <div className="relative flex flex-col items-center justify-center h-full gap-8 select-none">
-
       {phase === 'FLASH' && (
         <div
           className="fixed inset-0 z-50 pointer-events-none animate-flash"
-          style={{ background: isHighRare ? cfg.color : '#ffffff', opacity: 0 }}
+          style={{ background: isHighRare ? cfg.color : pack.color, opacity: 0 }}
         />
       )}
 
@@ -43,17 +45,17 @@ export default function PackOpening({ card, onComplete }: Props) {
             ${phase === 'FLASH' ? 'animate-pack-burst' : ''}
           `}
           style={{
-            background: 'linear-gradient(145deg, #1a0505, #0a0a0a)',
-            border: `3px solid ${cfg.borderColor}`,
+            background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
+            border: `3px solid ${pack.borderColor}`,
             boxShadow: phase === 'READY'
-              ? `0 0 30px ${cfg.glowColor}, 0 0 60px ${cfg.glowColor}`
-              : `0 0 50px ${cfg.glowStrong}, 0 0 100px ${cfg.glowColor}`,
+              ? `0 0 30px ${pack.color}55, 0 0 60px ${cfg.glowColor}`
+              : `0 0 50px ${cfg.glowStrong}, 0 0 100px ${pack.color}55`,
           }}
           onClick={handlePackTap}
         >
           <div
-            className="absolute inset-[6px] rounded-xl opacity-30"
-            style={{ border: `1px solid ${cfg.borderColor}` }}
+            className="absolute inset-[6px] rounded-xl opacity-35"
+            style={{ border: `1px solid ${pack.borderColor}` }}
           />
 
           <div className="absolute inset-0 pack-foil pointer-events-none" />
@@ -62,38 +64,39 @@ export default function PackOpening({ card, onComplete }: Props) {
               phase === 'READY' ? 'opacity-50 scale-x-75' : 'opacity-100 scale-x-125'
             }`}
             style={{
-              background: `linear-gradient(90deg, transparent, ${cfg.color}, transparent)`,
-              boxShadow: `0 0 18px ${cfg.color}`,
+              background: `linear-gradient(90deg, transparent, ${pack.color}, transparent)`,
+              boxShadow: `0 0 18px ${pack.color}`,
             }}
           />
 
           {phase !== 'READY' && (
             <div className="absolute inset-0 pointer-events-none">
               <span className="spark spark-a" style={{ background: cfg.color }} />
-              <span className="spark spark-b" style={{ background: cfg.borderColor }} />
+              <span className="spark spark-b" style={{ background: pack.borderColor }} />
               <span className="spark spark-c" style={{ background: '#ffffff' }} />
             </div>
           )}
 
-          <div className="text-center space-y-1 z-10">
-            <p className="text-[10px] tracking-[0.3em] font-black" style={{ color: cfg.color }}>
-              ✦ NAGOTOSHA ✦
+          <div className="text-center space-y-1 z-10 px-4">
+            <p className="text-[10px] tracking-[0.3em] font-black" style={{ color: pack.color }}>
+              NAGOTOSHA
             </p>
-            <p className="text-4xl">🎴</p>
-            <p className="text-xs text-white/60 font-medium mt-2">名古屋メシ図鑑</p>
+            <p className="text-5xl">{pack.emoji}</p>
+            <p className="text-sm text-white font-black mt-2">{pack.name}</p>
+            <p className="text-[10px] text-white/55 font-bold">{pack.shortName} Pack</p>
           </div>
 
           <div
-            className="absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black text-white"
-            style={{ background: cfg.borderColor }}
+            className="absolute -top-3 -right-3 w-9 h-9 rounded-full flex items-center justify-center text-base font-black text-white"
+            style={{ background: pack.borderColor }}
           >
-            ×1
+            {pack.emoji}
           </div>
 
           {phase === 'READY' && (
             <div
               className="absolute -inset-3 rounded-2xl animate-pulse-border pointer-events-none"
-              style={{ border: `1px solid ${cfg.borderColor}55` }}
+              style={{ border: `1px solid ${pack.borderColor}77` }}
             />
           )}
         </div>
@@ -101,14 +104,14 @@ export default function PackOpening({ card, onComplete }: Props) {
 
       {phase === 'READY' && (
         <div className="animate-fade-up text-center space-y-1">
-          <p className="text-white font-black text-lg">タップして開封！</p>
-          <p className="text-gray-500 text-xs">パックをタップするんじゃ🐻</p>
+          <p className="text-white font-black text-lg">タップして開封</p>
+          <p className="text-gray-500 text-xs">{pack.catchCopy}</p>
         </div>
       )}
 
       {phase === 'SHAKING' && (
         <div className="text-center">
-          <p className="text-white font-black text-lg animate-pulse">開封中…！</p>
+          <p className="text-white font-black text-lg animate-pulse">開封中...</p>
         </div>
       )}
 

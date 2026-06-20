@@ -25,12 +25,12 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
   const glowStyle = owned
     ? {
         boxShadow: isNew
-          ? `0 0 24px ${cfg.glowStrong}, 0 0 60px ${cfg.glowColor}, inset 0 0 20px rgba(255,255,255,0.04)`
-          : `0 0 12px ${cfg.glowColor}`,
+          ? `0 0 24px ${cfg.glowStrong}, 0 0 60px ${cfg.glowColor}, 0 16px 34px rgba(0,0,0,0.35), inset 0 0 24px rgba(255,248,232,0.08)`
+          : `0 10px 24px rgba(0,0,0,0.28), 0 0 12px ${cfg.glowColor}`,
       }
     : { boxShadow: 'none' };
 
-  const borderStyle = { border: `2px solid ${owned ? cfg.borderColor : '#2a2a2a'}` };
+  const borderStyle = { border: `2px solid ${owned ? cfg.borderColor : '#4a3428'}` };
 
   return (
     <div
@@ -39,7 +39,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
         ${onClick ? 'cursor-pointer' : ''}
         ${isUR && owned ? 'ur-glow' : ''}
         transition-transform duration-150 active:scale-95
-        overflow-hidden select-none
+        overflow-hidden select-none card-plate
       `}
       style={{ ...borderStyle, ...glowStyle }}
       onClick={onClick}
@@ -50,7 +50,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
           style={!isUR ? { background: `linear-gradient(145deg, ${cfg.bgFrom}, ${cfg.bgTo})` } : undefined}
         />
       ) : (
-        <div className="absolute inset-0 bg-[#0d0d0d]" />
+        <div className="absolute inset-0 bg-[#211915]" />
       )}
 
       {isHighRare && owned && (
@@ -86,7 +86,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
 
       <div
         className={`relative z-10 ${s.pad} pb-3`}
-        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85), transparent)' }}
+        style={{ background: 'linear-gradient(to top, rgba(36,24,18,0.92), rgba(36,24,18,0.08))' }}
       >
         {owned ? (
           <>

@@ -1,8 +1,10 @@
 import { Card, Rarity } from '@/types/card';
+import { DEFAULT_PACK, getPack, PackId } from '@/lib/packs';
 
-function pickRarity(): Rarity {
+function pickRarity(packId: PackId = DEFAULT_PACK.id): Rarity {
+  const pack = getPack(packId);
   const rarities: Rarity[] = ['N', 'R', 'SR', 'SSR', 'UR'];
-  const weights = [50, 30, 14, 5, 1];
+  const weights = rarities.map(rarity => pack.weights[rarity]);
   const total = weights.reduce((a, b) => a + b, 0);
   let rand = Math.random() * total;
   for (let i = 0; i < rarities.length; i++) {
@@ -12,8 +14,8 @@ function pickRarity(): Rarity {
   return 'N';
 }
 
-export function drawCard(allCards: Card[], ownedIds: string[]): Card {
-  const rarity = pickRarity();
+export function drawCard(allCards: Card[], ownedIds: string[], packId: PackId = DEFAULT_PACK.id): Card {
+  const rarity = pickRarity(packId);
   let pool = allCards.filter(c => c.rarity === rarity);
   const unowned = pool.filter(c => !ownedIds.includes(c.id));
   if (unowned.length > 0) pool = unowned;

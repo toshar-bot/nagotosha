@@ -8,14 +8,35 @@
 }
 
 html {
-  background: #080808;
+  background: #15110d;
 }
 
 body {
-  background: #080808;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(232, 93, 63, 0.18), transparent 34rem),
+    radial-gradient(circle at 12% 18%, rgba(242, 184, 75, 0.12), transparent 18rem),
+    linear-gradient(180deg, #211711 0%, #15110d 48%, #0f0c0a 100%);
   color: #ffffff;
   min-height: 100dvh;
   overscroll-behavior: none;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent 72%);
+}
+
+.app-shell {
+  background:
+    linear-gradient(180deg, rgba(255, 248, 232, 0.035), transparent 28rem),
+    radial-gradient(circle at 50% 0%, rgba(232, 93, 63, 0.12), transparent 22rem);
 }
 
 ::-webkit-scrollbar { display: none; }
@@ -32,6 +53,28 @@ body {
   animation: shimmer 2.5s linear infinite;
 }
 
+.card-plate::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 18%, rgba(255,255,255,0.09) 42%, transparent 58%),
+    radial-gradient(circle at 50% 55%, rgba(0,0,0,0), rgba(0,0,0,0.3));
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .ur-glow {
   animation: ur-rainbow 3s linear infinite;
 }
@@ -45,7 +88,7 @@ body {
 }
 
 .ur-bg {
-  background: linear-gradient(135deg, #7f1d1d 0%, #3b0764 50%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #8b1e1e 0%, #5b247a 50%, #1f3f67 100%);
 }
 
 .pack-foil {
