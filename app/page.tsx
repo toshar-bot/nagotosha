@@ -255,27 +255,22 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
   return (
     <button
       onClick={onClick}
-      className={`booster-pack premium-pack pack-shell relative h-[326px] w-52 flex-shrink-0 snap-center border-2 text-left transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-90 opacity-55'}`}
+      className={`relative flex-shrink-0 snap-center transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-88 opacity-50'}`}
       style={{
-        background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
-        borderColor: pack.borderColor,
-        boxShadow: active ? `0 0 38px ${pack.color}66, 0 24px 48px rgba(92,62,27,0.28)` : '0 12px 22px rgba(92,62,27,0.12)',
-        ['--pack-image' as string]: `url("${pack.imageUrl}")`,
+        filter: active ? `drop-shadow(0 0 22px ${pack.color}88) drop-shadow(0 18px 36px rgba(0,0,0,0.38))` : 'drop-shadow(0 8px 16px rgba(0,0,0,0.22))',
       }}
     >
-      <div className="absolute inset-0 pack-metal" />
-      <div className="absolute inset-x-5 top-7 z-10 rounded-full border border-white/55 bg-white/24 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/95 shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
-        NAGOTOSHA
-      </div>
-      <div className="pack-hero">
-        <div className={`pack-art pack-art-${pack.accentFood}`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
-      </div>
-      <div className="pack-title-panel">
-        <p className="text-[10px] font-black tracking-[0.22em] text-white/76">{pack.shortName.toUpperCase()} BOOSTER</p>
-        <p className="mt-1 text-[22px] font-black leading-tight text-white drop-shadow">{pack.name}</p>
-        <p className="mt-2 text-[10px] font-bold leading-snug text-white/84">{pack.catchCopy}</p>
-      </div>
+      <img
+        src={pack.imageUrl}
+        alt={pack.name}
+        className="w-52 h-auto object-contain select-none"
+        draggable={false}
+      />
+      {active && (
+        <p className="absolute -bottom-1 left-0 right-0 text-center text-[10px] font-black tracking-widest" style={{ color: pack.color }}>
+          {pack.catchCopy}
+        </p>
+      )}
     </button>
   );
 }

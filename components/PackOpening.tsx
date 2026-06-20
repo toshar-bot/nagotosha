@@ -25,14 +25,14 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
     setCutPct(100);
     setPhase('OPENING');
     setTimeout(() => setPhase('REVEAL'), 900);
-    setTimeout(() => onComplete(), 1850);
+    setTimeout(() => onComplete(), 1900);
   }
 
   function handlePointerDown(clientX: number) {
     if (phase !== 'READY') return;
     startX.current = clientX;
     setPhase('CUTTING');
-    setCutPct(8);
+    setCutPct(6);
   }
 
   function handlePointerMove(clientX: number) {
@@ -53,83 +53,95 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
     startX.current = null;
   }
 
+  /* パック画像の上部20%が切り取られて飛んでいく仕組み */
+  const TEAR_Y = 20; // 画像の上から何%で切るか
+
   return (
-    <div className="relative flex flex-col items-center justify-center h-full gap-8 select-none">
+    <div className="relative flex flex-col items-center justify-center h-full gap-6 select-none">
+
       {(phase === 'READY' || phase === 'CUTTING' || phase === 'OPENING') && (
-        <div className="relative h-[340px] w-[232px]">
+        <div className="relative" style={{ width: 220 }}>
+
+          {/* ── パック下部（切り取り後も残る） ── */}
+          <div className="relative overflow-hidden" style={{ clipPath: `polygon(0 ${TEAR_Y}%, 100% ${TEAR_Y}%, 100% 100%, 0 100%)` }}>
+            <img
+              src={pack.imageUrl}
+              alt={pack.name}
+              className="w-full h-auto object-contain"
+              draggable={false}
+            />
+            {/* カードが出てくる */}
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 transition-all duration-700 ${phase === 'OPENING' ? '-top-20 opacity-100 scale-100' : 'top-4 opacity-0 scale-90'}`}
+              style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1.4, 0.56, 1)', zIndex: 10 }}
+            >
+              <CardVisual card={card} size="md" owned />
+            </div>
+          </div>
+
+          {/* ── パック上部（なぞると飛んでいく） ── */}
           <div
-            className={`booster-pack premium-pack pack-shell absolute inset-0 border-2 ${phase === 'OPENING' ? 'pack-opened' : ''}`}
+            className={`absolute top-0 left-0 right-0 overflow-hidden transition-all duration-500 ${phase === 'OPENING' ? 'pack-top-fly' : ''}`}
             style={{
-              background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
-              borderColor: pack.borderColor,
-              boxShadow: `0 0 42px ${pack.color}66, 0 28px 58px rgba(92,62,27,0.28)`,
-              ['--pack-image' as string]: `url("${pack.imageUrl}")`,
+              clipPath: `polygon(0 0, 100% 0, 100% ${TEAR_Y}%, 0 ${TEAR_Y}%)`,
+              transformOrigin: 'center top',
             }}
-            onClick={openPack}
-            onMouseDown={event => handlePointerDown(event.clientX)}
-            onMouseMove={event => handlePointerMove(event.clientX)}
-            onMouseUp={handlePointerEnd}
-            onMouseLeave={handlePointerEnd}
-            onTouchStart={event => handlePointerDown(event.touches[0].clientX)}
-            onTouchMove={event => handlePointerMove(event.touches[0].clientX)}
-            onTouchEnd={handlePointerEnd}
           >
-            <div className="absolute inset-0 pack-metal" />
-            <div className="absolute inset-x-5 top-7 z-10 rounded-full border border-white/55 bg-white/24 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/95 shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
-              NAGOTOSHA
-            </div>
-            <div className="pack-hero">
-              <div className={`pack-art pack-art-${pack.accentFood}`} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
-            </div>
-            <div className="pack-title-panel">
-              <p className="text-[10px] font-black tracking-[0.22em] text-white/76">{pack.shortName.toUpperCase()} BOOSTER</p>
-              <p className="mt-1 text-[22px] font-black leading-tight text-white drop-shadow">{pack.name}</p>
-              <p className="mt-2 text-[10px] font-bold leading-snug text-white/84">{pack.catchCopy}</p>
-            </div>
-
-            <div className="pack-cut-guide">
-              <span style={{ width: `${Math.max(0, cutPct)}%`, background: pack.color }} />
-            </div>
-            <div className="pack-top-piece" />
+            <img
+              src={pack.imageUrl}
+              alt=""
+              className="w-full h-auto object-contain"
+              draggable={false}
+            />
           </div>
 
-          <div
-            className={`absolute left-1/2 top-16 -translate-x-1/2 transition-all duration-700 ${phase === 'OPENING' ? 'translate-y-[-92px] opacity-100 scale-100' : 'translate-y-14 opacity-0 scale-90'}`}
-            style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1.4, 0.56, 1)' }}
-          >
-            <CardVisual card={card} size="md" owned />
-          </div>
+          {/* ── なぞりゲージ ── */}
+          {(phase === 'READY' || phase === 'CUTTING') && (
+            <div
+              className="absolute left-4 right-4 z-20"
+              style={{ top: `calc(${TEAR_Y}% - 3px)` }}
+              onMouseDown={e => handlePointerDown(e.clientX)}
+              onMouseMove={e => handlePointerMove(e.clientX)}
+              onMouseUp={handlePointerEnd}
+              onMouseLeave={handlePointerEnd}
+              onTouchStart={e => handlePointerDown(e.touches[0].clientX)}
+              onTouchMove={e => handlePointerMove(e.touches[0].clientX)}
+              onTouchEnd={handlePointerEnd}
+            >
+              <div className="pack-cut-guide" style={{ position: 'relative', left: 0, right: 0, top: 0 }}>
+                <span style={{ width: `${cutPct}%`, background: pack.color }} />
+              </div>
+              {/* 透明なタッチエリア */}
+              <div className="absolute -inset-x-4 -inset-y-5 cursor-pointer" />
+            </div>
+          )}
+
+          {/* クリックでも開封 */}
+          {phase === 'READY' && (
+            <div className="absolute inset-0 cursor-pointer" onClick={openPack} />
+          )}
         </div>
       )}
 
-      {phase === 'READY' && (
-        <div className="animate-fade-up text-center space-y-1">
-          <p className="text-[#2b2118] font-black text-lg">上のラインを横になぞって開封</p>
+      {(phase === 'READY' || phase === 'CUTTING') && (
+        <div className="text-center space-y-1">
+          <p className="text-[#2b2118] font-black text-base">
+            {phase === 'CUTTING' ? 'そのまま右へスライド →' : '上の線を横になぞって開封'}
+          </p>
           <p className="text-[#8a7864] text-xs">タップでも開けます</p>
         </div>
       )}
 
-      {phase === 'CUTTING' && (
-        <div className="text-center">
-          <p className="text-[#2b2118] font-black text-lg">そのまま右へスライド</p>
-        </div>
-      )}
-
       {phase === 'OPENING' && (
-        <div className="text-center">
-          <p className="text-[#2b2118] font-black text-lg animate-pulse">カード排出中...</p>
-        </div>
+        <p className="text-[#2b2118] font-black text-base animate-pulse">カード排出中...</p>
       )}
 
       {phase === 'REVEAL' && (
         <div className="flex flex-col items-center gap-6 animate-card-rise">
           <CardVisual card={card} size="lg" owned />
           <div className="text-center animate-fade-up">
-            <p className="font-black text-lg" style={{ color: cfg.color }}>
-              {card.rarity}
-            </p>
-            <p className="text-[#2b2118] font-bold text-lg mt-0.5">{card.name}</p>
+            <p className="font-black text-lg" style={{ color: cfg.color }}>{card.rarity}</p>
+            <p className="text-[#2b2118] font-bold text-lg mt-0.5">{card.shopName}の{card.name}</p>
           </div>
         </div>
       )}

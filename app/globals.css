@@ -348,6 +348,15 @@ body::before {
   opacity: 0;
 }
 
+.pack-top-fly {
+  animation: pack-top-rip 0.52s cubic-bezier(0.22, 1.5, 0.56, 1) forwards;
+}
+
+@keyframes pack-top-rip {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-110px) rotate(-14deg); opacity: 0; }
+}
+
 /* カードが出てくる光の筋 */
 .pack-opened::after {
   animation: pack-light-burst 0.55s ease-out forwards;
