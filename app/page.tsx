@@ -9,7 +9,6 @@ import { RARITY_CONFIG, buildShareUrl } from '@/lib/rarity';
 import { DEFAULT_PACK, PACKS, PackConfig, PackId, getPack } from '@/lib/packs';
 import { Card, Rarity } from '@/types/card';
 import PackOpening from '@/components/PackOpening';
-import PackImage from '@/components/PackImage';
 import CardVisual from '@/components/CardVisual';
 
 type HomePhase = 'idle' | 'drawing' | 'result';
@@ -219,10 +218,11 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         filter: active ? `drop-shadow(0 0 22px ${pack.color}88) drop-shadow(0 18px 36px rgba(0,0,0,0.38))` : 'drop-shadow(0 8px 16px rgba(0,0,0,0.22))',
       }}
     >
-      <PackImage
+      <img
         src={pack.imageUrl}
         alt={pack.name}
-        className={`w-52 object-contain select-none${active ? ' pack-float' : ''}`}
+        className={`w-52 h-auto object-contain select-none${active ? ' pack-float' : ''}`}
+        draggable={false}
       />
     </button>
   );
