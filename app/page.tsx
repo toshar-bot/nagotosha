@@ -255,7 +255,7 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
   return (
     <button
       onClick={onClick}
-      className={`booster-pack premium-pack relative h-[326px] w-52 flex-shrink-0 snap-center border-2 text-left transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-90 opacity-55'}`}
+      className={`booster-pack premium-pack pack-shell relative h-[326px] w-52 flex-shrink-0 snap-center border-2 text-left transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-90 opacity-55'}`}
       style={{
         background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
         borderColor: pack.borderColor,
@@ -264,23 +264,23 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
       }}
     >
       <div className="absolute inset-0 pack-metal" />
-      <div className="absolute inset-x-5 top-8 rounded-full border border-white/40 bg-white/22 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/90">
+      <div className="absolute inset-x-5 top-7 z-10 rounded-full border border-white/55 bg-white/24 px-3 py-1 text-center text-[10px] font-black tracking-[0.22em] text-white/95 shadow-[0_8px_18px_rgba(0,0,0,0.16)]">
         NAGOTOSHA
       </div>
-      <div className="absolute inset-x-4 top-20 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
+      <div className="pack-hero">
         <img
           src={pack.imageUrl}
           alt={`${pack.name}のメインビジュアル`}
-          className="h-full w-full object-cover scale-110"
+          className="h-full w-full object-cover scale-105"
           draggable={false}
         />
         <div className={`absolute inset-0 pack-food-collage pack-food-${pack.accentFood}`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-transparent to-white/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/12" />
       </div>
-      <div className="absolute inset-x-5 bottom-8 text-center">
-        <p className="text-[10px] font-black tracking-[0.22em] text-white/70">{pack.shortName.toUpperCase()} BOOSTER</p>
-        <p className="mt-1 text-xl font-black leading-tight text-white drop-shadow">{pack.name}</p>
-        <p className="mt-2 text-[10px] font-bold leading-snug text-white/78">{pack.catchCopy}</p>
+      <div className="pack-title-panel">
+        <p className="text-[10px] font-black tracking-[0.22em] text-white/76">{pack.shortName.toUpperCase()} BOOSTER</p>
+        <p className="mt-1 text-[22px] font-black leading-tight text-white drop-shadow">{pack.name}</p>
+        <p className="mt-2 text-[10px] font-bold leading-snug text-white/84">{pack.catchCopy}</p>
       </div>
     </button>
   );
