@@ -79,6 +79,9 @@ export default function HomePage() {
   const shareUrl = pendingCard ? buildShareUrl(pendingCard, col.streak) : '';
   const cardCfg = pendingCard ? RARITY_CONFIG[pendingCard.rarity] : null;
   const selectedPack = getPack(selectedPackId);
+  const selectedPackIndex = PACKS.findIndex(pack => pack.id === selectedPackId);
+  const prevPack = PACKS[(selectedPackIndex + PACKS.length - 1) % PACKS.length];
+  const nextPack = PACKS[(selectedPackIndex + 1) % PACKS.length];
 
   return (
     <div className="flex flex-col min-h-dvh pb-20">
@@ -119,34 +122,62 @@ export default function HomePage() {
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-2">
-                  {PACKS.map(pack => {
-                    const active = selectedPackId === pack.id;
-                    return (
-                      <button
-                        key={pack.id}
-                        onClick={() => setSelectedPackId(pack.id)}
-                        className={`relative min-h-[116px] rounded-2xl border p-2 text-left overflow-hidden active:scale-95 transition-all ${
-                          active ? 'scale-[1.02]' : 'opacity-70'
-                        }`}
-                        style={{
-                          background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
-                          borderColor: active ? pack.borderColor : '#333',
-                          boxShadow: active ? `0 0 24px ${pack.color}55` : 'none',
-                        }}
-                      >
-                        <span className="absolute -right-3 -top-3 text-5xl opacity-20">{pack.emoji}</span>
-                        <span className="relative block text-3xl mb-2">{pack.emoji}</span>
-                        <span className="relative block text-white text-[11px] font-black leading-tight">{pack.name}</span>
-                        <span className="relative block text-[9px] text-white/55 mt-1 leading-snug">{pack.catchCopy}</span>
-                      </button>
-                    );
-                  })}
+                <div className="mx-auto w-fit rounded-full border border-gold/70 bg-black/35 px-5 py-2 text-center shadow-[0_0_24px_rgba(242,184,75,0.28)]">
+                  <span className="text-gold text-xs font-black tracking-widest">本日のパック</span>
+                  <span className="text-white font-black ml-3">1 / 1</span>
                 </div>
+
+                <div className="relative min-h-[318px] flex items-center justify-center overflow-hidden">
+                  <button
+                    onClick={() => setSelectedPackId(prevPack.id)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-20 h-40 rounded-2xl border opacity-55 blur-[0.2px] active:scale-95 transition-transform"
+                    style={{
+                      background: `linear-gradient(145deg, ${prevPack.bgFrom}, ${prevPack.bgTo})`,
+                      borderColor: prevPack.borderColor,
+                    }}
+                    aria-label={`${prevPack.name}を選ぶ`}
+                  >
+                    <span className="text-3xl">{prevPack.emoji}</span>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedPackId(nextPack.id)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-40 rounded-2xl border opacity-55 blur-[0.2px] active:scale-95 transition-transform"
+                    style={{
+                      background: `linear-gradient(145deg, ${nextPack.bgFrom}, ${nextPack.bgTo})`,
+                      borderColor: nextPack.borderColor,
+                    }}
+                    aria-label={`${nextPack.name}を選ぶ`}
+                  >
+                    <span className="text-3xl">{nextPack.emoji}</span>
+                  </button>
+
+                  <div
+                    className="relative z-10 w-52 h-72 rounded-[1.4rem] border-2 overflow-hidden pack-display shadow-2xl"
+                    style={{
+                      background: `linear-gradient(145deg, ${selectedPack.bgFrom}, ${selectedPack.bgTo})`,
+                      borderColor: selectedPack.borderColor,
+                      boxShadow: `0 0 34px ${selectedPack.color}66, 0 24px 48px rgba(0,0,0,0.45)`,
+                    }}
+                  >
+                    <div className="absolute inset-0 pack-foil" />
+                    <div className="absolute inset-x-5 top-5 h-6 rounded-full bg-white/15 border border-white/20" />
+                    <div className="absolute inset-x-4 top-14 bottom-20 rounded-2xl overflow-hidden border border-white/15 bg-black/25">
+                      <div className="h-full w-full pack-food-collage" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-white/10" />
+                    </div>
+                    <div className="absolute inset-x-4 bottom-5 text-center">
+                      <p className="text-5xl mb-1">{selectedPack.emoji}</p>
+                      <p className="text-white font-black text-lg leading-tight">{selectedPack.name}</p>
+                      <p className="text-[10px] text-white/60 font-bold mt-1">{selectedPack.catchCopy}</p>
+                    </div>
+                  </div>
+                </div>
+
                 <button onClick={handleStartDraw}
                   className="relative w-full py-5 rounded-2xl font-black text-white text-xl tracking-wider overflow-hidden active:scale-95 transition-transform"
                   style={{ background: `linear-gradient(135deg, ${selectedPack.borderColor}, ${selectedPack.bgFrom})`, boxShadow: `0 0 30px ${selectedPack.color}66` }}>
-                  <span className="relative">{selectedPack.emoji} {selectedPack.name}を開ける</span>
+                  <span className="relative">▲ タップで開ける ▲</span>
                 </button>
               </div>
             ) : (

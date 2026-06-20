@@ -6,6 +6,7 @@ export interface Card {
   description: string;
   rarity: Rarity;
   emoji: string;
+  imageUrl?: string;
   shopName: string;
   area: string;
   address: string;

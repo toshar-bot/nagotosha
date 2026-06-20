@@ -100,6 +100,29 @@ body::before {
   opacity: 0.8;
 }
 
+.pack-display::before {
+  content: "";
+  position: absolute;
+  inset: -24px -12px auto;
+  height: 78px;
+  background: radial-gradient(circle, rgba(255,255,255,0.45), transparent 58%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.pack-food-collage {
+  background:
+    radial-gradient(circle at 18% 20%, #ffd38b 0 9%, transparent 10%),
+    radial-gradient(circle at 72% 18%, #ff6547 0 10%, transparent 11%),
+    radial-gradient(circle at 82% 72%, #8b5cf6 0 9%, transparent 10%),
+    radial-gradient(circle at 22% 75%, #65d18e 0 8%, transparent 9%),
+    linear-gradient(135deg, rgba(255,255,255,0.24), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.32)),
+    url("https://commons.wikimedia.org/wiki/Special:FilePath/Hitsumabushi1.jpg?width=900");
+  background-size: auto, auto, auto, auto, auto, cover;
+  background-position: center;
+  filter: saturate(1.18) contrast(1.05);
+}
+
 .spark {
   position: absolute;
   width: 7px;

@@ -77,11 +77,15 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
             </div>
           )}
 
-          <div className="text-center space-y-1 z-10 px-4">
+          <div className="absolute inset-x-5 top-12 bottom-20 rounded-2xl overflow-hidden border border-white/15 bg-black/25 z-10">
+            <div className="h-full w-full pack-food-collage" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-white/10" />
+          </div>
+
+          <div className="absolute inset-x-3 bottom-6 text-center space-y-1 z-20 px-4">
             <p className="text-[10px] tracking-[0.3em] font-black" style={{ color: pack.color }}>
               NAGOTOSHA
             </p>
-            <p className="text-5xl">{pack.emoji}</p>
             <p className="text-sm text-white font-black mt-2">{pack.name}</p>
             <p className="text-[10px] text-white/55 font-bold">{pack.shortName} Pack</p>
           </div>

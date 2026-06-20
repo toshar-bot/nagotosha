@@ -1,5 +1,8 @@
 import { Card } from '@/types/card';
 
+const commons = (file: string) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=900`;
+
 export const CARDS: Card[] = [
   {
     id: 'card_001',
@@ -7,6 +10,7 @@ export const CARDS: Card[] = [
     description: '名古屋の朝を支配するモーニング文化の象徴。厚切りトーストに甘い小倉あんとバターをたっぷり乗せた至高の朝食。',
     rarity: 'N',
     emoji: '🍞',
+    imageUrl: commons('モーニング名古屋セットの小倉トースト_(8923375578).jpg'),
     shopName: 'コメダ珈琲店',
     area: '名駅',
     address: '名古屋市中村区名駅4丁目',
@@ -20,6 +24,7 @@ export const CARDS: Card[] = [
     description: '名古屋ソウルフードの代名詞。甘みのある和風豚骨スープと伝説の「スガキヤフォーク」が語り草。',
     rarity: 'N',
     emoji: '🍜',
+    imageUrl: commons('Sugakiya_001.jpg'),
     shopName: 'スガキヤ',
     area: '栄',
     address: '名古屋市中区栄3丁目 各店舗',
@@ -33,6 +38,7 @@ export const CARDS: Card[] = [
     description: '甘辛い八丁味噌ダレが揚げたてのカツを包む名古屋名物。矢場とんの本格味噌カツは行列必至。',
     rarity: 'R',
     emoji: '🍱',
+    imageUrl: commons('Miso-Katsu-Teishoku-1.jpg'),
     shopName: '矢場とん 矢場町本店',
     area: '栄',
     address: '名古屋市中区大須3-6-18',
@@ -46,6 +52,7 @@ export const CARDS: Card[] = [
     description: '世界の山ちゃんが築き上げた甘辛タレと胡椒の黄金比。名古屋の夜に欠かせないビールの友。',
     rarity: 'R',
     emoji: '🍗',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Nagoya_chicken_wings.jpg/640px-Nagoya_chicken_wings.jpg',
     shopName: '世界の山ちゃん 栄本店',
     area: '栄',
     address: '名古屋市中区栄4-9-6',
@@ -59,6 +66,7 @@ export const CARDS: Card[] = [
     description: 'スパイスの効いたトマトソースをあんかけにした名古屋独自のスパゲッティ。チャオが1960年代に生み出した。',
     rarity: 'SR',
     emoji: '🍝',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Ankake_Spaghetti_Yokoi_2021-08_ac.jpg/640px-Ankake_Spaghetti_Yokoi_2021-08_ac.jpg',
     shopName: 'チャオ 名駅店',
     area: '名駅',
     address: '名古屋市中村区名駅4-3-25',
@@ -72,6 +80,7 @@ export const CARDS: Card[] = [
     description: '実は名古屋発祥。ひき肉・ニラ・モヤシをたっぷりのせた激辛スープは食べるほどに旨みが滲み出す。',
     rarity: 'SR',
     emoji: '🌶️',
+    imageUrl: commons('Taiwan_ramen_by_a.fujii_in_Chubu_International_Airport,_Aichi.jpg'),
     shopName: '味仙 今池本店',
     area: '今池',
     address: '名古屋市千種区今池1-12-10',
@@ -85,6 +94,7 @@ export const CARDS: Card[] = [
     description: '1杯で3通りの食べ方が楽しめる名古屋グルメの最高峰。創業150年のあつた蓬莱軒が守り続ける伝統の味。',
     rarity: 'SR',
     emoji: '🐟',
+    imageUrl: commons('Hitsumabushi1.jpg'),
     shopName: 'あつた蓬莱軒 本店',
     area: '熱田',
     address: '名古屋市熱田区神戸町503',
@@ -98,6 +108,7 @@ export const CARDS: Card[] = [
     description: '喫茶マウンテンの名物。抹茶ソースと生クリームを絡めた甘いスパゲッティ。最初は全員笑うが一口で黙る。',
     rarity: 'SSR',
     emoji: '🍵',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Shironoir.jpg/640px-Shironoir.jpg',
     shopName: '喫茶マウンテン',
     area: '昭和区',
     address: '名古屋市昭和区山手通5-9',
@@ -111,6 +122,7 @@ export const CARDS: Card[] = [
     description: '海老天を握り込んだ名古屋発祥のおにぎり。千寿の天むすは1個食べたら止まらない小ぶりな逸品。',
     rarity: 'SSR',
     emoji: '🍙',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Tenmusu_by_m-louis_in_Aichi.jpg/640px-Tenmusu_by_m-louis_in_Aichi.jpg',
     shopName: '天むす千寿',
     area: '大須',
     address: '名古屋市中区大須2-10-36',
@@ -124,6 +136,7 @@ export const CARDS: Card[] = [
     description: '名古屋の食通だけが知る伝説の一皿。その場所も味も存在すら、まだ誰も完全には解き明かしていない。',
     rarity: 'UR',
     emoji: '✨',
+    imageUrl: commons('Hitsumabushi1.jpg'),
     shopName: '??? 謎の名店',
     area: '???',
     address: '場所は秘密じゃ',

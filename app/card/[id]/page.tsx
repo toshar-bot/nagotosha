@@ -59,6 +59,17 @@ export default function CardDetailPage() {
           </>
         ) : (
           <div className="w-full space-y-4 animate-fade-up">
+            {card.imageUrl && (
+              <div className="relative h-44 rounded-2xl overflow-hidden border border-border bg-surface">
+                <img src={card.imageUrl} alt={`${card.shopName}の${card.name}`} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                <div className="absolute left-4 right-4 bottom-4">
+                  <p className="text-xs font-black" style={{ color: cfg.color }}>{card.shopName}</p>
+                  <p className="text-2xl font-black text-white leading-tight">{card.name}</p>
+                </div>
+              </div>
+            )}
+
             <section className="rounded-2xl border border-border bg-surface p-4">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <span
@@ -69,7 +80,7 @@ export default function CardDetailPage() {
                 </span>
                 <span className="text-xs text-gray-400">{card.area}</span>
               </div>
-              <h2 className="text-xl font-black text-white mb-2">{card.name}</h2>
+              <h2 className="text-xl font-black text-white mb-2">{card.shopName}の{card.name}</h2>
               <p className="text-sm text-gray-300 leading-relaxed">{card.description}</p>
             </section>
 
@@ -85,7 +96,7 @@ export default function CardDetailPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full py-3.5 rounded-xl text-center font-black text-sm text-white active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #1f1f1f, #111)', border: '2px solid #333' }}
+                style={{ background: 'linear-gradient(135deg, #2c211b, #15110d)', border: '2px solid #4a3428' }}
               >
                 Googleマップで見る
               </a>
