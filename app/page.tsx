@@ -155,7 +155,7 @@ export default function HomePage() {
 
         {phase === 'idle' && (
           <div className="flex flex-col gap-6 animate-fade-up">
-            <TosharBubble text={canDraw ? '開封したいパックを横にスライドして選ぶのじゃ。\n右端まで行くと、また最初のパックへ戻るぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
+            <TosharBubble text={canDraw ? '開封したいパックを選ぶのじゃ。\nどのパックにするか、吟味するのじゃぞ。' : '今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
             <DiscoveryBar owned={ownedCount} total={TOTAL_CARDS} />
             {canDraw ? (
               <>
@@ -263,7 +263,7 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
       <img
         src={pack.imageUrl}
         alt={pack.name}
-        className="w-52 h-auto object-contain select-none"
+        className={`pack-img w-52 h-auto object-contain select-none${active ? ' pack-float' : ''}`}
         draggable={false}
       />
       {active && (
