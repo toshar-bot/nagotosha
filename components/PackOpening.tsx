@@ -10,8 +10,10 @@ interface Props {
   onComplete: () => void;
 }
 
-const TEAR_Y = 19;
+const TEAR_Y = 19; // % from top where pack tears
 const PACK_W = 272;
+// Offset so bottom-half img shows from TEAR_Y% down
+const BOTTOM_OFFSET = `${-(TEAR_Y / (100 - TEAR_Y)) * 100}%`;
 
 export default function PackOpening({ pack = DEFAULT_PACK, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('READY');
@@ -95,15 +97,34 @@ export default function PackOpening({ pack = DEFAULT_PACK, onComplete }: Props) 
         <p className="text-white/25 text-xs mt-8 tracking-widest">横になぞる ／ タップ</p>
       )}
 
+      {/* OPENING: overflow:hidden で透過エッジを回避 */}
       {phase === 'OPENING' && (
         <div className="relative" style={{ width: PACK_W }}>
-          <div style={{ clipPath: `polygon(0 ${TEAR_Y}%, 100% ${TEAR_Y}%, 100% 100%, 0 100%)` }}>
-            <img src={pack.imageUrl} alt="" className="w-full h-auto" draggable={false}
-              style={{ filter: `drop-shadow(0 0 28px ${pack.color}88)` }} />
+          {/* 高さを確保するための透明スペーサー */}
+          <img src={pack.imageUrl} alt="" className="w-full h-auto block" draggable={false}
+            style={{ visibility: 'hidden' }} />
+
+          {/* 下半分（残る） */}
+          <div style={{
+            position: 'absolute', top: `${TEAR_Y}%`, left: 0, right: 0, bottom: 0,
+            overflow: 'hidden',
+          }}>
+            <img
+              src={pack.imageUrl} alt="" draggable={false}
+              style={{
+                position: 'absolute', top: BOTTOM_OFFSET, left: 0, width: '100%',
+                filter: `drop-shadow(0 0 28px ${pack.color}88)`,
+              }}
+            />
           </div>
-          <div className="absolute top-0 left-0 right-0 pack-top-fly"
-            style={{ clipPath: `polygon(0 0, 100% 0, 100% ${TEAR_Y}%, 0 ${TEAR_Y}%)` }}>
-            <img src={pack.imageUrl} alt="" className="w-full h-auto" draggable={false} />
+
+          {/* 上半分（飛んでいく） */}
+          <div className="pack-top-fly" style={{
+            position: 'absolute', top: 0, left: 0, right: 0,
+            height: `${TEAR_Y}%`, overflow: 'hidden',
+          }}>
+            <img src={pack.imageUrl} alt="" draggable={false}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%' }} />
           </div>
         </div>
       )}

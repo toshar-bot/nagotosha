@@ -5,7 +5,7 @@ import { RARITY_CONFIG } from '@/lib/rarity';
 
 interface Props {
   card: Card;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   owned?: boolean;
   isNew?: boolean;
   rarityRevealed?: boolean;
@@ -16,6 +16,7 @@ const SIZE = {
   sm: { w: 'w-[104px]', h: 'h-[156px]', badge: 'text-[7px] px-1.5 py-0.5', name: 'text-[10px]', shop: 'text-[8px]' },
   md: { w: 'w-[176px]', h: 'h-[252px]', badge: 'text-[9px] px-2.5 py-1', name: 'text-sm', shop: 'text-[10px]' },
   lg: { w: 'w-[232px]', h: 'h-[332px]', badge: 'text-xs px-3 py-1', name: 'text-lg', shop: 'text-xs' },
+  xl: { w: 'w-[260px]', h: 'h-[373px]', badge: 'text-sm px-3.5 py-1', name: 'text-xl', shop: 'text-sm' },
 };
 
 export default function CardVisual({ card, size = 'md', owned = true, isNew = false, rarityRevealed = true, onClick }: Props) {
