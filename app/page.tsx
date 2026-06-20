@@ -268,14 +268,8 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         NAGOTOSHA
       </div>
       <div className="pack-hero">
-        <img
-          src={pack.imageUrl}
-          alt={`${pack.name}のメインビジュアル`}
-          className="h-full w-full object-cover scale-105"
-          draggable={false}
-        />
-        <div className={`absolute inset-0 pack-food-collage pack-food-${pack.accentFood}`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/12" />
+        <div className={`pack-art pack-art-${pack.accentFood}`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
       </div>
       <div className="pack-title-panel">
         <p className="text-[10px] font-black tracking-[0.22em] text-white/76">{pack.shortName.toUpperCase()} BOOSTER</p>

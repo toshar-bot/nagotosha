@@ -113,43 +113,72 @@ body::before {
   pointer-events: none;
 }
 
-.pack-food-collage {
-  background:
-    radial-gradient(circle at 82% 18%, rgba(255,255,255,0.48) 0 7%, transparent 8%),
-    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 42%, rgba(0,0,0,0.14));
-  background-size: auto;
-  background-position: center;
-  pointer-events: none;
+/* ── Pack Hero CSS Art (外部画像不要) ── */
+
+.pack-art {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
 }
 
-.pack-food-morning {
+/* MORNING: 喫茶店の朝、琥珀色の光 */
+.pack-art-morning {
   background:
-    radial-gradient(ellipse at 22% 23%, rgba(88,45,24,0.94) 0 12%, rgba(143,77,39,0.88) 13% 18%, transparent 19%),
-    radial-gradient(circle at 75% 24%, #fff8e2 0 9%, #e8c173 10% 15%, transparent 16%),
-    radial-gradient(ellipse at 69% 75%, rgba(73,42,26,0.74) 0 10%, transparent 11%),
-    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 42%, rgba(0,0,0,0.16));
-  background-size: auto;
-  background-position: center;
+    /* トーストのシルエット */
+    radial-gradient(ellipse 44% 36% at 25% 56%, #c4721e 0%, #94490c 62%, transparent 63%),
+    radial-gradient(ellipse 34% 26% at 23% 54%, rgba(255,225,150,0.52) 0%, transparent 52%),
+    /* コーヒーカップ */
+    radial-gradient(circle at 70% 61%, #160702 0% 13%, #42180a 13% 21%, transparent 22%),
+    radial-gradient(ellipse 8% 5% at 70% 47%, rgba(50,20,5,0.65) 0%, transparent 60%),
+    /* コーヒーの湯気 */
+    radial-gradient(ellipse 5% 16% at 68% 34%, rgba(255,255,255,0.28) 0%, transparent 70%),
+    radial-gradient(ellipse 4% 14% at 72% 29%, rgba(255,255,255,0.22) 0%, transparent 70%),
+    /* 朝の光 */
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(255,215,55,0.60) 0%, transparent 65%),
+    /* ベース */
+    linear-gradient(165deg, #fff9cc 0%, #f7c840 26%, #d47515 54%, #7a3c08 100%);
 }
 
-.pack-food-lunch {
+/* LUNCH: 台湾ラーメンの熱気 */
+.pack-art-lunch {
   background:
-    radial-gradient(circle at 78% 22%, rgba(204,47,33,0.92) 0 10%, transparent 11%),
-    radial-gradient(ellipse at 24% 72%, rgba(246,175,62,0.90) 0 10%, transparent 11%),
-    radial-gradient(circle at 72% 72%, rgba(43,139,79,0.82) 0 8%, transparent 9%),
-    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.02) 38%, rgba(0,0,0,0.16));
-  background-size: auto;
-  background-position: center;
+    /* 丼の外縁 */
+    radial-gradient(ellipse 70% 30% at 50% 87%, #3d1005 0%, #7a2208 42%, transparent 43%),
+    /* 丼の中（スープ） */
+    radial-gradient(ellipse 62% 24% at 50% 83%, #cc6525 0%, #e88535 56%, transparent 57%),
+    /* 麺の丸みのヒント */
+    radial-gradient(circle at 37% 74%, rgba(255,205,70,0.75) 0% 5%, transparent 6%),
+    radial-gradient(circle at 51% 77%, rgba(255,185,55,0.65) 0% 4%, transparent 5%),
+    radial-gradient(circle at 64% 72%, rgba(255,205,70,0.75) 0% 5%, transparent 6%),
+    /* 湯気 */
+    radial-gradient(ellipse 7% 24% at 34% 28%, rgba(255,255,255,0.30) 0%, transparent 70%),
+    radial-gradient(ellipse 6% 22% at 50% 22%, rgba(255,255,255,0.26) 0%, transparent 70%),
+    radial-gradient(ellipse 7% 24% at 66% 26%, rgba(255,255,255,0.30) 0%, transparent 70%),
+    /* 唐辛子 */
+    radial-gradient(circle at 77% 36%, #d82810 0% 7%, transparent 8%),
+    radial-gradient(circle at 74% 32%, rgba(255,80,40,0.52) 0% 11%, transparent 12%),
+    /* ベース */
+    linear-gradient(165deg, #ffe2cc 0%, #f06835 26%, #be2010 54%, #780505 100%);
 }
 
-.pack-food-dinner {
+/* DINNER: 夜の名古屋、黒と金 */
+.pack-art-dinner {
   background:
-    radial-gradient(circle at 78% 23%, rgba(124,58,237,0.78) 0 9%, transparent 10%),
-    radial-gradient(ellipse at 25% 74%, rgba(214,171,74,0.88) 0 12%, transparent 13%),
-    radial-gradient(circle at 25% 25%, rgba(28,96,74,0.74) 0 8%, transparent 9%),
-    linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0.18));
-  background-size: auto;
-  background-position: center;
+    /* うなぎの皮目テクスチャ */
+    repeating-linear-gradient(28deg,
+      rgba(200,140,20,0.18) 0px, rgba(200,140,20,0.18) 2px,
+      transparent 2px, transparent 16px),
+    /* 漆器の丸みヒント */
+    radial-gradient(ellipse 66% 22% at 50% 91%, #150520 0%, #3c1265 42%, transparent 43%),
+    /* 金の輝点 */
+    radial-gradient(circle at 68% 32%, rgba(230,185,30,0.80) 0% 9%, transparent 10%),
+    radial-gradient(circle at 70% 34%, rgba(255,230,80,0.38) 0% 17%, transparent 18%),
+    /* 紫の霞・左 */
+    radial-gradient(ellipse 65% 55% at 18% 22%, rgba(150,60,240,0.52) 0%, transparent 62%),
+    /* 深い藍・右 */
+    radial-gradient(ellipse 46% 46% at 84% 65%, rgba(80,20,160,0.44) 0%, transparent 58%),
+    /* ベース */
+    linear-gradient(165deg, #ead8ff 0%, #7228d8 28%, #380e88 58%, #0a0418 100%);
 }
 
 .booster-pack {
@@ -260,23 +289,36 @@ body::before {
 
 .pack-cut-guide {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 46px;
-  height: 4px;
-  border-radius: 9999px;
-  background: rgba(255,255,255,0.24);
-  box-shadow: 0 0 16px rgba(255,255,255,0.28);
+  left: 14px;
+  right: 14px;
+  top: 44px;
+  height: 5px;
   z-index: 24;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pack-cut-guide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,0.50) 0 5px,
+    transparent 5px 9px
+  );
 }
 
 .pack-cut-guide span {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  box-shadow: 0 0 18px currentColor;
-  transition: width 0.08s ease-out;
+  border-radius: 9999px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 12px currentColor, 0 0 28px currentColor;
+  transition: width 0.07s ease-out;
 }
 
 .pack-top-piece {
@@ -287,15 +329,27 @@ body::before {
   height: 58px;
   z-index: 23;
   background:
-    linear-gradient(145deg, rgba(255,255,255,0.30), rgba(255,255,255,0.05)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.30) 0 8px, rgba(0,0,0,0.16) 8px 16px);
-  border-bottom: 1px solid rgba(255,255,255,0.28);
-  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+    linear-gradient(145deg, rgba(255,255,255,0.32), rgba(255,255,255,0.06) 60%, rgba(0,0,0,0.08)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0 7px, rgba(0,0,0,0.14) 7px 14px);
+  border-bottom: 1px solid rgba(255,255,255,0.30);
+  transform-origin: center top;
+  transition: transform 0.48s cubic-bezier(0.22, 1.6, 0.56, 1), opacity 0.32s ease;
 }
 
 .pack-opened .pack-top-piece {
-  transform: translateY(-72px) rotate(-7deg);
+  transform: translateY(-88px) rotate(-12deg) scaleY(0.85);
   opacity: 0;
+}
+
+/* カードが出てくる光の筋 */
+.pack-opened::after {
+  animation: pack-light-burst 0.55s ease-out forwards;
+}
+
+@keyframes pack-light-burst {
+  0% { opacity: 0; }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; }
 }
 
 .rare-reveal-burst {
