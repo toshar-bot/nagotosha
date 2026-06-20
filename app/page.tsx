@@ -325,8 +325,31 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
       >
         {shouldCelebrate && (
           <div className="rare-reveal-burst pointer-events-none" style={{ ['--rare-color' as string]: currentCfg.color }}>
-            <div className="rare-ring-b" style={{ ['--rare-color' as string]: currentCfg.color }} />
-            <span>{currentCard.rarity}</span>
+            {/* 同心リング3枚 */}
+            <div className="pd-ring" style={{ width: '55vmax',  height: '55vmax',  animationDelay: '0.06s' }} />
+            <div className="pd-ring" style={{ width: '95vmax',  height: '95vmax',  animationDelay: '0.16s' }} />
+            <div className="pd-ring" style={{ width: '142vmax', height: '142vmax', animationDelay: '0.28s' }} />
+            {/* スパーク8方向 */}
+            {([
+              [-152, -152, 'white'], [0, -188, currentCfg.color],
+              [152, -152, 'white'],  [188, 0,   currentCfg.color],
+              [152,  152, 'white'],  [0,  188,  currentCfg.color],
+              [-152, 152, 'white'],  [-188, 0,  currentCfg.color],
+            ] as [number, number, string][]).map(([sx, sy, bg], i) => (
+              <div
+                key={i}
+                className="pd-spark"
+                style={{
+                  ['--sx' as string]: `${sx}px`,
+                  ['--sy' as string]: `${sy}px`,
+                  background: bg,
+                  boxShadow: `0 0 12px ${currentCfg.color}, 0 0 24px ${bg}`,
+                  animationDelay: `${0.09 + i * 0.022}s`,
+                }}
+              />
+            ))}
+            {/* レアリティバッジ */}
+            <div className="pd-badge">{currentCard.rarity}</div>
           </div>
         )}
 
