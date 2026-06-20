@@ -11,7 +11,12 @@ export default function TosharBubble({ text, animate = true, size = 'md' }: Prop
 
   return (
     <div className="flex items-end gap-3 px-4">
-      <div className={`toshar-avatar flex-shrink-0 ${animate ? 'animate-toshar-float' : ''}`} aria-label="トーシャー博士" />
+      <div
+        className={`toshar-avatar flex-shrink-0 flex items-center justify-center ${animate ? 'animate-toshar-float' : ''}`}
+        aria-label="トーシャー博士"
+      >
+        <span style={{ fontSize: '1.7rem', lineHeight: 1, userSelect: 'none' }}>🧑‍🍳</span>
+      </div>
 
       <div className="relative flex-1 bg-white/94 border border-border rounded-2xl rounded-bl-none px-4 py-3 shadow-[0_10px_28px_rgba(96,61,28,0.14)]">
         <div

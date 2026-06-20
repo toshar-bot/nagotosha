@@ -100,8 +100,8 @@ export default function HomePage() {
           <span className="text-[#8a7864] text-xs">連続</span>
         </div>
         <div className="text-center">
-          <p className="text-[10px] tracking-[0.25em] text-[#9b8261] font-bold uppercase">名古屋メシ図鑑</p>
-          <p className="text-[#2b2118] font-black text-base tracking-widest">NAGOTOSHA</p>
+          <p className="text-[9px] tracking-[0.18em] text-[#9b8261] font-bold">今日のご飯が決まる</p>
+          <p className="text-[#2b2118] font-black text-sm tracking-widest">名古屋メシ図鑑</p>
         </div>
         <div className="flex items-center gap-1 bg-white/80 border border-border rounded-full px-3 py-1.5 shadow-sm">
           <span className="text-[#2b2118] font-black text-sm">{ownedCount}</span>
@@ -142,7 +142,10 @@ export default function HomePage() {
               </>
             ) : (
               <>
-                <TosharBubble text={'今日は開封済みじゃ。\n結果を見返すか、図鑑を確認するのじゃ。'} />
+                <div className="text-center py-2">
+                  <p className="text-[#9b8261] text-sm font-bold">今日の開封は済んでいます</p>
+                  <p className="text-[#c4a87a] text-xs mt-1">また明日、新しい名古屋メシと出会おう</p>
+                </div>
                 <Link href="/zukan" className="w-full py-5 rounded-2xl font-black text-[#2b2118] text-lg text-center block active:scale-95 transition-transform bg-white border border-border shadow-sm">
                   図鑑を見る
                 </Link>
@@ -152,9 +155,7 @@ export default function HomePage() {
         )}
 
         {phase === 'drawing' && pendingCards.length > 0 && (
-          <div className="flex-1 flex flex-col justify-center">
-            <PackOpening card={featureCard} pack={selectedPack} onComplete={() => setPhase('result')} />
-          </div>
+          <PackOpening cards={pendingCards} pack={selectedPack} onComplete={() => setPhase('result')} />
         )}
 
         {phase === 'result' && pendingCards.length > 0 && (
@@ -269,8 +270,6 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
 
   return (
     <div className="flex flex-col items-center gap-5 animate-fade-up">
-      <TosharBubble text="開封結果じゃ。\n左右にスワイプして、5枚を1枚ずつ確認するのじゃ。\n高レアはカードが見えた瞬間にだけ演出が走るぞ。" />
-
       <div className="w-full flex items-center justify-center gap-4">
         <button className="w-11 h-11 rounded-full bg-white border border-border shadow-sm font-black text-[#2b2118]" onClick={() => move(-1)}>
           &lt;

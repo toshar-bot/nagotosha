@@ -2,34 +2,50 @@
 
 import { useRef, useState } from 'react';
 import { Card } from '@/types/card';
-import { RARITY_CONFIG } from '@/lib/rarity';
 import { DEFAULT_PACK, PackConfig } from '@/lib/packs';
 import CardVisual from './CardVisual';
 
-type Phase = 'READY' | 'CUTTING' | 'OPENING' | 'HOLD' | 'REVEAL';
+type Phase = 'READY' | 'CUTTING' | 'OPENING' | 'BURST';
 
 interface Props {
-  card: Card;
+  cards: Card[];
   pack?: PackConfig;
   onComplete: () => void;
 }
 
-const TEAR_Y = 19;   // パック上から何%で切るか
-const PACK_W = 272;  // パック表示幅(px)
+const TEAR_Y = 19;
+const PACK_W = 272;
 
-export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: Props) {
+// 5枚のファン配置 (中央からのオフセット)
+const BURST = [
+  { bx: -130, by: 55, br: -19, delay: 0.04 },
+  { bx: -65,  by: 18, br: -9,  delay: 0.09 },
+  { bx: 0,    by: 0,  br: 0,   delay: 0.14 },
+  { bx: 65,   by: 18, br: 9,   delay: 0.19 },
+  { bx: 130,  by: 55, br: 19,  delay: 0.24 },
+];
+
+function glowClass(rarity: string) {
+  switch (rarity) {
+    case 'R':   return 'glow-r';
+    case 'SR':  return 'glow-sr';
+    case 'SSR': return 'glow-ssr';
+    case 'UR':  return 'glow-ur';
+    default:    return '';
+  }
+}
+
+export default function PackOpening({ cards, pack = DEFAULT_PACK, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('READY');
   const [cutPct, setCutPct] = useState(0);
   const startX = useRef<number | null>(null);
-  const cfg = RARITY_CONFIG[card.rarity];
 
   function openPack() {
     if (phase !== 'READY' && phase !== 'CUTTING') return;
     setCutPct(100);
     setPhase('OPENING');
-    setTimeout(() => setPhase('HOLD'),   920);
-    setTimeout(() => setPhase('REVEAL'), 2100);
-    setTimeout(() => onComplete(),       3200);
+    setTimeout(() => setPhase('BURST'), 560);
+    setTimeout(() => onComplete(), 2800);
   }
 
   function handlePointerDown(clientX: number) {
@@ -54,10 +70,13 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
     startX.current = null;
   }
 
-  /* ── READY / CUTTING: パック全体を1枚で表示 ── */
-  if (phase === 'READY' || phase === 'CUTTING') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full select-none">
+  return (
+    <div
+      className="fixed inset-0 z-40 flex flex-col items-center justify-center select-none"
+      style={{ background: 'radial-gradient(ellipse at 50% 36%, #2d1808 0%, #050200 100%)' }}
+    >
+      {/* READY / CUTTING: 没入パック表示 */}
+      {(phase === 'READY' || phase === 'CUTTING') && (
         <div
           className={`relative cursor-pointer${phase === 'READY' ? ' pack-float' : ''}`}
           style={{ width: PACK_W }}
@@ -75,90 +94,71 @@ export default function PackOpening({ card, pack = DEFAULT_PACK, onComplete }: P
             alt={pack.name}
             className="pack-img w-full h-auto object-contain"
             draggable={false}
+            style={{ filter: `drop-shadow(0 0 40px ${pack.color}bb) drop-shadow(0 28px 56px rgba(0,0,0,0.75))` }}
           />
-
-          {/* 切り取りガイド（パックの上に重ねる） */}
-          <div
-            className="absolute left-3 right-3 z-10"
-            style={{ top: `calc(${TEAR_Y}% - 14px)` }}
-          >
-            {/* 矢印 */}
+          <div className="absolute left-3 right-3 z-10" style={{ top: `calc(${TEAR_Y}% - 14px)` }}>
             <div className="flex items-center justify-between px-1 mb-1">
               <span className="text-white text-sm" style={{ textShadow: `0 0 8px ${pack.color}` }}>✂</span>
               <div className="flex gap-0.5">
                 {[0, 1, 2, 3].map(i => (
-                  <span
-                    key={i}
-                    className="text-white/85 text-[11px] font-black"
-                    style={{
-                      animation: 'arrow-pulse 1.1s ease-in-out infinite',
-                      animationDelay: `${i * 0.18}s`,
-                      textShadow: `0 0 6px ${pack.color}`,
-                    }}
-                  >▶</span>
+                  <span key={i} className="text-white/80 text-[11px] font-black"
+                    style={{ animation: 'arrow-pulse 1.1s ease-in-out infinite', animationDelay: `${i * 0.18}s`, textShadow: `0 0 6px ${pack.color}` }}>
+                    ▶
+                  </span>
                 ))}
               </div>
             </div>
-            {/* ミシン目バー */}
             <div className="pack-cut-guide" style={{ position: 'relative', left: 0, right: 0, top: 0 }}>
               <span style={{ width: `${cutPct}%`, background: pack.color }} />
             </div>
           </div>
         </div>
+      )}
 
-        {/* 最小限の説明 */}
-        {phase === 'READY' && (
-          <p className="text-[#8a7864] text-xs mt-5 tracking-wide">横になぞる ／ タップ</p>
-        )}
-      </div>
-    );
-  }
+      {phase === 'READY' && (
+        <p className="text-white/25 text-xs mt-8 tracking-widest">横になぞる ／ タップ</p>
+      )}
 
-  /* ── OPENING / HOLD: パックを上下分割して開封演出 ── */
-  if (phase === 'OPENING' || phase === 'HOLD') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full select-none">
+      {/* OPENING: パックが裂ける */}
+      {phase === 'OPENING' && (
         <div className="relative" style={{ width: PACK_W }}>
-
-          {/* 下部（残る） */}
           <div style={{ clipPath: `polygon(0 ${TEAR_Y}%, 100% ${TEAR_Y}%, 100% 100%, 0 100%)` }}>
-            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto object-contain" draggable={false} />
+            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto" draggable={false}
+              style={{ filter: `drop-shadow(0 0 28px ${pack.color}88)` }} />
           </div>
-
-          {/* 上部（飛んでいく） */}
-          <div
-            className="absolute top-0 left-0 right-0 pack-top-fly"
-            style={{ clipPath: `polygon(0 0, 100% 0, 100% ${TEAR_Y}%, 0 ${TEAR_Y}%)` }}
-          >
-            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto object-contain" draggable={false} />
-          </div>
-
-          {/* カードが切り口から飛び出す */}
-          <div
-            className={`absolute left-1/2 z-30 ${phase === 'HOLD' ? 'card-hover-hold' : 'card-blast-from-tear'}`}
-            style={{ top: `${TEAR_Y}%` }}
-          >
-            <CardVisual card={card} size="md" owned />
+          <div className="absolute top-0 left-0 right-0 pack-top-fly"
+            style={{ clipPath: `polygon(0 0, 100% 0, 100% ${TEAR_Y}%, 0 ${TEAR_Y}%)` }}>
+            <img src={pack.imageUrl} alt="" className="pack-img w-full h-auto" draggable={false} />
           </div>
         </div>
+      )}
 
-        {phase === 'HOLD' && (
-          <p className="font-black text-xl mt-5 animate-pulse" style={{ color: cfg.color }}>
-            {cfg.label}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  /* ── REVEAL: フルカード表示 ── */
-  return (
-    <div className="flex flex-col items-center gap-5 animate-card-rise select-none">
-      <CardVisual card={card} size="lg" owned />
-      <div className="text-center animate-fade-up">
-        <p className="font-black text-xl" style={{ color: cfg.color }}>{card.rarity}</p>
-        <p className="text-[#2b2118] font-bold text-lg mt-0.5">{card.shopName}の{card.name}</p>
-      </div>
+      {/* BURST: 5枚同時に飛び出す */}
+      {phase === 'BURST' && (
+        <div className="relative" style={{ width: '100vw', height: '420px' }}>
+          {cards.map((card, i) => {
+            const pos = BURST[i] ?? BURST[2];
+            return (
+              <div
+                key={card.id}
+                className={`absolute card-burst-enter ${glowClass(card.rarity)}`}
+                style={{
+                  ['--bx' as string]: `${pos.bx}px`,
+                  ['--by' as string]: `${pos.by}px`,
+                  ['--br' as string]: `${pos.br}deg`,
+                  animationDelay: `${pos.delay}s`,
+                  left: '50%',
+                  top: '50%',
+                  zIndex: i + 1,
+                  borderRadius: '0.75rem',
+                } as React.CSSProperties}
+              >
+                <CardVisual card={card} size="sm" owned />
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
