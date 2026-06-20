@@ -330,7 +330,8 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
       >
         {shouldCelebrate && (
           <div className="rare-reveal-burst pointer-events-none" style={{ ['--rare-color' as string]: currentCfg.color }}>
-            <span>じゃーん！ {currentCard.rarity}</span>
+            <div className="rare-ring-b" style={{ ['--rare-color' as string]: currentCfg.color }} />
+            <span>{currentCard.rarity}</span>
           </div>
         )}
 
@@ -356,7 +357,9 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
               }}
               onClick={() => setCurrent(index)}
             >
-              <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} rarityRevealed={!isHiddenHighRare} />
+              <div className={delta === 0 && shouldCelebrate && index === current ? 'card-rare-zoom' : ''}>
+                <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} rarityRevealed={!isHiddenHighRare} />
+              </div>
               {delta === 0 && (
                 <div className="mt-3 text-center">
                   {isHiddenHighRare ? (
