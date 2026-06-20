@@ -255,7 +255,7 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
   return (
     <button
       onClick={onClick}
-      className={`relative flex-shrink-0 snap-center transition-all duration-300 ${active ? 'scale-100 opacity-100' : 'scale-88 opacity-50'}`}
+      className={`relative flex-shrink-0 snap-center transition-all duration-300 outline-none border-0 bg-transparent p-0 ${active ? 'scale-100 opacity-100' : 'scale-88 opacity-50'}`}
       style={{
         filter: active ? `drop-shadow(0 0 22px ${pack.color}88) drop-shadow(0 18px 36px rgba(0,0,0,0.38))` : 'drop-shadow(0 8px 16px rgba(0,0,0,0.22))',
       }}
@@ -266,11 +266,6 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         className={`pack-img w-52 h-auto object-contain select-none${active ? ' pack-float' : ''}`}
         draggable={false}
       />
-      {active && (
-        <p className="absolute -bottom-1 left-0 right-0 text-center text-[10px] font-black tracking-widest" style={{ color: pack.color }}>
-          {pack.catchCopy}
-        </p>
-      )}
     </button>
   );
 }
