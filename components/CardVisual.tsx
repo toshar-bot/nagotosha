@@ -8,6 +8,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg';
   owned?: boolean;
   isNew?: boolean;
+  rarityRevealed?: boolean;
   onClick?: () => void;
 }
 
@@ -17,7 +18,7 @@ const SIZE = {
   lg: { w: 'w-[232px]', h: 'h-[332px]', badge: 'text-xs px-3 py-1', name: 'text-lg', shop: 'text-xs' },
 };
 
-export default function CardVisual({ card, size = 'md', owned = true, isNew = false, onClick }: Props) {
+export default function CardVisual({ card, size = 'md', owned = true, isNew = false, rarityRevealed = true, onClick }: Props) {
   const cfg = RARITY_CONFIG[card.rarity];
   const s = SIZE[size];
   const isUR = card.rarity === 'UR';
@@ -62,7 +63,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
         </div>
       )}
 
-      {owned && isHighRare && <div className="absolute inset-0 card-shimmer opacity-70 pointer-events-none" />}
+      {owned && isHighRare && rarityRevealed && <div className="absolute inset-0 card-shimmer opacity-70 pointer-events-none" />}
 
       {isNew && owned && (
         <div className="absolute top-2 right-2 z-20 bg-accent text-white text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-wider">
@@ -70,7 +71,7 @@ export default function CardVisual({ card, size = 'md', owned = true, isNew = fa
         </div>
       )}
 
-      {owned && (
+      {owned && rarityRevealed && (
         <div className="relative z-20 flex justify-center mt-3">
           <span
             className={`${s.badge} rounded-full font-black tracking-widest uppercase backdrop-blur-sm`}

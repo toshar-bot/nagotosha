@@ -260,7 +260,7 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         background: `linear-gradient(145deg, ${pack.bgFrom}, ${pack.bgTo})`,
         borderColor: pack.borderColor,
         boxShadow: active ? `0 0 38px ${pack.color}66, 0 24px 48px rgba(92,62,27,0.28)` : '0 12px 22px rgba(92,62,27,0.12)',
-        ['--pack-image' as string]: `url(${pack.imageUrl})`,
+        ['--pack-image' as string]: `url("${pack.imageUrl}")`,
       }}
     >
       <div className="absolute inset-0 pack-metal" />
@@ -268,7 +268,13 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         NAGOTOSHA
       </div>
       <div className="absolute inset-x-4 top-20 bottom-24 overflow-hidden rounded-2xl border border-white/25 bg-black/20">
-        <div className={`h-full w-full pack-food-collage pack-food-${pack.accentFood}`} />
+        <img
+          src={pack.imageUrl}
+          alt={`${pack.name}のメインビジュアル`}
+          className="h-full w-full object-cover scale-110"
+          draggable={false}
+        />
+        <div className={`absolute inset-0 pack-food-collage pack-food-${pack.accentFood}`} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-transparent to-white/20" />
       </div>
       <div className="absolute inset-x-5 bottom-8 text-center">
@@ -294,7 +300,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
     if (!isCurrentHighRare || revealedHighRare[current]) return;
     const timer = window.setTimeout(() => {
       setRevealedHighRare(prev => ({ ...prev, [current]: true }));
-    }, 420);
+    }, 760);
     return () => window.clearTimeout(timer);
   }, [current, isCurrentHighRare, revealedHighRare]);
 
@@ -330,7 +336,7 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
       >
         {shouldCelebrate && (
           <div className="rare-reveal-burst pointer-events-none" style={{ ['--rare-color' as string]: currentCfg.color }}>
-            <span>{currentCard.rarity}</span>
+            <span>じゃーん！ {currentCard.rarity}</span>
           </div>
         )}
 
@@ -342,6 +348,8 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
           const cfg = RARITY_CONFIG[card.rarity];
           const count = collection.cardCounts[card.id] ?? 0;
           const duplicate = count > 1;
+          const isHighRareCard = HIGH_RARITIES.includes(card.rarity);
+          const isHiddenHighRare = isHighRareCard && !revealedHighRare[index];
 
           return (
             <div
@@ -354,12 +362,16 @@ function PackResult({ cards, collection, isNewDraw }: { cards: Card[]; collectio
               }}
               onClick={() => setCurrent(index)}
             >
-              <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} />
+              <CardVisual card={card} size="md" owned isNew={isNewDraw && !duplicate} rarityRevealed={!isHiddenHighRare} />
               {delta === 0 && (
                 <div className="mt-3 text-center">
-                  <p className="text-xs font-black tracking-widest" style={{ color: cfg.color }}>
-                    {card.rarity} / {cfg.label}
-                  </p>
+                  {isHiddenHighRare ? (
+                    <p className="text-xs font-black tracking-widest text-[#9b8261]">カード確認中...</p>
+                  ) : (
+                    <p className="text-xs font-black tracking-widest" style={{ color: cfg.color }}>
+                      {card.rarity} / {cfg.label}
+                    </p>
+                  )}
                   <p className="text-[#2b2118] font-black text-base">{card.shopName}の{card.name}</p>
                   {duplicate && <p className="text-[#9b8261] text-xs">所持数 {count}枚</p>}
                 </div>

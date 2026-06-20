@@ -7,6 +7,8 @@ interface Props {
 }
 
 export default function TosharBubble({ text, animate = true, size = 'md' }: Props) {
+  const displayText = text.replace(/\\n/g, '\n');
+
   return (
     <div className="flex items-end gap-3 px-4">
       <div className={`toshar-avatar flex-shrink-0 ${animate ? 'animate-toshar-float' : ''}`} aria-label="トーシャー博士" />
@@ -29,7 +31,7 @@ export default function TosharBubble({ text, animate = true, size = 'md' }: Prop
           }}
         />
         <p className={`whitespace-pre-line text-[#2b2118] leading-relaxed ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
-          {text}
+          {displayText}
         </p>
       </div>
     </div>
