@@ -11,8 +11,6 @@ import { Card, Rarity } from '@/types/card';
 import PackOpening from '@/components/PackOpening';
 import PackImage from '@/components/PackImage';
 import CardVisual from '@/components/CardVisual';
-import TosharBubble from '@/components/TosharBubble';
-import DiscoveryBar from '@/components/DiscoveryBar';
 
 type HomePhase = 'idle' | 'drawing' | 'result';
 
@@ -24,7 +22,6 @@ export default function HomePage() {
   const [pendingCards, setPendingCards] = useState<Card[]>([]);
   const [isNewDraw, setIsNewDraw] = useState(false);
   const [selectedPackId, setSelectedPackId] = useState<PackId>(DEFAULT_PACK.id);
-  const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
     const c = loadCollection();
@@ -90,7 +87,6 @@ export default function HomePage() {
 
   const ownedCount = col.ownedCardIds.length;
   const selectedPack = getPack(selectedPackId);
-  const featureCard = pendingCards[pendingCards.length - 1] ?? CARDS[0];
 
   const isDark = phase === 'idle';
 
