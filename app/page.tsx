@@ -223,6 +223,8 @@ function PackSlide({ pack, active, onClick }: { pack: PackConfig; active: boolea
         alt={pack.name}
         className={`w-52 h-auto object-contain select-none${active ? ' pack-float' : ''}`}
         draggable={false}
+        loading="eager"
+        fetchPriority="high"
       />
     </button>
   );
