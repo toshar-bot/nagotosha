@@ -1,19 +1,20 @@
-const KEY = 'nagotosha:book:v1';
+// v2: center-based coordinates, pageId per sticker
+const KEY = 'nagotosha:book:v2';
 
 export interface PlacedStickerData {
-  uid: string;       // この配置のユニークID
-  stickerId: string; // card.id
-  x: number;        // ページ幅に対する% (0-100)
-  y: number;        // ページ高さに対する% (0-100)
-  rotation: number; // degrees
+  uid: string;
+  stickerId: string;
+  pageId: 'left' | 'right';
+  cx: number;   // center x as % of page width (0-100)
+  cy: number;   // center y as % of page height (0-100)
+  rotation: number;
   zIndex: number;
 }
 
 export function loadPlaced(): PlacedStickerData[] {
   if (typeof window === 'undefined') return [];
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '[]');
-  } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(KEY) ?? '[]'); }
+  catch { return []; }
 }
 
 function savePlaced(items: PlacedStickerData[]): void {
@@ -23,15 +24,21 @@ function savePlaced(items: PlacedStickerData[]): void {
 
 export function addPlaced(
   stickerId: string,
-  x: number,
-  y: number,
+  pageId: 'left' | 'right',
+  cx: number,
+  cy: number,
   rotation: number,
 ): PlacedStickerData[] {
   const items = loadPlaced();
   const uid = `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
   const maxZ = items.reduce((m, i) => Math.max(m, i.zIndex), 0);
-  const newItem: PlacedStickerData = { uid, stickerId, x, y, rotation, zIndex: maxZ + 1 };
-  const updated = [...items, newItem];
+  const updated = [...items, { uid, stickerId, pageId, cx, cy, rotation, zIndex: maxZ + 1 }];
+  savePlaced(updated);
+  return updated;
+}
+
+export function movePlaced(uid: string, cx: number, cy: number): PlacedStickerData[] {
+  const updated = loadPlaced().map(i => i.uid === uid ? { ...i, cx, cy } : i);
   savePlaced(updated);
   return updated;
 }

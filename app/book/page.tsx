@@ -4,48 +4,81 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CARDS } from '@/data/cards';
 import { loadCollection } from '@/lib/storage';
-import { loadPlaced, addPlaced, removePlaced, PlacedStickerData } from '@/lib/stickerBook';
+import { loadPlaced, addPlaced, movePlaced, removePlaced, PlacedStickerData } from '@/lib/stickerBook';
 import { Card } from '@/types/card';
-import StickerBook from '@/components/StickerBook';
+import StickerBook, { randomRotation } from '@/components/StickerBook';
 import StickerTray from '@/components/StickerTray';
 
 export default function BookPage() {
-  const [ownedCards, setOwnedCards] = useState<Card[]>([]);
-  const [placed, setPlaced]         = useState<PlacedStickerData[]>([]);
-  const [newUid, setNewUid]         = useState<string | null>(null);
-  const [showRemoveHint, setShowRemoveHint] = useState(false);
+  const [ownedCards, setOwnedCards]       = useState<Card[]>([]);
+  const [placed, setPlaced]               = useState<PlacedStickerData[]>([]);
+  const [pendingId, setPendingId]         = useState<string | null>(null); // トレイ選択中
+  const [activeUid, setActiveUid]         = useState<string | null>(null); // ページ上選択中
+  const [newUid, setNewUid]               = useState<string | null>(null);
+  const [toast, setToast]                 = useState<string | null>(null);
 
   useEffect(() => {
     const col = loadCollection();
-    const owned = CARDS.filter(c => col.ownedCardIds.includes(c.id));
-    setOwnedCards(owned);
+    setOwnedCards(CARDS.filter(c => col.ownedCardIds.includes(c.id)));
     setPlaced(loadPlaced());
   }, []);
 
-  const handleSelect = useCallback((stickerId: string) => {
-    // ランダム配置
-    // x: 0-100 (左ページ=0-50, 右ページ=50-100)
-    // 左右交互になるよう現在の枚数で決める
-    const currentCount = loadPlaced().length;
-    const isLeft = currentCount % 2 === 0;
-    const x = isLeft
-      ? 5 + Math.random() * 35        // 左ページ: 5-40%
-      : 55 + Math.random() * 35;      // 右ページ: 55-90%
-    const y = 8 + Math.random() * 68; // 8-76%
-    const rotation = (Math.random() - 0.5) * 28; // ±14°
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 1600);
+  }
 
-    const updated = addPlaced(stickerId, x, y, rotation);
-    const latestUid = updated[updated.length - 1].uid;
-    setPlaced(updated);
-    setNewUid(latestUid);
-    setTimeout(() => setNewUid(null), 600);
+  // トレイでシール選択
+  const handleTraySelect = useCallback((id: string) => {
+    setActiveUid(null);  // ページ上の選択解除
+    setPendingId(prev => prev === id ? null : id); // 同じ → 解除
   }, []);
 
+  // ページタップで貼り付け
+  const handlePageTap = useCallback((
+    pageId: 'left' | 'right',
+    cx: number,
+    cy: number,
+  ) => {
+    if (!pendingId) return;
+    const rotation = randomRotation();
+    const updated = addPlaced(pendingId, pageId, cx, cy, rotation);
+    const uid = updated[updated.length - 1].uid;
+    setPlaced(updated);
+    setNewUid(uid);
+    setTimeout(() => setNewUid(null), 600);
+    setPendingId(null);  // 貼ったら選択解除
+  }, [pendingId]);
+
+  // ページ上のシール選択
+  const handleStickerSelect = useCallback((uid: string) => {
+    setPendingId(null);  // トレイ選択は解除
+    setActiveUid(uid);
+  }, []);
+
+  // 選択解除
+  const handleStickerDeselect = useCallback(() => {
+    setActiveUid(null);
+  }, []);
+
+  // ドラッグ後の位置保存
+  const handleStickerMove = useCallback((uid: string, cx: number, cy: number) => {
+    setPlaced(movePlaced(uid, cx, cy));
+    setActiveUid(null);
+  }, []);
+
+  // 長押しで削除（PlacedStickerからは呼ばれないが、将来用に残す）
   const handleRemove = useCallback((uid: string) => {
     setPlaced(removePlaced(uid));
-    setShowRemoveHint(true);
-    setTimeout(() => setShowRemoveHint(false), 1800);
+    setActiveUid(null);
+    showToast('はがしたぞ');
   }, []);
+
+  // 選択中シールをゴミ箱ボタンで削除
+  function handleDeleteActive() {
+    if (!activeUid) return;
+    handleRemove(activeUid);
+  }
 
   return (
     <div
@@ -53,8 +86,8 @@ export default function BookPage() {
       style={{
         height: '100dvh',
         paddingTop: 'env(safe-area-inset-top, 0px)',
-        // BottomNavの高さ分 + safe-area-bottom を確保
         paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)',
+        background: '#c4a882',
       }}
     >
       {/* ヘッダー */}
@@ -62,34 +95,54 @@ export default function BookPage() {
         className="flex items-center justify-between px-4 flex-shrink-0"
         style={{
           height: 44,
-          background: '#c8b89a',
-          borderBottom: '1px solid rgba(140,105,55,0.3)',
+          background: '#ede3ce',
+          borderBottom: '1.5px solid rgba(160,120,60,0.3)',
         }}
       >
-        <Link href="/" className="text-amber-900/50 text-sm font-bold active:opacity-60 transition-opacity">
+        <Link
+          href="/"
+          className="active:opacity-60 transition-opacity"
+          style={{ fontSize: 13, fontWeight: 900, color: 'rgba(120,85,35,0.6)' }}
+        >
           ← HOME
         </Link>
-        <p className="font-black text-amber-900/70 text-sm tracking-[0.12em]">
+        <p style={{ fontWeight: 900, fontSize: 14, letterSpacing: '0.06em', color: 'rgba(100,70,25,0.75)', fontStyle: 'italic' }}>
           名古屋メシ帳
         </p>
-        <div className="text-amber-900/40 text-xs font-bold">
-          {placed.length}枚
-        </div>
+        {/* アクティブシール削除ボタン or 枚数 */}
+        {activeUid ? (
+          <button
+            onClick={handleDeleteActive}
+            className="active:scale-90 transition-transform"
+            style={{
+              fontSize: 11, fontWeight: 900, color: 'rgba(200,60,60,0.75)',
+              background: 'rgba(200,60,60,0.1)',
+              border: '1px solid rgba(200,60,60,0.25)',
+              borderRadius: 10, padding: '3px 8px',
+            }}
+          >
+            はがす
+          </button>
+        ) : (
+          <span style={{ fontSize: 11, color: 'rgba(120,85,35,0.45)', fontWeight: 700 }}>
+            {placed.length}枚
+          </span>
+        )}
       </header>
 
-      {/* 削除ヒント */}
-      {showRemoveHint && (
+      {/* トースト */}
+      {toast && (
         <div
-          className="absolute left-1/2 z-50 px-4 py-2 rounded-full text-xs font-black text-white animate-fade-up"
+          className="animate-fade-up"
           style={{
-            top: 54,
-            transform: 'translateX(-50%)',
-            background: 'rgba(0,0,0,0.65)',
+            position: 'absolute', top: 56, left: '50%', transform: 'translateX(-50%)',
+            background: 'rgba(60,40,10,0.72)', color: 'white',
+            fontSize: 12, fontWeight: 900, padding: '5px 14px',
+            borderRadius: 20, zIndex: 100, pointerEvents: 'none',
             backdropFilter: 'blur(8px)',
-            pointerEvents: 'none',
           }}
         >
-          はがしたぞ
+          {toast}
         </div>
       )}
 
@@ -98,11 +151,20 @@ export default function BookPage() {
         cards={CARDS}
         placed={placed}
         newUid={newUid}
-        onRemove={handleRemove}
+        pendingStickerId={pendingId}
+        activeUid={activeUid}
+        onPageTap={handlePageTap}
+        onStickerSelect={handleStickerSelect}
+        onStickerDeselect={handleStickerDeselect}
+        onStickerMove={handleStickerMove}
       />
 
       {/* シールトレイ */}
-      <StickerTray cards={ownedCards} onSelect={handleSelect} />
+      <StickerTray
+        cards={ownedCards}
+        selectedId={pendingId}
+        onSelect={handleTraySelect}
+      />
     </div>
   );
 }
