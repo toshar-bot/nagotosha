@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const TABS = [
   { href: '/', label: 'HOME', icon: 'home' },
-  { href: '/zukan', label: '図鑑', icon: 'book' },
+  { href: '/zukan', label: 'シール帳', icon: 'book' },
 ];
 
 export default function BottomNav() {
@@ -17,7 +17,7 @@ export default function BottomNav() {
       <div className="max-w-md mx-auto">
         <div
           className="flex border-t border-border shadow-[0_-12px_34px_rgba(105,72,38,0.10)]"
-          style={{ background: 'rgba(255,250,241,0.94)', backdropFilter: 'blur(20px)' }}
+          style={{ background: 'rgba(5,2,12,0.94)', backdropFilter: 'blur(20px)', borderTopColor: 'rgba(255,255,255,0.08)' }}
         >
           {TABS.map(tab => {
             const isActive = active === tab.href;
@@ -25,13 +25,13 @@ export default function BottomNav() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all duration-150 ${isActive ? 'opacity-100' : 'opacity-45'}`}
+                className={`flex-1 flex flex-col items-center justify-center py-3 gap-0.5 transition-all duration-150 ${isActive ? 'opacity-100' : 'opacity-35'}`}
               >
                 <span className={`game-icon ${tab.icon}`} />
-                <span className={`text-[10px] font-black tracking-wider ${isActive ? 'text-accent' : 'text-[#9b8261]'}`}>
+                <span className={`text-[10px] font-black tracking-wider ${isActive ? 'text-amber-400' : 'text-white/40'}`}>
                   {tab.label}
                 </span>
-                {isActive && <div className="w-1 h-1 rounded-full bg-accent mt-0.5" />}
+                {isActive && <div className="w-1 h-1 rounded-full bg-amber-400 mt-0.5" />}
               </Link>
             );
           })}
