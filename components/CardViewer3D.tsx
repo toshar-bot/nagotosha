@@ -7,13 +7,14 @@ import CardVisual from './CardVisual';
 interface Props {
   card: Card;
   owned: boolean;
+  widthPx?: number;
 }
 
 const MAX_TILT_X = 22;   // degrees vertical
 const MAX_TILT_Y = 28;   // degrees horizontal
 const SPRING     = 0.11; // lerp factor (lower = springier)
 
-export default function CardViewer3D({ card, owned }: Props) {
+export default function CardViewer3D({ card, owned, widthPx }: Props) {
   const wrapRef   = useRef<HTMLDivElement>(null);
   const innerRef  = useRef<HTMLDivElement>(null);
   const shineRef  = useRef<HTMLDivElement>(null);
@@ -190,7 +191,7 @@ export default function CardViewer3D({ card, owned }: Props) {
             filter: 'drop-shadow(0 2px 0px rgba(0,0,0,0.65)) drop-shadow(2px 0 0px rgba(0,0,0,0.45))',
           }}
         >
-          <CardVisual card={card} size="lg" owned={owned} />
+          <CardVisual card={card} owned={owned} widthPx={widthPx} />
 
           {/* ── Shine（反射ハイライト） ── */}
           <div

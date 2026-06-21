@@ -808,3 +808,26 @@ button:active {
 .animate-sticker-peta {
   animation: sticker-peta 0.44s cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
 }
+
+/* ── カードデザイン v2 アニメーション ── */
+
+/* 虹色ホログラム（SSR/URボーダー・UR名前） */
+@keyframes hue-shift {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
+}
+.card-rainbow-animate { animation: hue-shift 5s linear infinite; }
+.card-ur-animate      { animation: hue-shift 2.2s linear infinite; }
+
+/* ゴールド/シルバーシマー光の帯 */
+@keyframes card-shimmer-sweep {
+  0%   { background-position: 200% center; }
+  100% { background-position: -100% center; }
+}
+
+/* ホログラムの揺らぎ */
+@keyframes holo-breathe {
+  0%, 100% { opacity: 0.16; transform: scaleX(1); }
+  50%       { opacity: 0.28; transform: scaleX(1.04); }
+}
+.card-holo-animate { animation: holo-breathe 3.2s ease-in-out infinite; }
