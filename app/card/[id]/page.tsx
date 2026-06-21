@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import CardVisual from '@/components/CardVisual';
+import CardViewer3D from '@/components/CardViewer3D';
 import TosharBubble from '@/components/TosharBubble';
 import { CARDS } from '@/data/cards';
 import { loadCollection, CollectionState } from '@/lib/storage';
@@ -44,7 +44,7 @@ export default function CardDetailPage() {
       </header>
 
       <div className="flex flex-col items-center gap-5">
-        <CardVisual card={card} size="lg" owned={owned} />
+        <CardViewer3D card={card} owned={owned} />
 
         {!owned ? (
           <>
