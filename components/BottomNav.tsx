@@ -16,7 +16,7 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 safe-bottom">
       <div className="max-w-md mx-auto">
         <div
-          className="flex border-t border-border shadow-[0_-12px_34px_rgba(105,72,38,0.10)]"
+          className="flex items-center border-t shadow-[0_-12px_34px_rgba(105,72,38,0.10)]"
           style={{ background: 'rgba(5,2,12,0.94)', backdropFilter: 'blur(20px)', borderTopColor: 'rgba(255,255,255,0.08)' }}
         >
           {TABS.map(tab => {
@@ -35,6 +35,28 @@ export default function BottomNav() {
               </Link>
             );
           })}
+
+          {/* マイシール作成ボタン（中央FAB風） */}
+          <Link
+            href="/create"
+            className="flex flex-col items-center justify-center py-2 gap-0.5 transition-all duration-150 active:scale-90"
+            style={{ width: 64 }}
+            aria-label="マイシール作成"
+          >
+            <div
+              className="flex items-center justify-center w-11 h-11 rounded-full font-black text-white text-2xl"
+              style={{
+                background: 'linear-gradient(135deg, #b8872f, #7a4a14)',
+                boxShadow: '0 0 18px rgba(184,135,47,0.55)',
+                marginTop: -20,
+              }}
+            >
+              ＋
+            </div>
+            <span className="text-[10px] font-black tracking-wider text-white/40 mt-0.5">
+              作成
+            </span>
+          </Link>
         </div>
       </div>
     </nav>
