@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 
 const TABS = [
   { href: '/', label: 'HOME', icon: 'home' },
-  { href: '/zukan', label: 'シール帳', icon: 'book' },
+  { href: '/book', label: 'シール帳', icon: 'book' },
 ];
 
 export default function BottomNav() {
   const path = usePathname();
-  const active = path.startsWith('/card') ? '/zukan' : path === '/' ? '/' : '/zukan';
+  const active = path.startsWith('/card') ? '/book' : path === '/' ? '/' : '/book';
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 safe-bottom">
