@@ -2,6 +2,7 @@
 
 import { Card } from '@/types/card';
 import { RARITY_CONFIG, RarityConfig } from '@/lib/rarity';
+import FullArtCard from './FullArtCard';
 
 // ─────────────────────────────────────────
 // Props
@@ -40,13 +41,8 @@ export default function CardVisual({
     return <CardBack w={w} h={h} onClick={onClick} />;
   }
 
-  if (cfg.isFullArt && card.imageUrl) {
-    return (
-      <FullArtCard
-        card={card} cfg={cfg} w={w} h={h}
-        isNew={isNew} subjectUrl={subjectUrl} onClick={onClick}
-      />
-    );
+  if (cfg.isFullArt) {
+    return <FullArtCard card={card} widthPx={w} isNew={isNew} />;
   }
 
   return (
@@ -191,11 +187,12 @@ function StandardCard({ card, cfg, w, h, isNew, subjectUrl, onClick }: CardProps
         }} />
       </div>
 
-      {/* ── L4: Subject cutout layer ── */}
-      {card.imageUrl && (
+      {/* ── L4: Subject cutout layer (将来: 実切り抜きPNG差し替えポイント) ── */}
+      {/* subjectUrl が渡された時のみ表示（現在は未使用） */}
+      {subjectUrl && card.imageUrl && (
         <SubjectLayer
-          imageUrl={subjectUrl ?? card.imageUrl}
-          isRealCutout={!!subjectUrl}
+          imageUrl={subjectUrl}
+          isRealCutout
           left={artMargin} artWidth={artWidth}
           top={artTop} height={artHeight}
           artR={artR} w={w} h={h}
@@ -326,141 +323,6 @@ function StandardCard({ card, cfg, w, h, isNew, subjectUrl, onClick }: CardProps
       <GlossLayer w={w} h={h} r={r} />
 
       {/* ── Outer edge highlight ── */}
-      <EdgeHighlight r={r - fw} />
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────
-// FullArtCard（UR）
-// ─────────────────────────────────────────
-function FullArtCard({ card, cfg, w, h, isNew, subjectUrl, onClick }: CardProps) {
-  const r  = Math.round(w * 0.052);
-  const fw = cfg.frameWidth;
-  const infoH = Math.round(h * 0.30);
-
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        position: 'relative', width: w, height: h,
-        borderRadius: r,
-        border: `${fw}px solid transparent`,
-        background: `${cfg.cardBg} padding-box, ${cfg.frameGradient} border-box`,
-        overflow: 'hidden',
-        cursor: onClick ? 'pointer' : 'default',
-        flexShrink: 0,
-        boxShadow: `0 ${w * 0.05}px ${w * 0.18}px rgba(0,0,0,0.65)`,
-      }}
-    >
-      {/* ── Full-bleed photo ── */}
-      {card.imageUrl && (
-        <img
-          src={card.imageUrl}
-          alt={card.name}
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%', objectFit: 'cover',
-            transform: 'scale(1.04)',
-          }}
-        />
-      )}
-
-      {/* L4: Subject cutout (re-usable layer, future: swap with segmented PNG) */}
-      {card.imageUrl && (
-        <SubjectLayer
-          imageUrl={subjectUrl ?? card.imageUrl}
-          isRealCutout={!!subjectUrl}
-          left={0} artWidth={w} top={0} height={Math.round(h * 0.72)}
-          artR={0} w={w} h={h}
-          forFullArt
-        />
-      )}
-
-      {/* Top fade overlay */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0,
-        height: Math.round(h * 0.22),
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)',
-        zIndex: 3,
-      }} />
-
-      {/* ── Rainbow holographic film (L8) ── */}
-      <div
-        className="card-rainbow-animate"
-        style={{
-          position: 'absolute', inset: 0, zIndex: 4,
-          mixBlendMode: 'color-dodge',
-          opacity: 0.18,
-          background: `linear-gradient(135deg, #ff4488 0%, transparent 30%, transparent 70%, #4488ff 100%)`,
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* Animated rainbow border ring */}
-      <div
-        className="card-rainbow-animate"
-        style={{
-          position: 'absolute', inset: 0, zIndex: 40,
-          borderRadius: r - fw + 1,
-          border: `${fw}px solid transparent`,
-          background: `transparent padding-box, ${cfg.frameGradient} border-box`,
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* ── Header: rarity badge ── */}
-      <div style={{
-        position: 'absolute',
-        top: Math.round(h * 0.014), left: Math.round(w * 0.058),
-        zIndex: 12,
-      }}>
-        <RarityBadge cfg={cfg} w={w} />
-      </div>
-      {isNew && (
-        <div style={{
-          position: 'absolute',
-          top: Math.round(h * 0.013), right: Math.round(w * 0.056),
-          fontSize: Math.max(7, Math.round(w * 0.030)),
-          fontWeight: 900, letterSpacing: '0.10em', color: '#fff',
-          background: 'linear-gradient(135deg, #e63946, #c2112a)',
-          borderRadius: w * 0.12,
-          padding: `${Math.round(w * 0.012)}px ${Math.round(w * 0.032)}px`,
-          zIndex: 12,
-        }}>NEW</div>
-      )}
-
-      {/* ── Frosted glass info panel (L7) ── */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0, height: infoH,
-        background: 'linear-gradient(to bottom, rgba(4,2,12,0) 0%, rgba(4,2,12,0.86) 28%, rgba(4,2,12,0.96) 100%)',
-        borderTop: '1px solid rgba(255,255,255,0.12)',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
-        zIndex: 8,
-        padding: `${Math.round(h * 0.04)}px ${Math.round(w * 0.07)}px ${Math.round(h * 0.04)}px`,
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-        gap: Math.round(h * 0.012),
-      }}>
-        <p style={{
-          fontSize: Math.max(8, Math.round(w * 0.034)),
-          fontWeight: 700,
-          color: 'rgba(255,180,220,0.85)',
-          letterSpacing: '0.05em',
-          overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-        }}>
-          {card.shopName}
-        </p>
-        <CardName name={card.name} cfg={cfg} w={w} h={h} />
-        <div style={{ display: 'flex', gap: Math.round(w * 0.022) }}>
-          <Tag label={card.area} cfg={cfg} w={w} />
-          <Tag label={card.priceRange} cfg={cfg} w={w} />
-        </div>
-      </div>
-
-      {/* ── L9: Gloss ── */}
-      <GlossLayer w={w} h={h} r={r} />
       <EdgeHighlight r={r - fw} />
     </div>
   );

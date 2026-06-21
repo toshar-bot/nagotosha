@@ -22,9 +22,9 @@ export default function CardDetailPage() {
   }, []);
 
   useEffect(() => {
-    // カードを画面幅の 85% で表示（最大 340px）
+    // カードを画面幅の 90% で表示（最大 360px）
     function measure() {
-      const w = Math.min(340, Math.round(window.innerWidth * 0.85));
+      const w = Math.min(360, Math.round(window.innerWidth * 0.90));
       setCardWidthPx(w);
     }
     measure();
