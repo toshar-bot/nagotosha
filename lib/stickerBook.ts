@@ -1,13 +1,15 @@
-// v2: center-based coordinates, pageId per sticker
-const KEY = 'nagotosha:book:v2';
+// v3: adds scale, pageIndex (テーマごとのページ)
+const KEY = 'nagotosha:book:v3';
 
 export interface PlacedStickerData {
   uid: string;
   stickerId: string;
+  pageIndex: number;      // 0-5 corresponds to THEME_ORDER index
   pageId: 'left' | 'right';
-  cx: number;   // center x as % of page width (0-100)
-  cy: number;   // center y as % of page height (0-100)
-  rotation: number;
+  cx: number;             // center x as % of page width
+  cy: number;             // center y as % of page height
+  rotation: number;       // degrees
+  scale: number;          // 1.0 = original size
   zIndex: number;
 }
 
@@ -24,6 +26,7 @@ function savePlaced(items: PlacedStickerData[]): void {
 
 export function addPlaced(
   stickerId: string,
+  pageIndex: number,
   pageId: 'left' | 'right',
   cx: number,
   cy: number,
@@ -31,14 +34,22 @@ export function addPlaced(
 ): PlacedStickerData[] {
   const items = loadPlaced();
   const uid = `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-  const maxZ = items.reduce((m, i) => Math.max(m, i.zIndex), 0);
-  const updated = [...items, { uid, stickerId, pageId, cx, cy, rotation, zIndex: maxZ + 1 }];
+  const maxZ = items.filter(i => i.pageIndex === pageIndex).reduce((m, i) => Math.max(m, i.zIndex), 0);
+  const updated = [...items, { uid, stickerId, pageIndex, pageId, cx, cy, rotation, scale: 1, zIndex: maxZ + 1 }];
   savePlaced(updated);
   return updated;
 }
 
-export function movePlaced(uid: string, cx: number, cy: number): PlacedStickerData[] {
-  const updated = loadPlaced().map(i => i.uid === uid ? { ...i, cx, cy } : i);
+export function movePlaced(
+  uid: string,
+  cx: number,
+  cy: number,
+  rotation: number,
+  scale: number,
+): PlacedStickerData[] {
+  const updated = loadPlaced().map(i =>
+    i.uid === uid ? { ...i, cx, cy, rotation, scale } : i,
+  );
   savePlaced(updated);
   return updated;
 }
