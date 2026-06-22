@@ -1,5 +1,20 @@
 import Link from 'next/link';
 
+const REPORT_INSIGHTS = [
+  {
+    title: 'どの記事が読まれたか',
+    text: '閲覧数や注目された記事から、読者の反応を確認できます。',
+  },
+  {
+    title: 'どれだけ来店導線が押されたか',
+    text: 'Googleマップクリックや保存数から、来店前の行動を確認できます。',
+  },
+  {
+    title: '次に何を改善すべきか',
+    text: '週末集客、写真、タイトル、PR導線など、次回改善のヒントを整理します。',
+  },
+];
+
 const KPI_ITEMS = [
   { label: '記事閲覧数', value: '4,820', sub: 'views' },
   { label: '保存数', value: '312', sub: 'saves' },
@@ -116,6 +131,29 @@ export default function ReportSamplePage() {
               掲載プラン
             </span>
           </div>
+        </div>
+      </section>
+
+      <section className="px-4 pt-6">
+        <SectionTitle eyebrow="REPORT POINTS">このレポートで分かること</SectionTitle>
+        <div className="mt-4 flex flex-col gap-3">
+          {REPORT_INSIGHTS.map(item => (
+            <article
+              key={item.title}
+              className="rounded-2xl bg-white p-4"
+              style={{
+                border: '1px solid rgba(29,91,115,0.10)',
+                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+              }}
+            >
+              <h2 className="text-[14px] font-black leading-snug" style={{ color: '#0a2438' }}>
+                {item.title}
+              </h2>
+              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+                {item.text}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -244,6 +282,34 @@ export default function ReportSamplePage() {
               </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <div
+          className="rounded-2xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
+            border: '1.5px solid rgba(29,91,115,0.14)',
+          }}
+        >
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            掲載後の反応まで一緒に見ます
+          </h2>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            掲載して終わりではなく、保存数や地図クリックを見ながら、次の来店につながる改善案まで提案します。
+          </p>
+          <Link
+            href="/partner"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
+              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+            }}
+          >
+            掲載プランを相談する
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 
