@@ -42,7 +42,8 @@ export default function CardDetailPage() {
     );
   }
 
-  const owned = col?.ownedCardIds.includes(card.id) ?? false;
+  // card_010 は品質確認用につき所持状態に関係なく常に表示
+  const owned = card.id === 'card_010' ? true : (col?.ownedCardIds.includes(card.id) ?? false);
   const cfg   = RARITY_CONFIG[card.rarity];
 
   return (
