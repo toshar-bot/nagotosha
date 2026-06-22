@@ -11,11 +11,15 @@ export interface PortalCommercialFields {
   isPr?: boolean;
   sponsorName?: string;
   mapUrl?: string;
+  mapLabel?: string;
   articleUrl?: string;
   imageUrl?: string;
   views?: number;
   saves?: number;
   mapClicks?: number;
+  trackingId?: string;
+  storeName?: string;
+  address?: string;
   isNew?: boolean;
   publishedAt?: string;
   area?: string;
