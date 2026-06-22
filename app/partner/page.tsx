@@ -348,6 +348,22 @@ export default function PartnerPage() {
           >
             PR表記・広告掲載について
           </Link>
+          <Link
+            href="/partner/wordpress-status"
+            className="mt-2 inline-flex w-full flex-col items-center justify-center rounded-2xl px-4 py-3 text-center active:scale-[0.98] transition-transform"
+            style={{
+              color: '#1d5b73',
+              background: '#f6fbff',
+              border: '1px solid rgba(29,91,115,0.12)',
+            }}
+          >
+            <span className="text-[12px] font-black">
+              WordPress接続ステータスを確認
+            </span>
+            <span className="mt-1 text-[10px] font-bold" style={{ color: '#6f8d9a' }}>
+              記事取得やフォールバック状態を確認できます。
+            </span>
+          </Link>
         </div>
       </section>
     </main>
