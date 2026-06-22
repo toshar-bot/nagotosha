@@ -29,6 +29,18 @@ const SUGGESTIONS = [
   },
 ];
 
+const SAVE_RANKING = [
+  { rank: 1, label: '大須スペシャルティコーヒー', value: 312 },
+  { rank: 2, label: '覚王山アパートメント秋市',    value: 204 },
+  { rank: 3, label: '栄 光のインスタレーション',    value: 128 },
+];
+
+const MAP_RANKING = [
+  { rank: 1, label: '大須スペシャルティコーヒー',   value: 148 },
+  { rank: 2, label: '錦 自家製パスタの店',          value: 96  },
+  { rank: 3, label: '覚王山 白いクリームソーダ',    value: 72  },
+];
+
 export default function ReportSamplePage() {
   return (
     <main
@@ -169,6 +181,40 @@ export default function ReportSamplePage() {
       </section>
 
       <section className="px-4 pt-8">
+        <SectionTitle eyebrow="RANKING">保存数・地図クリックもレポート化</SectionTitle>
+        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#5f8392' }}>
+          読まれた数だけでなく、あとで見返したい保存数や、実際の来店に近いGoogleマップクリックまで確認できます。
+        </p>
+        <div className="mt-4 flex flex-col gap-3">
+          <RankingPanel
+            eyebrow="SAVE RANKING"
+            title="保存ランキング"
+            unit="保存"
+            icon={<BookmarkPanelIcon />}
+            items={SAVE_RANKING}
+          />
+          <RankingPanel
+            eyebrow="MAP RANKING"
+            title="地図クリックランキング"
+            unit="地図クリック"
+            icon={<MapPinIcon />}
+            items={MAP_RANKING}
+          />
+        </div>
+        <div
+          className="mt-4 rounded-2xl p-4"
+          style={{
+            background: 'rgba(29,91,115,0.04)',
+            border: '1px solid rgba(29,91,115,0.09)',
+          }}
+        >
+          <p className="text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            保存数は「あとで行きたい」の強さ、地図クリックは「来店に近い行動」として、次回の露出や訴求改善に活用します。
+          </p>
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
         <SectionTitle eyebrow="NEXT ACTION">改善提案</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
           {SUGGESTIONS.map((item, index) => (
@@ -256,6 +302,98 @@ function ArrowLeftIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 12H5" />
       <path d="M11 6l-6 6 6 6" />
+    </svg>
+  );
+}
+
+function RankingPanel({
+  eyebrow, title, unit, icon, items,
+}: {
+  eyebrow: string;
+  title: string;
+  unit: string;
+  icon: React.ReactNode;
+  items: { rank: number; label: string; value: number }[];
+}) {
+  return (
+    <article
+      className="rounded-2xl bg-white p-4"
+      style={{
+        border: '1px solid rgba(29,91,115,0.10)',
+        boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+      }}
+    >
+      <div
+        className="flex items-center gap-2 mb-4 pb-3"
+        style={{ borderBottom: '1px solid rgba(29,91,115,0.07)' }}
+      >
+        <span style={{ color: '#0a9a9a' }}>{icon}</span>
+        <div>
+          <p className="text-[9px] font-black tracking-[0.18em]" style={{ color: '#a0b8c0' }}>
+            {eyebrow}
+          </p>
+          <p className="text-[13px] font-black leading-tight" style={{ color: '#0a2438' }}>
+            {title}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        {items.map(item => {
+          const isTop = item.rank === 1;
+          return (
+            <div
+              key={item.rank}
+              className="flex items-center gap-3 rounded-xl"
+              style={isTop
+                ? { background: 'rgba(10,154,154,0.07)', padding: '8px 10px' }
+                : { padding: '5px 2px' }}
+            >
+              <span
+                className="flex shrink-0 items-center justify-center rounded-full font-black"
+                style={isTop
+                  ? { width: 26, height: 26, background: '#0a9a9a', color: '#ffffff', fontSize: 12 }
+                  : { width: 22, height: 22, background: 'rgba(29,91,115,0.08)', color: '#8aa5b0', fontSize: 11 }}
+              >
+                {item.rank}
+              </span>
+              <span
+                className="flex-1 min-w-0 truncate font-black text-[12px]"
+                style={{ color: isTop ? '#0a2438' : '#5a7b8a' }}
+              >
+                {item.label}
+              </span>
+              <span
+                className="shrink-0 font-black tabular-nums"
+                style={{ fontSize: isTop ? 20 : 16, color: isTop ? '#0a9a9a' : '#8aa5b0', lineHeight: 1 }}
+              >
+                {item.value.toLocaleString()}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="mt-3 text-[10px] font-bold text-right" style={{ color: '#a0b8c0' }}>
+        {unit}数（サンプル）
+      </p>
+    </article>
+  );
+}
+
+function BookmarkPanelIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function MapPinIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75 6-13c0-3.314-2.686-6-6-6z" />
+      <circle cx="12" cy="8" r="2.5" />
     </svg>
   );
 }
