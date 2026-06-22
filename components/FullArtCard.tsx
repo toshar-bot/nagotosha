@@ -75,7 +75,7 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
           objectFit: 'cover',
           objectPosition: 'center 18%',
           filter: hideSubject
-            ? 'brightness(0.72) contrast(0.96) saturate(0.82)'
+            ? 'brightness(0.62) contrast(0.94) saturate(0.76) blur(0.5px)'
             : undefined,
         }} />
       )}
@@ -108,11 +108,14 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
       {/* ━━━━━━━━━━━━━━ L4: 青海波 (seigaiha) 上部装飾 ━━━━━━━━━━━━━━ */}
       <SeigahaBg w={w} h={h} />
 
-      {/* ━━━━━━━━━━━━━━ L5: 虹ホロフィルム（全面 color-dodge） ━━━━━━━━━━━━━━ */}
+      {/* ━━━━━━━━━━━━━━ L5: 虹ホロフィルム（枠・端のみ、中央の料理はクリア） ━━━━━━━━━━━━━━ */}
       <div className="card-ur-animate" style={{
         position: 'absolute', inset: 0, zIndex: 4,
-        mixBlendMode: 'color-dodge', opacity: 0.08,
+        mixBlendMode: 'color-dodge', opacity: 0.09,
         background: RAINBOW_CSS, pointerEvents: 'none',
+        // 中央（料理エリア）はほぼ透明、枠・端に集中させる
+        WebkitMaskImage: 'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 35%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.90) 100%)',
+        maskImage:       'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 35%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.90) 100%)',
       }} />
 
       {/* ━━━━━━━━━━━━━━ L6: ヘッダー（UR | タイトル | 地区バッジ） ━━━━━━━━━━━━━━ */}

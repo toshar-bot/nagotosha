@@ -55,19 +55,21 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     // img 内で translate することで、背景と subject の視差差を作る。
     // カードが右に傾く(ry>0)とき subject は逆方向へズレ → 前後感が生まれる
     if (subjectRef.current) {
-      const parX = (-c.ry * 0.32).toFixed(2);   // max ±8.3px @ 26deg
-      const parY = ( c.rx * 0.28).toFixed(2);   // max ±5.6px @ 20deg
-      // tilt に連動したシャドウ: カードが右に傾けば影は左下方向
-      const shX  = (-c.ry * 0.65).toFixed(1);
-      const shY  = ( c.rx * 0.50 + 14).toFixed(1);
+      // parallax 強化: ±12px X / ±9px Y
+      // カードが右(ry>0)→ subject は左へ、上(rx>0)→ subject は下へ
+      // この「逆方向へのズレ」が前後感を生む
+      const parX = (-c.ry * 0.46).toFixed(2);   // max ±12px @ 26deg
+      const parY = ( c.rx * 0.45).toFixed(2);   // max ±9.0px @ 20deg
+      const shX  = (-c.ry * 0.75).toFixed(1);
+      const shY  = ( c.rx * 0.60 + 16).toFixed(1);
 
       subjectRef.current.style.transform =
-        `translate(${parX}px, ${parY}px) scale(1.030)`;
+        `translate(${parX}px, ${parY}px) scale(1.058)`;
       subjectRef.current.style.filter = [
-        'brightness(1.16) contrast(1.18) saturate(1.12)',
-        `drop-shadow(${shX}px ${shY}px 24px rgba(0,0,0,0.72))`,
-        `drop-shadow(0 4px 10px rgba(0,0,0,0.52))`,
-        `drop-shadow(0 0 18px rgba(100,60,0,0.18))`,
+        'brightness(1.18) contrast(1.20) saturate(1.14)',
+        `drop-shadow(${shX}px ${shY}px 28px rgba(0,0,0,0.76))`,
+        `drop-shadow(0 5px 12px rgba(0,0,0,0.55))`,
+        `drop-shadow(0 0 22px rgba(110,65,0,0.20))`,
       ].join(' ');
     }
 
@@ -266,8 +268,8 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
               width: w, height: h,
               borderRadius: cardR,
               overflow: 'hidden',
-              // ★ これがCSS3Dの「前面」— base photo (z=0)より60px手前
-              transform: 'translateZ(60px)',
+              // ★ base photo (z=0) より 105px 手前 — 視差が目視で分かる距離
+              transform: 'translateZ(105px)',
               pointerEvents: 'none',
             }}>
               <img
@@ -280,11 +282,11 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
                   objectFit: 'cover',
                   objectPosition: 'center 18%',    // base 写真と完全一致
                   // 初期値 (RAF で毎フレーム上書き)
-                  transform: 'scale(1.030)',
+                  transform: 'scale(1.058)',
                   filter: [
-                    'brightness(1.16) contrast(1.18) saturate(1.12)',
-                    'drop-shadow(0 14px 24px rgba(0,0,0,0.72))',
-                    'drop-shadow(0 4px 10px rgba(0,0,0,0.52))',
+                    'brightness(1.18) contrast(1.20) saturate(1.14)',
+                    'drop-shadow(0 16px 28px rgba(0,0,0,0.76))',
+                    'drop-shadow(0 5px 12px rgba(0,0,0,0.55))',
                   ].join(' '),
                 }}
               />

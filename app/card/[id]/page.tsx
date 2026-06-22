@@ -90,97 +90,100 @@ export default function CardDetailPage() {
       {isUR && (
         <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
 
-          {/* 和柄 SVG レイヤー */}
+          {/* ── 和柄 SVG レイヤー（見えるレベルに強化） ── */}
           <svg
             width="100%" height="100%"
             style={{ position: 'absolute', inset: 0 }}
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              {/* 青海波 */}
-              <pattern id="seigaiha" x="0" y="0" width="56" height="34" patternUnits="userSpaceOnUse">
-                <path d="M0 28 A28 28 0 0 1 56 28"   fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.65"/>
-                <path d="M-28 28 A28 28 0 0 1 28 28" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.65"/>
+              {/* 青海波（大きめ） */}
+              <pattern id="seigaiha" x="0" y="0" width="64" height="38" patternUnits="userSpaceOnUse">
+                <path d="M0 32 A32 32 0 0 1 64 32"   fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.9"/>
+                <path d="M-32 32 A32 32 0 0 1 32 32" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.9"/>
               </pattern>
               {/* 七宝つなぎ */}
-              <pattern id="shippo" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-                <circle cx="0"  cy="0"  r="14" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.5"/>
-                <circle cx="28" cy="0"  r="14" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.5"/>
-                <circle cx="0"  cy="28" r="14" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.5"/>
-                <circle cx="28" cy="28" r="14" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.5"/>
-                <circle cx="14" cy="14" r="14" fill="none" stroke="rgba(185,145,28,1)" strokeWidth="0.5"/>
+              <pattern id="shippo" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+                <circle cx="0"  cy="0"  r="16" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.7"/>
+                <circle cx="32" cy="0"  r="16" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.7"/>
+                <circle cx="0"  cy="32" r="16" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.7"/>
+                <circle cx="32" cy="32" r="16" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.7"/>
+                <circle cx="16" cy="16" r="16" fill="none" stroke="rgba(195,152,30,1)" strokeWidth="0.7"/>
               </pattern>
             </defs>
 
-            {/* 上部 青海波（展示室の天井模様） */}
-            <rect width="100%" height="48%" fill="url(#seigaiha)" opacity="0.055"/>
+            {/* 上部 青海波（天井の和柄） */}
+            <rect width="100%" height="52%" fill="url(#seigaiha)" opacity="0.13"/>
 
-            {/* 下部 七宝つなぎ（展示台の床面） */}
-            <rect y="56%" width="100%" height="44%" fill="url(#shippo)" opacity="0.042"/>
+            {/* 下部 七宝つなぎ（床面） */}
+            <rect y="52%" width="100%" height="48%" fill="url(#shippo)" opacity="0.10"/>
 
-            {/* 縦の展示照明ライン（左右） */}
-            <line x1="22%" y1="0" x2="18%" y2="100%" stroke="rgba(195,150,30,0.045)" strokeWidth="22"/>
-            <line x1="78%" y1="0" x2="82%" y2="100%" stroke="rgba(195,150,30,0.038)" strokeWidth="18"/>
-            <line x1="50%" y1="0" x2="50%" y2="40%"   stroke="rgba(220,170,40,0.028)" strokeWidth="40"/>
+            {/* 展示照明: 上からの細い光 */}
+            <line x1="20%" y1="0" x2="16%" y2="100%" stroke="rgba(210,165,35,0.06)" strokeWidth="28"/>
+            <line x1="80%" y1="0" x2="84%" y2="100%" stroke="rgba(210,165,35,0.05)" strokeWidth="22"/>
+            {/* 中央スポット */}
+            <line x1="50%" y1="0" x2="50%" y2="45%" stroke="rgba(230,180,42,0.06)" strokeWidth="50"/>
 
-            {/* 金鯱シルエット（右上、非常に薄く） */}
-            <g transform="translate(76%, 3%) scale(0.18) rotate(12)" opacity="0.040" fill="rgba(200,155,32,1)">
-              {/* 胴体 */}
+            {/* ── 金鯱シルエット（右上、認識できるレベル） ── */}
+            <g transform="translate(68%, 1%) scale(0.28) rotate(10)" opacity="0.11" fill="rgba(205,160,35,1)">
               <path d="M55,160 C38,128 18,108 10,72 C2,38 18,10 42,6 C60,3 76,18 80,38
                         C88,16 108,5 126,18 C148,34 142,68 124,86
                         C144,76 158,94 148,116 C138,138 116,142 102,128
                         C96,148 82,162 68,156 Z"/>
-              {/* 背びれ */}
               <path d="M70,45 C78,28 96,18 108,32 C96,14 78,8 64,20 Z"/>
-              {/* 尾びれ */}
               <path d="M42,130 C30,148 22,162 38,168 C50,172 58,162 52,148 Z"/>
               <path d="M68,138 C62,158 58,174 74,176 C86,178 90,164 80,150 Z"/>
             </g>
 
-            {/* 名古屋城の塔（左下に極薄） */}
-            <g transform="translate(2%, 62%) scale(0.055)" opacity="0.025" fill="rgba(200,155,32,1)">
-              <rect x="100" y="180" width="200" height="220"/>
-              <rect x="130" y="120" width="140" height="70"/>
-              <rect x="155" y="70"  width="90"  height="60"/>
-              <polygon points="200,0 270,70 130,70"/>
-              <polygon points="200,30 245,70 155,70"/>
+            {/* ── 名古屋城シルエット（左下、認識できるレベル） ── */}
+            <g transform="translate(0%, 55%) scale(0.09)" opacity="0.09" fill="rgba(205,160,35,1)">
+              <rect x="80"  y="180" width="240" height="230"/>
+              <rect x="115" y="115" width="170" height="75"/>
+              <rect x="145" y="62"  width="110" height="62"/>
+              <rect x="168" y="22"  width="64"  height="48"/>
+              <polygon points="200,0 272,72 128,72"/>
+              <polygon points="200,28 252,72 148,72"/>
+              {/* 窓 */}
+              <rect x="130" y="200" width="30" height="30" fill="rgba(0,0,0,0.3)"/>
+              <rect x="185" y="200" width="30" height="30" fill="rgba(0,0,0,0.3)"/>
+              <rect x="240" y="200" width="30" height="30" fill="rgba(0,0,0,0.3)"/>
             </g>
           </svg>
 
-          {/* 金粉パーティクル */}
+          {/* ── 金粉（増量・明るく） ── */}
           {GOLD_DUST.map((p, i) => (
             <div key={i} style={{
               position: 'absolute', left: p.x, top: p.y,
-              width: p.s, height: p.s,
+              width: p.s + 1, height: p.s + 1,
               borderRadius: '50%',
-              background: p.b ? 'rgba(255,218,65,0.60)' : 'rgba(200,155,32,0.38)',
+              background: p.b ? 'rgba(255,220,60,0.72)' : 'rgba(205,158,32,0.50)',
               boxShadow: p.b
-                ? '0 0 5px rgba(255,210,55,0.50)'
-                : '0 0 3px rgba(185,142,22,0.28)',
+                ? '0 0 7px rgba(255,212,50,0.65)'
+                : '0 0 4px rgba(190,145,22,0.40)',
             }}/>
           ))}
 
-          {/* 天井からの暖色照明グロー */}
+          {/* ── 天井照明グロー（暖色スポット） ── */}
           <div style={{
             position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-            width: '90%', height: '30%',
-            background: 'radial-gradient(ellipse at 50% 0%, rgba(195,138,28,0.14) 0%, transparent 75%)',
+            width: '80%', height: '35%',
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(200,142,28,0.20) 0%, transparent 72%)',
           }}/>
 
-          {/* 左右の展示壁面グロー */}
+          {/* 左右壁面グロー */}
           <div style={{
             position: 'absolute', inset: 0,
             background: [
-              'radial-gradient(ellipse 25% 60% at 0% 50%, rgba(160,110,18,0.06) 0%, transparent 100%)',
-              'radial-gradient(ellipse 25% 60% at 100% 50%, rgba(160,110,18,0.06) 0%, transparent 100%)',
+              'radial-gradient(ellipse 28% 65% at 0% 50%, rgba(165,115,18,0.09) 0%, transparent 100%)',
+              'radial-gradient(ellipse 28% 65% at 100% 50%, rgba(165,115,18,0.09) 0%, transparent 100%)',
             ].join(', '),
           }}/>
 
-          {/* 下部の床反射 */}
+          {/* 下部床反射 */}
           <div style={{
             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: '70%', height: '22%',
-            background: 'radial-gradient(ellipse at 50% 100%, rgba(170,118,22,0.10) 0%, transparent 75%)',
+            width: '75%', height: '24%',
+            background: 'radial-gradient(ellipse at 50% 100%, rgba(175,122,22,0.14) 0%, transparent 72%)',
           }}/>
         </div>
       )}
