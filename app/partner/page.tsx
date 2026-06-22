@@ -80,6 +80,21 @@ const CONTACT_PLAN_OPTIONS = [
   'まだ決めていない',
 ];
 
+const RECOMMENDED_STORE_CASES = [
+  {
+    title: 'NEWオープン・リニューアル店',
+    text: 'オープン直後の認知づくり、初回来店、Googleマップ導線をまとめて強化します。',
+  },
+  {
+    title: '週末の来店を増やしたいお店',
+    text: '金曜から日曜に向けて、記事・地図クリック・保存導線で来店候補に入りやすくします。',
+  },
+  {
+    title: 'Googleマップ経由の来店を増やしたいお店',
+    text: '記事内の地図導線やクリック計測を活用して、検索後の来店行動につなげます。',
+  },
+];
+
 const CONTACT_MAILTO = `mailto:hello@nagotosha.com?subject=${encodeURIComponent(
   'なごとしゃ掲載相談',
 )}&body=${encodeURIComponent(`店舗名：
@@ -274,6 +289,55 @@ export default function PartnerPage() {
           <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#416b7d' }}>
             広告・PRの場合は、読者に分かるように明確に表記します。短期的な露出だけでなく、信頼を落とさない紹介を大切にします。
           </p>
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <SectionTitle eyebrow="RECOMMEND">こんなお店におすすめです</SectionTitle>
+        <div className="mt-4 flex flex-col gap-3">
+          {RECOMMENDED_STORE_CASES.map(item => (
+            <article
+              key={item.title}
+              className="rounded-2xl bg-white p-4"
+              style={{
+                border: '1px solid rgba(29,91,115,0.10)',
+                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+              }}
+            >
+              <h3 className="text-[15px] font-black leading-snug" style={{ color: '#0a2438' }}>
+                {item.title}
+              </h3>
+              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+                {item.text}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div
+          className="mt-4 rounded-2xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
+            border: '1.5px solid rgba(29,91,115,0.14)',
+          }}
+        >
+          <h3 className="text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            まずは掲載内容を相談する
+          </h3>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            お店の業態、エリア、集客したい曜日に合わせて、記事掲載・地図導線・週末集客の組み合わせを提案します。
+          </p>
+          <a
+            href={CONTACT_MAILTO}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
+              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+            }}
+          >
+            掲載について相談する
+            <ArrowRightIcon />
+          </a>
         </div>
       </section>
 
