@@ -1,5 +1,11 @@
 import Link from 'next/link';
 
+const DISCLOSURE_POINTS = [
+  'PR・広告表記を明確にします',
+  '通常記事と広告記事の違いを分かりやすくします',
+  '誇大表現や事実確認が難しい表現は避けます',
+];
+
 const PR_TYPES = [
   {
     type: 'PR記事',
@@ -76,6 +82,13 @@ const DISALLOWED = [
   'なごとしゃの世界観や品質基準に合わない内容',
 ];
 
+const DISALLOWED_DETAIL_POINTS = [
+  '読者に誤解を与える内容',
+  '法令や公序良俗に反する内容',
+  '実態確認が難しい過度な効果表現',
+  '他店や個人を不当に下げる表現',
+];
+
 export default function AdPolicyPage() {
   return (
     <main
@@ -119,6 +132,45 @@ export default function AdPolicyPage() {
             >
               広告やPRを含む場合は、記事内または掲載枠にわかりやすく表示します。
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pt-4">
+        <div
+          className="rounded-3xl bg-white p-5"
+          style={{
+            border: '1.5px solid rgba(29,91,115,0.12)',
+            boxShadow: '0 8px 24px rgba(10,36,56,0.08)',
+          }}
+        >
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+            POLICY
+          </p>
+          <h2 className="mt-2 text-[19px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            なごとしゃの広告掲載方針
+          </h2>
+          <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#416b7d' }}>
+            なごとしゃでは、読者が安心して情報を選べるように、広告・PR・協賛を含む記事には分かりやすい表記を行います。掲載内容は店舗やサービスの魅力を伝える一方で、読者に誤解を与える表現にならないよう確認します。
+          </p>
+          <div className="mt-4 flex flex-col gap-2.5">
+            {DISCLOSURE_POINTS.map(point => (
+              <div
+                key={point}
+                className="flex items-start gap-2.5 rounded-2xl px-3 py-3"
+                style={{
+                  background: '#f6fbff',
+                  border: '1px solid rgba(29,91,115,0.08)',
+                }}
+              >
+                <span className="mt-0.5 shrink-0" style={{ color: '#0a9a9a' }}>
+                  <CheckSmIcon />
+                </span>
+                <p className="text-[12px] font-black leading-5" style={{ color: '#24465a' }}>
+                  {point}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -304,6 +356,57 @@ export default function AdPolicyPage() {
               </div>
             ))}
           </div>
+          <div
+            className="mt-4 rounded-2xl p-4"
+            style={{
+              background: 'rgba(29,91,115,0.04)',
+              border: '1px solid rgba(29,91,115,0.08)',
+            }}
+          >
+            <p className="text-[11px] font-black tracking-[0.12em]" style={{ color: '#1d5b73' }}>
+              確認する観点
+            </p>
+            <div className="mt-3 flex flex-col gap-2">
+              {DISALLOWED_DETAIL_POINTS.map(point => (
+                <div key={point} className="flex items-start gap-2">
+                  <span className="mt-1 shrink-0" style={{ color: '#8aa5b0' }}>
+                    <DotIcon />
+                  </span>
+                  <p className="text-[12px] font-bold leading-5" style={{ color: '#416b7d' }}>
+                    {point}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <div
+          className="rounded-2xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
+            border: '1.5px solid rgba(29,91,115,0.14)',
+          }}
+        >
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            掲載内容に不安がある場合もご相談ください
+          </h2>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            PR表記や掲載内容の見せ方は、店舗の魅力と読者の分かりやすさの両方を大切にして調整します。
+          </p>
+          <Link
+            href="/partner"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
+              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+            }}
+          >
+            掲載について相談する
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 
