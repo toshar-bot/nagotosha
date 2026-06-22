@@ -75,7 +75,7 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
           objectFit: 'cover',
           objectPosition: 'center 18%',
           filter: hideSubject
-            ? 'brightness(0.82) contrast(1.02) saturate(0.88)'
+            ? 'brightness(0.72) contrast(0.96) saturate(0.82)'
             : undefined,
         }} />
       )}

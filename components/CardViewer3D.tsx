@@ -20,7 +20,8 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
   const frameShineRef = useRef<HTMLDivElement>(null);
   const holoRef       = useRef<HTMLDivElement>(null);
   const shadowRef     = useRef<HTMLDivElement>(null);
-  const subjectRef    = useRef<HTMLImageElement>(null);  // 3D 前面 subject レイヤー
+  // subject 3D: img のみ RAF で更新 (wrapperはstyle固定)
+  const subjectRef    = useRef<HTMLImageElement>(null);
 
   const rafRef  = useRef<number | null>(null);
   const target  = useRef({ rx: 0, ry: 0, px: 0.5, py: 0.5, active: false });
@@ -49,22 +50,24 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       innerRef.current.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg)`;
     }
 
-    // subject 3D前面レイヤー: parallax + 明度差 + 傾き連動シャドウ
+    // ── subject parallax ──
+    // wrapper が translateZ(60px) で固定前面にある。
+    // img 内で translate することで、背景と subject の視差差を作る。
+    // カードが右に傾く(ry>0)とき subject は逆方向へズレ → 前後感が生まれる
     if (subjectRef.current) {
-      // parallax: カードが右に傾く(ry>0)とき subject は逆方向(左)へズレる → 奥行き感
-      const parX = -c.ry * 0.24;   // max ±6.2px @ 26deg
-      const parY =  c.rx * 0.20;   // max ±4.0px @ 20deg
-      // シャドウ方向もカード傾きに連動
-      const shX = (-c.ry * 0.55).toFixed(1);
-      const shY = (c.rx * 0.40 + 10).toFixed(1);
+      const parX = (-c.ry * 0.32).toFixed(2);   // max ±8.3px @ 26deg
+      const parY = ( c.rx * 0.28).toFixed(2);   // max ±5.6px @ 20deg
+      // tilt に連動したシャドウ: カードが右に傾けば影は左下方向
+      const shX  = (-c.ry * 0.65).toFixed(1);
+      const shY  = ( c.rx * 0.50 + 14).toFixed(1);
 
       subjectRef.current.style.transform =
-        `translate3d(${parX.toFixed(2)}px, ${parY.toFixed(2)}px, 38px) scale(1.016)`;
+        `translate(${parX}px, ${parY}px) scale(1.030)`;
       subjectRef.current.style.filter = [
-        'brightness(1.10) contrast(1.15) saturate(1.10)',
-        `drop-shadow(${shX}px ${shY}px 20px rgba(0,0,0,0.68))`,
-        `drop-shadow(0 2px 6px rgba(0,0,0,0.44))`,
-        `drop-shadow(0 0 12px rgba(90,55,0,0.16))`,
+        'brightness(1.16) contrast(1.18) saturate(1.12)',
+        `drop-shadow(${shX}px ${shY}px 24px rgba(0,0,0,0.72))`,
+        `drop-shadow(0 4px 10px rgba(0,0,0,0.52))`,
+        `drop-shadow(0 0 18px rgba(100,60,0,0.18))`,
       ].join(' ');
     }
 
@@ -110,11 +113,11 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       holoRef.current.style.opacity = String(op);
     }
 
-    // 影の位置
+    // 接地影: カード傾きに合わせてズレる
     if (shadowRef.current) {
-      const ox = (-c.ry / MAX_TILT_Y) * 14;
-      const oy = (c.rx  / MAX_TILT_X) * 10 + 16;
-      shadowRef.current.style.transform = `translateX(${ox}px) translateY(${oy}px) scaleX(0.85)`;
+      const ox = (-c.ry / MAX_TILT_Y) * 16;
+      const oy = (c.rx  / MAX_TILT_X) * 10 + 18;
+      shadowRef.current.style.transform = `translateX(${ox}px) translateY(${oy}px) scaleX(0.82)`;
     }
 
     const settled = !t.active && Math.abs(c.rx) < 0.04 && Math.abs(c.ry) < 0.04;
@@ -182,7 +185,6 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     };
   }, [onPointerMove, onPointerLeave]);
 
-  // UR の subjectImageUrl があるときに 3D 前面 subject を描画するか
   const hasSubject = isUR && !!card.subjectImageUrl && owned;
 
   return (
@@ -190,7 +192,7 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       ref={wrapRef}
       style={{
         display: 'inline-block',
-        padding: '20px 24px 40px',
+        padding: '20px 24px 44px',
         touchAction: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
@@ -198,23 +200,37 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       }}
     >
       {/* perspective コンテナ */}
-      <div style={{ perspective: '1000px', perspectiveOrigin: '50% 50%', position: 'relative' }}>
+      <div style={{ perspective: '900px', perspectiveOrigin: '50% 45%', position: 'relative' }}>
 
-        {/* 地面の影 */}
+        {/* ── 接地影（楕円・傾き連動） ── */}
         <div
           ref={shadowRef}
           style={{
             position: 'absolute',
-            bottom: -16, left: '50%',
-            width: '78%', height: 32,
-            marginLeft: '-39%',
-            background: 'radial-gradient(ellipse, rgba(0,0,0,0.65) 0%, transparent 72%)',
+            bottom: -20, left: '50%',
+            width: '82%', height: 36,
+            marginLeft: '-41%',
+            background: 'radial-gradient(ellipse, rgba(0,0,0,0.70) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
             willChange: 'transform',
-            filter: 'blur(5px)',
+            filter: 'blur(8px)',
           }}
         />
+
+        {/* ── 台座グロー（金色の接地光） ── */}
+        {isUR && (
+          <div style={{
+            position: 'absolute',
+            bottom: -8, left: '50%',
+            width: '62%', height: 24,
+            marginLeft: '-31%',
+            background: 'radial-gradient(ellipse, rgba(200,140,30,0.28) 0%, transparent 72%)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+            filter: 'blur(4px)',
+          }}/>
+        )}
 
         {/* カード本体 */}
         <div
@@ -224,12 +240,12 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
             transformStyle: 'preserve-3d',
             willChange: 'transform',
             filter: [
-              `drop-shadow(${isUR ? 3 : 2}px ${isUR ? 5 : 3}px 0px rgba(0,0,0,${isUR ? 0.80 : 0.60}))`,
-              `drop-shadow(0 2px 2px rgba(0,0,0,0.50))`,
+              `drop-shadow(${isUR ? 4 : 2}px ${isUR ? 6 : 3}px 1px rgba(0,0,0,${isUR ? 0.82 : 0.60}))`,
+              `drop-shadow(0 2px 3px rgba(0,0,0,0.52))`,
             ].join(' '),
           }}
         >
-          {/* カードビジュアル本体 — subject は CardViewer3D が代替描画するので hideSubject */}
+          {/* カードビジュアル（base を内包）— subject は hideSubject で非表示 */}
           <CardVisual
             card={card}
             owned={owned}
@@ -237,31 +253,42 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
             hideSubject={hasSubject}
           />
 
-          {/* ── subject 3D前面レイヤー（translateZ で料理を前面に） ── */}
+          {/* ── subject 3D前面レイヤー ──────────────────────────────
+              構造: div(translateZ:60px固定 + overflow:hidden) > img(parallax)
+              - divのtranslateZでCSS3D上の前面に配置
+              - imgのtranslateでtilt連動の視差差を実現
+              - overflow:hiddenがscale時のはみ出しをクリップ
+          ──────────────────────────────────────────────────────── */}
           {hasSubject && (
-            <img
-              ref={subjectRef}
-              src={card.subjectImageUrl}
-              alt=""
-              aria-hidden
-              style={{
-                position: 'absolute',
-                top: 0, left: 0,
-                width: w,
-                height: h,
-                objectFit: 'cover',
-                objectPosition: 'center 18%',   // base 写真と完全一致
-                // 初期値（RAFで毎フレーム上書きされる）
-                transform: 'translate3d(0px, 0px, 38px) scale(1.016)',
-                clipPath: `inset(0 round ${cardR}px)`,
-                pointerEvents: 'none',
-                filter: [
-                  'brightness(1.10) contrast(1.15) saturate(1.10)',
-                  'drop-shadow(0 10px 20px rgba(0,0,0,0.68))',
-                  'drop-shadow(0 2px 6px rgba(0,0,0,0.44))',
-                ].join(' '),
-              }}
-            />
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: w, height: h,
+              borderRadius: cardR,
+              overflow: 'hidden',
+              // ★ これがCSS3Dの「前面」— base photo (z=0)より60px手前
+              transform: 'translateZ(60px)',
+              pointerEvents: 'none',
+            }}>
+              <img
+                ref={subjectRef}
+                src={card.subjectImageUrl}
+                alt=""
+                aria-hidden
+                style={{
+                  width: '100%', height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 18%',    // base 写真と完全一致
+                  // 初期値 (RAF で毎フレーム上書き)
+                  transform: 'scale(1.030)',
+                  filter: [
+                    'brightness(1.16) contrast(1.18) saturate(1.12)',
+                    'drop-shadow(0 14px 24px rgba(0,0,0,0.72))',
+                    'drop-shadow(0 4px 10px rgba(0,0,0,0.52))',
+                  ].join(' '),
+                }}
+              />
+            </div>
           )}
 
           {/* ── 枠シャイン ── */}
@@ -276,7 +303,7 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
             }}
           />
 
-          {/* ── ホログラムフィルム（SR+、角度で虹がずれる） ── */}
+          {/* ── ホログラムフィルム（SR+） ── */}
           {(isHighRare || isMid) && (
             <div
               ref={holoRef}
