@@ -50,14 +50,55 @@ export default function CardDetailPage() {
   const owned = card.id === 'card_010' ? true : (col?.ownedCardIds.includes(card.id) ?? false);
   const cfg   = RARITY_CONFIG[card.rarity];
 
+  const isUR = card.rarity === 'UR';
+
   return (
     <div
       ref={containerRef}
       className="min-h-dvh pb-24 flex flex-col"
-      style={{ background: '#09080f' }}
+      style={{
+        background: isUR
+          ? [
+              'radial-gradient(ellipse 72% 28% at 50% 10%, rgba(180,120,30,0.22) 0%, transparent 100%)',
+              'radial-gradient(ellipse 60% 32% at 50% 70%, rgba(220,150,40,0.14) 0%, transparent 100%)',
+              'radial-gradient(ellipse 100% 60% at 80% 20%, rgba(100,30,160,0.10) 0%, transparent 100%)',
+              'linear-gradient(180deg, #080610 0%, #0b0812 45%, #050309 100%)',
+            ].join(', ')
+          : '#09080f',
+      }}
     >
+      {/* ── UR 専用: 背景和柄 + 金粉 ── */}
+      {isUR && (
+        <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+          {/* 薄い青海波パターン */}
+          <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, opacity: 0.04 }}>
+            <defs>
+              <pattern id="bgSeigaiha" x="0" y="0" width="48" height="29" patternUnits="userSpaceOnUse">
+                <path d="M0 24 A24 24 0 0 1 48 24" fill="none" stroke="rgba(200,160,40,1)" strokeWidth="0.8"/>
+                <path d="M-24 24 A24 24 0 0 1 24 24" fill="none" stroke="rgba(200,160,40,1)" strokeWidth="0.8"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#bgSeigaiha)"/>
+          </svg>
+          {/* 金粉（ランダム輝点） */}
+          {[
+            {x:'12%',y:'18%'},{x:'82%',y:'12%'},{x:'24%',y:'58%'},{x:'88%',y:'44%'},
+            {x:'68%',y:'72%'},{x:'8%',y:'82%'},{x:'55%',y:'28%'},{x:'76%',y:'60%'},
+            {x:'38%',y:'88%'},{x:'92%',y:'78%'},
+          ].map((p, i) => (
+            <div key={i} style={{
+              position: 'absolute', left: p.x, top: p.y,
+              width: i % 3 === 0 ? 2 : 1, height: i % 3 === 0 ? 2 : 1,
+              borderRadius: '50%',
+              background: 'rgba(255,210,80,0.45)',
+              boxShadow: '0 0 4px rgba(255,200,60,0.35)',
+            }}/>
+          ))}
+        </div>
+      )}
+
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0">
+      <header className="flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0" style={{ position: 'relative', zIndex: 1 }}>
         <Link
           href="/zukan"
           className="active:opacity-60 transition-opacity"
@@ -76,12 +117,25 @@ export default function CardDetailPage() {
       </header>
 
       {/* ── 3Dカード（メイン） ── */}
-      <div className="flex justify-center items-center" style={{ paddingTop: 8, paddingBottom: 8 }}>
-        <CardViewer3D card={card} owned={owned} widthPx={cardWidthPx} />
+      <div className="flex justify-center items-center" style={{ paddingTop: 8, paddingBottom: 4, position: 'relative', zIndex: 1 }}>
+        <div style={{ position: 'relative' }}>
+          <CardViewer3D card={card} owned={owned} widthPx={cardWidthPx} />
+          {/* 台座グロー：カード直下の接地光 */}
+          {isUR && (
+            <div style={{
+              position: 'absolute',
+              bottom: -8, left: '50%', transform: 'translateX(-50%)',
+              width: '70%', height: 20,
+              background: 'radial-gradient(ellipse, rgba(200,140,30,0.32) 0%, transparent 75%)',
+              filter: 'blur(6px)',
+              pointerEvents: 'none',
+            }}/>
+          )}
+        </div>
       </div>
 
       {/* ── Info section ── */}
-      <div className="px-4 flex flex-col gap-4 mt-1">
+      <div className="px-4 flex flex-col gap-4 mt-1" style={{ position: 'relative', zIndex: 1 }}>
         {!owned ? (
           <>
             <TosharBubble size="sm" text="このカードはまだ未発見じゃ。今日の1枚で引き当てるんじゃ！" />

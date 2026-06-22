@@ -49,14 +49,22 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       innerRef.current.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg)`;
     }
 
-    // subject 3Dレイヤー: translateZ で前に出す + tilt に合わせてシャドウ方向変化
+    // subject 3D前面レイヤー: parallax + 明度差 + 傾き連動シャドウ
     if (subjectRef.current) {
-      const shadowX = Math.round(-c.ry * 0.55);
-      const shadowY = Math.round(c.rx  * 0.40) + 10;
+      // parallax: カードが右に傾く(ry>0)とき subject は逆方向(左)へズレる → 奥行き感
+      const parX = -c.ry * 0.24;   // max ±6.2px @ 26deg
+      const parY =  c.rx * 0.20;   // max ±4.0px @ 20deg
+      // シャドウ方向もカード傾きに連動
+      const shX = (-c.ry * 0.55).toFixed(1);
+      const shY = (c.rx * 0.40 + 10).toFixed(1);
+
+      subjectRef.current.style.transform =
+        `translate3d(${parX.toFixed(2)}px, ${parY.toFixed(2)}px, 38px) scale(1.016)`;
       subjectRef.current.style.filter = [
-        `drop-shadow(${shadowX}px ${shadowY}px 22px rgba(0,0,0,0.70))`,
-        `drop-shadow(0 3px 7px rgba(0,0,0,0.48))`,
-        `drop-shadow(0 0 14px rgba(70,40,0,0.12))`,
+        'brightness(1.10) contrast(1.15) saturate(1.10)',
+        `drop-shadow(${shX}px ${shY}px 20px rgba(0,0,0,0.68))`,
+        `drop-shadow(0 2px 6px rgba(0,0,0,0.44))`,
+        `drop-shadow(0 0 12px rgba(90,55,0,0.16))`,
       ].join(' ');
     }
 
@@ -243,14 +251,14 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
                 height: h,
                 objectFit: 'cover',
                 objectPosition: 'center 18%',   // base 写真と完全一致
-                transform: 'translateZ(20px)',   // カード面より 20px 前面に浮かせる
-                // clip-path で card の角丸に合わせてクリッピング
+                // 初期値（RAFで毎フレーム上書きされる）
+                transform: 'translate3d(0px, 0px, 38px) scale(1.016)',
                 clipPath: `inset(0 round ${cardR}px)`,
                 pointerEvents: 'none',
-                // 初期シャドウ（RAFで上書き）
                 filter: [
-                  'drop-shadow(0 10px 22px rgba(0,0,0,0.70))',
-                  'drop-shadow(0 3px 7px rgba(0,0,0,0.48))',
+                  'brightness(1.10) contrast(1.15) saturate(1.10)',
+                  'drop-shadow(0 10px 20px rgba(0,0,0,0.68))',
+                  'drop-shadow(0 2px 6px rgba(0,0,0,0.44))',
                 ].join(' '),
               }}
             />

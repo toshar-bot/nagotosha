@@ -67,12 +67,16 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
     }}>
 
       {/* ━━━━━━━━━━━━━━ L1: 料理写真フルブリード ━━━━━━━━━━━━━━ */}
+      {/* hideSubject=true のとき subject が前面に出るので base を少し沈める */}
       {card.imageUrl && (
         <img src={card.imageUrl} alt={card.name} style={{
           position: 'absolute', inset: 0,
           width: '100%', height: '100%',
           objectFit: 'cover',
           objectPosition: 'center 18%',
+          filter: hideSubject
+            ? 'brightness(0.82) contrast(1.02) saturate(0.88)'
+            : undefined,
         }} />
       )}
 
