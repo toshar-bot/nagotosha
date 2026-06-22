@@ -124,6 +124,7 @@ export const FEATURED_ARTICLES: FeaturedArticle[] = [
 
 export const RANKING: RankingItem[] = [
   {
+    id: 'ranking-osu-mazesoba',
     rank: 1,
     title: '平日でも行列！大須の台湾まぜそば新店が衝撃の旨さ',
     summary: '開店2週間で行列必至の注目店',
@@ -140,6 +141,7 @@ export const RANKING: RankingItem[] = [
     rankColor: '#c9412d',
   },
   {
+    id: 'ranking-nagoya-castle-garden',
     rank: 2,
     title: '名古屋城二の丸東庭園、紅葉の見頃は今週末',
     summary: '入場無料・アクセスも抜群',
@@ -150,6 +152,7 @@ export const RANKING: RankingItem[] = [
     rankColor: '#1d5b73',
   },
   {
+    id: 'ranking-kakuozan-market',
     rank: 3,
     title: '覚王山アパートメント秋市、出店者リスト公開',
     summary: '今年は60組以上が出店予定',
@@ -160,6 +163,7 @@ export const RANKING: RankingItem[] = [
     rankColor: '#4a3010',
   },
   {
+    id: 'ranking-sakae-komeda',
     rank: 4,
     title: '栄・コメダ珈琲創業地の限定メニューが復活',
     summary: '懐かしの味が週末限定で登場',

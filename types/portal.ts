@@ -46,6 +46,7 @@ export interface FeaturedArticle extends PortalCommercialFields {
 }
 
 export interface RankingItem extends PortalCommercialFields {
+  id: string;
   rank: number;
   title: string;
   summary: string;

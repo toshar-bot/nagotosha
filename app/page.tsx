@@ -565,6 +565,25 @@ function FeaturedCard({ article }: { article: FeaturedArticle }) {
 
 function RankingItem({ item }: { item: PortalRankingItem }) {
   const isTop = item.rank === 1;
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setSaved(isSaved(item.id));
+  }, [item.id]);
+
+  const handleToggleSaved = () => {
+    const result = toggleSavedItem({
+      id: item.id,
+      type: item.storeName || item.mapUrl ? 'store' : 'article',
+      title: item.title,
+      area: item.area,
+      category: 'ランキング',
+      articleUrl: item.articleUrl,
+      mapUrl: item.mapUrl,
+      imageUrl: item.imageUrl,
+    });
+    setSaved(result.saved);
+  };
 
   return (
     <div
@@ -624,6 +643,7 @@ function RankingItem({ item }: { item: PortalRankingItem }) {
           </span>
           <span className="text-[9px] font-medium" style={{ color: '#a0b8c0' }}>{item.date}</span>
           <MapLinkButton item={item} source="ranking" compact />
+          <SaveButton saved={saved} onClick={handleToggleSaved} compact />
           <span className="flex items-center gap-0.5 text-[9px] font-bold ml-auto" style={{ color: '#a0b8c0' }}>
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
@@ -645,10 +665,12 @@ function SaveButton({
   saved,
   saves,
   onClick,
+  compact = false,
 }: {
   saved: boolean;
   saves?: number;
   onClick: () => void;
+  compact?: boolean;
 }) {
   const displaySaves = typeof saves === 'number' ? saves + (saved ? 1 : 0) : null;
 
@@ -656,7 +678,10 @@ function SaveButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center justify-center gap-1 rounded-full px-3 py-1.5 text-[10px] font-black transition-transform active:scale-95"
+      className={[
+        'inline-flex items-center justify-center gap-1 rounded-full font-black transition-transform active:scale-95',
+        compact ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1.5 text-[10px]',
+      ].join(' ')}
       style={{
         color: saved ? '#ffffff' : '#1d5b73',
         background: saved ? 'linear-gradient(135deg, #1d5b73, #0a9a9a)' : 'rgba(29,91,115,0.08)',
@@ -744,7 +769,7 @@ function buildMapHref(item: FeaturedArticle | PortalRankingItem, source: 'featur
     placement: 'portal-home',
     storeName: item.storeName,
     address: item.address,
-    articleId: 'id' in item ? item.id : item.rank,
+    articleId: item.id,
     campaign: item.title,
   });
 }
