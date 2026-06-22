@@ -63,3 +63,17 @@ export interface CategoryTab extends PortalCommercialFields {
   key: string;
   label: string;
 }
+
+export type SavedItemType = 'article' | 'store' | 'event' | 'area';
+
+export interface SavedItem {
+  id: string;
+  type: SavedItemType;
+  title: string;
+  area?: string;
+  category?: PortalCategory;
+  articleUrl?: string;
+  mapUrl?: string;
+  imageUrl?: string;
+  savedAt: string;
+}
