@@ -15,11 +15,12 @@ const MAX_TILT_Y = 26;
 const SPRING     = 0.10;
 
 export default function CardViewer3D({ card, owned, widthPx }: Props) {
-  const wrapRef      = useRef<HTMLDivElement>(null);
-  const innerRef     = useRef<HTMLDivElement>(null);
-  const frameShineRef = useRef<HTMLDivElement>(null);  // 枠に沿うシャイン
-  const holoRef      = useRef<HTMLDivElement>(null);   // ホログラムフィルム
-  const shadowRef    = useRef<HTMLDivElement>(null);
+  const wrapRef       = useRef<HTMLDivElement>(null);
+  const innerRef      = useRef<HTMLDivElement>(null);
+  const frameShineRef = useRef<HTMLDivElement>(null);
+  const holoRef       = useRef<HTMLDivElement>(null);
+  const shadowRef     = useRef<HTMLDivElement>(null);
+  const subjectRef    = useRef<HTMLImageElement>(null);  // 3D 前面 subject レイヤー
 
   const rafRef  = useRef<number | null>(null);
   const target  = useRef({ rx: 0, ry: 0, px: 0.5, py: 0.5, active: false });
@@ -28,6 +29,10 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
   const isUR       = card.rarity === 'UR';
   const isHighRare = card.rarity === 'SSR' || isUR;
   const isMid      = card.rarity === 'SR';
+
+  const w = widthPx ?? 280;
+  const h = Math.round(w * 1.42);
+  const cardR = Math.round(w * 0.052);
 
   // ── RAF アニメーションループ ──────────────────────────────────
   function tick() {
@@ -44,16 +49,26 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       innerRef.current.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg)`;
     }
 
-    // 枠シャイン — pointer位置でinset-shadowの方向が変わる
+    // subject 3Dレイヤー: translateZ で前に出す + tilt に合わせてシャドウ方向変化
+    if (subjectRef.current) {
+      const shadowX = Math.round(-c.ry * 0.55);
+      const shadowY = Math.round(c.rx  * 0.40) + 10;
+      subjectRef.current.style.filter = [
+        `drop-shadow(${shadowX}px ${shadowY}px 22px rgba(0,0,0,0.70))`,
+        `drop-shadow(0 3px 7px rgba(0,0,0,0.48))`,
+        `drop-shadow(0 0 14px rgba(70,40,0,0.12))`,
+      ].join(' ');
+    }
+
+    // 枠シャイン
     if (frameShineRef.current) {
-      const ux = (c.px - 0.5) * 2;    // -1 … +1
+      const ux = (c.px - 0.5) * 2;
       const uy = (c.py - 0.5) * 2;
       const shineX = Math.round(-ux * 22);
       const shineY = Math.round(-uy * 22);
       const shineOp = t.active ? 0.65 : 0.0;
 
       if (isUR) {
-        // UR: 枠に沿って走る白グロー
         frameShineRef.current.style.boxShadow = [
           `inset ${shineX}px ${shineY}px 30px rgba(255,255,255,${shineOp * 0.28})`,
           `inset 0 0 6px rgba(255,255,255,${shineOp * 0.18})`,
@@ -70,12 +85,12 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       }
     }
 
-    // ホログラムフィルム — 角度で虹色がずれる (SR+のみ)
+    // ホログラムフィルム
     if (holoRef.current && (isHighRare || isMid)) {
       const hue   = Math.round(c.px * 280 + c.ry * 3);
       const angle = Math.round(c.px * 140 + c.py * 70 + 115);
-      const maxOp = isUR ? 0.16 : isHighRare ? 0.22 : 0.12;
-      const op    = t.active ? maxOp : maxOp * 0.35;  // 静止時も少し残す
+      const maxOp = isUR ? 0.14 : isHighRare ? 0.22 : 0.12;
+      const op    = t.active ? maxOp : maxOp * 0.35;
 
       holoRef.current.style.backgroundImage = `linear-gradient(${angle}deg,
         hsl(${hue},100%,65%) 0%,
@@ -159,7 +174,8 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     };
   }, [onPointerMove, onPointerLeave]);
 
-  const cardR = Math.round((widthPx ?? 280) * 0.052);
+  // UR の subjectImageUrl があるときに 3D 前面 subject を描画するか
+  const hasSubject = isUR && !!card.subjectImageUrl && owned;
 
   return (
     <div
@@ -199,16 +215,48 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
             position: 'relative',
             transformStyle: 'preserve-3d',
             willChange: 'transform',
-            // 縁の厚み感（右下に影）
             filter: [
               `drop-shadow(${isUR ? 3 : 2}px ${isUR ? 5 : 3}px 0px rgba(0,0,0,${isUR ? 0.80 : 0.60}))`,
               `drop-shadow(0 2px 2px rgba(0,0,0,0.50))`,
             ].join(' '),
           }}
         >
-          <CardVisual card={card} owned={owned} widthPx={widthPx} />
+          {/* カードビジュアル本体 — subject は CardViewer3D が代替描画するので hideSubject */}
+          <CardVisual
+            card={card}
+            owned={owned}
+            widthPx={widthPx}
+            hideSubject={hasSubject}
+          />
 
-          {/* ── 枠シャイン（inset-shadow → 枠に沿って光る） ── */}
+          {/* ── subject 3D前面レイヤー（translateZ で料理を前面に） ── */}
+          {hasSubject && (
+            <img
+              ref={subjectRef}
+              src={card.subjectImageUrl}
+              alt=""
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: 0, left: 0,
+                width: w,
+                height: h,
+                objectFit: 'cover',
+                objectPosition: 'center 18%',   // base 写真と完全一致
+                transform: 'translateZ(20px)',   // カード面より 20px 前面に浮かせる
+                // clip-path で card の角丸に合わせてクリッピング
+                clipPath: `inset(0 round ${cardR}px)`,
+                pointerEvents: 'none',
+                // 初期シャドウ（RAFで上書き）
+                filter: [
+                  'drop-shadow(0 10px 22px rgba(0,0,0,0.70))',
+                  'drop-shadow(0 3px 7px rgba(0,0,0,0.48))',
+                ].join(' '),
+              }}
+            />
+          )}
+
+          {/* ── 枠シャイン ── */}
           <div
             ref={frameShineRef}
             style={{

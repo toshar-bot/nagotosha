@@ -18,9 +18,10 @@ interface Props {
   /**
    * Real cutout PNG with alpha for the subject layer.
    * Falls back to pseudo-cutout (clip-path on photo) when not provided.
-   * Swap this prop with a real segmented PNG in future.
    */
   subjectUrl?: string;
+  /** CardViewer3D が translateZ subject を別描画するとき true → FullArtCard 内 SubjectLayer を非表示 */
+  hideSubject?: boolean;
   onClick?: () => void;
 }
 
@@ -31,7 +32,7 @@ const SIZES = { sm: 100, md: 164, lg: 230, xl: 290 } as const;
 // ─────────────────────────────────────────
 export default function CardVisual({
   card, size = 'md', widthPx, owned = true, isNew = false,
-  rarityRevealed = true, subjectUrl, onClick,
+  rarityRevealed = true, subjectUrl, hideSubject, onClick,
 }: Props) {
   const w   = widthPx ?? SIZES[size];
   const h   = Math.round(w * 1.42);
@@ -42,7 +43,7 @@ export default function CardVisual({
   }
 
   if (cfg.isFullArt) {
-    return <FullArtCard card={card} widthPx={w} isNew={isNew} />;
+    return <FullArtCard card={card} widthPx={w} isNew={isNew} hideSubject={hideSubject} />;
   }
 
   return (
