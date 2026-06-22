@@ -22,15 +22,19 @@ export default function CardDetailPage() {
   }, []);
 
   useEffect(() => {
-    // カードを画面幅の 90% で表示（最大 360px）
+    // UR は大きく（92vw / max 420px）、他は 88vw / max 360px
     function measure() {
-      const w = Math.min(360, Math.round(window.innerWidth * 0.90));
+      const isUR = card?.rarity === 'UR';
+      const vw = isUR ? 0.92 : 0.88;
+      const max = isUR ? 420 : 360;
+      const w = Math.min(max, Math.round(window.innerWidth * vw));
       setCardWidthPx(w);
     }
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card?.rarity]);
 
   if (!card) {
     return (
