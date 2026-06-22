@@ -22,13 +22,13 @@ const RAINBOW_CSS = `linear-gradient(105deg,
 
 /* ── SVG 金箔グラデーション stops ─────────────────────────── */
 const GOLD_S = [
-  { o: '0%',   c: '#fff8d2' },
-  { o: '10%',  c: '#fce068' },
-  { o: '34%',  c: '#f8a828' },
-  { o: '54%',  c: '#9a4e04' },
-  { o: '74%',  c: '#f8a828' },
-  { o: '90%',  c: '#fce068' },
-  { o: '100%', c: '#fff0a0' },
+  { o: '0%',   c: '#ffe89a' },   // トップ: 少し落ち着いた金
+  { o: '12%',  c: '#fcd84e' },   // 明るい黄金
+  { o: '32%',  c: '#e89420' },   // 中間暖色
+  { o: '52%',  c: '#5e2800' },   // 暗部を深く（旧 #9a4e04 → より濃いブラウン）
+  { o: '68%',  c: '#c07010' },   // 暗部抜け
+  { o: '82%',  c: '#f0c040' },   // 明→
+  { o: '100%', c: '#e8c870' },   // トップに戻る・白っぽくしない
 ];
 
 /* ── UR カードフレーム幅 ───────────────────────────────────── */
@@ -249,13 +249,13 @@ function SvgGoldTitle({ name, totalW, h }: { name: string; totalW: number; h: nu
           {GOLD_S.map(s => <stop key={s.o} offset={s.o} stopColor={s.c} />)}
         </linearGradient>
         <filter id="tFx" x="-18%" y="-22%" width="136%" height="144%">
-          {/* オレンジグロー */}
-          <feGaussianBlur in="SourceAlpha" stdDeviation="5.5" result="g1"/>
-          <feFlood floodColor="#ff8c0a" floodOpacity="0.88" result="c1"/>
+          {/* オレンジグロー（弱め） */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="g1"/>
+          <feFlood floodColor="#cc6800" floodOpacity="0.65" result="c1"/>
           <feComposite in="c1" in2="g1" operator="in" result="glow"/>
-          {/* コア輝点 */}
-          <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="g2"/>
-          <feFlood floodColor="#ffe040" floodOpacity="0.70" result="c2"/>
+          {/* コア輝点（抑制） */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.4" result="g2"/>
+          <feFlood floodColor="#e8b820" floodOpacity="0.50" result="c2"/>
           <feComposite in="c2" in2="g2" operator="in" result="core"/>
           {/* 下ドロップシャドウ */}
           <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="g3"/>
@@ -292,13 +292,13 @@ function SvgGoldTitle({ name, totalW, h }: { name: string; totalW: number; h: nu
         filter="url(#tFx)"
       >{name}</text>
 
-      {/* Layer C: 内側ハイライト */}
+      {/* Layer C: 内側ハイライト（白みを減らす） */}
       <text x="0" y={BL}
         fontSize={FS} fontWeight="800" fontFamily={FONT_JA}
         letterSpacing={SP}
         textLength={VW - SP} lengthAdjust="spacingAndGlyphs"
         fill="none"
-        stroke="rgba(255,255,230,0.14)" strokeWidth="0.5"
+        stroke="rgba(255,220,140,0.07)" strokeWidth="0.5"
       >{name}</text>
     </svg>
   );
@@ -461,11 +461,9 @@ function OriginPill({ w, h }: { w: number; h: number }) {
 function SubjectLayer({ subjectImageUrl, w, h }: { subjectImageUrl?: string; w: number; h: number }) {
   if (!subjectImageUrl) return null;
 
-  // 情報ゾーンの直上、カード下部 32% あたりにフロート
-  const bottom = Math.round(h * 0.30);
-  // 水平方向はカード幅の 92%、少し右に重心を寄せて料理感を強調
-  const imgW   = Math.round(w * 0.92);
-
+  // ── base 写真と全く同じ objectFit / objectPosition で重ねる ──
+  // PNG は元画像と同じ解像度・同じ寸法で生成されているため、
+  // 同じ crop パラメータを使えば料理の位置が pixel-perfect に一致する。
   return (
     <img
       src={subjectImageUrl}
@@ -473,20 +471,17 @@ function SubjectLayer({ subjectImageUrl, w, h }: { subjectImageUrl?: string; w: 
       aria-hidden
       style={{
         position: 'absolute',
-        bottom,
-        left: '50%',
-        transform: 'translateX(-50%)',   // 水平センタリング
-        width: imgW,
-        maxHeight: Math.round(h * 0.54), // カード高さの 54% まで
-        objectFit: 'contain',
-        objectPosition: 'bottom center',
-        zIndex: 8,                        // 写真 > subject > 文字下 の順
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition: 'center 18%',   // base 写真と必ず同じ値
+        zIndex: 8,
         pointerEvents: 'none',
-        // 立体感: 下方向に濃いシャドウ、全体に薄いアンビエント
         filter: [
-          `drop-shadow(0 ${Math.round(w*0.025)}px ${Math.round(w*0.055)}px rgba(0,0,0,0.82))`,
-          `drop-shadow(0 ${Math.round(w*0.006)}px ${Math.round(w*0.014)}px rgba(0,0,0,0.60))`,
-          `drop-shadow(0 0            ${Math.round(w*0.030)}px rgba(120,80,10,0.18))`,  // 温かい光の反射
+          `drop-shadow(0 ${Math.round(w*0.018)}px ${Math.round(w*0.038)}px rgba(0,0,0,0.70))`,
+          `drop-shadow(0 ${Math.round(w*0.005)}px ${Math.round(w*0.012)}px rgba(0,0,0,0.48))`,
+          `drop-shadow(0 0 ${Math.round(w*0.022)}px rgba(100,60,0,0.14))`,
         ].join(' '),
       }}
     />
