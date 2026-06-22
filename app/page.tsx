@@ -8,8 +8,9 @@ import Link from 'next/link';
 ───────────────────────────────────────── */
 
 import { CATEGORY_TABS, FEATURED_ARTICLES, HERO_SLIDES, MOOD_ITEMS, RANKING } from '@/data/portal';
+import { isSaved, toggleSavedItem } from '@/lib/saved';
 import { buildGoogleMapsSearchUrl, buildTrackedMapUrl } from '@/lib/tracking';
-import type { CategoryTab, FeaturedArticle, HeroSlide, RankingItem as PortalRankingItem } from '@/types/portal';
+import type { CategoryTab, FeaturedArticle, HeroSlide, RankingItem as PortalRankingItem, SavedItemType } from '@/types/portal';
 
 
 /* ─────────────────────────────────────────
@@ -449,6 +450,26 @@ function MoodButton({ label }: { label: string }) {
 ───────────────────────────────────────── */
 
 function FeaturedCard({ article }: { article: FeaturedArticle }) {
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setSaved(isSaved(article.id));
+  }, [article.id]);
+
+  const handleToggleSaved = () => {
+    const result = toggleSavedItem({
+      id: article.id,
+      type: getSavedType(article.tag),
+      title: article.title,
+      area: article.area,
+      category: article.tag,
+      articleUrl: article.articleUrl,
+      mapUrl: article.mapUrl,
+      imageUrl: article.imageUrl,
+    });
+    setSaved(result.saved);
+  };
+
   return (
     <div
       className="flex-shrink-0 rounded-2xl overflow-hidden"
@@ -529,7 +550,10 @@ function FeaturedCard({ article }: { article: FeaturedArticle }) {
             {(article.views ?? 0).toLocaleString()}
           </span>
         </div>
-        <MapLinkButton item={article} source="featured" />
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <SaveButton saved={saved} saves={article.saves} onClick={handleToggleSaved} />
+          <MapLinkButton item={article} source="featured" />
+        </div>
       </div>
     </div>
   );
@@ -617,6 +641,47 @@ function RankingItem({ item }: { item: PortalRankingItem }) {
   );
 }
 
+function SaveButton({
+  saved,
+  saves,
+  onClick,
+}: {
+  saved: boolean;
+  saves?: number;
+  onClick: () => void;
+}) {
+  const displaySaves = typeof saves === 'number' ? saves + (saved ? 1 : 0) : null;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center justify-center gap-1 rounded-full px-3 py-1.5 text-[10px] font-black transition-transform active:scale-95"
+      style={{
+        color: saved ? '#ffffff' : '#1d5b73',
+        background: saved ? 'linear-gradient(135deg, #1d5b73, #0a9a9a)' : 'rgba(29,91,115,0.08)',
+        border: saved ? '1px solid rgba(10,154,154,0.18)' : '1px solid rgba(29,91,115,0.14)',
+        boxShadow: saved ? '0 2px 8px rgba(29,91,115,0.18)' : 'none',
+      }}
+      aria-pressed={saved}
+    >
+      <BookmarkSmallIcon filled={saved} />
+      <span>{saved ? '保存済み' : '保存'}</span>
+      {displaySaves !== null && (
+        <span style={{ color: saved ? 'rgba(255,255,255,0.72)' : '#7aa0aa', fontWeight: 800 }}>
+          {displaySaves.toLocaleString()}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function getSavedType(tag: string): SavedItemType {
+  if (tag === 'イベント') return 'event';
+  if (tag === '新店' || tag === 'カフェ' || tag === 'グルメ') return 'store';
+  return 'article';
+}
+
 function MapLinkButton({
   item,
   source,
@@ -639,7 +704,7 @@ function MapLinkButton({
       rel="noopener noreferrer"
       className={[
         'inline-flex items-center justify-center gap-1 rounded-full font-black transition-transform active:scale-95',
-        compact ? 'px-2 py-0.5 text-[9px]' : 'mt-2 px-3 py-1.5 text-[10px]',
+        compact ? 'px-2 py-0.5 text-[9px]' : 'px-3 py-1.5 text-[10px]',
       ].join(' ')}
       style={{
         color: '#1d5b73',
@@ -655,6 +720,14 @@ function MapLinkButton({
         </span>
       )}
     </a>
+  );
+}
+
+function BookmarkSmallIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
   );
 }
 
