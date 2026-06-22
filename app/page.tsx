@@ -8,6 +8,7 @@ import Link from 'next/link';
 ───────────────────────────────────────── */
 
 import { CATEGORY_TABS, FEATURED_ARTICLES, HERO_SLIDES, MOOD_ITEMS, RANKING } from '@/data/portal';
+import { buildGoogleMapsSearchUrl, buildTrackedMapUrl } from '@/lib/tracking';
 import type { CategoryTab, FeaturedArticle, HeroSlide, RankingItem as PortalRankingItem } from '@/types/portal';
 
 
@@ -528,6 +529,7 @@ function FeaturedCard({ article }: { article: FeaturedArticle }) {
             {(article.views ?? 0).toLocaleString()}
           </span>
         </div>
+        <MapLinkButton item={article} source="featured" />
       </div>
     </div>
   );
@@ -597,6 +599,7 @@ function RankingItem({ item }: { item: PortalRankingItem }) {
             {item.area}
           </span>
           <span className="text-[9px] font-medium" style={{ color: '#a0b8c0' }}>{item.date}</span>
+          <MapLinkButton item={item} source="ranking" compact />
           <span className="flex items-center gap-0.5 text-[9px] font-bold ml-auto" style={{ color: '#a0b8c0' }}>
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
@@ -611,6 +614,74 @@ function RankingItem({ item }: { item: PortalRankingItem }) {
         <polyline points="1,1 7,7 1,13" />
       </svg>
     </div>
+  );
+}
+
+function MapLinkButton({
+  item,
+  source,
+  compact = false,
+}: {
+  item: FeaturedArticle | PortalRankingItem;
+  source: 'featured' | 'ranking';
+  compact?: boolean;
+}) {
+  const href = buildMapHref(item, source);
+  if (!href) return null;
+
+  const label = item.mapLabel ?? (compact ? '地図' : '地図で開く');
+  const clickText = typeof item.mapClicks === 'number' ? item.mapClicks.toLocaleString() : null;
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={[
+        'inline-flex items-center justify-center gap-1 rounded-full font-black transition-transform active:scale-95',
+        compact ? 'px-2 py-0.5 text-[9px]' : 'mt-2 px-3 py-1.5 text-[10px]',
+      ].join(' ')}
+      style={{
+        color: '#1d5b73',
+        background: 'rgba(10,154,154,0.10)',
+        border: '1px solid rgba(10,154,154,0.22)',
+      }}
+    >
+      <MapPinIcon size={compact ? 9 : 11} />
+      <span>{label}</span>
+      {clickText && (
+        <span style={{ color: '#7aa0aa', fontWeight: 800 }}>
+          {clickText}
+        </span>
+      )}
+    </a>
+  );
+}
+
+function buildMapHref(item: FeaturedArticle | PortalRankingItem, source: 'featured' | 'ranking') {
+  const query = [item.storeName, item.address].filter(Boolean).join(' ');
+  const mapUrl = item.mapUrl ?? (query ? buildGoogleMapsSearchUrl(query) : undefined);
+
+  if (!mapUrl) return null;
+
+  return buildTrackedMapUrl({
+    mapUrl,
+    trackingId: item.trackingId,
+    source,
+    placement: 'portal-home',
+    storeName: item.storeName,
+    address: item.address,
+    articleId: 'id' in item ? item.id : item.rank,
+    campaign: item.title,
+  });
+}
+
+function MapPinIcon({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
   );
 }
 
