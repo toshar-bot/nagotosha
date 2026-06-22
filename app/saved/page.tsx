@@ -11,6 +11,12 @@ const TYPE_LABELS: Record<SavedItem['type'], string> = {
   area: 'エリア',
 };
 
+const POPULAR_SAVED_SPOTS = [
+  { rank: 1, title: '大須スペシャルティコーヒー', area: '大須', saves: 312 },
+  { rank: 2, title: '覚王山アパートメント秋市', area: '覚王山', saves: 204 },
+  { rank: 3, title: '栄 光のインスタレーション', area: '栄', saves: 128 },
+];
+
 export default function SavedPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
 
@@ -72,6 +78,8 @@ export default function SavedPage() {
           <EmptyState />
         )}
       </section>
+
+      <PopularSavedSpots savedCount={items.length} />
     </main>
   );
 }
@@ -154,6 +162,81 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
         </div>
       )}
     </article>
+  );
+}
+
+function PopularSavedSpots({ savedCount }: { savedCount: number }) {
+  return (
+    <section className="px-4 pt-8">
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+              SAVED RANKING
+            </p>
+            <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#0a2438' }}>
+              保存されている人気スポット
+            </h2>
+          </div>
+          {savedCount > 0 && (
+            <span
+              className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black"
+              style={{ color: '#1d5b73', background: 'rgba(10,154,154,0.10)', border: '1px solid rgba(10,154,154,0.18)' }}
+            >
+              あなたの保存 {savedCount}件
+            </span>
+          )}
+        </div>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#416b7d' }}>
+          みんながあとで見返したいお店やイベントを、今後ここに集計していきます。
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {POPULAR_SAVED_SPOTS.map(item => (
+          <article
+            key={item.rank}
+            className="rounded-2xl bg-white p-4"
+            style={{
+              border: item.rank === 1 ? '1.5px solid rgba(10,154,154,0.28)' : '1px solid rgba(29,91,115,0.10)',
+              boxShadow: item.rank === 1 ? '0 8px 24px rgba(10,154,154,0.12)' : '0 4px 16px rgba(10,36,56,0.06)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-black"
+                style={{
+                  color: item.rank === 1 ? '#ffffff' : '#1d5b73',
+                  background: item.rank === 1 ? 'linear-gradient(135deg, #1d5b73, #0a9a9a)' : 'rgba(29,91,115,0.08)',
+                }}
+              >
+                {item.rank}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-[15px] font-black" style={{ color: '#0a2438' }}>
+                  {item.title}
+                </h3>
+                <p className="mt-1 text-[11px] font-bold" style={{ color: '#5f8392' }}>
+                  {item.area}
+                </p>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="text-[18px] font-black leading-none" style={{ color: '#1d5b73' }}>
+                  {item.saves.toLocaleString()}
+                </p>
+                <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#8aa5b0' }}>
+                  保存
+                </p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#6f8d9a' }}>
+        現在はサンプル表示です。今後、実際の保存数や地図クリック数をもとにランキング化していきます。
+      </p>
+    </section>
   );
 }
 
