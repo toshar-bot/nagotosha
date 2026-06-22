@@ -326,6 +326,17 @@ export default function PartnerPage() {
           <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#6f8d9a' }}>
             内容を確認後、掲載可否・プラン・進行方法についてご連絡します。広告・PR掲載の場合は、読者に分かる形で明確に表記します。
           </p>
+          <Link
+            href="/partner/report-sample"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-[12px] font-black active:scale-[0.98] transition-transform"
+            style={{
+              color: '#1d5b73',
+              background: '#f6fbff',
+              border: '1px solid rgba(29,91,115,0.12)',
+            }}
+          >
+            レポートサンプルを見る
+          </Link>
         </div>
       </section>
     </main>
