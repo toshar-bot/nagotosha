@@ -1,4 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+const description = '名古屋のお店向けに、記事掲載、Googleマップ送客、来店促進プランの相談を受け付けています。';
+
+export const metadata: Metadata = {
+  title: '店舗掲載・集客相談｜なごとしゃ',
+  description,
+  openGraph: {
+    title: '店舗掲載・集客相談｜なごとしゃ',
+    description,
+    type: 'website',
+  },
+};
 
 const SUPPORT_ITEMS = [
   {

@@ -1,6 +1,19 @@
+import type { Metadata } from 'next';
 import { FEATURED_ARTICLES } from '@/data/portal';
 import { getPortalArticlesWithFallback } from '@/lib/wordpress-fetch';
 import type { FeaturedArticle } from '@/types/portal';
+
+const description = '名古屋の新着グルメ、イベント、おでかけ情報をまとめてチェックできます。';
+
+export const metadata: Metadata = {
+  title: '新着記事｜なごとしゃ',
+  description,
+  openGraph: {
+    title: '新着記事｜なごとしゃ',
+    description,
+    type: 'website',
+  },
+};
 
 const FILTER_TABS = [
   { label: 'すべて',   active: true  },

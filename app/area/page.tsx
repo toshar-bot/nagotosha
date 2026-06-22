@@ -1,3 +1,17 @@
+import type { Metadata } from 'next';
+
+const description = '名駅、栄、大須、藤が丘など、名古屋のエリア別にグルメやおでかけ情報を探せます。';
+
+export const metadata: Metadata = {
+  title: 'エリアから探す｜なごとしゃ',
+  description,
+  openGraph: {
+    title: 'エリアから探す｜なごとしゃ',
+    description,
+    type: 'website',
+  },
+};
+
 const AREA_FILTERS = [
   {
     label: '今日近くで探す',

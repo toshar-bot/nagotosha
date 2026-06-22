@@ -1,3 +1,17 @@
+import type { Metadata } from 'next';
+
+const description = '今日行けるイベントや週末のおでかけ情報など、名古屋の注目イベントを探せます。';
+
+export const metadata: Metadata = {
+  title: '名古屋のイベント｜なごとしゃ',
+  description,
+  openGraph: {
+    title: '名古屋のイベント｜なごとしゃ',
+    description,
+    type: 'website',
+  },
+};
+
 const EVENT_FILTERS = [
   {
     label: '今日行ける',
