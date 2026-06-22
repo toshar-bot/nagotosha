@@ -335,7 +335,18 @@ export default function PartnerPage() {
               border: '1px solid rgba(29,91,115,0.12)',
             }}
           >
-            レポートサンプルを見る
+            掲載レポートサンプルを見る
+          </Link>
+          <Link
+            href="/partner/ad-policy"
+            className="mt-2 inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-[12px] font-black active:scale-[0.98] transition-transform"
+            style={{
+              color: '#1d5b73',
+              background: '#f6fbff',
+              border: '1px solid rgba(29,91,115,0.12)',
+            }}
+          >
+            PR表記・広告掲載について
           </Link>
         </div>
       </section>
