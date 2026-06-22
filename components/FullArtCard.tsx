@@ -460,22 +460,34 @@ function OriginPill({ w, h }: { w: number; h: number }) {
 ══════════════════════════════════════════════════════════════ */
 function SubjectLayer({ subjectImageUrl, w, h }: { subjectImageUrl?: string; w: number; h: number }) {
   if (!subjectImageUrl) return null;
+
+  // 情報ゾーンの直上、カード下部 32% あたりにフロート
+  const bottom = Math.round(h * 0.30);
+  // 水平方向はカード幅の 92%、少し右に重心を寄せて料理感を強調
+  const imgW   = Math.round(w * 0.92);
+
   return (
     <img
-      src={subjectImageUrl} alt="" aria-hidden
+      src={subjectImageUrl}
+      alt=""
+      aria-hidden
       style={{
         position: 'absolute',
-        bottom: Math.round(h * 0.28),
+        bottom,
         left: '50%',
-        transform: 'translateX(-50%) translateZ(0)',
-        width: '88%',
-        maxHeight: '52%',
+        transform: 'translateX(-50%)',   // 水平センタリング
+        width: imgW,
+        maxHeight: Math.round(h * 0.54), // カード高さの 54% まで
         objectFit: 'contain',
         objectPosition: 'bottom center',
-        zIndex: 9,
+        zIndex: 8,                        // 写真 > subject > 文字下 の順
         pointerEvents: 'none',
-        filter: `drop-shadow(0 ${Math.round(w*0.022)}px ${Math.round(w*0.060)}px rgba(0,0,0,0.88))
-                 drop-shadow(0 ${Math.round(w*0.006)}px ${Math.round(w*0.018)}px rgba(0,0,0,0.72))`,
+        // 立体感: 下方向に濃いシャドウ、全体に薄いアンビエント
+        filter: [
+          `drop-shadow(0 ${Math.round(w*0.025)}px ${Math.round(w*0.055)}px rgba(0,0,0,0.82))`,
+          `drop-shadow(0 ${Math.round(w*0.006)}px ${Math.round(w*0.014)}px rgba(0,0,0,0.60))`,
+          `drop-shadow(0 0            ${Math.round(w*0.030)}px rgba(120,80,10,0.18))`,  // 温かい光の反射
+        ].join(' '),
       }}
     />
   );

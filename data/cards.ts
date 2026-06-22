@@ -137,7 +137,7 @@ export const CARDS: Card[] = [
     rarity: 'UR',
     emoji: 'hitsumabushi',
     imageUrl: commons('Hitsumabushi1.jpg'),
-    subjectImageUrl: undefined,
+    subjectImageUrl: '/subjects/hitsumabushi.png',
     shopName: 'あつた蓬莱軒',
     area: '熱田',
     districtJa: '熱田',
