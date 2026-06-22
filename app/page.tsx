@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -7,160 +7,9 @@ import Link from 'next/link';
    静的データ
 ───────────────────────────────────────── */
 
-const HERO_SLIDES = [
-  {
-    id: 1,
-    badge: '今日の注目',
-    title: '覚王山アパートメント\n秋の手仕事市',
-    sub: '10/19(土)・20(日)  10:00〜17:00',
-    area: '覚王山',
-    /* 晴れた青空 + 白雲 + 地平の暖かさ */
-    bg: `
-      radial-gradient(ellipse 55% 38% at 22% 18%, rgba(255,255,255,0.88) 0%, transparent 55%),
-      radial-gradient(ellipse 40% 28% at 72% 12%, rgba(255,255,255,0.72) 0%, transparent 52%),
-      radial-gradient(ellipse 90% 45% at 50% 0%,  rgba(255,255,255,0.58) 0%, transparent 48%),
-      linear-gradient(175deg, #c8e8ff 0%, #90c8f0 28%, #5aa8e0 52%, #e8d8b0 78%, #f0e0c0 100%)
-    `,
-    accentColor: '#0f4a7a',
-    badgeBg: 'linear-gradient(135deg, #0f4a7a, #1d6aa8)',
-    textShadow: '0 1px 3px rgba(255,255,255,0.6)',
-  },
-  {
-    id: 2,
-    badge: 'NEW OPEN',
-    title: 'スペシャルティ\nコーヒー専門店',
-    sub: '大須に新たな一杯が誕生',
-    area: '大須',
-    /* 朝の光・コーヒーの温かさ */
-    bg: `
-      radial-gradient(ellipse 60% 50% at 80% 10%, rgba(255,255,240,0.80) 0%, transparent 58%),
-      radial-gradient(ellipse 45% 35% at 15% 22%, rgba(255,245,220,0.65) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 40% at 50% 0%, rgba(255,240,200,0.50) 0%, transparent 42%),
-      linear-gradient(168deg, #fff3d4 0%, #f5d880 22%, #e8a830 48%, #c07a18 72%, #7a4a10 100%)
-    `,
-    accentColor: '#5a3008',
-    badgeBg: 'linear-gradient(135deg, #c9412d, #e05828)',
-    textShadow: '0 1px 3px rgba(255,230,180,0.7)',
-  },
-  {
-    id: 3,
-    badge: '週末イベント',
-    title: '名古屋港水族館\nシャチ公演が再開',
-    sub: '週末は早めの来館がおすすめ',
-    area: '名古屋港',
-    /* 海の青・深さ・光の差し込み */
-    bg: `
-      radial-gradient(ellipse 65% 42% at 30% 15%, rgba(220,248,255,0.82) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 38% at 78% 8%,  rgba(200,240,255,0.60) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 35% at 50% 0%,  rgba(180,230,255,0.55) 0%, transparent 44%),
-      linear-gradient(172deg, #d0f0ff 0%, #78ccf0 25%, #2090d8 52%, #0060a8 75%, #003878 100%)
-    `,
-    accentColor: '#00264e',
-    badgeBg: 'linear-gradient(135deg, #007ac0, #0090e0)',
-    textShadow: '0 1px 3px rgba(180,230,255,0.7)',
-  },
-];
+import { CATEGORY_TABS, FEATURED_ARTICLES, HERO_SLIDES, MOOD_ITEMS, RANKING } from '@/data/portal';
+import type { CategoryTab, FeaturedArticle, HeroSlide, RankingItem as PortalRankingItem } from '@/types/portal';
 
-const MOOD_ITEMS = [
-  { label: '今日',   key: 'today' },
-  { label: '今週末', key: 'weekend' },
-  { label: '雨の日', key: 'rainy' },
-  { label: 'ひとりで', key: 'solo' },
-  { label: 'デート', key: 'date' },
-  { label: '手土産', key: 'gift' },
-];
-
-const FEATURED_ARTICLES = [
-  {
-    id: 'f1',
-    isNew: false,
-    tag: 'グルメ',
-    title: '矢場とんの新メニュー、みそかつバーガーが話題に',
-    area: '矢場町',
-    saves: 312,
-    views: 4820,
-    bg: 'linear-gradient(145deg, #fde8e0 0%, #f8c0a0 55%, #e89070 100%)',
-    accentColor: '#9a2810',
-  },
-  {
-    id: 'f2',
-    isNew: true,
-    tag: '新店',
-    title: '錦3丁目に自家製パスタの小さな名店がオープン',
-    area: '錦',
-    saves: 128,
-    views: 2430,
-    bg: 'linear-gradient(145deg, #e8edf8 0%, #b8c8f0 55%, #8098d8 100%)',
-    accentColor: '#1a2f70',
-  },
-  {
-    id: 'f3',
-    isNew: false,
-    tag: 'イベント',
-    title: '栄・久屋大通で光のインスタレーション開催中',
-    area: '栄',
-    saves: 87,
-    views: 1960,
-    bg: 'linear-gradient(145deg, #f8f0e0 0%, #e8cc70 55%, #c89830 100%)',
-    accentColor: '#5a3a08',
-  },
-  {
-    id: 'f4',
-    isNew: true,
-    tag: 'カフェ',
-    title: '覚王山に映える「白いクリームソーダ」のカフェ',
-    area: '覚王山',
-    saves: 204,
-    views: 3310,
-    bg: 'linear-gradient(145deg, #e8f8f0 0%, #a8e0c8 55%, #58b890 100%)',
-    accentColor: '#0f4a30',
-  },
-];
-
-const RANKING = [
-  {
-    rank: 1,
-    title: '平日でも行列！大須の台湾まぜそば新店が衝撃の旨さ',
-    summary: '開店2週間で行列必至の注目店',
-    area: '大須',
-    date: '10/15',
-    views: 6240,
-    bg: 'linear-gradient(128deg, #fff0e8 0%, #ffd0a8 60%, #f0a870 100%)',
-    rankColor: '#c9412d',
-  },
-  {
-    rank: 2,
-    title: '名古屋城二の丸東庭園、紅葉の見頃は今週末',
-    summary: '入場無料・アクセスも抜群',
-    area: '名古屋城',
-    date: '10/14',
-    views: 3980,
-    bg: 'linear-gradient(128deg, #fdf8e8 0%, #f0e090 60%, #d8c050 100%)',
-    rankColor: '#1d5b73',
-  },
-  {
-    rank: 3,
-    title: '覚王山アパートメント秋市、出店者リスト公開',
-    summary: '今年は60組以上が出店予定',
-    area: '覚王山',
-    date: '10/13',
-    views: 2850,
-    bg: 'linear-gradient(128deg, #edf2fd 0%, #b8c8f0 60%, #88a0d8 100%)',
-    rankColor: '#4a3010',
-  },
-  {
-    rank: 4,
-    title: '栄・コメダ珈琲創業地の限定メニューが復活',
-    summary: '懐かしの味が週末限定で登場',
-    area: '栄',
-    date: '10/12',
-    views: 1920,
-    bg: 'linear-gradient(128deg, #edf8f2 0%, #a8e0c0 60%, #70c090 100%)',
-    rankColor: '#4a6a8a',
-  },
-];
-
-const CATEGORY_TABS = ['今日', 'イベント', '新店', '週末', 'エリア'];
 
 /* ─────────────────────────────────────────
    メインページ
@@ -272,7 +121,7 @@ export default function PortalPage() {
 function HeroCarousel({
   slides, index, onDotClick,
 }: {
-  slides: typeof HERO_SLIDES;
+  slides: HeroSlide[];
   index: number;
   onDotClick: (i: number) => void;
 }) {
@@ -524,7 +373,7 @@ function Header() {
 ───────────────────────────────────────── */
 
 function CategoryTabs({ tabs, active, onChange }: {
-  tabs: string[];
+  tabs: CategoryTab[];
   active: number;
   onChange: (i: number) => void;
 }) {
@@ -539,7 +388,7 @@ function CategoryTabs({ tabs, active, onChange }: {
     >
       {tabs.map((tab, i) => (
         <button
-          key={tab}
+          key={tab.key}
           onClick={() => onChange(i)}
           className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-bold tracking-wide transition-all active:scale-95"
           style={i === active ? {
@@ -552,8 +401,7 @@ function CategoryTabs({ tabs, active, onChange }: {
             border: '1.5px solid rgba(29,91,115,0.15)',
           }}
         >
-          {tab}
-        </button>
+          {tab.label}`r`n        </button>
       ))}
     </div>
   );
@@ -599,7 +447,7 @@ function MoodButton({ label }: { label: string }) {
    注目記事カード
 ───────────────────────────────────────── */
 
-function FeaturedCard({ article }: { article: typeof FEATURED_ARTICLES[number] }) {
+function FeaturedCard({ article }: { article: FeaturedArticle }) {
   return (
     <div
       className="flex-shrink-0 rounded-2xl overflow-hidden"
@@ -670,14 +518,14 @@ function FeaturedCard({ article }: { article: typeof FEATURED_ARTICLES[number] }
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
-            {article.saves.toLocaleString()}
+            {(article.saves ?? 0).toLocaleString()}
           </span>
           <span className="flex items-center gap-1 text-[9px] font-bold" style={{ color: '#8aabb0' }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            {article.views.toLocaleString()}
+            {(article.views ?? 0).toLocaleString()}
           </span>
         </div>
       </div>
@@ -689,7 +537,7 @@ function FeaturedCard({ article }: { article: typeof FEATURED_ARTICLES[number] }
    ランキングアイテム
 ───────────────────────────────────────── */
 
-function RankingItem({ item }: { item: typeof RANKING[number] }) {
+function RankingItem({ item }: { item: PortalRankingItem }) {
   const isTop = item.rank === 1;
 
   return (
@@ -753,7 +601,7 @@ function RankingItem({ item }: { item: typeof RANKING[number] }) {
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
             </svg>
-            {item.views.toLocaleString()}
+            {(item.views ?? 0).toLocaleString()}
           </span>
         </div>
       </div>
