@@ -1,4 +1,5 @@
 import { FEATURED_ARTICLES } from '@/data/portal';
+import { getPortalArticlesWithFallback } from '@/lib/wordpress-fetch';
 import type { FeaturedArticle } from '@/types/portal';
 
 const FILTER_TABS = [
@@ -9,7 +10,9 @@ const FILTER_TABS = [
   { label: 'カフェ',   active: false },
 ];
 
-export default function NewPage() {
+export default async function NewPage() {
+  const articles = await getPortalArticlesWithFallback(FEATURED_ARTICLES);
+
   return (
     <main
       className="min-h-dvh pb-28"
@@ -66,14 +69,14 @@ export default function NewPage() {
       {/* ── 件数 ── */}
       <div className="px-5 pb-3">
         <p className="text-[11px] font-bold" style={{ color: '#8aa5b0' }}>
-          {FEATURED_ARTICLES.length}件の記事
+          {articles.length}件の記事
         </p>
       </div>
 
       {/* ── 記事一覧 ── */}
       <section className="px-4">
         <div className="flex flex-col gap-4">
-          {FEATURED_ARTICLES.map(article => (
+          {articles.map(article => (
             <NewArticleCard key={article.id} article={article} />
           ))}
         </div>
@@ -89,7 +92,7 @@ export default function NewPage() {
           }}
         >
           <p className="text-[11px] font-medium leading-6" style={{ color: '#8aa5b0' }}>
-            今後、WordPressの記事データと連携して新着情報を自動更新していきます。
+            WordPressの記事データと連携し、取得できない場合は編集部のおすすめ記事を表示します。
           </p>
         </div>
       </section>
