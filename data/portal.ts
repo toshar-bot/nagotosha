@@ -176,9 +176,9 @@ export const RANKING: RankingItem[] = [
 ];
 
 export const CATEGORY_TABS: CategoryTab[] = [
-  { key: 'today', label: '今日' },
-  { key: 'event', label: 'イベント' },
-  { key: 'new', label: '新店' },
-  { key: 'weekend', label: '週末' },
-  { key: 'area', label: 'エリア' },
+  { key: 'today', label: '今日', href: '/event' },
+  { key: 'event', label: 'イベント', href: '/event' },
+  { key: 'new', label: '新店', href: '/new' },
+  { key: 'weekend', label: '週末', href: '/event' },
+  { key: 'area', label: 'エリア', href: '/area' },
 ];

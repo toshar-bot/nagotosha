@@ -62,8 +62,9 @@ export default function PortalPage() {
 
         {/* ── みんなの注目記事 ── */}
         <section className="pt-6 pb-1">
-          <div className="px-4">
+          <div className="px-4 flex items-center justify-between gap-3">
             <SectionTitle>みんなの注目記事</SectionTitle>
+            <MoreLink href="/new">もっと見る</MoreLink>
           </div>
           <div
             className="flex gap-3 mt-3 px-4 overflow-x-auto"
@@ -79,7 +80,10 @@ export default function PortalPage() {
 
         {/* ── 人気ランキング ── */}
         <section className="px-4 pt-6 pb-2">
-          <SectionTitle>人気ランキング</SectionTitle>
+          <div className="flex items-center justify-between gap-3">
+            <SectionTitle>人気ランキング</SectionTitle>
+            <MoreLink href="/area">エリアから探す</MoreLink>
+          </div>
           <div className="flex flex-col gap-2.5 mt-3">
             {RANKING.map(item => (
               <RankingItem key={item.rank} item={item} />
@@ -389,8 +393,9 @@ function CategoryTabs({ tabs, active, onChange }: {
       }}
     >
       {tabs.map((tab, i) => (
-        <button
+        <Link
           key={tab.key}
+          href={tab.href}
           onClick={() => onChange(i)}
           className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-bold tracking-wide transition-all active:scale-95"
           style={i === active ? {
@@ -403,7 +408,8 @@ function CategoryTabs({ tabs, active, onChange }: {
             border: '1.5px solid rgba(29,91,115,0.15)',
           }}
         >
-          {tab.label}`r`n        </button>
+          {tab.label}
+        </Link>
       ))}
     </div>
   );
@@ -422,6 +428,22 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       />
       <h2 className="text-[15px] font-black text-[#0a2438] tracking-tight">{children}</h2>
     </div>
+  );
+}
+
+function MoreLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-black active:scale-95 transition-transform"
+      style={{
+        color: '#1d5b73',
+        background: 'rgba(10,154,154,0.10)',
+        border: '1px solid rgba(10,154,154,0.20)',
+      }}
+    >
+      {children}
+    </Link>
   );
 }
 

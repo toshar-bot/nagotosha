@@ -64,6 +64,7 @@ export interface MoodItem extends PortalCommercialFields {
 export interface CategoryTab extends PortalCommercialFields {
   key: string;
   label: string;
+  href: string;
 }
 
 export type SavedItemType = 'article' | 'store' | 'event' | 'area';
