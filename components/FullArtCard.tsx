@@ -43,14 +43,17 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
   const h  = Math.round(w * 1.42);
   const r  = Math.round(w * 0.052);
   const px = Math.round(w * 0.055);
+  // 幅400px未満をモバイル扱い: 光沢系をおとなしくする
+  const isMobile = w < 400;
 
   const distJa = card.districtJa ?? card.area;
   const distEn = card.districtEn ?? card.area.toUpperCase();
 
-  /* ヘッダー内のセンターカラム幅を計算 */
-  const urBadgeW   = Math.round(w * 0.215);
-  const distBadgeW = Math.round(w * 0.150);
-  const gap        = Math.round(w * 0.018);
+  /* ヘッダー内のセンターカラム幅を計算
+     モバイルでは UR / 地区バッジを縮小してタイトルに幅を渡す */
+  const urBadgeW   = Math.round(w * (isMobile ? 0.185 : 0.215));
+  const distBadgeW = Math.round(w * (isMobile ? 0.120 : 0.150));
+  const gap        = Math.round(w * 0.016);
   const innerW     = w - px * 2;
   const centerW    = innerW - urBadgeW - distBadgeW - gap * 2;
 
@@ -109,39 +112,55 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
       <SeigahaBg w={w} h={h} />
 
       {/* ━━━━━━━━━━━━━━ L5: 虹ホロフィルム（枠・端のみ、中央の料理はクリア） ━━━━━━━━━━━━━━ */}
+      {/* モバイルでは opacity を下げて文字・料理の可読性優先 */}
       <div className="card-ur-animate" style={{
         position: 'absolute', inset: 0, zIndex: 4,
-        mixBlendMode: 'color-dodge', opacity: 0.09,
+        mixBlendMode: 'color-dodge', opacity: isMobile ? 0.045 : 0.09,
         background: RAINBOW_CSS, pointerEvents: 'none',
         // 中央（料理エリア）はほぼ透明、枠・端に集中させる
-        WebkitMaskImage: 'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 35%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.90) 100%)',
-        maskImage:       'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 35%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.90) 100%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 38%, rgba(0,0,0,0.40) 65%, rgba(0,0,0,0.85) 100%)',
+        maskImage:       'radial-gradient(ellipse 64% 56% at 50% 50%, transparent 38%, rgba(0,0,0,0.40) 65%, rgba(0,0,0,0.85) 100%)',
       }} />
 
-      {/* ━━━━━━━━━━━━━━ L6: ヘッダー（UR | タイトル | 地区バッジ） ━━━━━━━━━━━━━━ */}
+      {/* ━━━━━━━━━━━━━━ L6: ヘッダー ━━━━━━━━━━━━━━ */}
+      {/* モバイル(w<400): 2段レイアウト
+          - 行1: UR(左) + 熱田バッジ(右) を小さく横並び
+          - 行2: タイトルが full-width を使えるので絶対に切れない
+
+          PC(w≥400): 3列レイアウト（従来）
+      */}
       <div style={{
         position: 'absolute',
         top: Math.round(h * 0.022), left: px, right: px,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-        gap,
         zIndex: 14,
       }}>
-        {/* 左: UR バッジ */}
-        <UrBadge w={w} h={h} />
-
-        {/* 中央: タイトル + EN サブタイトル */}
-        <div style={{
-          flex: 1, minWidth: 0,
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          paddingTop: Math.round(h * 0.004),
-        }}>
-          <SvgGoldTitle name={card.name} totalW={centerW} h={Math.round(w * 0.115)} />
-          <EnSubtitle name={card.name} w={centerW} h={Math.round(w * 0.038)} />
-          <OriginPill w={w} h={h} />
-        </div>
-
-        {/* 右: 地区バッジ */}
-        <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
+        {isMobile ? (
+          /* ── モバイル: 2段 ── */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * 0.006) }}>
+            {/* 行1: UR + 熱田 */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <UrBadge w={w} h={h} />
+              <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
+            </div>
+            {/* 行2: タイトル (full width) */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <GoldTitleHtml name={card.name} w={innerW} />
+              <EnSubtitle name={card.name} w={innerW} h={Math.round(w * 0.030)} />
+              <OriginPill w={w} h={h} />
+            </div>
+          </div>
+        ) : (
+          /* ── PC: 3列 ── */
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap }}>
+            <UrBadge w={w} h={h} />
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: Math.round(h * 0.004) }}>
+              <SvgGoldTitle name={card.name} totalW={centerW} h={Math.round(w * 0.115)} />
+              <EnSubtitle name={card.name} w={centerW} h={Math.round(w * 0.038)} />
+              <OriginPill w={w} h={h} />
+            </div>
+            <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
+          </div>
+        )}
       </div>
 
       {/* ━━━━━━━━━━━━━━ L7: ヘッダー下 ゴールドライン ━━━━━━━━━━━━━━ */}
@@ -152,6 +171,29 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
       }}>
         <GoldRule w={w} />
       </div>
+
+      {/* ━━━━━━━━━━━━━━ L7.5: 料理がカード面に落とすキャスト影 ━━━━━━━━━━━━━━ */}
+      {/* hideSubject=true = subject が z=105px に浮かんでいる状態。
+          CSS変数 --tilt-rx / --tilt-ry は CardViewer3D の RAF が毎フレーム更新。
+          影の位置がtiltに追従することで「物体が浮いている」感が強まる。 */}
+      {hideSubject && (
+        <div style={{
+          position: 'absolute',
+          top: '30%', left: '4%',
+          width: '92%', height: '48%',
+          zIndex: 6,
+          pointerEvents: 'none',
+          background: 'radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.25) 38%, transparent 68%)',
+          filter: 'blur(14px)',
+          transform: [
+            'translate(',
+            'calc(var(--tilt-ry, 0) * -0.38px),',
+            'calc(var(--tilt-rx, 0) * 0.30px)',
+            ')',
+          ].join(''),
+          mixBlendMode: 'multiply',
+        }} />
+      )}
 
       {/* ━━━━━━━━━━━━━━ L8: 料理 subject レイヤー（切り抜きPNG） ━━━━━━━━━━━━━━ */}
       {/* hideSubject=true のとき CardViewer3D が translateZ レイヤーで代替描画 */}
@@ -184,11 +226,12 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
       }} />
 
       {/* ━━━━━━━━━━━━━━ L62: グロスバーニッシュ ━━━━━━━━━━━━━━ */}
+      {/* モバイルでは白反射を弱めて白飛び防止 */}
       <div style={{
         position: 'absolute', inset: 0, borderRadius: r,
         background: `linear-gradient(138deg,
-          rgba(255,255,255,0.09) 0%,
-          rgba(255,255,255,0.03) 22%,
+          rgba(255,255,255,${isMobile ? 0.04 : 0.09}) 0%,
+          rgba(255,255,255,0.02) 22%,
           transparent 50%)`,
         zIndex: 62, pointerEvents: 'none',
       }} />
@@ -224,8 +267,8 @@ function SeigahaBg({ w, h }: { w: number; h: number }) {
                 key={`${row}-${col}`}
                 d={`M ${cx} ${cy + unit * 0.5} A ${unit * 0.5} ${unit * 0.5} 0 0 1 ${cx + unit} ${cy + unit * 0.5}`}
                 fill="none"
-                stroke="rgba(180,140,30,0.09)"
-                strokeWidth="0.8"
+                stroke="rgba(195,155,32,0.20)"
+                strokeWidth="1.2"
               />
             );
           })
@@ -241,36 +284,44 @@ function SeigahaBg({ w, h }: { w: number; h: number }) {
 
 /* ══════════════════════════════════════════════════════════════
    SVG 金箔タイトル文字
-   ・textLength で必ずコンテナ幅いっぱいに引き伸ばす
-   ・3レイヤー: 黒太影 → 金箔fill+glow → 内側暖色光
+
+   旧実装の問題:
+   - viewBox="0 0 300 120" + textLength=294 + spacingAndGlyphs
+   - スマホブラウザで日本語文字への textLength 強制が不安定
+   - height 制約で scale が下がり text が SVG 内に収まらずクリップされる場合あり
+
+   新実装:
+   - viewBox を SVG 要素の実ピクセルサイズに合わせる（座標=ピクセル）
+   - textAnchor="middle" + x="50%" で中央揃え
+   - textLength は使わず自然フォントサイズで収める
+   - 文字数に応じて font-size を調整（5文字以上は少し縮小）
 ══════════════════════════════════════════════════════════════ */
 function SvgGoldTitle({ name, totalW, h }: { name: string; totalW: number; h: number }) {
-  const VW = 300;
-  const VH = 120;
-  const FS = 95;
-  const BL = 90;
-  const SP = 6;
+  const len  = name.length;
+  // 文字数が多いほど font-size を下げて必ず収める
+  const FS   = Math.round(h * (len <= 5 ? 0.80 : len <= 7 ? 0.68 : 0.58));
+  const BY   = Math.round(h * 0.84);
+  const SW   = Math.max(5, Math.round(FS * 0.12));  // shadow strokeWidth
 
   return (
     <svg
       width={totalW} height={h}
-      viewBox={`0 0 ${VW} ${VH}`}
-      preserveAspectRatio="xMidYMid meet"
+      viewBox={`0 0 ${totalW} ${h}`}
       style={{ display: 'block', overflow: 'visible' }}
     >
       <defs>
         <linearGradient id="tGold" x1="0" y1="0" x2="0" y2="1">
           {GOLD_S.map(s => <stop key={s.o} offset={s.o} stopColor={s.c} />)}
         </linearGradient>
-        <filter id="tFx" x="-18%" y="-22%" width="136%" height="144%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="g1"/>
+        <filter id="tFx" x="-8%" y="-24%" width="116%" height="148%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="g1"/>
           <feFlood floodColor="#cc6800" floodOpacity="0.65" result="c1"/>
           <feComposite in="c1" in2="g1" operator="in" result="glow"/>
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.4" result="g2"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.0" result="g2"/>
           <feFlood floodColor="#e8b820" floodOpacity="0.50" result="c2"/>
           <feComposite in="c2" in2="g2" operator="in" result="core"/>
-          <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="g3"/>
-          <feOffset dx="0" dy="5" in="g3" result="sOff"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="g3"/>
+          <feOffset dx="0" dy="3" in="g3" result="sOff"/>
           <feFlood floodColor="#000000" floodOpacity="0.97" result="c3"/>
           <feComposite in="c3" in2="sOff" operator="in" result="shadow"/>
           <feMerge>
@@ -283,35 +334,61 @@ function SvgGoldTitle({ name, totalW, h }: { name: string; totalW: number; h: nu
       </defs>
 
       {/* Layer A: 黒太ストローク（輪郭・影） */}
-      <text x="0" y={BL}
+      <text x="50%" y={BY}
+        textAnchor="middle"
         fontSize={FS} fontWeight="800" fontFamily={FONT_JA}
-        letterSpacing={SP}
-        textLength={VW - SP} lengthAdjust="spacingAndGlyphs"
         fill="none"
-        stroke="rgba(0,0,0,0.97)" strokeWidth="10"
+        stroke="rgba(0,0,0,0.97)" strokeWidth={SW}
         strokeLinejoin="round" strokeLinecap="round"
       >{name}</text>
 
       {/* Layer B: 金箔 fill + フィルタ */}
-      <text x="0" y={BL}
+      <text x="50%" y={BY}
+        textAnchor="middle"
         fontSize={FS} fontWeight="800" fontFamily={FONT_JA}
-        letterSpacing={SP}
-        textLength={VW - SP} lengthAdjust="spacingAndGlyphs"
         fill="url(#tGold)"
-        stroke="rgba(255,220,140,0.30)" strokeWidth="0.6"
+        stroke="rgba(255,220,140,0.22)" strokeWidth="0.5"
         strokeLinejoin="round"
         filter="url(#tFx)"
       >{name}</text>
-
-      {/* Layer C: 内側暖色ハイライト（白みを最小化） */}
-      <text x="0" y={BL}
-        fontSize={FS} fontWeight="800" fontFamily={FONT_JA}
-        letterSpacing={SP}
-        textLength={VW - SP} lengthAdjust="spacingAndGlyphs"
-        fill="none"
-        stroke="rgba(255,220,140,0.07)" strokeWidth="0.5"
-      >{name}</text>
     </svg>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HTML 金箔タイトル（モバイル専用）
+
+   SVGのtextLength/viewBox問題を完全に回避する。
+   background-clip: text で金箔グラデーション。
+   whiteSpace: nowrap で1行確定、全幅使用で絶対に切れない。
+══════════════════════════════════════════════════════════════ */
+function GoldTitleHtml({ name, w }: { name: string; w: number }) {
+  const len = name.length;
+  // 文字数に応じて font-size 調整（幅の何%か）
+  // 5文字: 8.8%、7文字: 7.0%、それ以上: 5.8%
+  const fsPct = len <= 5 ? 0.088 : len <= 7 ? 0.070 : 0.058;
+  const fs = Math.round(w * fsPct);
+
+  return (
+    <div style={{
+      fontSize: fs,
+      fontWeight: 800,
+      fontFamily: FONT_JA,
+      letterSpacing: '0.05em',
+      lineHeight: 1,
+      textAlign: 'center',
+      whiteSpace: 'nowrap',    // 1行固定
+      width: '100%',           // 親の full width を使う
+      // 金箔グラデーション文字
+      background: 'linear-gradient(to bottom, #ffe89a 0%, #fcd84e 12%, #e89420 42%, #c07010 68%, #f0c040 84%, #e8c870 100%)',
+      WebkitBackgroundClip: 'text',
+      backgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      // 黒影で立体感（drop-shadow は -webkit-text-fill-color と共存可）
+      filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.97)) drop-shadow(0 0 10px rgba(160,95,8,0.55))',
+    }}>
+      {name}
+    </div>
   );
 }
 
@@ -358,11 +435,12 @@ function EnSubtitle({ name, w, h }: { name: string; w: number; h: number }) {
    UR バッジ（左上・大）
 ══════════════════════════════════════════════════════════════ */
 function UrBadge({ w, h }: { w: number; h: number }) {
-  const FS = Math.round(w * 0.090);
-  const starSz = Math.round(w * 0.028);
+  const isMobile = w < 400;
+  const FS = Math.round(w * (isMobile ? 0.076 : 0.090));
+  const starSz = Math.round(w * (isMobile ? 0.022 : 0.028));
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h*0.002), flexShrink: 0 }}>
-      <svg width={Math.round(w*0.215)} height={Math.round(FS*1.08)}
+      <svg width={Math.round(w*(isMobile?0.185:0.215))} height={Math.round(FS*1.08)}
         style={{ display: 'block', overflow: 'visible' }}>
         <defs>
           <linearGradient id="urG" x1="0" y1="0" x2="1" y2="1">
@@ -391,17 +469,20 @@ function UrBadge({ w, h }: { w: number; h: number }) {
         >UR</text>
       </svg>
 
-      <div style={{
-        fontSize: Math.round(w*0.024), fontWeight: 800,
-        letterSpacing: '0.18em',
-        color: 'rgba(255,215,108,0.92)',
-        fontFamily: FONT_EN,
-        textShadow: `0 0 ${Math.round(w*0.018)}px rgba(255,175,28,0.55), 0 1px 4px rgba(0,0,0,0.97)`,
-        lineHeight: 1,
-      }}>ULTRA RARE</div>
+      {/* モバイルでは "ULTRA RARE" テキストを省略して横幅を節約 */}
+      {!isMobile && (
+        <div style={{
+          fontSize: Math.round(w*0.024), fontWeight: 800,
+          letterSpacing: '0.18em',
+          color: 'rgba(255,215,108,0.92)',
+          fontFamily: FONT_EN,
+          textShadow: `0 0 ${Math.round(w*0.018)}px rgba(255,175,28,0.55), 0 1px 4px rgba(0,0,0,0.97)`,
+          lineHeight: 1,
+        }}>ULTRA RARE</div>
+      )}
 
-      <div style={{ display: 'flex', gap: Math.round(w*0.010), marginTop: Math.round(h*0.003) }}>
-        {Array.from({length:5}).map((_,i) => (
+      <div style={{ display: 'flex', gap: Math.round(w*0.008), marginTop: Math.round(h*0.003) }}>
+        {Array.from({length: isMobile ? 3 : 5}).map((_,i) => (
           <svg key={i} width={starSz} height={starSz} viewBox="0 0 20 20" className="card-rainbow-animate">
             <polygon
               points="10,0 12.2,7 20,7 13.8,11.3 16,18 10,14 4,18 6.2,11.3 0,7 7.8,7"
@@ -418,7 +499,8 @@ function UrBadge({ w, h }: { w: number; h: number }) {
    地区バッジ（右上・六角形ダイヤ）
 ══════════════════════════════════════════════════════════════ */
 function DistrictBadge({ distJa, distEn, w }: { distJa: string; distEn: string; w: number }) {
-  const sz = Math.round(w * 0.150);
+  const isMobile = w < 400;
+  const sz = Math.round(w * (isMobile ? 0.120 : 0.150));
   return (
     <div style={{ position: 'relative', width: sz, height: sz, flexShrink: 0, marginTop: Math.round(w*0.006) }}>
       <div style={{
@@ -426,14 +508,13 @@ function DistrictBadge({ distJa, distEn, w }: { distJa: string; distEn: string; 
         transform: 'rotate(45deg)',
         border: '1.5px solid rgba(200,155,35,0.68)',
         background: 'rgba(2,0,8,0.82)',
-        boxShadow: [
-          `0 0 ${Math.round(w*0.032)}px rgba(200,155,35,0.30)`,
-          `inset 0 0 ${Math.round(w*0.015)}px rgba(200,155,35,0.08)`,
-        ].join(', '),
+        boxShadow: `0 0 ${Math.round(w*0.028)}px rgba(200,155,35,0.28)`,
       }} />
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: Math.round(w*0.028), color: 'rgba(255,215,108,0.97)', fontWeight: 900, lineHeight: 1, fontFamily: FONT_JA, textShadow: '0 1px 5px rgba(0,0,0,0.96)' }}>{distJa}</div>
-        <div style={{ fontSize: Math.round(w*0.018), color: 'rgba(255,200,88,0.56)', fontWeight: 700, letterSpacing: '0.04em', lineHeight: 1, marginTop: 2, fontFamily: FONT_EN }}>{distEn}</div>
+        <div style={{ fontSize: Math.round(w*(isMobile?0.022:0.028)), color: 'rgba(255,215,108,0.97)', fontWeight: 900, lineHeight: 1, fontFamily: FONT_JA, textShadow: '0 1px 5px rgba(0,0,0,0.96)' }}>{distJa}</div>
+        {!isMobile && (
+          <div style={{ fontSize: Math.round(w*0.018), color: 'rgba(255,200,88,0.56)', fontWeight: 700, letterSpacing: '0.04em', lineHeight: 1, marginTop: 2, fontFamily: FONT_EN }}>{distEn}</div>
+        )}
       </div>
     </div>
   );

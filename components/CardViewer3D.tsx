@@ -20,7 +20,6 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
   const frameShineRef = useRef<HTMLDivElement>(null);
   const holoRef       = useRef<HTMLDivElement>(null);
   const shadowRef     = useRef<HTMLDivElement>(null);
-  // subject 3D: img のみ RAF で更新 (wrapperはstyle固定)
   const subjectRef    = useRef<HTMLImageElement>(null);
 
   const rafRef  = useRef<number | null>(null);
@@ -32,10 +31,10 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
   const isMid      = card.rarity === 'SR';
 
   const w = widthPx ?? 280;
+  const isMobile   = w < 400;
   const h = Math.round(w * 1.42);
   const cardR = Math.round(w * 0.052);
 
-  // ── RAF アニメーションループ ──────────────────────────────────
   function tick() {
     const t = target.current;
     const c = current.current;
@@ -48,28 +47,28 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     // カード本体の傾き
     if (innerRef.current) {
       innerRef.current.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg)`;
+      // FullArtCard の ShadowCast が参照する CSS 変数
+      // 傾きの数値を変数として流し込み、カード面に落ちる影をtilt連動で動かす
+      innerRef.current.style.setProperty('--tilt-rx', c.rx.toFixed(2));
+      innerRef.current.style.setProperty('--tilt-ry', c.ry.toFixed(2));
     }
 
     // ── subject parallax ──
-    // wrapper が translateZ(60px) で固定前面にある。
-    // img 内で translate することで、背景と subject の視差差を作る。
-    // カードが右に傾く(ry>0)とき subject は逆方向へズレ → 前後感が生まれる
+    // カードが右(ry>0)のとき subject は左(-ry)へ → 前後感
     if (subjectRef.current) {
-      // parallax 強化: ±12px X / ±9px Y
-      // カードが右(ry>0)→ subject は左へ、上(rx>0)→ subject は下へ
-      // この「逆方向へのズレ」が前後感を生む
-      const parX = (-c.ry * 0.46).toFixed(2);   // max ±12px @ 26deg
-      const parY = ( c.rx * 0.45).toFixed(2);   // max ±9.0px @ 20deg
-      const shX  = (-c.ry * 0.75).toFixed(1);
-      const shY  = ( c.rx * 0.60 + 16).toFixed(1);
+      const parX = (-c.ry * 0.48).toFixed(2);   // max ±12.5px
+      const parY = ( c.rx * 0.45).toFixed(2);   // max ±9.0px
+      const shX  = (-c.ry * 0.78).toFixed(1);
+      const shY  = ( c.rx * 0.60 + 18).toFixed(1);
 
+      // frame break: scale(1.10) で上に 5% はみ出す
       subjectRef.current.style.transform =
-        `translate(${parX}px, ${parY}px) scale(1.058)`;
+        `translate(${parX}px, ${parY}px) scale(1.10)`;
       subjectRef.current.style.filter = [
-        'brightness(1.18) contrast(1.20) saturate(1.14)',
-        `drop-shadow(${shX}px ${shY}px 28px rgba(0,0,0,0.76))`,
-        `drop-shadow(0 5px 12px rgba(0,0,0,0.55))`,
-        `drop-shadow(0 0 22px rgba(110,65,0,0.20))`,
+        'brightness(1.20) contrast(1.22) saturate(1.15)',
+        `drop-shadow(${shX}px ${shY}px 30px rgba(0,0,0,0.80))`,
+        `drop-shadow(0 6px 14px rgba(0,0,0,0.58))`,
+        `drop-shadow(0 0 24px rgba(110,65,0,0.22))`,
       ].join(' ');
     }
 
@@ -102,7 +101,9 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     if (holoRef.current && (isHighRare || isMid)) {
       const hue   = Math.round(c.px * 280 + c.ry * 3);
       const angle = Math.round(c.px * 140 + c.py * 70 + 115);
-      const maxOp = isUR ? 0.14 : isHighRare ? 0.22 : 0.12;
+      const maxOp = isMobile
+        ? (isUR ? 0.07 : isHighRare ? 0.11 : 0.06)
+        : (isUR ? 0.13 : isHighRare ? 0.22 : 0.12);
       const op    = t.active ? maxOp : maxOp * 0.35;
 
       holoRef.current.style.backgroundImage = `linear-gradient(${angle}deg,
@@ -115,11 +116,11 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       holoRef.current.style.opacity = String(op);
     }
 
-    // 接地影: カード傾きに合わせてズレる
+    // 接地影
     if (shadowRef.current) {
-      const ox = (-c.ry / MAX_TILT_Y) * 16;
-      const oy = (c.rx  / MAX_TILT_X) * 10 + 18;
-      shadowRef.current.style.transform = `translateX(${ox}px) translateY(${oy}px) scaleX(0.82)`;
+      const ox = (-c.ry / MAX_TILT_Y) * 18;
+      const oy = (c.rx  / MAX_TILT_X) * 10 + 20;
+      shadowRef.current.style.transform = `translateX(${ox}px) translateY(${oy}px) scaleX(0.80)`;
     }
 
     const settled = !t.active && Math.abs(c.rx) < 0.04 && Math.abs(c.ry) < 0.04;
@@ -134,7 +135,6 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
   }
 
-  // ── ポインター ────────────────────────────────────────────────
   const onPointerMove = useCallback((e: PointerEvent) => {
     const rect = wrapRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -153,7 +153,6 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     startRaf();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── ジャイロ ──────────────────────────────────────────────────
   useEffect(() => {
     function onOrientation(e: DeviceOrientationEvent) {
       if (target.current.active) return;
@@ -172,7 +171,6 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
     return () => window.removeEventListener('deviceorientation', onOrientation);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── イベント登録 ──────────────────────────────────────────────
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
@@ -194,60 +192,59 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
       ref={wrapRef}
       style={{
         display: 'inline-block',
-        padding: '20px 24px 44px',
+        padding: '28px 24px 48px',
         touchAction: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
         cursor: 'grab',
       }}
     >
-      {/* perspective コンテナ */}
       <div style={{ perspective: '900px', perspectiveOrigin: '50% 45%', position: 'relative' }}>
 
-        {/* ── 接地影（楕円・傾き連動） ── */}
-        <div
-          ref={shadowRef}
-          style={{
-            position: 'absolute',
-            bottom: -20, left: '50%',
-            width: '82%', height: 36,
-            marginLeft: '-41%',
-            background: 'radial-gradient(ellipse, rgba(0,0,0,0.70) 0%, transparent 70%)',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-            willChange: 'transform',
-            filter: 'blur(8px)',
-          }}
-        />
+        {/* 接地影 */}
+        <div ref={shadowRef} style={{
+          position: 'absolute',
+          bottom: -22, left: '50%',
+          width: '84%', height: 38,
+          marginLeft: '-42%',
+          background: 'radial-gradient(ellipse, rgba(0,0,0,0.72) 0%, transparent 68%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+          willChange: 'transform',
+          filter: 'blur(9px)',
+        }} />
 
-        {/* ── 台座グロー（金色の接地光） ── */}
+        {/* 台座グロー */}
         {isUR && (
           <div style={{
             position: 'absolute',
-            bottom: -8, left: '50%',
-            width: '62%', height: 24,
-            marginLeft: '-31%',
-            background: 'radial-gradient(ellipse, rgba(200,140,30,0.28) 0%, transparent 72%)',
+            bottom: -6, left: '50%',
+            width: '65%', height: 28,
+            marginLeft: '-32.5%',
+            background: 'radial-gradient(ellipse, rgba(210,148,32,0.32) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
-            filter: 'blur(4px)',
+            filter: 'blur(5px)',
           }}/>
         )}
 
-        {/* カード本体 */}
+        {/* カード本体（preserve-3d コンテキスト） */}
         <div
           ref={innerRef}
           style={{
             position: 'relative',
             transformStyle: 'preserve-3d',
             willChange: 'transform',
+            // CSS変数の初期値（RAFで更新）
+            ['--tilt-rx' as string]: '0',
+            ['--tilt-ry' as string]: '0',
             filter: [
-              `drop-shadow(${isUR ? 4 : 2}px ${isUR ? 6 : 3}px 1px rgba(0,0,0,${isUR ? 0.82 : 0.60}))`,
+              `drop-shadow(${isUR ? 4 : 2}px ${isUR ? 7 : 3}px 1px rgba(0,0,0,${isUR ? 0.84 : 0.60}))`,
               `drop-shadow(0 2px 3px rgba(0,0,0,0.52))`,
             ].join(' '),
           }}
         >
-          {/* カードビジュアル（base を内包）— subject は hideSubject で非表示 */}
+          {/* カードビジュアル（base photo含む） */}
           <CardVisual
             card={card}
             owned={owned}
@@ -255,20 +252,25 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
             hideSubject={hasSubject}
           />
 
-          {/* ── subject 3D前面レイヤー ──────────────────────────────
-              構造: div(translateZ:60px固定 + overflow:hidden) > img(parallax)
-              - divのtranslateZでCSS3D上の前面に配置
-              - imgのtranslateでtilt連動の視差差を実現
-              - overflow:hiddenがscale時のはみ出しをクリップ
-          ──────────────────────────────────────────────────────── */}
+          {/* ════════════════════════════════════════════════════════
+              subject 3D前面レイヤー
+
+              構造:
+              - div: translateZ(105px) 固定 + clipPath で「上だけ解放」
+                     → scale(1.10) した img の上端がカード外へはみ出す (frame break)
+              - img: parallax translate + brightness/contrast (RAFで更新)
+
+              なぜ frame break が前後感を作るか:
+              - 「枠内の一枚絵」ではなく「枠を破る立体物」に見える
+              - clip がない上方向にコンテンツが飛び出し、手前に浮いて見える
+          ════════════════════════════════════════════════════════ */}
           {hasSubject && (
             <div style={{
               position: 'absolute',
               top: 0, left: 0,
               width: w, height: h,
-              borderRadius: cardR,
-              overflow: 'hidden',
-              // ★ base photo (z=0) より 105px 手前 — 視差が目視で分かる距離
+              // 上端だけ 52px 解放（frame break）、下・左右はクリップ維持
+              clipPath: `inset(-52px 0px 0px 0px round 0 0 ${cardR}px ${cardR}px)`,
               transform: 'translateZ(105px)',
               pointerEvents: 'none',
             }}>
@@ -280,45 +282,40 @@ export default function CardViewer3D({ card, owned, widthPx }: Props) {
                 style={{
                   width: '100%', height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 18%',    // base 写真と完全一致
+                  objectPosition: 'center 18%',
+                  transformOrigin: '50% 60%',   // 下寄りのscale原点 → 上方向に膨らむ
                   // 初期値 (RAF で毎フレーム上書き)
-                  transform: 'scale(1.058)',
+                  transform: 'scale(1.10)',
                   filter: [
-                    'brightness(1.18) contrast(1.20) saturate(1.14)',
-                    'drop-shadow(0 16px 28px rgba(0,0,0,0.76))',
-                    'drop-shadow(0 5px 12px rgba(0,0,0,0.55))',
+                    'brightness(1.20) contrast(1.22) saturate(1.15)',
+                    'drop-shadow(0 18px 30px rgba(0,0,0,0.80))',
+                    'drop-shadow(0 6px 14px rgba(0,0,0,0.58))',
                   ].join(' '),
                 }}
               />
             </div>
           )}
 
-          {/* ── 枠シャイン ── */}
-          <div
-            ref={frameShineRef}
-            style={{
+          {/* 枠シャイン */}
+          <div ref={frameShineRef} style={{
+            position: 'absolute', inset: 0,
+            borderRadius: cardR,
+            pointerEvents: 'none',
+            zIndex: 50,
+            transition: 'box-shadow 0.08s ease-out',
+          }} />
+
+          {/* ホログラムフィルム */}
+          {(isHighRare || isMid) && (
+            <div ref={holoRef} style={{
               position: 'absolute', inset: 0,
               borderRadius: cardR,
               pointerEvents: 'none',
-              zIndex: 50,
-              transition: 'box-shadow 0.08s ease-out',
-            }}
-          />
-
-          {/* ── ホログラムフィルム（SR+） ── */}
-          {(isHighRare || isMid) && (
-            <div
-              ref={holoRef}
-              style={{
-                position: 'absolute', inset: 0,
-                borderRadius: cardR,
-                pointerEvents: 'none',
-                opacity: isUR ? 0.10 : isHighRare ? 0.16 : 0.08,
-                mixBlendMode: 'color-dodge',
-                zIndex: 51,
-                transition: 'opacity 0.3s',
-              }}
-            />
+              opacity: isUR ? 0.10 : isHighRare ? 0.16 : 0.08,
+              mixBlendMode: 'color-dodge',
+              zIndex: 51,
+              transition: 'opacity 0.3s',
+            }} />
           )}
         </div>
       </div>
