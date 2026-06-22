@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { clearSavedItems, getSavedItems, removeSavedItem } from '@/lib/saved';
 import type { SavedItem } from '@/types/portal';
 
@@ -15,6 +16,12 @@ const POPULAR_SAVED_SPOTS = [
   { rank: 1, title: '大須スペシャルティコーヒー', area: '大須', saves: 312 },
   { rank: 2, title: '覚王山アパートメント秋市', area: '覚王山', saves: 204 },
   { rank: 3, title: '栄 光のインスタレーション', area: '栄', saves: 128 },
+];
+
+const EMPTY_STATE_LINKS = [
+  { href: '/new', label: '新着記事を探す' },
+  { href: '/event', label: 'イベントを探す' },
+  { href: '/area', label: 'エリアから探す' },
 ];
 
 export default function SavedPage() {
@@ -250,6 +257,26 @@ function EmptyState() {
       <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
         気になるお店やイベントを保存すると、ここに表示されます。
       </p>
+      <p className="mt-5 text-[12px] font-black" style={{ color: '#416b7d' }}>
+        まずは、気になる情報を探しに行きましょう。
+      </p>
+      <div className="mt-4 grid gap-2">
+        {EMPTY_STATE_LINKS.map(link => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="flex items-center justify-between rounded-2xl px-4 py-3 text-[13px] font-black active:scale-[0.98] transition-transform"
+            style={{
+              color: '#1d5b73',
+              background: '#f6fbff',
+              border: '1px solid rgba(29,91,115,0.12)',
+            }}
+          >
+            {link.label}
+            <ArrowRightIcon />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
