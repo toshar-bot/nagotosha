@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 const description = '今日行けるイベントや週末のおでかけ情報など、名古屋の注目イベントを探せます。';
 
@@ -62,6 +63,24 @@ const EVENTS = [
   },
 ];
 
+const EVENT_NEXT_LINKS = [
+  {
+    title: '近くのエリアから探す',
+    text: 'イベント会場の近くで、グルメや寄り道スポットを探せます。',
+    href: '/area',
+  },
+  {
+    title: '新着のおでかけ情報を見る',
+    text: '新店、イベント、話題のお店をまとめてチェックできます。',
+    href: '/new',
+  },
+  {
+    title: '気になる情報を保存する',
+    text: '行きたい場所を保存して、あとから見返せます。',
+    href: '/saved',
+  },
+];
+
 export default function EventPage() {
   return (
     <main className="min-h-dvh pb-28" style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f8fbff 44%, #ffffff 100%)' }}>
@@ -85,6 +104,68 @@ export default function EventPage() {
           {EVENTS.map(event => (
             <EventCard key={event.title} event={event} />
           ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <SectionTitle eyebrow="NEXT TRIP">イベントのあとに探す</SectionTitle>
+        <div className="mt-4 flex flex-col gap-3">
+          {EVENT_NEXT_LINKS.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-2xl bg-white p-4 active:scale-[0.99] transition-transform"
+              style={{
+                border: '1px solid rgba(29,91,115,0.10)',
+                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+              }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-[15px] font-black leading-snug" style={{ color: '#0a2438' }}>
+                    {item.title}
+                  </h2>
+                  <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+                    {item.text}
+                  </p>
+                </div>
+                <span className="shrink-0" style={{ color: '#1d5b73' }}>
+                  <ArrowRightIcon />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-7">
+        <div
+          className="rounded-2xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
+            border: '1.5px solid rgba(29,91,115,0.14)',
+          }}
+        >
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#1d5b73' }}>
+            EVENT OWNER
+          </p>
+          <h2 className="mt-2 text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            イベント告知を相談したい方へ
+          </h2>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            新店イベント、期間限定企画、週末集客など、名古屋のお店や主催者向けの掲載相談を受け付けています。
+          </p>
+          <Link
+            href="/partner"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
+              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+            }}
+          >
+            掲載について相談する
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 
