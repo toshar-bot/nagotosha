@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { FEATURED_ARTICLES } from '@/data/portal';
 import { getPortalArticlesWithFallback } from '@/lib/wordpress-fetch';
 import type { FeaturedArticle } from '@/types/portal';
@@ -14,6 +15,27 @@ export const metadata: Metadata = {
     type: 'website',
   },
 };
+
+const NAV_LINKS = [
+  {
+    href: '/area',
+    label: 'エリアから探す',
+    description: '気になるお店やイベントを、名駅・栄・大須などのエリア別に探せます。',
+    icon: <NavMapIcon />,
+  },
+  {
+    href: '/event',
+    label: 'イベントを見る',
+    description: '今日行けるイベントや週末のおでかけ情報をチェックできます。',
+    icon: <NavCalendarIcon />,
+  },
+  {
+    href: '/saved',
+    label: '保存した記事を見る',
+    description: '気になる記事やお店を保存して、あとから見返せます。',
+    icon: <NavBookmarkIcon />,
+  },
+] as const;
 
 const FILTER_TABS = [
   { label: 'すべて',   active: true  },
@@ -107,6 +129,77 @@ export default async function NewPage() {
           <p className="text-[11px] font-medium leading-6" style={{ color: '#8aa5b0' }}>
             WordPressの記事データと連携し、取得できない場合は編集部のおすすめ記事を表示します。
           </p>
+        </div>
+      </section>
+
+      {/* ── 回遊導線 ── */}
+      <section className="px-4 pt-10">
+        <p className="text-[10px] font-black tracking-[0.20em] mb-4" style={{ color: '#0a9a9a' }}>
+          記事を読んだら次に探す
+        </p>
+        <div className="flex flex-col gap-3">
+          {NAV_LINKS.map(nav => (
+            <Link
+              key={nav.href}
+              href={nav.href}
+              className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4 active:scale-[0.98] transition-transform"
+              style={{
+                border: '1px solid rgba(29,91,115,0.10)',
+                boxShadow: '0 2px 10px rgba(10,36,56,0.05)',
+              }}
+            >
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: 'rgba(29,91,115,0.08)' }}
+              >
+                {nav.icon}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[14px] font-black leading-snug" style={{ color: '#0a2438' }}>
+                  {nav.label}
+                </span>
+                <span
+                  className="mt-0.5 block text-[11px] font-medium leading-5"
+                  style={{ color: '#7a9aab' }}
+                >
+                  {nav.description}
+                </span>
+              </span>
+              <ChevronRightIcon />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 店舗向け導線 ── */}
+      <section className="px-4 pt-8 pb-2">
+        <div
+          className="rounded-2xl px-5 py-5"
+          style={{
+            background: 'linear-gradient(145deg, #0a2438 0%, #1d5b73 100%)',
+          }}
+        >
+          <p className="text-[10px] font-black tracking-[0.18em] mb-2" style={{ color: '#6ecece' }}>
+            PARTNER
+          </p>
+          <p className="text-[15px] font-black leading-snug" style={{ color: '#ffffff' }}>
+            新店・イベント告知をしたいお店へ
+          </p>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#a8cdd8' }}>
+            新店オープン、期間限定メニュー、週末イベントなど、名古屋のお店向けの掲載相談を受け付けています。
+          </p>
+          <Link
+            href="/partner"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-black active:scale-95 transition-transform"
+            style={{
+              color: '#0a2438',
+              background: '#ffffff',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+            }}
+          >
+            掲載について相談する
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
     </main>
@@ -289,6 +382,43 @@ function EyeIcon() {
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a0b8c0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  );
+}
+
+function NavMapIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+      <line x1="8" y1="2" x2="8" y2="18" />
+      <line x1="16" y1="6" x2="16" y2="22" />
+    </svg>
+  );
+}
+
+function NavCalendarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
+function NavBookmarkIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
