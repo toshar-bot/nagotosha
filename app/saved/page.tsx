@@ -10,6 +10,13 @@ export const metadata: Metadata = {
     title: '保存した記事｜なごとしゃ',
     description,
     type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '保存した記事｜なごとしゃ',
+    description,
+    images: ['/opengraph-image'],
   },
 };
 

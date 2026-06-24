@@ -10,6 +10,13 @@ export const metadata: Metadata = {
     title: 'エリアから探す｜なごとしゃ',
     description,
     type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'エリアから探す｜なごとしゃ',
+    description,
+    images: ['/opengraph-image'],
   },
 };
 

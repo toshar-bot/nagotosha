@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     title: 'なごとしゃ｜名古屋のグルメ・イベント・おでかけ情報',
     description,
     type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'なごとしゃ｜名古屋のグルメ・イベント・おでかけ情報',
+    description,
+    images: ['/opengraph-image'],
   },
 };
 
