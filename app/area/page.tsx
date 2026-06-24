@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 const description = '名駅、栄、大須、藤が丘など、名古屋のエリア別にグルメやおでかけ情報を探せます。';
 
@@ -70,6 +71,24 @@ const AREAS = [
   },
 ];
 
+const AREA_NEXT_LINKS = [
+  {
+    title: '新着のお店を見る',
+    text: '気になるエリアの新店や話題のお店をまとめてチェックできます。',
+    href: '/new',
+  },
+  {
+    title: '近くのイベントを見る',
+    text: '週末のおでかけや、今日行けるイベントを探せます。',
+    href: '/event',
+  },
+  {
+    title: '気になる場所を保存する',
+    text: '行きたいお店やイベントを保存して、あとから見返せます。',
+    href: '/saved',
+  },
+];
+
 export default function AreaPage() {
   return (
     <main className="min-h-dvh pb-28" style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f8fbff 44%, #ffffff 100%)' }}>
@@ -93,6 +112,68 @@ export default function AreaPage() {
           {AREAS.map(area => (
             <AreaCard key={area.name} area={area} />
           ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <SectionTitle eyebrow="NEXT DISCOVERY">エリアを決めたら次に見る</SectionTitle>
+        <div className="mt-4 flex flex-col gap-3">
+          {AREA_NEXT_LINKS.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-2xl bg-white p-4 active:scale-[0.99] transition-transform"
+              style={{
+                border: '1px solid rgba(29,91,115,0.10)',
+                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+              }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-[15px] font-black leading-snug" style={{ color: '#0a2438' }}>
+                    {item.title}
+                  </h2>
+                  <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+                    {item.text}
+                  </p>
+                </div>
+                <span className="shrink-0" style={{ color: '#1d5b73' }}>
+                  <ArrowRightIcon />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-7">
+        <div
+          className="rounded-2xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
+            border: '1.5px solid rgba(29,91,115,0.14)',
+          }}
+        >
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#1d5b73' }}>
+            AREA OWNER
+          </p>
+          <h2 className="mt-2 text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+            このエリアで集客したいお店へ
+          </h2>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+            名駅、栄、大須、藤が丘など、エリアごとの来店導線づくりやGoogleマップ送客の相談を受け付けています。
+          </p>
+          <Link
+            href="/partner"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            style={{
+              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
+              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+            }}
+          >
+            掲載について相談する
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 
