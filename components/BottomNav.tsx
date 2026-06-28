@@ -18,8 +18,8 @@ const GAME_TABS = [
 
 export default function BottomNav() {
   const path = usePathname();
-  if (path === '/new' || path.startsWith('/partner')) return null;
-  const isPortal = ['/', '/event', '/area', '/saved'].includes(path);
+  if (path.startsWith('/partner')) return null;
+  const isPortal = ['/', '/new', '/event', '/area', '/saved'].includes(path);
 
   if (isPortal) {
     return (
@@ -42,17 +42,17 @@ export default function BottomNav() {
                   href={tab.href}
                   className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 transition-all duration-150 active:scale-90"
                 >
-                  <span style={{ color: isActive ? '#2563EB' : '#94A3B8' }}>
+                  <span style={{ color: isActive ? '#E8483F' : '#94A3B8' }}>
                     {tab.icon}
                   </span>
                   <span
                     className="text-[9px] font-bold tracking-wide"
-                    style={{ color: isActive ? '#2563EB' : '#94A3B8' }}
+                    style={{ color: isActive ? '#E8483F' : '#94A3B8' }}
                   >
                     {tab.label}
                   </span>
                   {isActive && (
-                    <div className="w-4 h-0.5 rounded-full mt-0.5" style={{ background: '#2563EB' }} />
+                    <div className="w-4 h-0.5 rounded-full mt-0.5" style={{ background: '#E8483F' }} />
                   )}
                 </Link>
               );

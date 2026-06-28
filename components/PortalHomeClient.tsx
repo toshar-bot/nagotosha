@@ -121,8 +121,7 @@ const HOME_CSS =
   '@keyframes home-gacha-opening-light{0%{opacity:0;transform:translate(-50%,10px) scale(.62)}34%{opacity:1;transform:translate(-50%,0) scale(.94)}100%{opacity:.18;transform:translate(-50%,-8px) scale(1.24)}}' +
   '@keyframes home-gacha-white-flash{0%,58%,100%{opacity:0}70%{opacity:.95}82%{opacity:.18}}' +
   '@keyframes home-gacha-particle{0%{opacity:0;transform:translateY(18px) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translateY(-82px) scale(1.1)}}' +
-  '@keyframes home-gacha-result-in{0%{opacity:0;transform:translateY(32px) scale(.96)}100%{opacity:1;transform:translateY(0) scale(1)}}' +
-  '@keyframes home-gacha-luxury-float{0%,100%{transform:translateY(0) rotate(-.9deg)}50%{transform:translateY(-5px) rotate(.8deg)}}' +
+  '@keyframes home-gacha-result-in{0%{opacity:0;transform:translateY(18px) scale(.88)}100%{opacity:1;transform:translateY(0) scale(1)}}' +
   '@keyframes home-gacha-card-shine{0%,22%{transform:translateX(-62%) rotate(8deg);opacity:0}38%{opacity:.92}62%{transform:translateX(52%) rotate(8deg);opacity:.78}100%{transform:translateX(76%) rotate(8deg);opacity:0}}' +
   '@keyframes home-gacha-card-twinkle{0%,100%{opacity:.28;transform:scale(.76)}50%{opacity:1;transform:scale(1.16)}}';
 
@@ -150,7 +149,7 @@ const HERO_SLIDES = [
   },
   {
     eyebrow: '\u65b0\u3057\u3044\u5bc4\u308a\u9053',
-    title: '\u591c\u306b\u884c\u304d\u305f\u3044\u540d\u53e4\u5c4b\u30b0\u30eb\u30e1',
+    title: '\u591c\u306b\u884c\u304d\u305f\u3044\n\u540d\u53e4\u5c4b\u30b0\u30eb\u30e1',
     copy: '\u98df\u5f8c\u3082\u697d\u3057\u3081\u308b\u304a\u5e97\u3084\u3001\u4ed5\u4e8b\u5e30\u308a\u306e\u4e00\u8ed2\u3092\u63a2\u305b\u307e\u3059\u3002',
     imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
   },
@@ -255,18 +254,18 @@ function useBottomNavAutoHide() {
 function Header() {
   return (
     <header className="border-b border-[#f2d9d8] bg-white">
-      <div className="mx-auto flex min-h-[92px] max-w-[940px] items-center justify-between gap-2 overflow-hidden px-2 py-2">
-        <Link href="/" className="flex min-w-0 flex-1 items-center overflow-hidden" aria-label="縺ｪ縺斐→縺励ｃ 繝帙・繝">
+      <div className="mx-auto flex min-h-[92px] max-w-[940px] items-center justify-between gap-1 px-2 py-2">
+        <Link href="/" className="flex min-w-0 flex-1 items-center overflow-hidden" aria-label="なごとしゃ ホーム">
           <img
             src="/subjects/nagotosha-header-complete.png"
-            alt="縺ｪ縺斐→縺励ｃ 蜷榊商螻区ュ蝣ｱ螻 繝医・繧ｷ繝｣繝ｼ"
-            className="block h-[84px] w-full max-w-[calc(100vw-100px)] object-cover object-center sm:h-[96px] sm:max-w-[560px]"
+            alt="なごとしゃ 名古屋情報局 トーシャー"
+            className="block h-[78px] w-auto max-w-[calc(100vw-120px)] object-contain object-left sm:h-[86px] sm:max-w-[560px]"
           />
         </Link>
-        <nav className="flex shrink-0 items-end gap-1 text-[#061744]" aria-label="header actions">
-          <HeaderAction label="讀懃ｴ｢" href="/new" type="search" />
-          <HeaderAction label="繧ｬ繝√Ε" href="/game" type="gacha" />
-          <HeaderAction label="繝｡繝九Η繝ｼ" href="/area" type="menu" />
+        <nav className="flex shrink-0 items-center gap-0.5" aria-label="ヘッダーナビ">
+          <HeaderAction label="検索" href="/new" type="search" />
+          <HeaderAction label="ガチャ" href="/game" type="gacha" />
+          <HeaderAction label="メニュー" href="/area" type="menu" />
         </nav>
       </div>
     </header>
@@ -275,10 +274,10 @@ function Header() {
 
 function HeaderAction({ label, type, href }: { label: string; type: 'search' | 'gacha' | 'menu'; href?: string }) {
   const icon = type === 'search' ? <SearchIcon /> : type === 'gacha' ? <GachaIcon /> : <MenuIcon />;
-  const content = <>{icon}<span style={{ fontSize: 8, fontWeight: 900, lineHeight: 1, whiteSpace: 'nowrap' }}>{label}</span></>;
-  const style: CSSProperties = { minWidth: 28, color: THEME.navy, textDecoration: 'none', gap: 2 };
-  if (href) return <Link href={href} aria-label={label} className="flex flex-col items-center justify-center active:opacity-70" style={style}>{content}</Link>;
-  return <button type="button" aria-label={label} className="flex flex-col items-center justify-center active:opacity-70" style={{ ...style, border: 0, padding: 0, background: 'transparent' }}>{content}</button>;
+  const content = <>{icon}<span style={{ fontSize: 9, fontWeight: 900, lineHeight: 1, marginTop: 2 }}>{label}</span></>;
+  const style: CSSProperties = { minWidth: 36, color: THEME.navy, textDecoration: 'none', gap: 2, padding: '4px 1px', borderRadius: 8 };
+  if (href) return <Link href={href} aria-label={label} className="flex flex-col items-center justify-center active:opacity-60 transition-opacity" style={style}>{content}</Link>;
+  return <button type="button" aria-label={label} className="flex flex-col items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{content}</button>;
 }
 
 function CategoryTabs() {
@@ -378,7 +377,7 @@ function HeroSection() {
             >
               <div className="flex h-full min-h-[280px] flex-col justify-center px-8 py-8 text-white sm:min-h-[330px] sm:px-12">
                 <p className="text-[15px] font-black tracking-[0.03em] drop-shadow">{slide.eyebrow}</p>
-                <h2 className="mt-4 max-w-[560px] text-[31px] font-black leading-tight tracking-[-0.01em] drop-shadow sm:text-[44px]">
+                <h2 className="mt-4 max-w-[560px] text-[28px] font-black leading-snug tracking-[-0.01em] drop-shadow sm:text-[40px]" style={{ whiteSpace: 'pre-line' }}>
                   {slide.title}
                 </h2>
                 <p className="mt-4 max-w-[520px] text-[14px] font-bold leading-relaxed text-white/92 sm:text-[17px]">
@@ -633,8 +632,9 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
           <div className="relative z-10">
             <GachaHeading />
             <div className="relative z-10 mx-auto mt-3 max-w-[430px] rounded-[24px] bg-white px-5 py-3 text-[14px] font-black leading-relaxed text-[#071A4D] shadow-[0_14px_28px_rgba(7,26,77,0.10)] sm:text-[16px]">
-              <p>名古屋の魅力がつまったおでかけ先を</p>
-              <p>ランダムでご紹介！何が出るかはお楽しみ。</p>
+              <p>名古屋の魅力がつまった</p>
+              <p>お出かけ先をランダムで紹介！</p>
+              <p>何が出るかはお楽しみ！</p>
               <span className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-white" aria-hidden="true" />
             </div>
 
@@ -752,8 +752,14 @@ function GachaOpeningScreen() {
       <p className="text-[28px] font-black tracking-[0.08em] text-[#0f5d3a]">開封中...</p>
       <p className="mt-1 text-sm font-black text-[#071A4D]/70">何が出るかはお楽しみ</p>
       <div className="pointer-events-none absolute left-1/2 top-[170px] h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-[conic-gradient(from_24deg,rgba(255,42,109,.50),rgba(255,220,84,.78),rgba(84,255,187,.52),rgba(88,184,255,.58),rgba(172,100,255,.54),rgba(255,42,109,.50))] blur-[24px]" style={{ animation: 'portal-rainbow-burst 1.5s ease-in-out both' }} />
-      <div className="absolute left-1/2 top-[154px] h-[342px] w-[238px] -translate-x-1/2 opacity-82" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards' }}>
-        <OdekakePackVisual opening />
+      <div className="pointer-events-none absolute left-1/2 top-[144px] h-[370px] w-[290px] -translate-x-1/2 rounded-[34px] bg-[radial-gradient(circle_at_50%_44%,rgba(255,226,122,.48),rgba(232,72,63,.18)_45%,rgba(255,159,201,.16)_58%,transparent_74%)] blur-[20px]" />
+      <div className="absolute left-1/2 top-[154px] h-[342px] w-[238px] -translate-x-1/2 opacity-82" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards', clipPath: 'inset(72px 0 0 0)' }}>
+        <img
+          src="/gacha/odekake-pack-cutout.png"
+          alt="お出かけパック"
+          className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_24px_36px_rgba(109,69,10,0.30)]"
+          draggable={false}
+        />
       </div>
       <div className="absolute left-1/2 top-[156px] h-[76px] w-[238px] -translate-x-1/2 overflow-hidden" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
         <OdekakePackVisual opening part="top" />
@@ -771,9 +777,19 @@ function GachaOpeningScreen() {
 function toGachaResult(article: ArticleLike): GachaResult {
   const fallbackImage = 'https://upload.wikimedia.org/wikipedia/commons/5/57/%E3%81%B2%E3%81%A4%E3%81%BE%E3%81%B6%E3%81%97_%288866834170%29.jpg';
   const storeName = (article as ArticleLike & { storeName?: string }).storeName;
+  const text = [article.title, article.description, article.tag, article.area].filter(Boolean).join(' ');
+  const cardTitle =
+    text.includes('ひつまぶし') ? 'ひつまぶし' :
+    text.includes('味噌カツ') || text.includes('みそかつ') ? '味噌カツ' :
+    text.includes('水族館') || text.includes('名古屋港') ? '名古屋港水族館' :
+    text.includes('動植物園') || text.includes('東山') || text.includes('コアラ') ? '東山動植物園' :
+    text.includes('カフェ') || text.toLowerCase().includes('cafe') ? '名古屋カフェ' :
+    text.includes('イベント') ? '名古屋イベント' :
+    text.includes('新店') || text.includes('オープン') ? '新店ニュース' :
+    (article.tag && article.tag.length <= 8 ? article.tag : '名古屋おでかけ');
 
   return {
-    title: article.title || JP.hitsumabushi,
+    title: cardTitle,
     category: article.tag || '名古屋名物',
     shopName: storeName || article.title || 'あつた蓬莱軒',
     catchCopy: article.description || '香ばしく焼き上げた、名古屋らしい一杯で。',
@@ -785,66 +801,40 @@ function toGachaResult(article: ArticleLike): GachaResult {
 
 function GachaResultScreen({ article, onReset }: { article: ArticleLike; onReset: () => void }) {
   const result = toGachaResult(article);
+
   return (
-    <div className="relative z-10 mx-auto max-w-[430px] px-1 pb-1 pt-1 text-center" style={{ animation: 'home-gacha-result-in .68s cubic-bezier(.2,1,.24,1) both' }}>
+    <div className="relative z-10 mx-auto max-w-[390px] px-1 pb-1 pt-1 text-center" style={{ animation: 'home-gacha-result-in .62s cubic-bezier(.22,1,.36,1) both' }}>
       <GachaHeading />
-      <div className="pointer-events-none absolute inset-x-0 top-20 h-[520px] rounded-full bg-[radial-gradient(circle_at_50%_28%,rgba(255,232,153,.50),transparent_44%),radial-gradient(circle_at_22%_48%,rgba(255,97,116,.12),transparent_30%),radial-gradient(circle_at_85%_60%,rgba(83,150,96,.12),transparent_28%)]" />
-      <div
-        className="relative mx-auto mt-6 w-[min(86vw,390px)] overflow-hidden rounded-[26px] border-[2px] border-[#dab559] bg-[linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,0)_28%),linear-gradient(145deg,#b7191f_0%,#7f1016_45%,#c7362d_100%)] p-[12px] shadow-[0_20px_48px_rgba(80,20,15,.22),0_0_0_4px_rgba(255,230,160,.35),inset_0_0_30px_rgba(255,220,130,.18)]"
-        style={{ animation: 'home-gacha-luxury-float 4.8s ease-in-out infinite' }}
-      >
-        <div className="pointer-events-none absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at 16% 18%,rgba(255,232,150,.8) 0 1px,transparent 2px),radial-gradient(circle at 86% 12%,rgba(255,255,255,.9) 0 1.5px,transparent 3px),radial-gradient(circle at 75% 82%,rgba(255,232,150,.85) 0 1px,transparent 2px),linear-gradient(135deg,transparent 0 13px,rgba(255,225,150,.15) 13px 14px,transparent 14px 28px)', backgroundSize: '100% 100%,100% 100%,100% 100%,42px 42px' }} />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,transparent_38%,rgba(255,255,255,.42)_47%,rgba(255,236,170,.32)_50%,transparent_60%,transparent_100%)] mix-blend-screen" style={{ animation: 'home-gacha-card-shine 3.6s ease-in-out infinite' }} />
-        <div className="pointer-events-none absolute left-3 top-3 h-9 w-9 rounded-tl-[18px] border-l-2 border-t-2 border-[#ffe59a]" />
-        <div className="pointer-events-none absolute right-3 top-3 h-9 w-9 rounded-tr-[18px] border-r-2 border-t-2 border-[#ffe59a]" />
-        <div className="pointer-events-none absolute bottom-3 left-3 h-9 w-9 rounded-bl-[18px] border-b-2 border-l-2 border-[#ffe59a]" />
-        <div className="pointer-events-none absolute bottom-3 right-3 h-9 w-9 rounded-br-[18px] border-b-2 border-r-2 border-[#ffe59a]" />
-
-        {[0, 1, 2, 3, 4, 5].map((spark) => (
-          <span
-            key={spark}
-            className="pointer-events-none absolute h-1.5 w-1.5 rotate-45 bg-[#ffe493] shadow-[0_0_12px_rgba(255,232,150,.95)]"
-            style={{
-              left: `${12 + (spark * 17) % 78}%`,
-              top: `${10 + (spark * 23) % 76}%`,
-              animation: `home-gacha-card-twinkle 2.6s ease-in-out ${spark * .22}s infinite`,
-            }}
-          />
-        ))}
-
-        <div className="relative overflow-hidden rounded-[21px] border border-[#f4d681] bg-[#fff7df] px-3 pb-4 pt-4 shadow-[inset_0_0_26px_rgba(103,49,10,.08)]">
-          <div className="pointer-events-none absolute inset-0 opacity-35" style={{ backgroundImage: 'radial-gradient(ellipse at top, rgba(255,255,255,.9), transparent 36%), linear-gradient(135deg, transparent 0 12px, rgba(15,93,58,.08) 12px 13px, transparent 13px 26px)', backgroundSize: '100% 100%,38px 38px' }} />
-          <div className="relative mx-auto inline-flex rounded-b-[10px] rounded-t-[18px] border border-[#d6b052] bg-[#0f5d3a] px-5 py-1.5 text-[10px] font-black tracking-[0.18em] text-[#ffe493] shadow-[0_6px_12px_rgba(15,93,58,.18)]">
-            NAGOYA COLLECTION CARD
-          </div>
-          <h3 className="relative mt-4 line-clamp-2 text-center text-[38px] font-black leading-[1.05] tracking-[-0.04em] text-[#174B2F] drop-shadow-[0_2px_0_rgba(255,237,178,.88)]">
-            {result.title}
-          </h3>
-          <div className="relative mt-2 inline-flex rounded-full border border-[#d6b052] bg-[#0f5d3a] px-5 py-1.5 text-[12px] font-black text-[#ffe493] shadow-[0_5px_12px_rgba(15,93,58,.14)]">
+      <div className="pointer-events-none absolute inset-x-0 top-20 h-[330px] rounded-full bg-[radial-gradient(circle_at_50%_32%,rgba(255,232,153,.28),transparent_44%),radial-gradient(circle_at_22%_54%,rgba(255,97,116,.07),transparent_30%),radial-gradient(circle_at_85%_62%,rgba(83,150,96,.07),transparent_28%)]" />
+      <div className="relative mx-auto mt-4 w-[min(78vw,306px)] overflow-hidden rounded-[24px] border border-[#d8b15d] bg-[#102417] shadow-[0_14px_30px_rgba(7,26,77,.16),0_0_0_3px_rgba(255,232,166,.32)]">
+        <div className="pointer-events-none absolute inset-[6px] z-10 rounded-[19px] border border-[#f7df95]/70" />
+        <div className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(115deg,transparent_0%,transparent_36%,rgba(255,255,255,.42)_45%,rgba(255,226,145,.30)_49%,transparent_60%),conic-gradient(from_120deg_at_50%_45%,rgba(255,84,130,.18),rgba(255,225,91,.20),rgba(92,255,202,.15),rgba(91,162,255,.16),rgba(203,116,255,.14),rgba(255,84,130,.18))] bg-[length:190%_190%,180%_180%] mix-blend-screen opacity-60" style={{ animation: 'portal-holo-pan 4.8s ease-in-out infinite' }} />
+        <div className="pointer-events-none absolute inset-0 z-10 opacity-[.18] bg-[radial-gradient(circle_at_18%_16%,#ffe29b_0_2px,transparent_3px),radial-gradient(circle_at_82%_20%,#fff1b7_0_2px,transparent_3px),radial-gradient(circle_at_20%_84%,#ffe29b_0_2px,transparent_3px),radial-gradient(circle_at_78%_78%,#fff1b7_0_2px,transparent_3px)]" />
+        <div className="relative h-[188px] bg-cover bg-center" style={{ backgroundImage: 'url("' + result.imageUrl + '")' }}>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,26,77,.05)_0%,rgba(7,26,77,0)_36%,rgba(7,26,77,.68)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 opacity-[.16] bg-[repeating-radial-gradient(ellipse_at_top,#ffe5a3_0_1px,transparent_1px_13px)] mix-blend-screen" />
+          <span className="absolute left-4 top-4 rounded-full border border-[#e7c46e]/80 bg-[#102417]/88 px-3 py-1 text-[11px] font-black text-[#ffe6a3] shadow-[0_6px_14px_rgba(7,26,77,.18)]">
             {result.category}
-          </div>
-
-          <div className="relative mt-4 h-[300px] overflow-hidden rounded-[20px] border-[2px] border-[#d6b052] bg-cover bg-center shadow-[0_14px_26px_rgba(87,45,15,.18)]" style={{ backgroundImage: 'url("' + result.imageUrl + '")' }}>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,.16),transparent_35%),linear-gradient(180deg,rgba(255,255,255,.06),transparent_58%,rgba(37,20,8,.18))]" />
-          </div>
-
-          <div className="relative mx-1 -mt-1 rounded-[20px] border border-[#d6b052]/80 bg-[linear-gradient(180deg,#fff4d6,#f8dda0)] px-4 py-4 text-left shadow-[0_10px_18px_rgba(87,45,15,.14)]">
-            <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-[#d6b052] bg-[#fff9e8] text-[22px] shadow-inner" aria-hidden="true">🏯</div>
-              <div className="min-w-0">
-                <p className="line-clamp-1 text-[20px] font-black leading-tight text-[#3b2412]">{result.shopName}</p>
-                <p className="mt-1 line-clamp-2 text-[13px] font-bold leading-relaxed text-[#5b4530]">{result.catchCopy}</p>
-              </div>
-            </div>
-            <div className="mt-3 text-center">
-              <span className="inline-flex rounded-full border border-[#d6b052] bg-[#0f5d3a] px-6 py-1.5 text-[14px] font-black text-[#ffe493]">{result.area}</span>
-            </div>
+          </span>
+          <div className="absolute bottom-4 left-4 right-4 text-left text-white">
+            <p className="line-clamp-1 text-[19px] font-black leading-tight drop-shadow">{result.shopName}</p>
+            <p className="mt-1 line-clamp-1 text-[12px] font-bold text-white/90">{result.area}</p>
           </div>
         </div>
+
+        <div className="relative bg-[linear-gradient(180deg,#fffaf0,#fff3dc)] p-3.5 text-left">
+          <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-[#d8b15d]/70" />
+          <h3 className="line-clamp-1 text-[17px] font-black leading-snug text-[#071A4D]">
+            {result.title}
+          </h3>
+          <p className="mt-2 line-clamp-2 text-[12.5px] font-bold leading-relaxed text-[#667085]">
+            {result.catchCopy}
+          </p>
+        </div>
       </div>
-      <div className="relative z-10 mx-auto mt-6 grid w-[min(86vw,390px)] gap-3">
-        <a href={result.articleUrl} className="inline-flex h-[58px] items-center justify-center rounded-full border border-[#d6b052] bg-[linear-gradient(180deg,#ef4444,#c91723)] text-[18px] font-black text-white no-underline shadow-[0_12px_24px_rgba(185,25,31,.28),inset_0_1px_0_rgba(255,255,255,.28)]">詳細を見る<span className="ml-3 grid h-7 w-7 place-items-center rounded-full border border-white/70 text-[18px]" aria-hidden="true">{String.fromCharCode(8250)}</span></a>
-        <button type="button" onClick={onReset} className="inline-flex h-[54px] items-center justify-center rounded-full border border-[#e8483f] bg-white text-[16px] font-black text-[#e8483f] shadow-[0_8px_18px_rgba(80,20,15,.10)]">もう一度回す<span className="ml-4 text-[22px] leading-none" aria-hidden="true">↻</span></button>
+      <div className="relative z-10 mx-auto mt-4 grid w-[min(78vw,306px)] gap-2.5">
+        <a href={result.articleUrl} className="inline-flex h-[52px] items-center justify-center rounded-full border border-[#d6b052] bg-[linear-gradient(180deg,#ef4444,#c91723)] text-[16px] font-black text-white no-underline shadow-[0_10px_20px_rgba(185,25,31,.24),inset_0_1px_0_rgba(255,255,255,.28)]">詳細を見る<span className="ml-3 grid h-6 w-6 place-items-center rounded-full border border-white/70 text-[16px]" aria-hidden="true">{String.fromCharCode(8250)}</span></a>
+        <button type="button" onClick={onReset} className="inline-flex h-[48px] items-center justify-center rounded-full border border-[#e8483f] bg-white text-[14px] font-black text-[#e8483f] shadow-[0_7px_15px_rgba(80,20,15,.10)]">もう一度回す<span className="ml-3 text-[18px] leading-none" aria-hidden="true">↻</span></button>
       </div>
     </div>
   );

@@ -58,7 +58,32 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
       }}
     >
       <a href={articleHref} className="absolute inset-0 z-10" aria-label={`${article.title}${JP.articleAriaSuffix}`} />
-      <div className="pointer-events-none relative h-[200px] overflow-hidden" style={{ background: article.bg }}>
+
+      {/* 画像エリア: imageUrls(複数)があればスライダー、なければ単枚 */}
+      {(article.imageUrls && article.imageUrls.length > 1) ? (
+        <div
+          className="relative z-20 flex h-[200px] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
+          {article.imageUrls.map((url, i) => (
+            <div
+              key={i}
+              className="relative h-[200px] min-w-full shrink-0 overflow-hidden"
+              style={{ scrollSnapAlign: 'start', background: article.bg }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" loading={i === 0 ? 'eager' : 'lazy'} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 42%, rgba(0,0,0,0.28) 100%)' }} />
+            </div>
+          ))}
+          <div className="pointer-events-none absolute bottom-2.5 left-0 right-0 z-10 flex justify-center gap-1">
+            {article.imageUrls.map((_, i) => (
+              <span key={i} className="h-1.5 w-1.5 rounded-full bg-white/70" />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="pointer-events-none relative h-[200px] overflow-hidden" style={{ background: article.bg }}>
           {imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imageUrl} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
@@ -70,6 +95,7 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
             }}
           />
         </div>
+      )}
 
         <div className="pointer-events-none px-4 pt-3">
           <h2 className="text-[17px] font-black leading-snug" style={{ color: '#0F172A' }}>

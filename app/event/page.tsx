@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { EventCardClient } from '@/components/EventCardClient';
 
 const description = '今日行けるイベントや週末のおでかけ情報など、名古屋の注目イベントを探せます。';
 
@@ -21,40 +22,48 @@ export const metadata: Metadata = {
 };
 
 const EVENT_FILTERS = [
-  { label: '今日行ける',       text: '今から予定に入れやすいイベント' },
-  { label: '今週末',           text: '週末のおでかけ候補をまとめて確認' },
-  { label: '雨の日でも楽しめる', text: '屋内や駅近で過ごしやすい催し' },
-  { label: '家族で行きたい',   text: '親子で楽しみやすい名古屋イベント' },
-];
+  { label: '今日行ける',        text: '今から予定に入れやすいイベント',   icon: 'clock' },
+  { label: '今週末',            text: '週末のおでかけ候補をまとめて確認', icon: 'sun' },
+  { label: '雨の日でも楽しめる', text: '屋内や駅近で過ごしやすい催し',   icon: 'umbrella' },
+  { label: '家族で行きたい',    text: '親子で楽しみやすい名古屋イベント', icon: 'heart' },
+] as const;
 
 const EVENTS = [
   {
+    id: 'event-sakae-light',
     title: '栄 光のインスタレーション',
     area: '栄',
     period: '開催中',
     tag: '夜のおでかけ',
-    description: '仕事帰りにも立ち寄りやすい、街なかのライトアップイベント。',
+    description: '仕事帰りに立ち寄れる、街なかのライトアップ展示。',
+    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75',
   },
   {
+    id: 'event-kakuozan-market',
     title: '覚王山アパートメント秋市',
     area: '覚王山',
     period: '今週末',
     tag: 'マーケット',
-    description: '雑貨、焼き菓子、クラフト作品をゆっくり楽しめる週末マーケット。',
+    description: '雑貨、焼き菓子、クラフト品が並ぶ週末マーケット。',
+    imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=600&q=75',
   },
   {
+    id: 'event-port-family',
     title: '名古屋港ファミリーデイ',
     area: '名古屋港',
     period: '今週末',
     tag: '家族向け',
-    description: '海辺の散歩と一緒に楽しめる、親子向けのおでかけイベント。',
+    description: '海辺を歩きながら楽しめる、親子向けのおでかけイベント。',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75',
   },
   {
+    id: 'event-osu-food',
     title: '大須まちなか食べ歩き企画',
     area: '大須',
     period: '開催中',
     tag: 'グルメ',
-    description: '大須商店街を歩きながら、新しいお店や限定メニューを探せる企画。',
+    description: '大須商店街で新店や限定メニューを巡れる企画。',
+    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=75',
   },
 ];
 
@@ -97,7 +106,7 @@ export default function EventPage() {
       <section className="px-4 pt-2">
         <div className="grid grid-cols-2 gap-3">
           {EVENT_FILTERS.map(filter => (
-            <FilterCard key={filter.label} label={filter.label} text={filter.text} />
+            <FilterCard key={filter.label} label={filter.label} text={filter.text} icon={filter.icon} />
           ))}
         </div>
       </section>
@@ -105,9 +114,9 @@ export default function EventPage() {
       {/* ── イベント一覧 ── */}
       <section className="px-4 pt-7">
         <SectionTitle eyebrow="EVENT LIST">開催中・今週末のイベント</SectionTitle>
-        <div className="mt-4 flex flex-col gap-3">
+        <div className="mt-4 flex flex-col gap-4">
           {EVENTS.map(event => (
-            <EventCard key={event.title} event={event} />
+            <EventCardClient key={event.id} event={event} />
           ))}
         </div>
       </section>
@@ -189,8 +198,16 @@ function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.
   );
 }
 
-function FilterCard({ label, text }: { label: string; text: string }) {
+function FilterCard({ label, text, icon }: { label: string; text: string; icon: string }) {
   const featured = label === '今日行ける' || label === '今週末';
+  const iconEl = (() => {
+    if (icon === 'clock') return <ClockIcon />;
+    if (icon === 'sun') return <SunIcon />;
+    if (icon === 'umbrella') return <UmbrellaIcon />;
+    if (icon === 'heart') return <HeartIcon />;
+    return <CalendarIcon />;
+  })();
+
   return (
     <article
       className="rounded-[14px] p-4"
@@ -206,7 +223,7 @@ function FilterCard({ label, text }: { label: string; text: string }) {
         className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl"
         style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
       >
-        <CalendarIcon />
+        {iconEl}
       </div>
       <h2 className="text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
         {label}
@@ -218,81 +235,40 @@ function FilterCard({ label, text }: { label: string; text: string }) {
   );
 }
 
-function EventCard({ event }: { event: typeof EVENTS[number] }) {
-  const mapUrl = `https://www.google.com/maps/search/?${new URLSearchParams({
-    api: '1',
-    query: `名古屋 ${event.area} ${event.title}`,
-  }).toString()}`;
+/* ── SVG Icons ── */
 
+function ClockIcon() {
   return (
-    <article
-      className="rounded-[14px] bg-white p-4"
-      style={{
-        border: '1px solid #E6ECF5',
-        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
-      }}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <span
-          className="rounded-full px-3 py-1 text-[10px] font-black"
-          style={{ color: '#ffffff', background: '#071A4D' }}
-        >
-          {event.tag}
-        </span>
-        <span
-          className="rounded-full px-3 py-1 text-[10px] font-black"
-          style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)' }}
-        >
-          {event.period}
-        </span>
-      </div>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 3.5" />
+    </svg>
+  );
+}
 
-      <h2 className="mt-3 text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
-        {event.title}
-      </h2>
-      <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
-        {event.description}
-      </p>
+function SunIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  );
+}
 
-      <div className="mt-3 flex items-center gap-2">
-        <span
-          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
-          style={{ color: '#071A4D', background: 'rgba(7,26,77,0.06)' }}
-        >
-          <MapPinIcon />
-          {event.area}
-        </span>
-      </div>
+function UmbrellaIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 12a11.05 11.05 0 0 0-22 0z" />
+      <path d="M12 12v6a3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <a
-          href="/new"
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
-          style={{
-            color: '#ffffff',
-            background: '#E8483F',
-            boxShadow: '0 6px 14px rgba(232,72,63,0.25)',
-          }}
-        >
-          詳細を見る
-          <ArrowRightIcon />
-        </a>
-        <a
-          href={mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
-          style={{
-            color: '#071A4D',
-            background: 'rgba(7,26,77,0.06)',
-            border: '1px solid #E6ECF5',
-          }}
-        >
-          地図で探す
-          <MapPinIcon />
-        </a>
-      </div>
-    </article>
+function HeartIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
   );
 }
 
@@ -303,15 +279,6 @@ function CalendarIcon() {
       <path d="M8 2v5" />
       <path d="M16 2v5" />
       <path d="M3 10h18" />
-    </svg>
-  );
-}
-
-function MapPinIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
-      <circle cx="12" cy="10" r="2.5" />
     </svg>
   );
 }

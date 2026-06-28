@@ -102,7 +102,7 @@ export default async function NewPage({
   const filteredArticles = filterArticles(articles, filters);
 
   return (
-    <main className="min-h-dvh pb-24" style={{ background: '#ffffff' }}>
+    <main className="min-h-dvh pb-28" style={{ background: '#ffffff' }}>
       <section className="px-4 pt-8 pb-5">
         <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
           NEW ARTICLES

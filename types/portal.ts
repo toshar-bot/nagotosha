@@ -14,6 +14,7 @@ export interface PortalCommercialFields {
   mapLabel?: string;
   articleUrl?: string;
   imageUrl?: string;
+  imageUrls?: string[];
   views?: number;
   saves?: number;
   mapClicks?: number;
