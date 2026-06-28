@@ -49,13 +49,19 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
   const distJa = card.districtJa ?? card.area;
   const distEn = card.districtEn ?? card.area.toUpperCase();
 
-  /* ヘッダー内のセンターカラム幅を計算
-     モバイルでは UR / 地区バッジを縮小してタイトルに幅を渡す */
-  const urBadgeW   = Math.round(w * (isMobile ? 0.185 : 0.215));
-  const distBadgeW = Math.round(w * (isMobile ? 0.120 : 0.150));
-  const gap        = Math.round(w * 0.016);
-  const innerW     = w - px * 2;
+  const gap    = Math.round(w * 0.016);
+  const innerW = w - px * 2;
+
+  // PC レイアウト用
+  const urBadgeW   = Math.round(w * 0.215);
+  const distBadgeW = Math.round(w * 0.150);
   const centerW    = innerW - urBadgeW - distBadgeW - gap * 2;
+
+  // モバイルタイトルのフォントサイズ:
+  //   実機Safariでの右端欠けを避けるため、最大値と文字間を控えめにする
+  const mobileTitleFs = Math.min(Math.round(w * 0.105), 36, Math.max(22,
+    Math.round(w / Math.max(1, card.name.length) * 0.58)
+  ));
 
   return (
     <div style={{
@@ -123,45 +129,94 @@ export default function FullArtCard({ card, widthPx: w, isNew, hideSubject }: Pr
       }} />
 
       {/* ━━━━━━━━━━━━━━ L6: ヘッダー ━━━━━━━━━━━━━━ */}
-      {/* モバイル(w<400): 2段レイアウト
-          - 行1: UR(左) + 熱田バッジ(右) を小さく横並び
-          - 行2: タイトルが full-width を使えるので絶対に切れない
-
-          PC(w≥400): 3列レイアウト（従来）
-      */}
-      <div style={{
-        position: 'absolute',
-        top: Math.round(h * 0.022), left: px, right: px,
-        zIndex: 14,
-      }}>
-        {isMobile ? (
-          /* ── モバイル: 2段 ── */
-          <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * 0.006) }}>
-            {/* 行1: UR + 熱田 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <UrBadge w={w} h={h} />
-              <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
-            </div>
-            {/* 行2: タイトル (full width) */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <GoldTitleHtml name={card.name} w={innerW} />
-              <EnSubtitle name={card.name} w={innerW} h={Math.round(w * 0.030)} />
-              <OriginPill w={w} h={h} />
-            </div>
-          </div>
-        ) : (
-          /* ── PC: 3列 ── */
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap }}>
+      {isMobile ? (
+        /*
+         * ══ モバイル: 全要素を absolute 独立配置 ══
+         *
+         * flex/minWidth/overflow の連鎖を完全に断ち切る。
+         * タイトルは left:px / right:px で幅を確定 → どんな状況でも切れない。
+         * フォントサイズは文字数で自動計算（mobileTitleFs）。
+         * 色は background-clip:text を使わないシンプルな color+textShadow。
+         */
+        <>
+          {/* UR バッジ（左上） */}
+          <div style={{ position: 'absolute', top: Math.round(h*0.022), left: px, zIndex: 14 }}>
             <UrBadge w={w} h={h} />
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: Math.round(h * 0.004) }}>
-              <SvgGoldTitle name={card.name} totalW={centerW} h={Math.round(w * 0.115)} />
-              <EnSubtitle name={card.name} w={centerW} h={Math.round(w * 0.038)} />
-              <OriginPill w={w} h={h} />
-            </div>
+          </div>
+
+          {/* 地区バッジ（右上） */}
+          <div style={{ position: 'absolute', top: Math.round(h*0.022), right: px, zIndex: 14 }}>
             <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
           </div>
-        )}
-      </div>
+
+          {/* ──── 料理名タイトル ────
+               left / right で幅を確定（flex 依存ゼロ）
+               background-clip:text と filter は使わない（iOS Safari で不安定）
+               シンプルな color + textShadow で金色を表現               */}
+          <div style={{
+            position: 'absolute',
+            top: Math.round(h * 0.088),
+            left: 0, right: 0,
+            zIndex: 18,
+            textAlign: 'center',
+            overflow: 'visible',
+            pointerEvents: 'none',
+            padding: `0 ${Math.round(w * 0.035)}px`,
+            boxSizing: 'border-box',
+          }}>
+            <div data-testid="full-art-card-title" style={{
+              display: 'block',
+              width: '100%',
+              maxWidth: '100%',
+              overflow: 'visible',
+              fontSize: mobileTitleFs,
+              fontWeight: 800,
+              fontFamily: FONT_JA,
+              letterSpacing: 0,
+              lineHeight: 1,
+              color: '#f5d060',
+              textShadow: [
+                '0 2px 6px rgba(0,0,0,0.97)',
+                '0 0 12px rgba(150,85,5,0.55)',
+                '-1px -1px 0 rgba(0,0,0,0.75)',
+                ' 1px  1px 0 rgba(0,0,0,0.65)',
+              ].join(', '),
+              whiteSpace: 'nowrap',
+              textOverflow: 'clip',
+            }}>
+              {card.name}
+            </div>
+
+            <div style={{ marginTop: Math.round(h * 0.006) }}>
+              <EnSubtitle name={card.name} w={innerW} h={Math.round(w * 0.028)} />
+            </div>
+            <div style={{ marginTop: Math.round(h * 0.005) }}>
+              <OriginPill w={w} h={h} />
+            </div>
+          </div>
+        </>
+      ) : (
+        /* ══ PC: 3列 flex（従来） ══ */
+        <div style={{
+          position: 'absolute',
+          top: Math.round(h * 0.022), left: px, right: px,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+          gap,
+          zIndex: 14,
+        }}>
+          <UrBadge w={w} h={h} />
+          <div style={{
+            flex: 1, minWidth: 0,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            paddingTop: Math.round(h * 0.004),
+          }}>
+            <SvgGoldTitle name={card.name} totalW={centerW} h={Math.round(w * 0.115)} />
+            <EnSubtitle name={card.name} w={centerW} h={Math.round(w * 0.038)} />
+            <OriginPill w={w} h={h} />
+          </div>
+          <DistrictBadge distJa={distJa} distEn={distEn} w={w} />
+        </div>
+      )}
 
       {/* ━━━━━━━━━━━━━━ L7: ヘッダー下 ゴールドライン ━━━━━━━━━━━━━━ */}
       <div style={{
@@ -356,43 +411,6 @@ function SvgGoldTitle({ name, totalW, h }: { name: string; totalW: number; h: nu
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HTML 金箔タイトル（モバイル専用）
-
-   SVGのtextLength/viewBox問題を完全に回避する。
-   background-clip: text で金箔グラデーション。
-   whiteSpace: nowrap で1行確定、全幅使用で絶対に切れない。
-══════════════════════════════════════════════════════════════ */
-function GoldTitleHtml({ name, w }: { name: string; w: number }) {
-  const len = name.length;
-  // 文字数に応じて font-size 調整（幅の何%か）
-  // 5文字: 8.8%、7文字: 7.0%、それ以上: 5.8%
-  const fsPct = len <= 5 ? 0.088 : len <= 7 ? 0.070 : 0.058;
-  const fs = Math.round(w * fsPct);
-
-  return (
-    <div style={{
-      fontSize: fs,
-      fontWeight: 800,
-      fontFamily: FONT_JA,
-      letterSpacing: '0.05em',
-      lineHeight: 1,
-      textAlign: 'center',
-      whiteSpace: 'nowrap',    // 1行固定
-      width: '100%',           // 親の full width を使う
-      // 金箔グラデーション文字
-      background: 'linear-gradient(to bottom, #ffe89a 0%, #fcd84e 12%, #e89420 42%, #c07010 68%, #f0c040 84%, #e8c870 100%)',
-      WebkitBackgroundClip: 'text',
-      backgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      // 黒影で立体感（drop-shadow は -webkit-text-fill-color と共存可）
-      filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.97)) drop-shadow(0 0 10px rgba(160,95,8,0.55))',
-    }}>
-      {name}
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════
    EN サブタイトル
 ══════════════════════════════════════════════════════════════ */
 const EN_MAP: Record<string, string> = {
@@ -436,11 +454,11 @@ function EnSubtitle({ name, w, h }: { name: string; w: number; h: number }) {
 ══════════════════════════════════════════════════════════════ */
 function UrBadge({ w, h }: { w: number; h: number }) {
   const isMobile = w < 400;
-  const FS = Math.round(w * (isMobile ? 0.076 : 0.090));
-  const starSz = Math.round(w * (isMobile ? 0.022 : 0.028));
+  const FS = Math.round(w * (isMobile ? 0.060 : 0.090));
+  const starSz = Math.round(w * (isMobile ? 0.018 : 0.028));
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h*0.002), flexShrink: 0 }}>
-      <svg width={Math.round(w*(isMobile?0.185:0.215))} height={Math.round(FS*1.08)}
+      <svg width={Math.round(w*(isMobile?0.140:0.215))} height={Math.round(FS*1.08)}
         style={{ display: 'block', overflow: 'visible' }}>
         <defs>
           <linearGradient id="urG" x1="0" y1="0" x2="1" y2="1">
@@ -500,7 +518,7 @@ function UrBadge({ w, h }: { w: number; h: number }) {
 ══════════════════════════════════════════════════════════════ */
 function DistrictBadge({ distJa, distEn, w }: { distJa: string; distEn: string; w: number }) {
   const isMobile = w < 400;
-  const sz = Math.round(w * (isMobile ? 0.120 : 0.150));
+  const sz = Math.round(w * (isMobile ? 0.092 : 0.150));
   return (
     <div style={{ position: 'relative', width: sz, height: sz, flexShrink: 0, marginTop: Math.round(w*0.006) }}>
       <div style={{
@@ -511,7 +529,7 @@ function DistrictBadge({ distJa, distEn, w }: { distJa: string; distEn: string; 
         boxShadow: `0 0 ${Math.round(w*0.028)}px rgba(200,155,35,0.28)`,
       }} />
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: Math.round(w*(isMobile?0.022:0.028)), color: 'rgba(255,215,108,0.97)', fontWeight: 900, lineHeight: 1, fontFamily: FONT_JA, textShadow: '0 1px 5px rgba(0,0,0,0.96)' }}>{distJa}</div>
+        <div style={{ fontSize: Math.round(w*(isMobile?0.018:0.028)), color: 'rgba(255,215,108,0.97)', fontWeight: 900, lineHeight: 1, fontFamily: FONT_JA, textShadow: '0 1px 5px rgba(0,0,0,0.96)' }}>{distJa}</div>
         {!isMobile && (
           <div style={{ fontSize: Math.round(w*0.018), color: 'rgba(255,200,88,0.56)', fontWeight: 700, letterSpacing: '0.04em', lineHeight: 1, marginTop: 2, fontFamily: FONT_EN }}>{distEn}</div>
         )}
@@ -711,3 +729,4 @@ function GoldRule({ w, style }: { w: number; style?: React.CSSProperties }) {
     }} />
   );
 }
+

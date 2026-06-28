@@ -103,7 +103,7 @@ export default function GamePage() {
         <StickerReveal cards={foundCards} onComplete={() => setPhase('result')} />
       )}
       {phase === 'result' && foundCards.length > 0 && (
-        <HuntResult cards={foundCards} col={col} isNew={isNewHunt} />
+        <HuntResult cards={foundCards} col={col} isNew={isNewHunt} onReroll={handleDevReset} />
       )}
 
       {process.env.NODE_ENV === 'development' && (
@@ -161,8 +161,8 @@ function HomeScreen({
           <span className="text-xs text-white/45">連続</span>
         </div>
         <div className="text-center">
-          <p className="text-[9px] tracking-[0.18em] font-bold text-white/35">今日のご飯が決まる</p>
-          <p className="font-black text-sm tracking-widest text-white/85">名古屋メシ図鑑</p>
+          <p className="text-[9px] tracking-[0.18em] font-bold text-white/35">今日のおでかけが決まる</p>
+          <p className="font-black text-sm tracking-widest text-white/85">おでかけガチャ</p>
         </div>
         <div className="flex items-center gap-1 rounded-full px-3 py-1.5 bg-white/8 border border-white/12">
           <span className="font-black text-sm text-white/90">{ownedCount}</span>
@@ -179,7 +179,7 @@ function HomeScreen({
             style={{ backdropFilter: 'blur(8px)' }}>
             <p className="text-white/80 text-sm font-bold leading-relaxed text-center">
               {canHunt
-                ? '今日の名古屋メシを\n探しに行くぞ！'
+                ? '今日のおでかけ先を\n探しに行くぞ！'
                 : '今日の探索は完了じゃ。\nまた明日な！'}
             </p>
             {/* 吹き出しの矢印 */}
@@ -214,7 +214,7 @@ function HomeScreen({
               background: 'linear-gradient(to bottom, rgba(255,255,255,0.14), transparent)',
               pointerEvents: 'none',
             }} />
-            <span className="relative">今日の名古屋メシを探索する</span>
+            <span className="relative">今日のおでかけ先を探す</span>
           </button>
         ) : (
           <div className="flex flex-col items-center gap-4 w-full max-w-xs">
@@ -240,72 +240,109 @@ function HomeScreen({
 }
 
 /* ── 探索結果 ── */
-function HuntResult({ cards, col, isNew }: { cards: Card[]; col: CollectionState; isNew: boolean }) {
-  const topRarity = [...cards].sort((a, b) => {
+function HuntResult({
+  cards,
+  col,
+  isNew,
+  onReroll,
+}: {
+  cards: Card[];
+  col: CollectionState;
+  isNew: boolean;
+  onReroll: () => void;
+}) {
+  const topCard = [...cards].sort((a, b) => {
     const rank: Record<string, number> = { N: 1, R: 2, SR: 3, SSR: 4, UR: 5 };
     return rank[b.rarity] - rank[a.rarity];
   })[0];
-  const cfg = RARITY_CONFIG[topRarity.rarity];
+  const cfg = RARITY_CONFIG[topCard.rarity];
+  const isTopNew = isNew && (col.cardCounts[topCard.id] ?? 0) <= 1;
+  const topIndex = cards.findIndex(card => card.id === topCard.id);
 
   return (
     <div
-      className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 select-none"
+      className="fixed inset-0 z-40 flex items-center justify-center select-none px-4 py-6"
       style={{
-        background: '#030108',
-        paddingBottom: 'env(safe-area-inset-bottom, 20px)',
+        background: 'rgba(12,10,12,0.52)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
       }}
     >
-      {/* 背景グロウ */}
       <div style={{
-        position: 'absolute', inset: 0,
-        background: `radial-gradient(ellipse 70% 55% at 50% 50%, ${cfg.glowColor} 0%, transparent 65%)`,
-        pointerEvents: 'none',
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `radial-gradient(circle at 24% 18%, ${cfg.glowColor} 0%, transparent 18%), radial-gradient(circle at 78% 72%, rgba(255,210,120,0.20) 0%, transparent 20%), linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,245,230,0.56))`,
       }} />
 
-      <div className="relative z-10 flex flex-col items-center gap-8 px-4 w-full animate-fade-up">
-        {/* タイトル */}
-        <div className="text-center">
-          <p className="text-[10px] tracking-[0.28em] font-bold mb-1" style={{ color: cfg.color }}>
-            NAGOTOSHA MESHI FOUND
-          </p>
-          <p className="text-white font-black text-2xl">
-            {cards.length}枚のシールを発見！
-          </p>
-        </div>
+      <section
+        className="relative z-10 w-full max-w-[390px] rounded-[28px] bg-white/90 shadow-2xl animate-fade-up"
+        style={{
+          border: '1px solid rgba(255,255,255,0.82)',
+          boxShadow: `0 24px 80px rgba(40,20,8,0.22), 0 0 38px ${cfg.glowColor}`,
+        }}
+      >
+        <div className="px-5 pt-5 pb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-[10px] font-black tracking-[0.24em] text-neutral-400">PACK RESULT</p>
+              <h2 className="text-xl font-black text-neutral-900">おでかけカードを発見</h2>
+            </div>
+            <span className="rounded-full px-3 py-1 text-xs font-black" style={{ color: cfg.color, background: `${cfg.color}18` }}>
+              {topCard.rarity}
+            </span>
+          </div>
 
-        {/* シールのミニ表示 */}
-        <div className="flex gap-2 flex-wrap justify-center">
-          {cards.map((card, i) => (
-            <div
-              key={i}
-              style={{
-                animation: 'sticker-drop 0.45s cubic-bezier(0.34,1.5,0.64,1) both',
-                animationDelay: `${i * 0.09}s`,
-              }}
-            >
+          <div className="rounded-2xl bg-white p-4 shadow-[0_12px_34px_rgba(20,12,8,0.14)]">
+            <div className="flex justify-center">
               <StickerVisual
-                card={card}
-                size="sm"
+                card={topCard}
+                size="lg"
                 discovered
-                tilt
-                isNew={isNew && (col.cardCounts[card.id] ?? 0) <= 1}
+                isNew={isTopNew}
               />
             </div>
-          ))}
-        </div>
+            <div className="mt-4">
+              <p className="text-xs font-bold text-neutral-500">{topCard.shopName}</p>
+              <h3 className="mt-1 text-lg font-black leading-tight text-neutral-950">{topCard.name}</h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-neutral-700">
+                {topCard.description}
+              </p>
+            </div>
+          </div>
 
-        {/* シール帳へのCTA */}
-        <Link
-          href="/zukan"
-          className="w-full max-w-xs py-4 rounded-2xl font-black text-white text-base text-center active:scale-95 transition-transform"
-          style={{
-            background: `linear-gradient(135deg, ${cfg.color}cc, ${cfg.color}66)`,
-            boxShadow: `0 0 30px ${cfg.glowColor}, 0 4px 0 rgba(0,0,0,0.3)`,
-          }}
-        >
-          シール帳で確認する
-        </Link>
-      </div>
+          <div className="mt-4 flex items-center justify-center gap-1.5">
+            {cards.map((card, i) => (
+              <span
+                key={`${card.id}-${i}`}
+                className="h-2 rounded-full transition-all"
+                style={{
+                  width: i === topIndex ? 22 : 8,
+                  background: i === topIndex ? cfg.color : 'rgba(20,20,20,0.18)',
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            <Link
+              href={`/card/${topCard.id}`}
+              className="w-full rounded-full py-4 text-center text-base font-black text-white active:scale-[0.98] transition-transform"
+              style={{ background: `linear-gradient(135deg, ${cfg.color}, ${cfg.color}bb)` }}
+            >
+              詳細を見る
+            </Link>
+            <button
+              type="button"
+              onClick={onReroll}
+              className="w-full rounded-full border py-4 text-base font-black active:scale-[0.98] transition-transform"
+              style={{ borderColor: `${cfg.color}88`, color: cfg.color, background: 'rgba(255,255,255,0.74)' }}
+            >
+              もう一度回す
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
