@@ -1,174 +1,223 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { NewArticleCardClient } from '@/components/NewArticleCardClient';
 import { FEATURED_ARTICLES } from '@/data/portal';
 import { getPortalArticlesWithFallback } from '@/lib/wordpress-fetch';
 import type { FeaturedArticle } from '@/types/portal';
 
-const description = '名古屋の新着グルメ、イベント、おでかけ情報をまとめてチェックできます。';
+const JP = {
+  description: '\u540d\u53e4\u5c4b\u306e\u65b0\u7740\u30b0\u30eb\u30e1\u3001\u30a4\u30d9\u30f3\u30c8\u3001\u304a\u3067\u304b\u3051\u60c5\u5831\u3092\u307e\u3068\u3081\u3066\u30c1\u30a7\u30c3\u30af\u3067\u304d\u307e\u3059\u3002',
+  siteName: '\u306a\u3054\u3068\u3057\u3083',
+  metaTitle: '\u65b0\u7740\u8a18\u4e8b\uff5c\u306a\u3054\u3068\u3057\u3083',
+  pageTitle: '\u65b0\u7740\u8a18\u4e8b',
+  pageLead: '\u65b0\u5e97\u30aa\u30fc\u30d7\u30f3\u3001\u8a71\u984c\u306e\u30b9\u30dd\u30c3\u30c8\u3001\u65b0\u3057\u3044\u8a18\u4e8b\u3092\u307e\u3068\u3081\u3066\u30c1\u30a7\u30c3\u30af\u3067\u304d\u307e\u3059\u3002',
+  all: '\u3059\u3079\u3066',
+  newOpen: '\u65b0\u5e97',
+  gourmet: '\u30b0\u30eb\u30e1',
+  event: '\u30a4\u30d9\u30f3\u30c8',
+  cafe: '\u30ab\u30d5\u30a7',
+  articlesCount: '\u4ef6\u306e\u8a18\u4e8b',
+  noArticles: '\u8a72\u5f53\u3059\u308b\u8a18\u4e8b\u304c\u3042\u308a\u307e\u305b\u3093',
+  noArticlesLead: '\u6761\u4ef6\u3092\u5909\u3048\u3066\u3001\u3082\u3046\u4e00\u5ea6\u63a2\u3057\u3066\u307f\u3066\u304f\u3060\u3055\u3044\u3002',
+  nextLead: '\u8a18\u4e8b\u3092\u8aad\u3093\u3060\u3089\u6b21\u306b\u63a2\u3059',
+  areaLink: '\u30a8\u30ea\u30a2\u304b\u3089\u63a2\u3059',
+  areaDescription: '\u6c17\u306b\u306a\u308b\u304a\u5e97\u3084\u30a4\u30d9\u30f3\u30c8\u3092\u3001\u540d\u99c5\u30fb\u6804\u30fb\u5927\u9808\u306a\u3069\u306e\u30a8\u30ea\u30a2\u5225\u306b\u63a2\u305b\u307e\u3059\u3002',
+  eventLink: '\u30a4\u30d9\u30f3\u30c8\u3092\u898b\u308b',
+  eventDescription: '\u4eca\u65e5\u884c\u3051\u308b\u30a4\u30d9\u30f3\u30c8\u3084\u9031\u672b\u306e\u304a\u3067\u304b\u3051\u60c5\u5831\u3092\u30c1\u30a7\u30c3\u30af\u3067\u304d\u307e\u3059\u3002',
+  savedLink: '\u4fdd\u5b58\u3057\u305f\u8a18\u4e8b\u3092\u898b\u308b',
+  savedDescription: '\u6c17\u306b\u306a\u308b\u8a18\u4e8b\u3084\u304a\u5e97\u3092\u4fdd\u5b58\u3057\u3066\u3001\u3042\u3068\u304b\u3089\u898b\u8fd4\u305b\u307e\u3059\u3002',
+  partnerTitle: '\u65b0\u5e97\u30fb\u30a4\u30d9\u30f3\u30c8\u544a\u77e5\u3092\u3057\u305f\u3044\u304a\u5e97\u3078',
+  partnerDescription: '\u65b0\u5e97\u30aa\u30fc\u30d7\u30f3\u3001\u671f\u9593\u9650\u5b9a\u30e1\u30cb\u30e5\u30fc\u3001\u9031\u672b\u30a4\u30d9\u30f3\u30c8\u306a\u3069\u3001\u540d\u53e4\u5c4b\u306e\u304a\u5e97\u5411\u3051\u306e\u63b2\u8f09\u76f8\u8ac7\u3092\u53d7\u3051\u4ed8\u3051\u3066\u3044\u307e\u3059\u3002',
+  partnerCta: '\u63b2\u8f09\u306b\u3064\u3044\u3066\u76f8\u8ac7\u3059\u308b',
+  articleAriaSuffix: '\u306e\u8a18\u4e8b\u3092\u898b\u308b',
+  newFeatureWords: ['new', 'new-open', '\u65b0\u5e97'],
+  openWords: ['\u65b0\u5e97', '\u30aa\u30fc\u30d7\u30f3'],
+};
 
 export const metadata: Metadata = {
-  title: '新着記事｜なごとしゃ',
-  description,
+  title: JP.metaTitle,
+  description: JP.description,
   openGraph: {
-    title: '新着記事｜なごとしゃ',
-    description,
+    title: JP.metaTitle,
+    description: JP.description,
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: JP.siteName }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '新着記事｜なごとしゃ',
-    description,
+    title: JP.metaTitle,
+    description: JP.description,
     images: ['/opengraph-image'],
   },
 };
 
+const FILTER_TABS = [
+  { label: JP.all, href: '/new', tagParam: undefined as string | undefined },
+  { label: JP.newOpen, href: `/new?feature=${encodeURIComponent(JP.newOpen)}`, featureParam: JP.newOpen },
+  { label: JP.gourmet, href: `/new?tag=${encodeURIComponent(JP.gourmet)}`, tagParam: JP.gourmet },
+  { label: JP.event, href: `/new?tag=${encodeURIComponent(JP.event)}`, tagParam: JP.event },
+  { label: JP.cafe, href: `/new?type=${encodeURIComponent(JP.cafe)}`, typeParam: JP.cafe },
+];
+
 const NAV_LINKS = [
   {
     href: '/area',
-    label: 'エリアから探す',
-    description: '気になるお店やイベントを、名駅・栄・大須などのエリア別に探せます。',
+    label: JP.areaLink,
+    description: JP.areaDescription,
     icon: <NavMapIcon />,
   },
   {
     href: '/event',
-    label: 'イベントを見る',
-    description: '今日行けるイベントや週末のおでかけ情報をチェックできます。',
+    label: JP.eventLink,
+    description: JP.eventDescription,
     icon: <NavCalendarIcon />,
   },
   {
     href: '/saved',
-    label: '保存した記事を見る',
-    description: '気になる記事やお店を保存して、あとから見返せます。',
+    label: JP.savedLink,
+    description: JP.savedDescription,
     icon: <NavBookmarkIcon />,
   },
 ] as const;
 
-const FILTER_TABS = [
-  { label: 'すべて',   active: true  },
-  { label: '新店',     active: false },
-  { label: 'グルメ',   active: false },
-  { label: 'イベント', active: false },
-  { label: 'カフェ',   active: false },
-];
+type NewSearchParams = {
+  tag?: string | string[];
+  area?: string | string[];
+  type?: string | string[];
+  feature?: string | string[];
+};
 
-export default async function NewPage() {
+export default async function NewPage({
+  searchParams,
+}: {
+  searchParams?: NewSearchParams;
+}) {
   const articles = await getPortalArticlesWithFallback(FEATURED_ARTICLES);
+  const filters = {
+    tag: queryValue(searchParams?.tag),
+    area: queryValue(searchParams?.area),
+    type: queryValue(searchParams?.type),
+    feature: queryValue(searchParams?.feature),
+  };
+  const filteredArticles = filterArticles(articles, filters);
 
   return (
-    <main
-      className="min-h-dvh pb-28"
-      style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f8fbff 44%, #ffffff 100%)' }}
-    >
-      {/* ── ヒーロー ── */}
-      <section className="relative overflow-hidden px-5 pt-7 pb-6">
-        <div
-          className="absolute inset-x-0 top-0 h-56"
-          style={{
-            background:
-              'radial-gradient(circle at 18% 8%, rgba(255,255,255,0.92) 0%, transparent 36%), radial-gradient(circle at 85% 18%, rgba(10,154,154,0.14) 0%, transparent 34%)',
-          }}
-        />
-        <div className="relative">
-          <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#0a9a9a' }}>
-            NEW
-          </p>
-          <h1 className="text-[28px] font-black leading-tight tracking-tight" style={{ color: '#0a2438' }}>
-            新着・NEW!
-          </h1>
-          <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#416b7d' }}>
-            新店オープン、話題のスポット、新しい記事をまとめてチェックできます。
-          </p>
-        </div>
+    <main className="min-h-dvh pb-24" style={{ background: '#ffffff' }}>
+      <section className="px-4 pt-8 pb-5">
+        <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
+          NEW ARTICLES
+        </p>
+        <h1 className="mt-1 text-[28px] font-black leading-tight tracking-tight" style={{ color: '#071A4D' }}>
+          {JP.pageTitle}
+        </h1>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+          {JP.pageLead}
+        </p>
       </section>
 
-      {/* ── フィルタータブ（静的） ── */}
-      <div className="px-4 pb-2">
-        <div
-          className="flex gap-2 overflow-x-auto pb-1"
-          style={{ scrollbarWidth: 'none' } as React.CSSProperties}
-        >
-          {FILTER_TABS.map(tab => (
-            <span
-              key={tab.label}
-              className="shrink-0 rounded-full px-3.5 py-2 text-[12px] font-black"
-              style={tab.active ? {
-                color: '#ffffff',
-                background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
-                boxShadow: '0 2px 8px rgba(29,91,115,0.22)',
-              } : {
-                color: '#5f8392',
-                background: '#f0f7fc',
-                border: '1px solid rgba(29,91,115,0.12)',
-              }}
-            >
-              {tab.label}
-            </span>
-          ))}
+      <div className="px-4 pb-4">
+        <div className="flex gap-2 overflow-x-auto pb-1 pr-4" style={{ scrollbarWidth: 'none' } as React.CSSProperties}>
+          {FILTER_TABS.map(tab => {
+            const isActive = isFilterTabActive(tab, filters);
+            return (
+              <Link
+                key={tab.label}
+                href={tab.href}
+                className="flex shrink-0 items-center rounded-[16px] px-[17px] text-[13px] font-black no-underline"
+                style={
+                  isActive
+                    ? {
+                        height: 44,
+                        color: '#ffffff',
+                        background: '#E8483F',
+                        boxShadow: '0 7px 16px rgba(232,72,63,0.22)',
+                        textDecoration: 'none',
+                      }
+                    : {
+                        height: 44,
+                        color: '#071A4D',
+                        background: '#ffffff',
+                        border: '1px solid #F1B9B5',
+                        textDecoration: 'none',
+                      }
+                }
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
-      {/* ── 件数 ── */}
-      <div className="px-5 pb-3">
-        <p className="text-[11px] font-bold" style={{ color: '#8aa5b0' }}>
-          {articles.length}件の記事
+      <div className="px-4 pb-4">
+        <p className="text-[11px] font-bold" style={{ color: '#667085' }}>
+          {filteredArticles.length}
+          {JP.articlesCount}
         </p>
       </div>
 
-      {/* ── 記事一覧 ── */}
       <section className="px-4">
-        <div className="flex flex-col gap-4">
-          {articles.map(article => (
-            <NewArticleCard key={article.id} article={article} />
-          ))}
-        </div>
+        {filteredArticles.length > 0 ? (
+          <div className="flex flex-col gap-5">
+            {filteredArticles.map((article, index) => (
+              <NewArticleCardClient
+                key={article.id}
+                article={article}
+                imageUrl={article.imageUrl ?? getFallbackArticleImageUrl(article, index)}
+                hookLine={getArticleHookLine(article)}
+                views={article.views ?? getStableViews(article)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div
+            className="rounded-[18px] bg-white px-5 py-8 text-center"
+            style={{
+              border: '1px solid #E6ECF5',
+              boxShadow: '0 8px 24px rgba(7,26,77,0.07)',
+            }}
+          >
+            <p className="text-[15px] font-black" style={{ color: '#071A4D' }}>
+              {JP.noArticles}
+            </p>
+            <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+              {JP.noArticlesLead}
+            </p>
+          </div>
+        )}
       </section>
 
-      {/* ── WordPress連携注記 ── */}
-      <section className="px-4 pt-8">
-        <div
-          className="rounded-2xl px-4 py-3"
-          style={{
-            background: 'rgba(29,91,115,0.04)',
-            border: '1px solid rgba(29,91,115,0.08)',
-          }}
-        >
-          <p className="text-[11px] font-medium leading-6" style={{ color: '#8aa5b0' }}>
-            WordPressの記事データと連携し、取得できない場合は編集部のおすすめ記事を表示します。
-          </p>
+      <section className="px-4 pt-12">
+        <div className="flex items-center gap-3">
+          <div className="flex-1 border-t border-dashed" style={{ borderColor: 'rgba(232,72,63,0.36)' }} />
+          <span className="text-[15px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
+            NEXT
+          </span>
+          <div className="flex-1 border-t border-dashed" style={{ borderColor: 'rgba(232,72,63,0.36)' }} />
         </div>
-      </section>
-
-      {/* ── 回遊導線 ── */}
-      <section className="px-4 pt-10">
-        <p className="text-[10px] font-black tracking-[0.20em] mb-4" style={{ color: '#0a9a9a' }}>
-          記事を読んだら次に探す
+        <p className="mt-2 text-center text-[13px] font-black" style={{ color: '#071A4D' }}>
+          {JP.nextLead}
         </p>
-        <div className="flex flex-col gap-3">
+        <div className="mt-5 flex flex-col gap-3">
           {NAV_LINKS.map(nav => (
             <Link
               key={nav.href}
               href={nav.href}
-              className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4 active:scale-[0.98] transition-transform"
+              className="flex items-center gap-3 rounded-[14px] bg-white px-4 py-4 no-underline transition-transform active:scale-[0.98]"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 2px 10px rgba(10,36,56,0.05)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 12px rgba(7,26,77,0.07)',
+                textDecoration: 'none',
               }}
             >
-              <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: 'rgba(29,91,115,0.08)' }}
-              >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ background: 'rgba(232,72,63,0.08)' }}>
                 {nav.icon}
               </span>
-              <span className="flex-1 min-w-0">
-                <span className="block text-[14px] font-black leading-snug" style={{ color: '#0a2438' }}>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
                   {nav.label}
                 </span>
-                <span
-                  className="mt-0.5 block text-[11px] font-medium leading-5"
-                  style={{ color: '#7a9aab' }}
-                >
+                <span className="mt-0.5 block text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
                   {nav.description}
                 </span>
               </span>
@@ -178,33 +227,33 @@ export default async function NewPage() {
         </div>
       </section>
 
-      {/* ── 店舗向け導線 ── */}
       <section className="px-4 pt-8 pb-2">
         <div
-          className="rounded-2xl px-5 py-5"
+          className="rounded-[18px] px-5 py-6"
           style={{
-            background: 'linear-gradient(145deg, #0a2438 0%, #1d5b73 100%)',
+            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
+            border: '1.5px solid rgba(232,72,63,0.14)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.18em] mb-2" style={{ color: '#6ecece' }}>
+          <p className="mb-2 text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
             PARTNER
           </p>
-          <p className="text-[15px] font-black leading-snug" style={{ color: '#ffffff' }}>
-            新店・イベント告知をしたいお店へ
-          </p>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#a8cdd8' }}>
-            新店オープン、期間限定メニュー、週末イベントなど、名古屋のお店向けの掲載相談を受け付けています。
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
+            {JP.partnerTitle}
+          </h2>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+            {JP.partnerDescription}
           </p>
           <Link
             href="/partner"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-black active:scale-95 transition-transform"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white no-underline transition-transform active:scale-[0.98]"
             style={{
-              color: '#0a2438',
-              background: '#ffffff',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+              background: '#E8483F',
+              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
+              textDecoration: 'none',
             }}
           >
-            掲載について相談する
+            {JP.partnerCta}
             <ArrowRightIcon />
           </Link>
         </div>
@@ -213,159 +262,115 @@ export default async function NewPage() {
   );
 }
 
-/* ── 記事カード ── */
-function NewArticleCard({ article }: { article: FeaturedArticle }) {
-  const hasActions = article.articleUrl || article.mapUrl;
+function queryValue(value: string | string[] | undefined): string {
+  if (Array.isArray(value)) return value[0] ?? '';
+  return value ?? '';
+}
 
+function isFilterTabActive(
+  tab: (typeof FILTER_TABS)[number],
+  filters: { tag?: string; area?: string; type?: string; feature?: string },
+): boolean {
+  const hasAnyFilter = Boolean(filters.tag || filters.area || filters.type || filters.feature);
+  if (!hasAnyFilter) return tab.href === '/new';
   return (
-    <article
-      className="rounded-2xl bg-white"
-      style={{
-        border: '1px solid rgba(29,91,115,0.10)',
-        borderLeft: `3px solid ${article.accentColor}`,
-        boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
-      }}
-    >
-      <div className="p-4">
-        {/* バッジ行 */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-3">
-          {article.isNew && (
-            <span
-              className="rounded-full px-2.5 py-1 text-[10px] font-black tracking-wide text-white"
-              style={{
-                background: 'linear-gradient(135deg, #c9412d, #e05030)',
-                boxShadow: '0 1px 6px rgba(201,65,45,0.35)',
-              }}
-            >
-              NEW!
-            </span>
-          )}
-          <span
-            className="rounded-full px-2.5 py-1 text-[10px] font-black"
-            style={{
-              color: article.accentColor,
-              background: 'rgba(0,0,0,0.04)',
-              border: '1px solid rgba(0,0,0,0.08)',
-            }}
-          >
-            {article.tag}
-          </span>
-          {article.isPr && (
-            <span
-              className="rounded-full px-2 py-0.5 text-[9px] font-black tracking-[0.10em]"
-              style={{
-                color: '#5f8392',
-                background: 'rgba(0,0,0,0.04)',
-                border: '1px solid rgba(0,0,0,0.10)',
-              }}
-            >
-              PR
-            </span>
-          )}
-        </div>
-
-        {/* タイトル */}
-        <h2 className="text-[16px] font-black leading-snug" style={{ color: '#0a2438' }}>
-          {article.title}
-        </h2>
-
-        {/* description（あれば） */}
-        {article.description && (
-          <p
-            className="mt-2 text-[12px] font-medium leading-6"
-            style={{
-              color: '#5a7b8a',
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical' as const,
-            }}
-          >
-            {article.description}
-          </p>
-        )}
-
-        {/* メタ情報 */}
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          {article.area && (
-            <span
-              className="rounded-full px-2.5 py-1 text-[10px] font-bold"
-              style={{ color: '#1d5b73', background: 'rgba(29,91,115,0.08)' }}
-            >
-              {article.area}
-            </span>
-          )}
-          {article.publishedAt && (
-            <span className="text-[10px] font-bold" style={{ color: '#a0b8c0' }}>
-              {formatPublishedAt(article.publishedAt)}
-            </span>
-          )}
-          {article.views !== undefined && article.views > 0 && (
-            <span
-              className="flex items-center gap-1 text-[10px] font-bold"
-              style={{ color: '#a0b8c0' }}
-            >
-              <EyeIcon />
-              {article.views.toLocaleString()}
-            </span>
-          )}
-        </div>
-
-        {/* sponsorName */}
-        {article.isPr && article.sponsorName && (
-          <p className="mt-2 text-[10px] font-bold" style={{ color: '#8aa5b0' }}>
-            提供：{article.sponsorName}
-          </p>
-        )}
-
-        {/* アクションボタン */}
-        {hasActions && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {article.articleUrl && (
-              <a
-                href={article.articleUrl}
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
-                style={{ color: '#ffffff', background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)' }}
-              >
-                記事を見る
-                <ArrowRightIcon />
-              </a>
-            )}
-            {article.mapUrl && (
-              <a
-                href={article.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
-                style={{
-                  color: '#1d5b73',
-                  background: 'rgba(10,154,154,0.10)',
-                  border: '1px solid rgba(10,154,154,0.22)',
-                }}
-              >
-                地図で開く
-                <MapPinIcon />
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    </article>
+    ('tagParam' in tab && tab.tagParam === filters.tag) ||
+    ('typeParam' in tab && tab.typeParam === filters.type) ||
+    ('featureParam' in tab && tab.featureParam === filters.feature)
   );
 }
 
-/* ── ヘルパー ── */
-function formatPublishedAt(iso: string): string {
-  try {
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return iso;
-    return `${d.getMonth() + 1}/${d.getDate()}`;
-  } catch {
-    return iso;
-  }
+function filterArticles(
+  articles: FeaturedArticle[],
+  filters: { tag?: string; area?: string; type?: string; feature?: string },
+): FeaturedArticle[] {
+  const values = Object.values(filters)
+    .map(value => normalizeSearchText(value))
+    .filter(Boolean);
+
+  if (values.length === 0) return articles;
+
+  return articles.filter(article => {
+    const haystack = normalizeSearchText(
+      [
+        article.title,
+        article.description,
+        article.tag,
+        article.area,
+        article.category,
+        article.isNew ? 'NEW new new-open \u65b0\u5e97 \u30aa\u30fc\u30d7\u30f3' : '',
+        article.isPr ? 'PR pr' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    );
+
+    return values.some(value => haystack.includes(value));
+  });
 }
 
-/* ── SVGアイコン ── */
+function normalizeSearchText(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function getFallbackArticleImageUrl(article: FeaturedArticle, index: number): string | undefined {
+  const keyword = normalizeSearchText(`${article.tag} ${article.category ?? ''} ${article.title} ${article.description ?? ''}`);
+  const fallback =
+    pickFallbackArticle(keyword, [JP.cafe, '\u73c8\u7432', '\u30b3\u30fc\u30d2\u30fc'], index) ??
+    pickFallbackArticle(keyword, ['\u30d1\u30f3', '\u30b9\u30a4\u30fc\u30c4'], index) ??
+    pickFallbackArticle(keyword, [JP.gourmet, '\u6599\u7406', '\u30ec\u30b9\u30c8\u30e9\u30f3', '\u30e9\u30fc\u30e1\u30f3', '\u30e9\u30f3\u30c1'], index) ??
+    pickFallbackArticle(keyword, [JP.event, '\u796d\u308a', '\u9031\u672b'], index) ??
+    pickFallbackArticle(keyword, [JP.newOpen, '\u30aa\u30fc\u30d7\u30f3'], index) ??
+    pickAnyFallbackArticle(article, index);
+
+  return fallback?.imageUrl;
+}
+
+function pickFallbackArticle(keyword: string, words: string[], index: number): FeaturedArticle | undefined {
+  if (!words.some(word => keyword.includes(word.toLowerCase()))) return undefined;
+  const candidates = FEATURED_ARTICLES.filter(item => {
+    const source = normalizeSearchText(`${item.tag} ${item.title} ${item.description ?? ''}`);
+    return words.some(word => source.includes(word.toLowerCase())) && Boolean(item.imageUrl);
+  });
+  return pickFromCandidates(candidates, keyword || String(index));
+}
+
+function pickAnyFallbackArticle(article: FeaturedArticle, index: number): FeaturedArticle | undefined {
+  const candidates = FEATURED_ARTICLES.filter(item => item.imageUrl);
+  return pickFromCandidates(candidates, `${article.id}-${article.title}-${index}`);
+}
+
+function pickFromCandidates(candidates: FeaturedArticle[], seed: string): FeaturedArticle | undefined {
+  if (candidates.length === 0) return undefined;
+  const hash = getStableHash(seed);
+  return candidates[hash % candidates.length];
+}
+
+function getArticleHookLine(article: FeaturedArticle): string {
+  const source = normalizeSearchText(`${article.title} ${article.description ?? ''} ${article.tag} ${article.area ?? ''}`);
+  if (article.isNew || JP.openWords.some(word => source.includes(normalizeSearchText(word)))) {
+    return '\u9031\u672b\u306b\u3061\u3087\u3046\u3069\u3044\u3044\u3001\u540d\u53e4\u5c4b\u306e\u65b0\u30b9\u30dd\u30c3\u30c8\u3002';
+  }
+  if (source.includes(normalizeSearchText(JP.cafe)) || source.includes('\u73c8\u7432') || source.includes('\u30b3\u30fc\u30d2\u30fc')) {
+    return '\u99c5\u8fd1\u3067\u3075\u3089\u3063\u3068\u5bc4\u308c\u308b\u3001\u6c17\u306b\u306a\u308b\u4e00\u8ed2\u3002';
+  }
+  if (source.includes(normalizeSearchText(JP.event)) || source.includes('\u9031\u672b') || source.includes('\u796d\u308a')) {
+    return '\u4eca\u884c\u304d\u305f\u3044\u3001\u540d\u53e4\u5c4b\u306e\u304a\u3067\u304b\u3051\u8a71\u984c\u3002';
+  }
+  if (source.includes(normalizeSearchText(JP.gourmet)) || source.includes('\u30b0\u30eb\u30e1') || source.includes('\u6599\u7406')) {
+    return '\u5199\u771f\u3067\u898b\u305f\u3089\u6c17\u306b\u306a\u308b\u3001\u540d\u53e4\u5c4b\u306e\u8a71\u984c\u5e97\u3002';
+  }
+  return '\u3053\u308c\u306f\u884c\u304d\u305f\u3044\u3002\u540d\u53e4\u5c4b\u306e\u6c17\u306b\u306a\u308b\u8a71\u984c\u3002';
+}
+
+function getStableViews(article: FeaturedArticle): number {
+  return 1200 + (getStableHash(`${article.id}-${article.title}`) % 7200);
+}
+
+function getStableHash(value: string): number {
+  return Array.from(value).reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 7);
+}
+
 function ArrowRightIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -375,27 +380,9 @@ function ArrowRightIcon() {
   );
 }
 
-function MapPinIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
-      <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  );
-}
-
-function EyeIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
 function ChevronRightIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a0b8c0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C4CEDD" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 18l6-6-6-6" />
     </svg>
   );
@@ -403,7 +390,7 @@ function ChevronRightIcon() {
 
 function NavMapIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
       <line x1="8" y1="2" x2="8" y2="18" />
       <line x1="16" y1="6" x2="16" y2="22" />
@@ -413,7 +400,7 @@ function NavMapIcon() {
 
 function NavCalendarIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
       <line x1="16" y1="2" x2="16" y2="6" />
       <line x1="8" y1="2" x2="8" y2="6" />
@@ -424,7 +411,7 @@ function NavCalendarIcon() {
 
 function NavBookmarkIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d5b73" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </svg>
   );

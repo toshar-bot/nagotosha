@@ -58,98 +58,99 @@ const MAP_RANKING = [
 
 export default function ReportSamplePage() {
   return (
-    <main
-      className="min-h-dvh pb-28"
-      style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f7fbff 42%, #ffffff 100%)' }}
-    >
-      <section className="relative overflow-hidden px-5 pt-7 pb-7">
-        <div
-          className="absolute inset-x-0 top-0 h-64"
-          style={{
-            background:
-              'radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95) 0%, transparent 34%), radial-gradient(circle at 86% 18%, rgba(10,154,154,0.16) 0%, transparent 32%)',
-          }}
-        />
-        <div className="relative">
-          <Link
-            href="/partner"
-            className="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.14em]"
-            style={{ color: '#1d5b73' }}
-          >
-            <ArrowLeftIcon />
-            PARTNER
-          </Link>
+    <main className="min-h-dvh pb-10" style={{ background: '#ffffff' }}>
 
-          <div className="mt-7">
-            <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#0a9a9a' }}>
-              SAMPLE REPORT
-            </p>
-            <h1 className="text-[29px] font-black leading-[1.14] tracking-tight" style={{ color: '#0a2438' }}>
-              掲載後の反応が、
-              <br />
-              数字で見える。
-            </h1>
-            <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#416b7d' }}>
-              なごとしゃでは、記事の閲覧数・保存数・Googleマップクリック数をもとに、次の集客改善につなげます。
-            </p>
-            <p className="mt-3 rounded-2xl px-4 py-3 text-[11px] font-bold leading-5" style={{ color: '#5f8392', background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(29,91,115,0.10)' }}>
-              これはサンプル表示です。実際の数値は掲載内容・期間により変動します。
-            </p>
-          </div>
+      {/* ── ページヘッダー ── */}
+      <section className="px-5 pt-7 pb-7">
+        <Link
+          href="/partner"
+          className="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.14em]"
+          style={{ color: '#071A4D' }}
+        >
+          <ArrowLeftIcon />
+          PARTNER
+        </Link>
+
+        <div className="mt-7">
+          <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#E8483F' }}>
+            SAMPLE REPORT
+          </p>
+          <h1 className="text-[29px] font-black leading-[1.14] tracking-tight" style={{ color: '#071A4D' }}>
+            掲載後の反応が、
+            <br />
+            数字で見える。
+          </h1>
+          <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#667085' }}>
+            なごとしゃでは、記事の閲覧数・保存数・Googleマップクリック数をもとに、次の集客改善につなげます。
+          </p>
+          <p
+            className="mt-3 rounded-[12px] px-4 py-3 text-[11px] font-bold leading-5"
+            style={{ color: '#667085', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
+          >
+            これはサンプル表示です。実際の数値は掲載内容・期間により変動します。
+          </p>
         </div>
       </section>
 
+      {/* ── 店舗カード ── */}
       <section className="px-4">
         <div
-          className="rounded-3xl bg-white p-5"
+          className="rounded-[14px] bg-white p-5"
           style={{
-            border: '1.5px solid rgba(29,91,115,0.12)',
-            boxShadow: '0 8px 24px rgba(10,36,56,0.08)',
+            border: '1px solid #E6ECF5',
+            boxShadow: '0 8px 24px rgba(7,26,77,0.08)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
             STORE
           </p>
           <div className="mt-3 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-[20px] font-black leading-snug" style={{ color: '#0a2438' }}>
+              <h2 className="text-[20px] font-black leading-snug" style={{ color: '#071A4D' }}>
                 大須スペシャルティコーヒー
               </h2>
-              <p className="mt-2 text-[12px] font-bold" style={{ color: '#5f8392' }}>
+              <p className="mt-2 text-[12px] font-bold" style={{ color: '#667085' }}>
                 掲載期間：2026.06.01 - 2026.06.30
               </p>
             </div>
-            <span className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black tracking-[0.12em] text-white" style={{ background: '#0a9a9a' }}>
+            <span
+              className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black text-white"
+              style={{ background: '#E8483F' }}
+            >
               大須
             </span>
           </div>
           <div className="mt-4 flex items-center gap-2">
-            <span className="rounded-full px-3 py-1 text-[11px] font-black" style={{ color: '#1d5b73', background: 'rgba(29,91,115,0.08)' }}>
+            <span
+              className="rounded-full px-3 py-1 text-[11px] font-black"
+              style={{ color: '#071A4D', background: 'rgba(7,26,77,0.08)' }}
+            >
               スタンダード
             </span>
-            <span className="text-[11px] font-bold" style={{ color: '#8aa5b0' }}>
+            <span className="text-[11px] font-bold" style={{ color: '#9BA3B0' }}>
               掲載プラン
             </span>
           </div>
         </div>
       </section>
 
+      {/* ── レポートで分かること ── */}
       <section className="px-4 pt-6">
         <SectionTitle eyebrow="REPORT POINTS">このレポートで分かること</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
           {REPORT_INSIGHTS.map(item => (
             <article
               key={item.title}
-              className="rounded-2xl bg-white p-4"
+              className="rounded-[14px] bg-white p-4"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
               }}
             >
-              <h2 className="text-[14px] font-black leading-snug" style={{ color: '#0a2438' }}>
+              <h2 className="text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
                 {item.title}
               </h2>
-              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
                 {item.text}
               </p>
             </article>
@@ -157,25 +158,26 @@ export default function ReportSamplePage() {
         </div>
       </section>
 
+      {/* ── KPI ── */}
       <section className="px-4 pt-6">
         <SectionTitle eyebrow="KPI">掲載レポート</SectionTitle>
         <div className="mt-4 grid grid-cols-2 gap-3">
           {KPI_ITEMS.map(item => (
             <article
               key={item.label}
-              className="rounded-2xl bg-white p-4"
+              className="rounded-[14px] bg-white p-4"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
               }}
             >
-              <p className="text-[11px] font-black leading-snug" style={{ color: '#416b7d' }}>
+              <p className="text-[11px] font-black leading-snug" style={{ color: '#667085' }}>
                 {item.label}
               </p>
-              <p className="mt-2 text-[26px] font-black tracking-tight" style={{ color: '#1d5b73' }}>
+              <p className="mt-2 text-[26px] font-black tracking-tight" style={{ color: '#071A4D' }}>
                 {item.value}
               </p>
-              <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#a0b8c0' }}>
+              <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#9BA3B0' }}>
                 {item.sub}
               </p>
             </article>
@@ -183,33 +185,31 @@ export default function ReportSamplePage() {
         </div>
       </section>
 
+      {/* ── 反応の内訳 ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="BREAKDOWN">反応の内訳</SectionTitle>
         <div
-          className="mt-4 rounded-2xl bg-white p-4"
+          className="mt-4 rounded-[14px] bg-white p-4"
           style={{
-            border: '1px solid rgba(29,91,115,0.10)',
-            boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+            border: '1px solid #E6ECF5',
+            boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
           }}
         >
           <div className="flex flex-col gap-4">
             {BREAKDOWN_ITEMS.map(item => (
               <div key={item.label}>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-[12px] font-black" style={{ color: '#24465a' }}>
+                  <span className="text-[12px] font-black" style={{ color: '#071A4D' }}>
                     {item.label}
                   </span>
-                  <span className="text-[12px] font-black" style={{ color: '#1d5b73' }}>
+                  <span className="text-[12px] font-black" style={{ color: '#E8483F' }}>
                     {item.value}%
                   </span>
                 </div>
-                <div className="h-2.5 overflow-hidden rounded-full" style={{ background: '#edf6fa' }}>
+                <div className="h-2.5 overflow-hidden rounded-full" style={{ background: '#F0F4F8' }}>
                   <div
                     className="h-full rounded-full"
-                    style={{
-                      width: `${item.value}%`,
-                      background: 'linear-gradient(90deg, #1d5b73, #0a9a9a)',
-                    }}
+                    style={{ width: `${item.value}%`, background: '#E8483F' }}
                   />
                 </div>
               </div>
@@ -218,9 +218,10 @@ export default function ReportSamplePage() {
         </div>
       </section>
 
+      {/* ── ランキング ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="RANKING">保存数・地図クリックもレポート化</SectionTitle>
-        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#5f8392' }}>
+        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#667085' }}>
           読まれた数だけでなく、あとで見返したい保存数や、実際の来店に近いGoogleマップクリックまで確認できます。
         </p>
         <div className="mt-4 flex flex-col gap-3">
@@ -240,42 +241,43 @@ export default function ReportSamplePage() {
           />
         </div>
         <div
-          className="mt-4 rounded-2xl p-4"
+          className="mt-4 rounded-[12px] p-4"
           style={{
-            background: 'rgba(29,91,115,0.04)',
-            border: '1px solid rgba(29,91,115,0.09)',
+            background: 'rgba(7,26,77,0.03)',
+            border: '1px solid rgba(7,26,77,0.08)',
           }}
         >
-          <p className="text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+          <p className="text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             保存数は「あとで行きたい」の強さ、地図クリックは「来店に近い行動」として、次回の露出や訴求改善に活用します。
           </p>
         </div>
       </section>
 
+      {/* ── 改善提案 ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="NEXT ACTION">改善提案</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
           {SUGGESTIONS.map((item, index) => (
             <article
               key={item.title}
-              className="rounded-2xl bg-white p-4"
+              className="rounded-[14px] bg-white p-4"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
               }}
             >
               <div className="flex items-start gap-3">
                 <span
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-black"
-                  style={{ color: '#ffffff', background: '#1d5b73' }}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                  style={{ background: '#E8483F' }}
                 >
                   {index + 1}
                 </span>
                 <div>
-                  <h2 className="text-[14px] font-black" style={{ color: '#0a2438' }}>
+                  <h2 className="text-[14px] font-black" style={{ color: '#071A4D' }}>
                     {item.title}
                   </h2>
-                  <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+                  <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
                     {item.text}
                   </p>
                 </div>
@@ -285,26 +287,27 @@ export default function ReportSamplePage() {
         </div>
       </section>
 
+      {/* ── 相談CTA ── */}
       <section className="px-4 pt-8">
         <div
-          className="rounded-2xl p-4"
+          className="rounded-[14px] p-4"
           style={{
-            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
-            border: '1.5px solid rgba(29,91,115,0.14)',
+            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
+            border: '1.5px solid rgba(232,72,63,0.14)',
           }}
         >
-          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
             掲載後の反応まで一緒に見ます
           </h2>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             掲載して終わりではなく、保存数や地図クリックを見ながら、次の来店につながる改善案まで提案します。
           </p>
           <Link
             href="/partner"
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
             style={{
-              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
-              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+              background: '#E8483F',
+              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
             }}
           >
             掲載プランを相談する
@@ -313,15 +316,18 @@ export default function ReportSamplePage() {
         </div>
       </section>
 
+      {/* ── ファイナルCTA ── */}
       <section className="px-4 pt-8">
         <div
-          className="rounded-3xl p-5 text-center"
+          className="rounded-[18px] p-5 text-center"
           style={{
-            background: 'linear-gradient(135deg, #0a2438, #1d5b73)',
-            boxShadow: '0 10px 28px rgba(10,36,56,0.28)',
+            background: 'linear-gradient(135deg, #E8483F, #c73a33)',
+            boxShadow: '0 10px 28px rgba(232,72,63,0.30)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.2em] text-white/55">REPORT TO ACTION</p>
+          <p className="text-[10px] font-black tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            REPORT TO ACTION
+          </p>
           <h2 className="mt-2 text-[20px] font-black leading-snug text-white">
             数字を見ながら、
             <br />
@@ -329,8 +335,8 @@ export default function ReportSamplePage() {
           </h2>
           <Link
             href="/partner#contact"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-[14px] font-black active:scale-[0.98] transition-transform"
-            style={{ color: '#1d5b73' }}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-[14px] font-black active:scale-[0.98] transition-transform"
+            style={{ color: '#071A4D' }}
           >
             掲載について相談する
             <ArrowRightIcon />
@@ -344,10 +350,10 @@ export default function ReportSamplePage() {
 function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
         {eyebrow}
       </p>
-      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#0a2438' }}>
+      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#071A4D' }}>
         {children}
       </h2>
     </div>
@@ -383,22 +389,22 @@ function RankingPanel({
 }) {
   return (
     <article
-      className="rounded-2xl bg-white p-4"
+      className="rounded-[14px] bg-white p-4"
       style={{
-        border: '1px solid rgba(29,91,115,0.10)',
-        boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+        border: '1px solid #E6ECF5',
+        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
       }}
     >
       <div
         className="flex items-center gap-2 mb-4 pb-3"
-        style={{ borderBottom: '1px solid rgba(29,91,115,0.07)' }}
+        style={{ borderBottom: '1px solid rgba(7,26,77,0.07)' }}
       >
-        <span style={{ color: '#0a9a9a' }}>{icon}</span>
+        <span style={{ color: '#E8483F' }}>{icon}</span>
         <div>
-          <p className="text-[9px] font-black tracking-[0.18em]" style={{ color: '#a0b8c0' }}>
+          <p className="text-[9px] font-black tracking-[0.18em]" style={{ color: '#9BA3B0' }}>
             {eyebrow}
           </p>
-          <p className="text-[13px] font-black leading-tight" style={{ color: '#0a2438' }}>
+          <p className="text-[13px] font-black leading-tight" style={{ color: '#071A4D' }}>
             {title}
           </p>
         </div>
@@ -410,28 +416,28 @@ function RankingPanel({
           return (
             <div
               key={item.rank}
-              className="flex items-center gap-3 rounded-xl"
+              className="flex items-center gap-3 rounded-[10px]"
               style={isTop
-                ? { background: 'rgba(10,154,154,0.07)', padding: '8px 10px' }
+                ? { background: 'rgba(232,72,63,0.06)', padding: '8px 10px' }
                 : { padding: '5px 2px' }}
             >
               <span
                 className="flex shrink-0 items-center justify-center rounded-full font-black"
                 style={isTop
-                  ? { width: 26, height: 26, background: '#0a9a9a', color: '#ffffff', fontSize: 12 }
-                  : { width: 22, height: 22, background: 'rgba(29,91,115,0.08)', color: '#8aa5b0', fontSize: 11 }}
+                  ? { width: 26, height: 26, background: '#E8483F', color: '#ffffff', fontSize: 12 }
+                  : { width: 22, height: 22, background: 'rgba(7,26,77,0.08)', color: '#9BA3B0', fontSize: 11 }}
               >
                 {item.rank}
               </span>
               <span
                 className="flex-1 min-w-0 truncate font-black text-[12px]"
-                style={{ color: isTop ? '#0a2438' : '#5a7b8a' }}
+                style={{ color: isTop ? '#071A4D' : '#667085' }}
               >
                 {item.label}
               </span>
               <span
                 className="shrink-0 font-black tabular-nums"
-                style={{ fontSize: isTop ? 20 : 16, color: isTop ? '#0a9a9a' : '#8aa5b0', lineHeight: 1 }}
+                style={{ fontSize: isTop ? 20 : 16, color: isTop ? '#E8483F' : '#9BA3B0', lineHeight: 1 }}
               >
                 {item.value.toLocaleString()}
               </span>
@@ -440,7 +446,7 @@ function RankingPanel({
         })}
       </div>
 
-      <p className="mt-3 text-[10px] font-bold text-right" style={{ color: '#a0b8c0' }}>
+      <p className="mt-3 text-[10px] font-bold text-right" style={{ color: '#9BA3B0' }}>
         {unit}数（サンプル）
       </p>
     </article>

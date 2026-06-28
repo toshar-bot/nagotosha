@@ -42,23 +42,27 @@ export default function SavedPage() {
   };
 
   return (
-    <main className="min-h-dvh pb-28" style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f8fbff 44%, #ffffff 100%)' }}>
-      <section className="relative overflow-hidden px-5 pt-7 pb-6">
-        <div className="absolute inset-x-0 top-0 h-56" style={{ background: 'radial-gradient(circle at 18% 8%, rgba(255,255,255,0.92) 0%, transparent 36%), radial-gradient(circle at 85% 18%, rgba(10,154,154,0.14) 0%, transparent 34%)' }} />
-        <div className="relative">
-          <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#0a9a9a' }}>SAVED</p>
-          <h1 className="text-[28px] font-black leading-tight tracking-tight" style={{ color: '#0a2438' }}>保存した記事</h1>
-          <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#416b7d' }}>
-            気になる記事や行きたいお店を、あとから見返せる場所です。
-          </p>
-        </div>
+    <main className="min-h-dvh pb-28" style={{ background: '#ffffff' }}>
+
+      {/* ── ページヘッダー ── */}
+      <section className="px-4 pt-8 pb-5">
+        <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
+          SAVED
+        </p>
+        <h1 className="mt-1 text-[28px] font-black leading-tight tracking-tight" style={{ color: '#071A4D' }}>
+          保存した記事
+        </h1>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+          気になる記事や行きたいお店を、あとから見返せる場所です。
+        </p>
       </section>
 
+      {/* ── 保存リスト ── */}
       <section className="px-4 pt-3">
         {items.length > 0 ? (
           <div>
             <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-[12px] font-black" style={{ color: '#416b7d' }}>
+              <p className="text-[12px] font-black" style={{ color: '#071A4D' }}>
                 {items.length}件を保存中
               </p>
               <button
@@ -66,9 +70,9 @@ export default function SavedPage() {
                 onClick={handleClear}
                 className="rounded-full px-3 py-1.5 text-[11px] font-black active:scale-95 transition-transform"
                 style={{
-                  color: '#7a4050',
-                  background: 'rgba(201,65,45,0.08)',
-                  border: '1px solid rgba(201,65,45,0.14)',
+                  color: '#E8483F',
+                  background: 'rgba(232,72,63,0.08)',
+                  border: '1px solid rgba(232,72,63,0.22)',
                 }}
               >
                 保存をすべて削除
@@ -94,33 +98,42 @@ export default function SavedPage() {
 function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string) => void }) {
   return (
     <article
-      className="rounded-2xl bg-white p-4"
+      className="rounded-[14px] bg-white p-4"
       style={{
-        border: '1px solid rgba(29,91,115,0.10)',
-        boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+        border: '1px solid #E6ECF5',
+        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
       }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="mb-2 flex flex-wrap items-center gap-1.5">
-            <span className="rounded-full px-2.5 py-1 text-[10px] font-black" style={{ color: '#1d5b73', background: 'rgba(29,91,115,0.08)' }}>
+            <span
+              className="rounded-full px-2.5 py-1 text-[10px] font-black"
+              style={{ color: '#071A4D', background: 'rgba(7,26,77,0.08)' }}
+            >
               {TYPE_LABELS[item.type]}
             </span>
             {item.area && (
-              <span className="rounded-full px-2.5 py-1 text-[10px] font-bold" style={{ color: '#5f8392', background: '#f1f7fb' }}>
+              <span
+                className="rounded-full px-2.5 py-1 text-[10px] font-bold"
+                style={{ color: '#667085', background: '#F8FAFC' }}
+              >
                 {item.area}
               </span>
             )}
             {item.category && (
-              <span className="rounded-full px-2.5 py-1 text-[10px] font-bold" style={{ color: '#5f8392', background: '#f1f7fb' }}>
+              <span
+                className="rounded-full px-2.5 py-1 text-[10px] font-bold"
+                style={{ color: '#667085', background: '#F8FAFC' }}
+              >
                 {item.category}
               </span>
             )}
           </div>
-          <h2 className="text-[15px] font-black leading-snug" style={{ color: '#0a2438' }}>
+          <h2 className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
             {item.title}
           </h2>
-          <p className="mt-2 text-[10px] font-bold" style={{ color: '#8aa5b0' }}>
+          <p className="mt-2 text-[10px] font-bold" style={{ color: '#9BA3B0' }}>
             保存日：{formatSavedAt(item.savedAt)}
           </p>
         </div>
@@ -129,9 +142,9 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
           onClick={() => onRemove(item.id)}
           className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-black active:scale-95 transition-transform"
           style={{
-            color: '#7a4050',
-            background: 'rgba(201,65,45,0.08)',
-            border: '1px solid rgba(201,65,45,0.14)',
+            color: '#E8483F',
+            background: 'rgba(232,72,63,0.08)',
+            border: '1px solid rgba(232,72,63,0.18)',
           }}
         >
           削除
@@ -144,7 +157,11 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
             <a
               href={item.articleUrl}
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
-              style={{ color: '#ffffff', background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)' }}
+              style={{
+                color: '#ffffff',
+                background: '#E8483F',
+                boxShadow: '0 6px 14px rgba(232,72,63,0.25)',
+              }}
             >
               記事を見る
               <ArrowRightIcon />
@@ -157,9 +174,9 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
               style={{
-                color: '#1d5b73',
-                background: 'rgba(10,154,154,0.10)',
-                border: '1px solid rgba(10,154,154,0.22)',
+                color: '#071A4D',
+                background: 'rgba(7,26,77,0.06)',
+                border: '1px solid #E6ECF5',
               }}
             >
               地図で開く
@@ -178,23 +195,27 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
       <div className="mb-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+            <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
               SAVED RANKING
             </p>
-            <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#0a2438' }}>
+            <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#071A4D' }}>
               保存されている人気スポット
             </h2>
           </div>
           {savedCount > 0 && (
             <span
               className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black"
-              style={{ color: '#1d5b73', background: 'rgba(10,154,154,0.10)', border: '1px solid rgba(10,154,154,0.18)' }}
+              style={{
+                color: '#E8483F',
+                background: 'rgba(232,72,63,0.08)',
+                border: '1px solid rgba(232,72,63,0.18)',
+              }}
             >
               あなたの保存 {savedCount}件
             </span>
           )}
         </div>
-        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#416b7d' }}>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
           みんながあとで見返したいお店やイベントを、今後ここに集計していきます。
         </p>
       </div>
@@ -203,35 +224,38 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
         {POPULAR_SAVED_SPOTS.map(item => (
           <article
             key={item.rank}
-            className="rounded-2xl bg-white p-4"
+            className="rounded-[14px] bg-white p-4"
             style={{
-              border: item.rank === 1 ? '1.5px solid rgba(10,154,154,0.28)' : '1px solid rgba(29,91,115,0.10)',
-              boxShadow: item.rank === 1 ? '0 8px 24px rgba(10,154,154,0.12)' : '0 4px 16px rgba(10,36,56,0.06)',
+              border: item.rank === 1 ? '1.5px solid rgba(232,72,63,0.22)' : '1px solid #E6ECF5',
+              boxShadow: item.rank === 1
+                ? '0 8px 24px rgba(232,72,63,0.10)'
+                : '0 4px 16px rgba(7,26,77,0.06)',
             }}
           >
             <div className="flex items-center gap-3">
               <div
                 className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-black"
                 style={{
-                  color: item.rank === 1 ? '#ffffff' : '#1d5b73',
-                  background: item.rank === 1 ? 'linear-gradient(135deg, #1d5b73, #0a9a9a)' : 'rgba(29,91,115,0.08)',
+                  color: item.rank === 1 ? '#ffffff' : '#071A4D',
+                  background: item.rank === 1 ? '#E8483F' : 'rgba(7,26,77,0.08)',
+                  boxShadow: item.rank === 1 ? '0 6px 14px rgba(232,72,63,0.30)' : 'none',
                 }}
               >
                 {item.rank}
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="truncate text-[15px] font-black" style={{ color: '#0a2438' }}>
+                <h3 className="truncate text-[15px] font-black" style={{ color: '#071A4D' }}>
                   {item.title}
                 </h3>
-                <p className="mt-1 text-[11px] font-bold" style={{ color: '#5f8392' }}>
+                <p className="mt-1 text-[11px] font-bold" style={{ color: '#667085' }}>
                   {item.area}
                 </p>
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-[18px] font-black leading-none" style={{ color: '#1d5b73' }}>
+                <p className="text-[18px] font-black leading-none" style={{ color: '#071A4D' }}>
                   {item.saves.toLocaleString()}
                 </p>
-                <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#8aa5b0' }}>
+                <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#9BA3B0' }}>
                   保存
                 </p>
               </div>
@@ -240,7 +264,7 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
         ))}
       </div>
 
-      <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#6f8d9a' }}>
+      <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
         現在はサンプル表示です。今後、実際の保存数や地図クリック数をもとにランキング化していきます。
       </p>
     </section>
@@ -249,15 +273,26 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
 
 function EmptyState() {
   return (
-    <div className="rounded-3xl bg-white p-5 text-center" style={{ border: '1.5px solid rgba(29,91,115,0.12)', boxShadow: '0 8px 24px rgba(10,36,56,0.08)' }}>
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: 'linear-gradient(135deg, #e8f7fb, #d9f3ef)', color: '#1d5b73' }}>
+    <div
+      className="rounded-[18px] bg-white p-5 text-center"
+      style={{
+        border: '1px solid #E6ECF5',
+        boxShadow: '0 8px 24px rgba(7,26,77,0.08)',
+      }}
+    >
+      <div
+        className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
+        style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
+      >
         <BookmarkIcon />
       </div>
-      <h2 className="mt-4 text-[17px] font-black" style={{ color: '#0a2438' }}>保存した記事はまだありません</h2>
-      <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
+      <h2 className="mt-4 text-[17px] font-black" style={{ color: '#071A4D' }}>
+        保存した記事はまだありません
+      </h2>
+      <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
         気になるお店やイベントを保存すると、ここに表示されます。
       </p>
-      <p className="mt-5 text-[12px] font-black" style={{ color: '#416b7d' }}>
+      <p className="mt-5 text-[12px] font-black" style={{ color: '#071A4D' }}>
         まずは、気になる情報を探しに行きましょう。
       </p>
       <div className="mt-4 grid gap-2">
@@ -265,11 +300,11 @@ function EmptyState() {
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center justify-between rounded-2xl px-4 py-3 text-[13px] font-black active:scale-[0.98] transition-transform"
+            className="flex items-center justify-between rounded-[14px] px-4 py-3 text-[13px] font-black active:scale-[0.98] transition-transform"
             style={{
-              color: '#1d5b73',
-              background: '#f6fbff',
-              border: '1px solid rgba(29,91,115,0.12)',
+              color: '#071A4D',
+              background: '#F8FAFC',
+              border: '1px solid #E6ECF5',
             }}
           >
             {link.label}

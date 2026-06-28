@@ -11,24 +11,24 @@ const PR_TYPES = [
     type: 'PR記事',
     desc: '店舗から掲載料を受けて制作する紹介記事',
     badge: 'PR / Sponsored',
-    badgeBg: 'rgba(10,154,154,0.10)',
-    badgeColor: '#0a9a9a',
+    badgeBg: 'rgba(232,72,63,0.08)',
+    badgeColor: '#E8483F',
     icon: 'doc',
   },
   {
     type: '広告枠',
     desc: 'トップページやランキング周辺に掲載する広告枠',
     badge: '広告',
-    badgeBg: 'rgba(29,91,115,0.08)',
-    badgeColor: '#1d5b73',
+    badgeBg: 'rgba(7,26,77,0.08)',
+    badgeColor: '#071A4D',
     icon: 'layout',
   },
   {
     type: '編集記事',
     desc: '編集部が独自に選定・取材・紹介する通常記事',
     badge: '通常記事として掲載',
-    badgeBg: 'rgba(0,0,0,0.04)',
-    badgeColor: '#5f8392',
+    badgeBg: 'rgba(0,0,0,0.05)',
+    badgeColor: '#667085',
     icon: 'pen',
   },
 ];
@@ -91,82 +91,72 @@ const DISALLOWED_DETAIL_POINTS = [
 
 export default function AdPolicyPage() {
   return (
-    <main
-      className="min-h-dvh pb-28"
-      style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f7fbff 42%, #ffffff 100%)' }}
-    >
-      {/* ── ヒーロー ── */}
-      <section className="relative overflow-hidden px-5 pt-7 pb-7">
-        <div
-          className="absolute inset-x-0 top-0 h-64"
-          style={{
-            background:
-              'radial-gradient(circle at 18% 10%, rgba(255,255,255,0.95) 0%, transparent 34%), radial-gradient(circle at 86% 18%, rgba(10,154,154,0.14) 0%, transparent 32%)',
-          }}
-        />
-        <div className="relative">
-          <Link
-            href="/partner"
-            className="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.14em]"
-            style={{ color: '#1d5b73' }}
-          >
-            <ArrowLeftIcon />
-            PARTNER
-          </Link>
+    <main className="min-h-dvh pb-10" style={{ background: '#ffffff' }}>
 
-          <div className="mt-7">
-            <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#0a9a9a' }}>
-              AD POLICY
-            </p>
-            <h1 className="text-[29px] font-black leading-[1.14] tracking-tight" style={{ color: '#0a2438' }}>
-              PR表記と
-              <br />
-              広告掲載について
-            </h1>
-            <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#416b7d' }}>
-              なごとしゃでは、読者にわかりやすく、店舗にも誠実な掲載を行うため、PR記事・広告枠・通常記事の違いを明確にしています。
-            </p>
-            <p
-              className="mt-3 rounded-2xl px-4 py-3 text-[11px] font-bold leading-5"
-              style={{ color: '#5f8392', background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(29,91,115,0.10)' }}
-            >
-              広告やPRを含む場合は、記事内または掲載枠にわかりやすく表示します。
-            </p>
-          </div>
+      {/* ── ページヘッダー ── */}
+      <section className="px-5 pt-7 pb-7">
+        <Link
+          href="/partner"
+          className="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.14em]"
+          style={{ color: '#071A4D' }}
+        >
+          <ArrowLeftIcon />
+          PARTNER
+        </Link>
+
+        <div className="mt-7">
+          <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#E8483F' }}>
+            AD POLICY
+          </p>
+          <h1 className="text-[29px] font-black leading-[1.14] tracking-tight" style={{ color: '#071A4D' }}>
+            PR表記と
+            <br />
+            広告掲載について
+          </h1>
+          <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#667085' }}>
+            なごとしゃでは、読者にわかりやすく、店舗にも誠実な掲載を行うため、PR記事・広告枠・通常記事の違いを明確にしています。
+          </p>
+          <p
+            className="mt-3 rounded-[12px] px-4 py-3 text-[11px] font-bold leading-5"
+            style={{ color: '#667085', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
+          >
+            広告やPRを含む場合は、記事内または掲載枠にわかりやすく表示します。
+          </p>
         </div>
       </section>
 
+      {/* ── 広告掲載方針 ── */}
       <section className="px-4 pt-4">
         <div
-          className="rounded-3xl bg-white p-5"
+          className="rounded-[14px] bg-white p-5"
           style={{
-            border: '1.5px solid rgba(29,91,115,0.12)',
-            boxShadow: '0 8px 24px rgba(10,36,56,0.08)',
+            border: '1px solid #E6ECF5',
+            boxShadow: '0 8px 24px rgba(7,26,77,0.08)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
             POLICY
           </p>
-          <h2 className="mt-2 text-[19px] font-black leading-snug" style={{ color: '#0a2438' }}>
+          <h2 className="mt-2 text-[19px] font-black leading-snug" style={{ color: '#071A4D' }}>
             なごとしゃの広告掲載方針
           </h2>
-          <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#416b7d' }}>
+          <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#667085' }}>
             なごとしゃでは、読者が安心して情報を選べるように、広告・PR・協賛を含む記事には分かりやすい表記を行います。掲載内容は店舗やサービスの魅力を伝える一方で、読者に誤解を与える表現にならないよう確認します。
           </p>
           <div className="mt-4 flex flex-col gap-2.5">
             {DISCLOSURE_POINTS.map(point => (
               <div
                 key={point}
-                className="flex items-start gap-2.5 rounded-2xl px-3 py-3"
+                className="flex items-start gap-2.5 rounded-[10px] px-3 py-3"
                 style={{
-                  background: '#f6fbff',
-                  border: '1px solid rgba(29,91,115,0.08)',
+                  background: '#F8FAFC',
+                  border: '1px solid #E6ECF5',
                 }}
               >
-                <span className="mt-0.5 shrink-0" style={{ color: '#0a9a9a' }}>
+                <span className="mt-0.5 shrink-0" style={{ color: '#E8483F' }}>
                   <CheckSmIcon />
                 </span>
-                <p className="text-[12px] font-black leading-5" style={{ color: '#24465a' }}>
+                <p className="text-[12px] font-black leading-5" style={{ color: '#071A4D' }}>
                   {point}
                 </p>
               </div>
@@ -175,31 +165,31 @@ export default function AdPolicyPage() {
         </div>
       </section>
 
-      {/* ── PR表記について ── */}
+      {/* ── PR・広告の表示 ── */}
       <section className="px-4 pt-4">
         <SectionTitle eyebrow="DISCLOSURE">PR・広告は明確に表示します</SectionTitle>
-        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#5f8392' }}>
+        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#667085' }}>
           店舗から掲載料や提供を受けた記事・枠については、「PR」「広告」「Sponsored」などの表記を行います。読者が通常の記事と区別できるようにし、信頼性を損なわない運営を目指します。
         </p>
         <div className="mt-4 flex flex-col gap-3">
           {PR_TYPES.map(item => (
             <article
               key={item.type}
-              className="flex items-start gap-4 rounded-2xl bg-white p-4"
+              className="flex items-start gap-4 rounded-[14px] bg-white p-4"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
               }}
             >
               <div
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: 'linear-gradient(135deg, #e8f7fb, #d9f3ef)', color: '#1d5b73' }}
+                style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
               >
                 <PrTypeIcon name={item.icon} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <h3 className="text-[14px] font-black" style={{ color: '#0a2438' }}>
+                  <h3 className="text-[14px] font-black" style={{ color: '#071A4D' }}>
                     {item.type}
                   </h3>
                   <span
@@ -209,7 +199,7 @@ export default function AdPolicyPage() {
                     {item.badge}
                   </span>
                 </div>
-                <p className="mt-1.5 text-[12px] font-medium leading-5" style={{ color: '#5a7b8a' }}>
+                <p className="mt-1.5 text-[12px] font-medium leading-5" style={{ color: '#667085' }}>
                   {item.desc}
                 </p>
               </div>
@@ -218,47 +208,47 @@ export default function AdPolicyPage() {
         </div>
       </section>
 
-      {/* ── 広告商品一覧 ── */}
+      {/* ── 掲載メニュー ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="MENU">店舗向け掲載メニュー</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
           {AD_MENUS.map(item => (
             <article
               key={item.name}
-              className="rounded-2xl bg-white p-4"
+              className="rounded-[14px] bg-white p-4"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
               }}
             >
               <div className="flex items-start gap-3">
                 <div
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                  style={{ background: 'linear-gradient(135deg, #e8f7fb, #d9f3ef)', color: '#1d5b73' }}
+                  style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
                 >
                   <MenuIcon name={item.icon} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[14px] font-black" style={{ color: '#0a2438' }}>
+                  <h3 className="text-[14px] font-black" style={{ color: '#071A4D' }}>
                     {item.name}
                   </h3>
-                  <p className="mt-1.5 text-[12px] font-medium leading-5" style={{ color: '#5a7b8a' }}>
+                  <p className="mt-1.5 text-[12px] font-medium leading-5" style={{ color: '#667085' }}>
                     {item.desc}
                   </p>
                 </div>
               </div>
               <div
                 className="mt-3 flex flex-wrap items-center gap-1.5 pt-3"
-                style={{ borderTop: '1px solid rgba(29,91,115,0.06)' }}
+                style={{ borderTop: '1px solid #E6ECF5' }}
               >
-                <span className="text-[9px] font-black tracking-[0.12em]" style={{ color: '#8aa5b0' }}>
+                <span className="text-[9px] font-black tracking-[0.12em]" style={{ color: '#9BA3B0' }}>
                   主な指標
                 </span>
                 {item.metrics.map(m => (
                   <span
                     key={m}
                     className="rounded-full px-2 py-0.5 text-[10px] font-black"
-                    style={{ background: 'rgba(29,91,115,0.07)', color: '#1d5b73' }}
+                    style={{ background: 'rgba(7,26,77,0.06)', color: '#071A4D' }}
                   >
                     {m}
                   </span>
@@ -274,13 +264,13 @@ export default function AdPolicyPage() {
         <SectionTitle eyebrow="COMPARISON">通常記事とPR記事の違い</SectionTitle>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <article
-            className="rounded-2xl bg-white p-4"
+            className="rounded-[14px] bg-white p-4"
             style={{
-              border: '1px solid rgba(29,91,115,0.10)',
-              boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+              border: '1px solid #E6ECF5',
+              boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
             }}
           >
-            <p className="text-[10px] font-black tracking-[0.14em] mb-3" style={{ color: '#8aa5b0' }}>
+            <p className="text-[10px] font-black tracking-[0.14em] mb-3" style={{ color: '#9BA3B0' }}>
               通常記事
             </p>
             <ul className="flex flex-col gap-2.5">
@@ -288,9 +278,9 @@ export default function AdPolicyPage() {
                 <li
                   key={f}
                   className="flex items-start gap-1.5 text-[11px] font-bold leading-5"
-                  style={{ color: '#416b7d' }}
+                  style={{ color: '#667085' }}
                 >
-                  <span className="shrink-0 mt-0.5" style={{ color: '#b0c8d0' }}>
+                  <span className="shrink-0 mt-0.5" style={{ color: '#C4CEDD' }}>
                     <DotIcon />
                   </span>
                   {f}
@@ -300,14 +290,14 @@ export default function AdPolicyPage() {
           </article>
 
           <article
-            className="rounded-2xl p-4"
+            className="rounded-[14px] p-4"
             style={{
-              background: 'linear-gradient(140deg, #f0fbf9, #eaf6fb)',
-              border: '1.5px solid rgba(10,154,154,0.20)',
-              boxShadow: '0 4px 16px rgba(10,154,154,0.08)',
+              background: 'rgba(232,72,63,0.04)',
+              border: '1.5px solid rgba(232,72,63,0.18)',
+              boxShadow: '0 4px 16px rgba(232,72,63,0.06)',
             }}
           >
-            <p className="text-[10px] font-black tracking-[0.14em] mb-3" style={{ color: '#0a9a9a' }}>
+            <p className="text-[10px] font-black tracking-[0.14em] mb-3" style={{ color: '#E8483F' }}>
               PR記事
             </p>
             <ul className="flex flex-col gap-2.5">
@@ -315,9 +305,9 @@ export default function AdPolicyPage() {
                 <li
                   key={f}
                   className="flex items-start gap-1.5 text-[11px] font-bold leading-5"
-                  style={{ color: '#24465a' }}
+                  style={{ color: '#071A4D' }}
                 >
-                  <span className="shrink-0 mt-0.5" style={{ color: '#0a9a9a' }}>
+                  <span className="shrink-0 mt-0.5" style={{ color: '#E8483F' }}>
                     <CheckSmIcon />
                   </span>
                   {f}
@@ -328,17 +318,17 @@ export default function AdPolicyPage() {
         </div>
       </section>
 
-      {/* ── 掲載できない内容 ── */}
+      {/* ── 掲載をお断りする場合 ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="POLICY">掲載をお断りする場合があります</SectionTitle>
-        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#5f8392' }}>
+        <p className="mt-3 text-[13px] font-medium leading-7" style={{ color: '#667085' }}>
           読者の安全や信頼を守るため、内容によっては掲載をお断りする場合があります。
         </p>
         <div
-          className="mt-4 rounded-2xl bg-white p-4"
+          className="mt-4 rounded-[14px] bg-white p-4"
           style={{
-            border: '1px solid rgba(29,91,115,0.10)',
-            boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+            border: '1px solid #E6ECF5',
+            boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
           }}
         >
           <div className="flex flex-col gap-3">
@@ -350,29 +340,29 @@ export default function AdPolicyPage() {
                 >
                   <XIcon />
                 </span>
-                <p className="text-[13px] font-black pt-0.5" style={{ color: '#24465a' }}>
+                <p className="text-[13px] font-black pt-0.5" style={{ color: '#071A4D' }}>
                   {item}
                 </p>
               </div>
             ))}
           </div>
           <div
-            className="mt-4 rounded-2xl p-4"
+            className="mt-4 rounded-[10px] p-4"
             style={{
-              background: 'rgba(29,91,115,0.04)',
-              border: '1px solid rgba(29,91,115,0.08)',
+              background: 'rgba(7,26,77,0.03)',
+              border: '1px solid rgba(7,26,77,0.07)',
             }}
           >
-            <p className="text-[11px] font-black tracking-[0.12em]" style={{ color: '#1d5b73' }}>
+            <p className="text-[11px] font-black tracking-[0.12em]" style={{ color: '#071A4D' }}>
               確認する観点
             </p>
             <div className="mt-3 flex flex-col gap-2">
               {DISALLOWED_DETAIL_POINTS.map(point => (
                 <div key={point} className="flex items-start gap-2">
-                  <span className="mt-1 shrink-0" style={{ color: '#8aa5b0' }}>
+                  <span className="mt-1 shrink-0" style={{ color: '#9BA3B0' }}>
                     <DotIcon />
                   </span>
-                  <p className="text-[12px] font-bold leading-5" style={{ color: '#416b7d' }}>
+                  <p className="text-[12px] font-bold leading-5" style={{ color: '#667085' }}>
                     {point}
                   </p>
                 </div>
@@ -382,26 +372,27 @@ export default function AdPolicyPage() {
         </div>
       </section>
 
+      {/* ── 相談CTA ── */}
       <section className="px-4 pt-8">
         <div
-          className="rounded-2xl p-4"
+          className="rounded-[14px] p-4"
           style={{
-            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
-            border: '1.5px solid rgba(29,91,115,0.14)',
+            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
+            border: '1.5px solid rgba(232,72,63,0.14)',
           }}
         >
-          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
             掲載内容に不安がある場合もご相談ください
           </h2>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             PR表記や掲載内容の見せ方は、店舗の魅力と読者の分かりやすさの両方を大切にして調整します。
           </p>
           <Link
             href="/partner"
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
             style={{
-              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
-              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+              background: '#E8483F',
+              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
             }}
           >
             掲載について相談する
@@ -410,39 +401,41 @@ export default function AdPolicyPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* ── ファイナルCTA ── */}
       <section className="px-4 pt-8">
         <div
-          className="rounded-3xl p-5"
+          className="rounded-[18px] p-5"
           style={{
-            background: 'linear-gradient(135deg, #0a2438, #1d5b73)',
-            boxShadow: '0 10px 28px rgba(10,36,56,0.28)',
+            background: 'linear-gradient(135deg, #E8483F, #c73a33)',
+            boxShadow: '0 10px 28px rgba(232,72,63,0.30)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.2em] text-white/55">HONEST PARTNERSHIP</p>
+          <p className="text-[10px] font-black tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            HONEST PARTNERSHIP
+          </p>
           <h2 className="mt-2 text-[20px] font-black leading-snug text-white">
             誠実に伝わる掲載を、
             <br />
             一緒に作ります。
           </h2>
-          <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: 'rgba(255,255,255,0.65)' }}>
+          <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: 'rgba(255,255,255,0.7)' }}>
             広告感を強く出すのではなく、読者が行きたくなる理由を整理し、店舗の魅力が自然に伝わる掲載を目指します。
           </p>
           <Link
             href="/partner#contact"
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-[14px] font-black active:scale-[0.98] transition-transform"
-            style={{ color: '#1d5b73' }}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-4 text-[14px] font-black active:scale-[0.98] transition-transform"
+            style={{ color: '#071A4D' }}
           >
             掲載について相談する
             <ArrowRightIcon />
           </Link>
           <Link
             href="/partner/report-sample"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-2xl px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
+            className="mt-3 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
             style={{
-              color: 'rgba(255,255,255,0.75)',
-              background: 'rgba(255,255,255,0.10)',
-              border: '1px solid rgba(255,255,255,0.15)',
+              color: 'rgba(255,255,255,0.80)',
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.18)',
             }}
           >
             掲載レポートサンプルを見る
@@ -456,10 +449,10 @@ export default function AdPolicyPage() {
 function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>
+      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
         {eyebrow}
       </p>
-      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#0a2438' }}>
+      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#071A4D' }}>
         {children}
       </h2>
     </div>

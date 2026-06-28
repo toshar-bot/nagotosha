@@ -21,22 +21,10 @@ export const metadata: Metadata = {
 };
 
 const EVENT_FILTERS = [
-  {
-    label: '今日行ける',
-    text: '今から予定に入れやすいイベント',
-  },
-  {
-    label: '今週末',
-    text: '週末のおでかけ候補をまとめて確認',
-  },
-  {
-    label: '雨の日でも楽しめる',
-    text: '屋内や駅近で過ごしやすい催し',
-  },
-  {
-    label: '家族で行きたい',
-    text: '親子で楽しみやすい名古屋イベント',
-  },
+  { label: '今日行ける',       text: '今から予定に入れやすいイベント' },
+  { label: '今週末',           text: '週末のおでかけ候補をまとめて確認' },
+  { label: '雨の日でも楽しめる', text: '屋内や駅近で過ごしやすい催し' },
+  { label: '家族で行きたい',   text: '親子で楽しみやすい名古屋イベント' },
 ];
 
 const EVENTS = [
@@ -90,13 +78,22 @@ const EVENT_NEXT_LINKS = [
 
 export default function EventPage() {
   return (
-    <main className="min-h-dvh pb-28" style={{ background: 'linear-gradient(180deg, #eef6ff 0%, #f8fbff 44%, #ffffff 100%)' }}>
-      <PortalHeader
-        eyebrow="EVENT"
-        title="名古屋のイベント"
-        copy="今日・今週末・季節のイベントをここに集約していきます。"
-      />
+    <main className="min-h-dvh pb-28" style={{ background: '#ffffff' }}>
 
+      {/* ── ページヘッダー ── */}
+      <section className="px-4 pt-8 pb-5">
+        <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
+          EVENT
+        </p>
+        <h1 className="mt-1 text-[28px] font-black leading-tight tracking-tight" style={{ color: '#071A4D' }}>
+          名古屋のイベント
+        </h1>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+          今日・今週末・季節のイベントをここに集約していきます。
+        </p>
+      </section>
+
+      {/* ── フィルターカード ── */}
       <section className="px-4 pt-2">
         <div className="grid grid-cols-2 gap-3">
           {EVENT_FILTERS.map(filter => (
@@ -105,6 +102,7 @@ export default function EventPage() {
         </div>
       </section>
 
+      {/* ── イベント一覧 ── */}
       <section className="px-4 pt-7">
         <SectionTitle eyebrow="EVENT LIST">開催中・今週末のイベント</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
@@ -114,6 +112,7 @@ export default function EventPage() {
         </div>
       </section>
 
+      {/* ── 回遊導線 ── */}
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="NEXT TRIP">イベントのあとに探す</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
@@ -121,53 +120,50 @@ export default function EventPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-2xl bg-white p-4 active:scale-[0.99] transition-transform"
+              className="flex items-center gap-3 rounded-[14px] bg-white px-4 py-4 active:scale-[0.98] transition-transform"
               style={{
-                border: '1px solid rgba(29,91,115,0.10)',
-                boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+                border: '1px solid #E6ECF5',
+                boxShadow: '0 4px 12px rgba(7,26,77,0.07)',
               }}
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="text-[15px] font-black leading-snug" style={{ color: '#0a2438' }}>
-                    {item.title}
-                  </h2>
-                  <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>
-                    {item.text}
-                  </p>
-                </div>
-                <span className="shrink-0" style={{ color: '#1d5b73' }}>
-                  <ArrowRightIcon />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                  {item.title}
                 </span>
-              </div>
+                <span className="mt-0.5 block text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
+                  {item.text}
+                </span>
+              </span>
+              <ChevronRightIcon />
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="px-4 pt-7">
+      {/* ── PARTNER ── */}
+      <section className="px-4 pt-8 pb-2">
         <div
-          className="rounded-2xl p-4"
+          className="rounded-[18px] px-5 py-6"
           style={{
-            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
-            border: '1.5px solid rgba(29,91,115,0.14)',
+            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
+            border: '1.5px solid rgba(232,72,63,0.14)',
           }}
         >
-          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#1d5b73' }}>
+          <p className="mb-2 text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
             EVENT OWNER
           </p>
-          <h2 className="mt-2 text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>
+          <h2 className="text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
             イベント告知を相談したい方へ
           </h2>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             新店イベント、期間限定企画、週末集客など、名古屋のお店や主催者向けの掲載相談を受け付けています。
           </p>
           <Link
             href="/partner"
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
             style={{
-              background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)',
-              boxShadow: '0 8px 22px rgba(29,91,115,0.20)',
+              background: '#E8483F',
+              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
             }}
           >
             掲載について相談する
@@ -176,65 +172,48 @@ export default function EventPage() {
         </div>
       </section>
 
-      <section className="px-4 pt-7">
-        <div
-          className="rounded-2xl p-4"
-          style={{
-            background: 'linear-gradient(135deg, #f8fcff, #edf8f6)',
-            border: '1.5px solid rgba(29,91,115,0.14)',
-          }}
-        >
-          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#1d5b73' }}>
-            NEXT UPDATE
-          </p>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#416b7d' }}>
-            今後、イベント情報やWordPress記事データと連携して、開催中・今週末の情報を自動更新していきます。
-          </p>
-        </div>
-      </section>
     </main>
-  );
-}
-
-function PortalHeader({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
-  return (
-    <section className="relative overflow-hidden px-5 pt-7 pb-6">
-      <div className="absolute inset-x-0 top-0 h-56" style={{ background: 'radial-gradient(circle at 18% 8%, rgba(255,255,255,0.92) 0%, transparent 36%), radial-gradient(circle at 85% 18%, rgba(10,154,154,0.14) 0%, transparent 34%)' }} />
-      <div className="relative">
-        <p className="text-[10px] font-black tracking-[0.22em] mb-3" style={{ color: '#0a9a9a' }}>{eyebrow}</p>
-        <h1 className="text-[28px] font-black leading-tight tracking-tight" style={{ color: '#0a2438' }}>{title}</h1>
-        <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#416b7d' }}>{copy}</p>
-      </div>
-    </section>
   );
 }
 
 function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#0a9a9a' }}>{eyebrow}</p>
-      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#0a2438' }}>{children}</h2>
+      <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
+        {eyebrow}
+      </p>
+      <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#071A4D' }}>
+        {children}
+      </h2>
     </div>
   );
 }
 
 function FilterCard({ label, text }: { label: string; text: string }) {
   const featured = label === '今日行ける' || label === '今週末';
-
   return (
     <article
-      className="rounded-2xl p-4"
+      className="rounded-[14px] p-4"
       style={{
-        background: featured ? 'linear-gradient(135deg, #ffffff, #edf8f6)' : '#ffffff',
-        border: featured ? '1.5px solid rgba(10,154,154,0.24)' : '1px solid rgba(29,91,115,0.10)',
-        boxShadow: featured ? '0 7px 20px rgba(10,154,154,0.10)' : '0 4px 16px rgba(10,36,56,0.06)',
+        background: '#ffffff',
+        border: featured ? '1.5px solid rgba(232,72,63,0.22)' : '1px solid #E6ECF5',
+        boxShadow: featured
+          ? '0 7px 20px rgba(232,72,63,0.10)'
+          : '0 4px 16px rgba(7,26,77,0.06)',
       }}
     >
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: 'rgba(10,154,154,0.10)', color: '#1d5b73' }}>
+      <div
+        className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl"
+        style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
+      >
         <CalendarIcon />
       </div>
-      <h2 className="text-[14px] font-black leading-snug" style={{ color: '#0a2438' }}>{label}</h2>
-      <p className="mt-2 text-[11px] font-medium leading-5" style={{ color: '#5a7b8a' }}>{text}</p>
+      <h2 className="text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
+        {label}
+      </h2>
+      <p className="mt-2 text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
+        {text}
+      </p>
     </article>
   );
 }
@@ -247,26 +226,39 @@ function EventCard({ event }: { event: typeof EVENTS[number] }) {
 
   return (
     <article
-      className="rounded-2xl bg-white p-4"
+      className="rounded-[14px] bg-white p-4"
       style={{
-        border: '1px solid rgba(29,91,115,0.10)',
-        boxShadow: '0 4px 16px rgba(10,36,56,0.06)',
+        border: '1px solid #E6ECF5',
+        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
       }}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="rounded-full px-3 py-1 text-[10px] font-black" style={{ color: '#ffffff', background: '#1d5b73' }}>
+        <span
+          className="rounded-full px-3 py-1 text-[10px] font-black"
+          style={{ color: '#ffffff', background: '#071A4D' }}
+        >
           {event.tag}
         </span>
-        <span className="rounded-full px-3 py-1 text-[10px] font-black" style={{ color: '#0a9a9a', background: 'rgba(10,154,154,0.10)' }}>
+        <span
+          className="rounded-full px-3 py-1 text-[10px] font-black"
+          style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)' }}
+        >
           {event.period}
         </span>
       </div>
 
-      <h2 className="mt-3 text-[17px] font-black leading-snug" style={{ color: '#0a2438' }}>{event.title}</h2>
-      <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#5a7b8a' }}>{event.description}</p>
+      <h2 className="mt-3 text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
+        {event.title}
+      </h2>
+      <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+        {event.description}
+      </p>
 
       <div className="mt-3 flex items-center gap-2">
-        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold" style={{ color: '#1d5b73', background: 'rgba(29,91,115,0.08)' }}>
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
+          style={{ color: '#071A4D', background: 'rgba(7,26,77,0.06)' }}
+        >
           <MapPinIcon />
           {event.area}
         </span>
@@ -274,9 +266,13 @@ function EventCard({ event }: { event: typeof EVENTS[number] }) {
 
       <div className="mt-4 flex flex-wrap gap-2">
         <a
-          href="#"
+          href="/new"
           className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
-          style={{ color: '#ffffff', background: 'linear-gradient(135deg, #1d5b73, #0a9a9a)' }}
+          style={{
+            color: '#ffffff',
+            background: '#E8483F',
+            boxShadow: '0 6px 14px rgba(232,72,63,0.25)',
+          }}
         >
           詳細を見る
           <ArrowRightIcon />
@@ -287,9 +283,9 @@ function EventCard({ event }: { event: typeof EVENTS[number] }) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
           style={{
-            color: '#1d5b73',
-            background: 'rgba(10,154,154,0.10)',
-            border: '1px solid rgba(10,154,154,0.22)',
+            color: '#071A4D',
+            background: 'rgba(7,26,77,0.06)',
+            border: '1px solid #E6ECF5',
           }}
         >
           地図で探す
@@ -325,6 +321,14 @@ function ArrowRightIcon() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12h14" />
       <path d="M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C4CEDD" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18l6-6-6-6" />
     </svg>
   );
 }
