@@ -707,7 +707,7 @@ function GachaPackScreen({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
       <GachaHeading />
-      <div className="pointer-events-none absolute left-1/2 top-[172px] h-[310px] w-[310px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,223,112,.62),rgba(15,93,58,.22)_46%,transparent_72%)] blur-[18px]" />
+      <div className="pointer-events-none absolute left-1/2 top-[172px] h-[310px] w-[310px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,223,112,.62),rgba(232,72,63,.18)_46%,transparent_72%)] blur-[18px]" />
       <button type="button" onClick={onOpen} className="relative mx-auto mt-7 block h-[350px] w-[238px] select-none active:scale-[0.99]" aria-label="お出かけパックをタップして開封">
         <OdekakePackVisual />
       </button>
@@ -735,7 +735,7 @@ function OdekakePackVisual({ opening = false, part = 'full' }: { opening?: boole
 
   return (
     <div className="absolute inset-0 grid place-items-center" style={{ animation: opening ? undefined : 'home-gacha-pack-float 4.4s ease-in-out infinite' }}>
-      <div className="absolute inset-[-10px] rounded-[34px] bg-[radial-gradient(circle_at_50%_50%,rgba(255,226,122,.54),rgba(15,93,58,.20)_42%,transparent_72%)] blur-[18px]" />
+      <div className="absolute inset-[-10px] rounded-[34px] bg-[radial-gradient(circle_at_50%_50%,rgba(255,226,122,.54),rgba(232,72,63,.15)_42%,transparent_72%)] blur-[18px]" />
       <img
         src="/gacha/odekake-pack-cutout.png"
         alt="お出かけパック"
