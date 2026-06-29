@@ -1,5 +1,5 @@
 import { FEATURED_ARTICLES } from '@/data/portal';
-import { normalizeWordPressPostsToFeaturedArticles } from '@/lib/wordpress';
+import { normalizeWordPressPostsToFeaturedArticles, stripHtml } from '@/lib/wordpress';
 import type { FeaturedArticle, WordPressPost } from '@/types/portal';
 
 export interface WordPressPostsParams {
@@ -98,7 +98,8 @@ export async function getLatestPortalArticles(
 ): Promise<FeaturedArticle[]> {
   const posts = await getWordPressPosts(params);
   if (posts.length === 0) return [];
-  return normalizeWordPressPostsToFeaturedArticles(posts, { markAsNew: true });
+  const publicPosts = posts.filter(p => !isTestPost(p));
+  return normalizeWordPressPostsToFeaturedArticles(publicPosts, { markAsNew: true });
 }
 
 export async function getPortalArticlesWithFallback(
@@ -131,6 +132,11 @@ export async function getWordPressPostById(
   } catch {
     return null;
   }
+}
+
+function isTestPost(post: WordPressPost): boolean {
+  const title = stripHtml(post.title.rendered).trim();
+  return title.includes('【TEST】') || /^\[?TEST]/i.test(title);
 }
 
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
