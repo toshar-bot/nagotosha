@@ -116,7 +116,7 @@ const HOME_CSS =
   '@keyframes home-gacha-card-float{0%,100%{transform:translateY(0) rotate(var(--rotate))}50%{transform:translateY(-7px) rotate(calc(var(--rotate) + .9deg))}}' +
   '@keyframes home-gacha-cta{0%,100%{transform:scale(1);box-shadow:0 15px 30px rgba(232,72,63,.30)}50%{transform:scale(1.025);box-shadow:0 18px 42px rgba(232,72,63,.38)}}' +
   '@keyframes home-gacha-pack-float{0%,100%{transform:translateY(0) rotate(-1.1deg)}50%{transform:translateY(-10px) rotate(1.1deg)}}' +
-  '@keyframes home-gacha-pack-sink{0%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,34px) scale(.93);opacity:.62}}' +
+  '@keyframes home-gacha-pack-sink{0%{transform:translate(-50%,0) scale(1)}100%{transform:translate(-50%,34px) scale(.93)}}' +
   '@keyframes home-gacha-pack-cut{0%{transform:translate(-50%,0) rotateX(0);opacity:1}100%{transform:translate(-50%,-76px) rotateX(-80deg);opacity:.96}}' +
   '@keyframes home-gacha-opening-light{0%{opacity:0;transform:translate(-50%,10px) scale(.62)}34%{opacity:1;transform:translate(-50%,0) scale(.94)}100%{opacity:.18;transform:translate(-50%,-8px) scale(1.24)}}' +
   '@keyframes home-gacha-white-flash{0%,58%,100%{opacity:0}70%{opacity:.95}82%{opacity:.18}}' +
@@ -810,7 +810,7 @@ function OdekakePackVisual({ opening = false }: { opening?: boolean }) {
       <img
         src="/gacha/odekake-pack-clean.png"
         alt="お出かけパック"
-        className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_24px_36px_rgba(109,69,10,0.30)]"
+        className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_18px_28px_rgba(109,69,10,0.22)]"
         draggable={false}
       />
     </div>
@@ -822,22 +822,24 @@ function GachaOpeningScreen() {
     <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
       <p className="text-[28px] font-black tracking-[0.08em] text-[#0f5d3a]">開封中...</p>
       <p className="mt-1 text-sm font-black text-[#071A4D]/70">何が出るかはお楽しみ</p>
-      <div className="absolute left-1/2 top-[224px] h-[270px] w-[238px] -translate-x-1/2 opacity-82" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards' }}>
+      <div className="absolute left-1/2 top-[224px] h-[270px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards' }}>
         <img
           src="/gacha/odekake-pack-body.png"
           alt="お出かけパック"
-          className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_24px_36px_rgba(109,69,10,0.30)]"
+          className="relative z-10 block h-full w-full select-none object-contain"
           draggable={false}
         />
+        <div className="pointer-events-none absolute left-1/2 top-[-18px] z-20 h-[70px] w-[214px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.96)_0%,rgba(255,235,154,.72)_24%,rgba(255,205,90,.26)_52%,transparent_76%)] blur-[9px]" />
+        <div className="pointer-events-none absolute left-1/2 top-[-2px] z-30 h-[6px] w-[196px] -translate-x-1/2 rounded-full bg-white shadow-[0_0_18px_rgba(255,244,178,.98),0_0_34px_rgba(255,205,90,.55)]" />
       </div>
       <div className="absolute left-1/2 top-[154px] h-[76px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
         <img
           src="/gacha/odekake-pack-top.png"
           alt=""
-          className="block h-full w-full select-none object-contain drop-shadow-[0_14px_20px_rgba(109,69,10,0.22)]"
+          className="block h-full w-full select-none object-contain"
           draggable={false}
         />
-        <div className="absolute inset-x-8 bottom-1 h-[8px] rounded-full bg-white shadow-[0_0_26px_rgba(255,238,149,.98),0_0_64px_rgba(255,80,112,.62)]" />
+        <div className="absolute inset-x-8 bottom-1 h-[5px] rounded-full bg-white shadow-[0_0_16px_rgba(255,238,149,.82)]" />
       </div>
     </div>
   );
