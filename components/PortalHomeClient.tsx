@@ -139,22 +139,31 @@ const CATEGORY_TABS = [
 
 const HERO_SLIDES = [
   {
-    eyebrow: '\u540d\u53e4\u5c4b\u3067\u697d\u3057\u3080\u590f\u306e\u591c',
-    title: '\u30d3\u30a2\u30ac\u30fc\u30c7\u30f3\u7279\u96c62026',
-    copy: '\u30d3\u30fc\u30eb\u3084\u30af\u30e9\u30d5\u30c8\u30d3\u30fc\u30eb\u3092\u697d\u3057\u3081\u308b\u540d\u53e4\u5c4b\u306e\u30d3\u30a2\u30ac\u30fc\u30c7\u30f3\u60c5\u5831\u3092\u304a\u5c4a\u3051\u3002',
+    eyebrow: '\u540d\u53e4\u5c4b\u306e\u3044\u307e\u3092\u898b\u3064\u3051\u308b',
+    title: '\u4eca\u65e5\u884c\u304d\u305f\u3044\n\u5834\u6240\u3092\u6c7a\u3081\u308b',
+    copy: '\u30b0\u30eb\u30e1\u30fb\u30ab\u30d5\u30a7\u30fbNEW OPEN\u3002\u4eca\u65e5\u306e\u304a\u3067\u304b\u3051\u5148\u304c\u3053\u3053\u3067\u898b\u3064\u304b\u308a\u307e\u3059\u3002',
     imageUrl: 'https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&w=1200&q=80',
+    badge: 'TODAY',
+    ctaText: '\u4eca\u65e5\u306e\u304a\u3059\u3059\u3081\u3092\u898b\u308b',
+    ctaHref: '/new',
   },
   {
-    eyebrow: '\u9031\u672b\u306e\u304a\u3067\u304b\u3051',
-    title: '\u590f\u796d\u308a\u30fb\u82b1\u706b\u5927\u4f1a\u7279\u96c6',
-    copy: '\u591c\u98a8\u3068\u5149\u306b\u5305\u307e\u308c\u308b\u3001\u540d\u53e4\u5c4b\u306e\u5b63\u7bc0\u30a4\u30d9\u30f3\u30c8\u3092\u307e\u3068\u3081\u307e\u3057\u305f\u3002',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    eyebrow: '\u4eca\u6708\u30aa\u30fc\u30d7\u30f3\u306e\u65b0\u5e97\u3092\u30c1\u30a7\u30c3\u30af',
+    title: '\u540d\u53e4\u5c4b\u306e\n\u65b0\u3057\u3044\u304a\u5e97',
+    copy: '\u8a71\u984c\u306e\u30cb\u30e5\u30fc\u30aa\u30fc\u30d7\u30f3\u3001\u30aa\u30fc\u30d7\u30f3\u76f4\u5f8c\u306e\u8a18\u4e8b\u3092\u3044\u3061\u65e9\u304f\u304a\u5c4a\u3051\u3057\u307e\u3059\u3002',
+    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    badge: 'NEW OPEN',
+    ctaText: '\u65b0\u7740\u8a18\u4e8b\u3092\u898b\u308b',
+    ctaHref: '/new',
   },
   {
-    eyebrow: '\u65b0\u3057\u3044\u5bc4\u308a\u9053',
-    title: '\u591c\u306b\u884c\u304d\u305f\u3044\n\u540d\u53e4\u5c4b\u30b0\u30eb\u30e1',
-    copy: '\u98df\u5f8c\u3082\u697d\u3057\u3081\u308b\u304a\u5e97\u3084\u3001\u4ed5\u4e8b\u5e30\u308a\u306e\u4e00\u8ed2\u3092\u63a2\u305b\u307e\u3059\u3002',
+    eyebrow: '\u6c17\u306b\u306a\u3063\u305f\u3089\u4fdd\u5b58\u3057\u3066\u304a\u304f',
+    title: '\u4fdd\u5b58\u3057\u3066\n\u9031\u672b\u306b\u4f7f\u3048\u308b',
+    copy: '\u884c\u304d\u305f\u3044\u304a\u5e97\u3084\u30a4\u30d9\u30f3\u30c8\u3092\u4fdd\u5b58\u3002\u9031\u672b\u306e\u4e88\u5b9a\u3092\u7acb\u3066\u308b\u3068\u304d\u306b\u3059\u3050\u4f7f\u3048\u307e\u3059\u3002',
     imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
+    badge: 'MY LIST',
+    ctaText: '\u4fdd\u5b58\u30ea\u30b9\u30c8\u3092\u898b\u308b',
+    ctaHref: '/saved',
   },
 ];
 const NEW_OPEN_STORES = [
@@ -426,27 +435,45 @@ function HeroSection() {
           {slides.map((slide, index) => (
             <article
               key={`${slide.title}-${index}`}
-              className="relative min-h-[280px] min-w-full overflow-hidden sm:min-h-[330px]"
+              className="relative min-h-[300px] min-w-full overflow-hidden sm:min-h-[360px]"
               style={{
-                backgroundImage: `linear-gradient(90deg, rgba(8,12,24,0.82) 0%, rgba(8,12,24,0.56) 45%, rgba(8,12,24,0.16) 100%), url(${slide.imageUrl})`,
+                backgroundImage: `linear-gradient(105deg, rgba(7,12,28,0.90) 0%, rgba(7,12,28,0.64) 52%, rgba(7,12,28,0.14) 100%), url(${slide.imageUrl})`,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
               }}
             >
-              <div className="flex h-full min-h-[280px] flex-col justify-center px-8 py-8 text-white sm:min-h-[330px] sm:px-12">
-                <p className="text-[15px] font-black tracking-[0.03em] drop-shadow">{slide.eyebrow}</p>
-                <h2 className="mt-4 max-w-[560px] text-[28px] font-black leading-snug tracking-[-0.01em] drop-shadow sm:text-[40px]" style={{ whiteSpace: 'pre-line' }}>
+              {/* Decorative glow */}
+              <div
+                className="pointer-events-none absolute left-[-80px] top-1/2 h-[280px] w-[280px] -translate-y-1/2 rounded-full opacity-[0.14]"
+                style={{ background: 'radial-gradient(circle, #E8483F 0%, transparent 70%)' }}
+              />
+              <div className="relative flex h-full min-h-[300px] flex-col justify-center px-6 py-10 text-white sm:min-h-[360px] sm:px-12">
+                {/* Badge chip */}
+                <span className="mb-3 inline-flex w-fit items-center rounded-full bg-[#E8483F] px-2.5 py-0.5 text-[10px] font-black tracking-[0.12em] text-white">
+                  {slide.badge}
+                </span>
+                {/* Eyebrow */}
+                <p className="text-[12px] font-bold tracking-[0.06em] text-white/65 drop-shadow">
+                  {slide.eyebrow}
+                </p>
+                {/* Title */}
+                <h2
+                  className="mt-2 max-w-[480px] text-[30px] font-black leading-[1.18] tracking-[-0.02em] drop-shadow sm:text-[44px]"
+                  style={{ whiteSpace: 'pre-line', textShadow: '0 2px 18px rgba(0,0,0,0.28)' }}
+                >
                   {slide.title}
                 </h2>
-                <p className="mt-4 max-w-[520px] text-[14px] font-bold leading-relaxed text-white/92 sm:text-[17px]">
+                {/* Copy */}
+                <p className="mt-3 max-w-[440px] text-[13px] font-medium leading-relaxed text-white/75 drop-shadow sm:text-[15px]">
                   {slide.copy}
                 </p>
+                {/* CTA */}
                 <Link
-                  href="/event"
-                  className="mt-7 inline-flex w-fit items-center gap-2 rounded-[13px] bg-[#e8212a] px-7 py-3 text-[15px] font-black text-white shadow-[0_12px_24px_rgba(232,33,42,0.26)] transition hover:bg-[#c91720]"
+                  href={slide.ctaHref}
+                  className="mt-6 inline-flex w-fit items-center gap-2 rounded-[14px] bg-[#E8483F] px-6 py-3 text-[14px] font-black text-white shadow-[0_10px_28px_rgba(232,72,63,0.38)] transition-all hover:bg-[#c91720] hover:shadow-[0_14px_32px_rgba(232,72,63,0.52)] active:scale-95 sm:px-8 sm:text-[15px]"
                 >
-                  {JP.detail}
-                  <span aria-hidden="true">{String.fromCharCode(8594)}</span>
+                  {slide.ctaText}
+                  <span aria-hidden="true">→</span>
                 </Link>
               </div>
             </article>
