@@ -75,7 +75,7 @@ function safeNumber(value: unknown): number | undefined {
   return undefined;
 }
 
-function getFeaturedMediaUrl(post: WordPressPost): string | undefined {
+export function getFeaturedMediaUrl(post: WordPressPost): string | undefined {
   return post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 }
 

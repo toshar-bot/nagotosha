@@ -110,6 +110,29 @@ export async function getPortalArticlesWithFallback(
   return fallback ?? FEATURED_ARTICLES;
 }
 
+export async function getWordPressPostById(
+  id: string | number,
+): Promise<WordPressPost | null> {
+  const apiBase = getWordPressApiBase();
+  if (!apiBase) return null;
+
+  const numericId = typeof id === 'string' ? id.replace(/^wp-/, '') : String(id);
+  if (!numericId || !/^\d+$/.test(numericId)) return null;
+
+  try {
+    const url = `${apiBase}/posts/${numericId}?_embed=1`;
+    const response = await fetch(url, {
+      next: { revalidate: getWordPressRevalidateSeconds() },
+    });
+    if (!response.ok) return null;
+    const data: unknown = await response.json();
+    if (!isWordPressPost(data)) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
   if (!value) return fallback;
   const parsed = Number(value);

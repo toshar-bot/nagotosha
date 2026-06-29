@@ -31,7 +31,9 @@ type Props = {
 };
 
 export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Props) {
-  const articleHref = article.articleUrl ?? '#';
+  const articleHref = article.id.startsWith('wp-')
+    ? `/article/${article.id.slice(3)}`
+    : (article.articleUrl ?? '#');
   const [isSaved, setIsSaved] = useState(false);
 
   const chips = useMemo(() => getArticleChips(article), [article]);
