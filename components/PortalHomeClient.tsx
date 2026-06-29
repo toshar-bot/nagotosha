@@ -119,6 +119,9 @@ const HOME_CSS =
   '@keyframes home-gacha-pack-sink{0%{transform:translate(-50%,0) scale(1)}100%{transform:translate(-50%,34px) scale(.93)}}' +
   '@keyframes home-gacha-pack-cut{0%{transform:translate(-50%,0) rotateX(0);opacity:1}100%{transform:translate(-50%,-76px) rotateX(-80deg);opacity:.96}}' +
   '@keyframes home-gacha-opening-light{0%{opacity:0;transform:translate(-50%,10px) scale(.62)}34%{opacity:1;transform:translate(-50%,0) scale(.94)}100%{opacity:.18;transform:translate(-50%,-8px) scale(1.24)}}' +
+  '@keyframes home-gacha-sun-burst{0%{opacity:0;transform:translate(-50%,22px) scale(.72);filter:blur(8px)}28%{opacity:.95;transform:translate(-50%,2px) scale(1);filter:blur(2px)}72%{opacity:.72;transform:translate(-50%,-8px) scale(1.08);filter:blur(3px)}100%{opacity:.18;transform:translate(-50%,-18px) scale(1.18);filter:blur(7px)}}' +
+  '@keyframes home-gacha-core-glow{0%{opacity:0;transform:translate(-50%,0) scale(.74)}30%{opacity:1;transform:translate(-50%,-2px) scale(1.02)}100%{opacity:.46;transform:translate(-50%,-6px) scale(1.18)}}' +
+  '@keyframes home-gacha-dust-rise{0%{opacity:0;transform:translateY(14px) scale(.55)}20%{opacity:.95}100%{opacity:0;transform:translateY(-74px) scale(1.12)}}' +
   '@keyframes home-gacha-white-flash{0%,58%,100%{opacity:0}70%{opacity:.95}82%{opacity:.18}}' +
   '@keyframes home-gacha-particle{0%{opacity:0;transform:translateY(18px) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translateY(-82px) scale(1.1)}}' +
   '@keyframes home-gacha-result-in{0%{opacity:0;transform:translateY(18px) scale(.88)}100%{opacity:1;transform:translateY(0) scale(1)}}' +
@@ -830,13 +833,28 @@ function GachaOpeningScreen() {
           draggable={false}
         />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-158px] z-0 h-[184px] w-[286px] -translate-x-1/2 opacity-90 blur-[1px]"
+          className="pointer-events-none absolute left-1/2 top-[-142px] z-0 h-[210px] w-[292px] -translate-x-1/2"
           style={{
-            clipPath: 'polygon(48% 100%, 52% 100%, 61% 0, 66% 100%, 74% 100%, 91% 10%, 80% 100%, 100% 100%, 100% 88%, 56% 100%, 44% 100%, 0 88%, 0 100%, 20% 100%, 9% 10%, 26% 100%, 34% 100%, 39% 0)',
-            background: 'linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,238,152,.66) 40%, rgba(255,204,88,.14) 74%, transparent 100%)',
+            animation: 'home-gacha-sun-burst 1.24s ease-out both',
+            clipPath: 'polygon(50% 100%, 6% 0, 24% 100%, 34% 0, 44% 100%, 50% 0, 56% 100%, 66% 0, 76% 100%, 94% 0)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,241,170,.72) 32%, rgba(255,204,82,.28) 62%, transparent 100%)',
           }}
         />
-        <div className="pointer-events-none absolute left-1/2 top-[-34px] z-0 h-[76px] w-[222px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.90)_0%,rgba(255,232,130,.50)_34%,transparent_74%)] blur-[12px]" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[-64px] z-0 h-[128px] w-[238px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.96)_0%,rgba(255,239,160,.72)_28%,rgba(255,184,72,.24)_58%,transparent_76%)] blur-[14px]"
+          style={{ animation: 'home-gacha-core-glow 1.18s ease-out both' }}
+        />
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <span
+            key={i}
+            className="pointer-events-none absolute z-0 h-1.5 w-1.5 rounded-full bg-[#ffd66b] shadow-[0_0_10px_rgba(255,214,107,.95)]"
+            style={{
+              left: `${34 + i * 7}%`,
+              top: `${4 + (i % 2) * 12}px`,
+              animation: `home-gacha-dust-rise ${0.82 + i * 0.08}s ease-out ${0.08 + i * 0.04}s both`,
+            }}
+          />
+        ))}
       </div>
       <div className="absolute left-1/2 top-[154px] h-[76px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
         <img
@@ -845,7 +863,6 @@ function GachaOpeningScreen() {
           className="block h-full w-full select-none object-contain"
           draggable={false}
         />
-        <div className="absolute inset-x-8 bottom-1 h-[5px] rounded-full bg-white shadow-[0_0_16px_rgba(255,238,149,.82)]" />
       </div>
     </div>
   );
