@@ -98,7 +98,7 @@ export async function getLatestPortalArticles(
 ): Promise<FeaturedArticle[]> {
   const posts = await getWordPressPosts(params);
   if (posts.length === 0) return [];
-  const publicPosts = posts.filter(p => !isTestPost(p));
+  const publicPosts = posts.filter(p => !isTestPost(p)).map(applyMetaOverride);
   return normalizeWordPressPostsToFeaturedArticles(publicPosts, { markAsNew: true });
 }
 
@@ -128,7 +128,7 @@ export async function getWordPressPostById(
     if (!response.ok) return null;
     const data: unknown = await response.json();
     if (!isWordPressPost(data)) return null;
-    return data;
+    return applyMetaOverride(data);
   } catch {
     return null;
   }
@@ -137,6 +137,50 @@ export async function getWordPressPostById(
 function isTestPost(post: WordPressPost): boolean {
   const title = stripHtml(post.title.rendered).trim();
   return title.includes('【TEST】') || /^\[?TEST]/i.test(title);
+}
+
+type ArticleMetaOverride = {
+  area?: string;
+  category?: string;
+  mapUrl?: string;
+};
+
+const ARTICLE_META_OVERRIDES: Record<number, ArticleMetaOverride> = {
+  32: {
+    area: '新栄',
+    category: 'NEW OPEN',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=七宝麻辣湯%20新栄',
+  },
+  39: {
+    area: '名駅',
+    category: 'ベーカリー',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=JR名古屋タカシマヤ%20デリシャスコート',
+  },
+  8: {
+    area: '名古屋',
+    category: '期間限定',
+  },
+  6: {
+    area: '名駅',
+    category: 'イベント',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=JR名古屋タカシマヤ',
+  },
+};
+
+function applyMetaOverride(post: WordPressPost): WordPressPost {
+  const override = ARTICLE_META_OVERRIDES[post.id];
+  if (!override) return post;
+  const meta = post.meta ?? {};
+  const s = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+  return {
+    ...post,
+    meta: {
+      ...meta,
+      area:     s(meta.area)     ?? override.area,
+      category: s(meta.category) ?? override.category,
+      mapUrl:   s(meta.mapUrl)   ?? override.mapUrl,
+    },
+  };
 }
 
 function parsePositiveInteger(value: string | undefined, fallback: number): number {
