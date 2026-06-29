@@ -918,14 +918,12 @@ function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: 
                 <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-black/12" />
               </div>
               <div className="relative bg-[linear-gradient(180deg,#fff8e6,#f4e4bd)] px-3.5 py-3 text-[#2f2415]">
-                <div className="mb-2 flex justify-center">
-                  <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.tag}</span>
-                </div>
                 <h3 className="text-[15px] font-black leading-[1.28] text-[#071A4D]">{card.title}</h3>
                 <p className="mt-1 text-[11px] font-black leading-[1.35] text-[#174B2F]">{card.sourceName}</p>
                 <p className="mt-1 min-h-[30px] text-[10px] font-bold leading-[1.45] text-[#4b3a28]">{card.catchCopy}</p>
-                <div className="mt-2 flex items-center justify-center">
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
                   <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.area}</span>
+                  <span className="rounded-full border border-[#c9a746]/50 bg-[#174B2F]/65 px-2 py-0.5 text-[9px] font-black text-[#fff3bd]/85">{card.tag}</span>
                 </div>
               </div>
             </div>
