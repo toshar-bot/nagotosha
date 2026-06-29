@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { FeaturedArticle } from '@/types/portal';
+import { isSaved, toggleSavedItem } from '@/lib/saved';
 
 const JP = {
   readArticle: '\u8a18\u4e8b\u3092\u898b\u308b',
@@ -14,8 +15,6 @@ const JP = {
   pr: 'PR',
   articleAriaSuffix: '\u306e\u8a18\u4e8b\u3092\u898b\u308b',
 };
-
-const STORAGE_KEY = 'savedArticleIds';
 
 type Chip = {
   label: string;
@@ -34,21 +33,25 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
   const articleHref = article.id.startsWith('wp-')
     ? `/article/${article.id.slice(3)}`
     : (article.articleUrl ?? '#');
-  const [isSaved, setIsSaved] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const chips = useMemo(() => getArticleChips(article), [article]);
 
   useEffect(() => {
-    setIsSaved(getSavedIds().includes(article.id));
+    setSaved(isSaved(article.id));
   }, [article.id]);
 
   const toggleSaved = () => {
-    const current = getSavedIds();
-    const next = current.includes(article.id)
-      ? current.filter(id => id !== article.id)
-      : [...current, article.id];
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setIsSaved(next.includes(article.id));
+    const result = toggleSavedItem({
+      id: article.id,
+      type: 'article',
+      title: article.title,
+      area: article.area,
+      imageUrl: article.imageUrl ?? imageUrl,
+      articleUrl: articleHref,
+      mapUrl: article.mapUrl,
+    });
+    setSaved(result.saved);
   };
 
   return (
@@ -140,14 +143,14 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
             onClick={toggleSaved}
             className="ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition-transform active:scale-95"
             style={{
-              color: isSaved ? '#E8483F' : '#667085',
-              background: isSaved ? 'rgba(232,72,63,0.10)' : 'rgba(7,26,77,0.05)',
-              border: isSaved ? '1px solid rgba(232,72,63,0.28)' : '1px solid #E6ECF5',
+              color: saved ? '#E8483F' : '#667085',
+              background: saved ? 'rgba(232,72,63,0.10)' : 'rgba(7,26,77,0.05)',
+              border: saved ? '1px solid rgba(232,72,63,0.28)' : '1px solid #E6ECF5',
             }}
-            aria-pressed={isSaved}
+            aria-pressed={saved}
           >
-            <BookmarkIcon filled={isSaved} />
-            {isSaved ? JP.saved : JP.save}
+            <BookmarkIcon filled={saved} />
+            {saved ? JP.saved : JP.save}
           </button>
         </div>
 
@@ -254,16 +257,6 @@ function getChipStyle(chip: Chip, article: FeaturedArticle): CSSProperties {
     border: '1px solid rgba(0,0,0,0.10)',
     textDecoration: 'none',
   };
-}
-
-function getSavedIds(): string[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '[]');
-    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
-  } catch {
-    return [];
-  }
 }
 
 function formatPublishedAt(iso: string): string {
