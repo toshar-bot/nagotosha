@@ -829,8 +829,14 @@ function GachaOpeningScreen() {
           className="relative z-10 block h-full w-full select-none object-contain"
           draggable={false}
         />
-        <div className="pointer-events-none absolute left-1/2 top-[-18px] z-20 h-[70px] w-[214px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.96)_0%,rgba(255,235,154,.72)_24%,rgba(255,205,90,.26)_52%,transparent_76%)] blur-[9px]" />
-        <div className="pointer-events-none absolute left-1/2 top-[-2px] z-30 h-[6px] w-[196px] -translate-x-1/2 rounded-full bg-white shadow-[0_0_18px_rgba(255,244,178,.98),0_0_34px_rgba(255,205,90,.55)]" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[-158px] z-0 h-[184px] w-[286px] -translate-x-1/2 opacity-90 blur-[1px]"
+          style={{
+            clipPath: 'polygon(48% 100%, 52% 100%, 61% 0, 66% 100%, 74% 100%, 91% 10%, 80% 100%, 100% 100%, 100% 88%, 56% 100%, 44% 100%, 0 88%, 0 100%, 20% 100%, 9% 10%, 26% 100%, 34% 100%, 39% 0)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,238,152,.66) 40%, rgba(255,204,88,.14) 74%, transparent 100%)',
+          }}
+        />
+        <div className="pointer-events-none absolute left-1/2 top-[-34px] z-0 h-[76px] w-[222px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.90)_0%,rgba(255,232,130,.50)_34%,transparent_74%)] blur-[12px]" />
       </div>
       <div className="absolute left-1/2 top-[154px] h-[76px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
         <img
@@ -886,17 +892,16 @@ function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: 
             <div className="relative overflow-hidden rounded-[18px] border border-[#d8ad3d]/85 bg-[#071A4D]">
               <div className="relative h-[178px] overflow-hidden">
                 <img src={card.imageUrl} alt={card.title} className="block h-full w-full object-cover" draggable={false} />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/72" />
-                <span className="absolute left-3 top-3 rounded-full border border-[#f7d875]/80 bg-black/45 px-2.5 py-1 text-[10px] font-black text-[#ffe9a6] backdrop-blur">{card.tag}</span>
-                <div className="absolute inset-x-3 bottom-3">
-                  <h3 className="text-[16px] font-black leading-[1.24] text-white drop-shadow-[0_2px_5px_rgba(0,0,0,.75)]">{card.title}</h3>
-                  <p className="mt-1 text-[10px] font-black tracking-[0.12em] text-[#ffe8a8]">NAGOYA COLLECTION CARD</p>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-black/12" />
               </div>
               <div className="relative bg-[linear-gradient(180deg,#fff8e6,#f4e4bd)] px-3.5 py-3 text-[#2f2415]">
-                <p className="text-[12px] font-black leading-[1.35] text-[#174B2F]">{card.sourceName}</p>
-                <p className="mt-1 min-h-[34px] text-[10px] font-bold leading-[1.48] text-[#4b3a28]">{card.catchCopy}</p>
-                <div className="mt-3 flex items-center justify-center">
+                <div className="mb-2 flex justify-center">
+                  <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.tag}</span>
+                </div>
+                <h3 className="text-[15px] font-black leading-[1.28] text-[#071A4D]">{card.title}</h3>
+                <p className="mt-1 text-[11px] font-black leading-[1.35] text-[#174B2F]">{card.sourceName}</p>
+                <p className="mt-1 min-h-[30px] text-[10px] font-bold leading-[1.45] text-[#4b3a28]">{card.catchCopy}</p>
+                <div className="mt-2 flex items-center justify-center">
                   <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.area}</span>
                 </div>
               </div>
