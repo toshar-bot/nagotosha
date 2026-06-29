@@ -833,11 +833,17 @@ function GachaOpeningScreen() {
           draggable={false}
         />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-142px] z-0 h-[210px] w-[292px] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-[-148px] z-0 h-[220px] w-[312px] -translate-x-1/2"
           style={{
             animation: 'home-gacha-sun-burst 1.24s ease-out both',
-            clipPath: 'polygon(50% 100%, 6% 0, 24% 100%, 34% 0, 44% 100%, 50% 0, 56% 100%, 66% 0, 76% 100%, 94% 0)',
-            background: 'linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,241,170,.72) 32%, rgba(255,204,82,.28) 62%, transparent 100%)',
+            background: [
+              'radial-gradient(ellipse at 50% 100%, rgba(255,255,255,.96) 0%, rgba(255,246,188,.74) 16%, rgba(255,211,94,.26) 42%, transparent 70%)',
+              'linear-gradient(72deg, transparent 0%, transparent 31%, rgba(255,255,255,.58) 43%, rgba(255,231,143,.32) 50%, transparent 62%, transparent 100%)',
+              'linear-gradient(108deg, transparent 0%, transparent 33%, rgba(255,255,255,.50) 45%, rgba(255,231,143,.26) 52%, transparent 64%, transparent 100%)',
+              'linear-gradient(90deg, transparent 0%, rgba(255,238,168,.28) 38%, rgba(255,255,255,.50) 50%, rgba(255,238,168,.28) 62%, transparent 100%)',
+            ].join(','),
+            WebkitMaskImage: 'linear-gradient(0deg, #000 0%, rgba(0,0,0,.92) 42%, rgba(0,0,0,.45) 72%, transparent 100%)',
+            maskImage: 'linear-gradient(0deg, #000 0%, rgba(0,0,0,.92) 42%, rgba(0,0,0,.45) 72%, transparent 100%)',
           }}
         />
         <div
