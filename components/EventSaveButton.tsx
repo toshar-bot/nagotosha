@@ -23,8 +23,9 @@ export function EventSaveButton(props: Props) {
       type="button"
       onClick={toggle}
       aria-pressed={saved}
-      className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
+      className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
       style={{
+        minWidth: 104,
         color: saved ? '#E8483F' : '#667085',
         background: saved ? 'rgba(232,72,63,0.10)' : 'rgba(7,26,77,0.05)',
         border: saved ? '1px solid rgba(232,72,63,0.28)' : '1px solid #E6ECF5',

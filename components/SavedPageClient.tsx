@@ -13,9 +13,30 @@ const TYPE_LABELS: Record<SavedItem['type'], string> = {
 };
 
 const POPULAR_SAVED_SPOTS = [
-  { rank: 1, title: '大須スペシャルティコーヒー', area: '大須', saves: 312 },
-  { rank: 2, title: '覚王山アパートメント秋市', area: '覚王山', saves: 204 },
-  { rank: 3, title: '栄 光のインスタレーション', area: '栄', saves: 128 },
+  {
+    rank: 1,
+    title: '大須スペシャルティコーヒー',
+    area: '大須',
+    saves: 312,
+    imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=75',
+    href: '/new',
+  },
+  {
+    rank: 2,
+    title: '覚王山アパートメント秋市',
+    area: '覚王山',
+    saves: 204,
+    imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=400&q=75',
+    href: '/event',
+  },
+  {
+    rank: 3,
+    title: '栄 光のインスタレーション',
+    area: '栄',
+    saves: 128,
+    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=75',
+    href: '/event',
+  },
 ];
 
 const EMPTY_STATE_LINKS = [
@@ -61,7 +82,7 @@ export default function SavedPage() {
       <section className="px-4 pt-3">
         {items.length > 0 ? (
           <div>
-            <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="mb-4 flex items-center justify-between gap-3">
               <p className="text-[12px] font-black" style={{ color: '#071A4D' }}>
                 {items.length}件を保存中
               </p>
@@ -75,11 +96,11 @@ export default function SavedPage() {
                   border: '1px solid rgba(232,72,63,0.22)',
                 }}
               >
-                保存をすべて削除
+                すべて削除
               </button>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {items.map(item => (
                 <SavedCard key={item.id} item={item} onRemove={handleRemove} />
               ))}
@@ -96,72 +117,82 @@ export default function SavedPage() {
 }
 
 function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string) => void }) {
+  const dest = item.articleUrl || '/new';
   return (
     <article
-      className="rounded-[14px] bg-white p-4"
-      style={{
-        border: '1px solid #E6ECF5',
-        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
-      }}
+      className="relative overflow-hidden rounded-[18px] bg-white"
+      style={{ border: '1px solid #E6ECF5', boxShadow: '0 8px 24px rgba(7,26,77,0.08)' }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="mb-2 flex flex-wrap items-center gap-1.5">
-            <span
-              className="rounded-full px-2.5 py-1 text-[10px] font-black"
-              style={{ color: '#071A4D', background: 'rgba(7,26,77,0.08)' }}
-            >
-              {TYPE_LABELS[item.type]}
-            </span>
-            {item.area && (
-              <span
-                className="rounded-full px-2.5 py-1 text-[10px] font-bold"
-                style={{ color: '#667085', background: '#F8FAFC' }}
-              >
-                {item.area}
-              </span>
-            )}
-            {item.category && (
-              <span
-                className="rounded-full px-2.5 py-1 text-[10px] font-bold"
-                style={{ color: '#667085', background: '#F8FAFC' }}
-              >
-                {item.category}
-              </span>
-            )}
+      {/* 全体タップ用オーバーレイ */}
+      <a href={dest} className="absolute inset-0 z-10" aria-label={`${item.title}を見る`} />
+
+      {/* 写真エリア（imageUrlがなくてもフォールバック表示） */}
+      <div
+        className="relative h-[120px] overflow-hidden"
+        style={{ background: FALLBACK_BG[item.type] }}
+      >
+        {item.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.imageUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center" style={{ color: FALLBACK_ICON_COLOR[item.type], opacity: 0.35 }}>
+            <FallbackIcon type={item.type} />
           </div>
-          <h2 className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
-            {item.title}
-          </h2>
-          <p className="mt-2 text-[10px] font-bold" style={{ color: '#9BA3B0' }}>
-            保存日：{formatSavedAt(item.savedAt)}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => onRemove(item.id)}
-          className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-black active:scale-95 transition-transform"
-          style={{
-            color: '#E8483F',
-            background: 'rgba(232,72,63,0.08)',
-            border: '1px solid rgba(232,72,63,0.18)',
-          }}
-        >
-          削除
-        </button>
+        )}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.18) 100%)' }}
+        />
       </div>
 
-      {(item.articleUrl || item.mapUrl) && (
-        <div className="mt-4 flex flex-wrap gap-2">
+      {/* テキストエリア */}
+      <div className="p-4">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className="rounded-full px-2.5 py-1 text-[10px] font-black"
+            style={{ color: '#071A4D', background: 'rgba(7,26,77,0.08)' }}
+          >
+            {TYPE_LABELS[item.type]}
+          </span>
+          {item.area && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
+              style={{ color: '#667085', background: '#F8FAFC' }}
+            >
+              <MapPinIcon />
+              {item.area}
+            </span>
+          )}
+          {item.category && (
+            <span
+              className="rounded-full px-2.5 py-1 text-[10px] font-bold"
+              style={{ color: '#667085', background: '#F8FAFC' }}
+            >
+              {item.category}
+            </span>
+          )}
+        </div>
+
+        <h2 className="mt-2 text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
+          {item.title}
+        </h2>
+        <p className="mt-1.5 text-[10px] font-bold" style={{ color: '#9BA3B0' }}>
+          保存日：{formatSavedAt(item.savedAt)}
+        </p>
+
+        {/* ボタン行（z-20 で overlay より上） */}
+        <div className="relative z-20 mt-4 flex flex-wrap gap-2">
           {item.articleUrl && (
             <a
               href={item.articleUrl}
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
-              style={{
-                color: '#ffffff',
-                background: '#E8483F',
-                boxShadow: '0 6px 14px rgba(232,72,63,0.25)',
-              }}
+              style={{ color: '#ffffff', background: '#E8483F', boxShadow: '0 6px 14px rgba(232,72,63,0.25)' }}
             >
               記事を見る
               <ArrowRightIcon />
@@ -173,18 +204,22 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
-              style={{
-                color: '#071A4D',
-                background: 'rgba(7,26,77,0.06)',
-                border: '1px solid #E6ECF5',
-              }}
+              style={{ color: '#071A4D', background: 'rgba(7,26,77,0.06)', border: '1px solid #E6ECF5' }}
             >
               地図で開く
               <MapPinIcon />
             </a>
           )}
+          <button
+            type="button"
+            onClick={() => onRemove(item.id)}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
+            style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)', border: '1px solid rgba(232,72,63,0.18)' }}
+          >
+            削除
+          </button>
         </div>
-      )}
+      </div>
     </article>
   );
 }
@@ -205,11 +240,7 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
           {savedCount > 0 && (
             <span
               className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black"
-              style={{
-                color: '#E8483F',
-                background: 'rgba(232,72,63,0.08)',
-                border: '1px solid rgba(232,72,63,0.18)',
-              }}
+              style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)', border: '1px solid rgba(232,72,63,0.18)' }}
             >
               あなたの保存 {savedCount}件
             </span>
@@ -220,52 +251,67 @@ function PopularSavedSpots({ savedCount }: { savedCount: number }) {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {POPULAR_SAVED_SPOTS.map(item => (
-          <article
+      <div className="flex flex-col gap-4">
+        {POPULAR_SAVED_SPOTS.map((item) => (
+          <a
             key={item.rank}
-            className="rounded-[14px] bg-white p-4"
+            href={item.href}
+            className="relative overflow-hidden rounded-[18px] bg-white block active:scale-[0.98] transition-transform"
             style={{
               border: item.rank === 1 ? '1.5px solid rgba(232,72,63,0.22)' : '1px solid #E6ECF5',
-              boxShadow: item.rank === 1
-                ? '0 8px 24px rgba(232,72,63,0.10)'
-                : '0 4px 16px rgba(7,26,77,0.06)',
+              boxShadow: item.rank === 1 ? '0 10px 28px rgba(232,72,63,0.12)' : '0 6px 18px rgba(7,26,77,0.07)',
+              textDecoration: 'none',
             }}
           >
-            <div className="flex items-center gap-3">
+            {/* 写真 */}
+            <div
+              className="relative h-[120px] overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 100%)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.imageUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+              />
               <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-black"
-                style={{
-                  color: item.rank === 1 ? '#ffffff' : '#071A4D',
-                  background: item.rank === 1 ? '#E8483F' : 'rgba(7,26,77,0.08)',
-                  boxShadow: item.rank === 1 ? '0 6px 14px rgba(232,72,63,0.30)' : 'none',
-                }}
-              >
-                {item.rank}
+                className="absolute inset-0 pointer-events-none"
+                style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.30) 100%)' }}
+              />
+              {/* 順位バッジ（SVG） */}
+              <div className="absolute left-3 top-3">
+                <RankBadge rank={item.rank} />
               </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-[15px] font-black" style={{ color: '#071A4D' }}>
-                  {item.title}
-                </h3>
-                <p className="mt-1 text-[11px] font-bold" style={{ color: '#667085' }}>
-                  {item.area}
-                </p>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-[18px] font-black leading-none" style={{ color: '#071A4D' }}>
+              {/* 保存数バッジ */}
+              <div className="absolute right-3 bottom-3">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black text-white"
+                  style={{ background: 'rgba(0,0,0,0.42)', backdropFilter: 'blur(4px)' }}
+                >
+                  <BookmarkIcon />
                   {item.saves.toLocaleString()}
-                </p>
-                <p className="mt-1 text-[9px] font-black tracking-[0.14em]" style={{ color: '#9BA3B0' }}>
-                  保存
-                </p>
+                </span>
               </div>
             </div>
-          </article>
+
+            {/* テキスト */}
+            <div className="px-4 py-3">
+              <h3 className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                {item.title}
+              </h3>
+              <p className="mt-1 flex items-center gap-1 text-[11px] font-bold" style={{ color: '#667085' }}>
+                <MapPinIcon />
+                {item.area}
+              </p>
+            </div>
+          </a>
         ))}
       </div>
 
-      <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
-        現在はサンプル表示です。今後、実際の保存数や地図クリック数をもとにランキング化していきます。
+      <p className="mt-4 text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
+        現在はサンプル表示です。今後、実際の保存数をもとにランキング化していきます。
       </p>
     </section>
   );
@@ -275,16 +321,13 @@ function EmptyState() {
   return (
     <div
       className="rounded-[18px] bg-white p-5 text-center"
-      style={{
-        border: '1px solid #E6ECF5',
-        boxShadow: '0 8px 24px rgba(7,26,77,0.08)',
-      }}
+      style={{ border: '1px solid #E6ECF5', boxShadow: '0 8px 24px rgba(7,26,77,0.08)' }}
     >
       <div
         className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
         style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
       >
-        <BookmarkIcon />
+        <BookmarkIcon large />
       </div>
       <h2 className="mt-4 text-[17px] font-black" style={{ color: '#071A4D' }}>
         保存した記事はまだありません
@@ -301,11 +344,7 @@ function EmptyState() {
             key={link.href}
             href={link.href}
             className="flex items-center justify-between rounded-[14px] px-4 py-3 text-[13px] font-black active:scale-[0.98] transition-transform"
-            style={{
-              color: '#071A4D',
-              background: '#F8FAFC',
-              border: '1px solid #E6ECF5',
-            }}
+            style={{ color: '#071A4D', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
           >
             {link.label}
             <ArrowRightIcon />
@@ -328,10 +367,101 @@ function formatSavedAt(savedAt: string) {
   }).format(date);
 }
 
-function BookmarkIcon() {
+/* ── フォールバック用定数 ── */
+
+const FALLBACK_BG: Record<string, string> = {
+  event: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 100%)',
+  article: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+  store: 'linear-gradient(135deg, #FFF7ED 0%, #FED7AA 100%)',
+  area: 'linear-gradient(135deg, #F0FDF4 0%, #BBF7D0 100%)',
+};
+
+const FALLBACK_ICON_COLOR: Record<string, string> = {
+  event: '#E8483F',
+  article: '#3B82F6',
+  store: '#EA580C',
+  area: '#16A34A',
+};
+
+function FallbackIcon({ type }: { type: string }) {
+  if (type === 'event') return (
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="3" />
+      <path d="M3 10h18" /><path d="M8 2v5" /><path d="M16 2v5" />
+    </svg>
+  );
+  if (type === 'store') return (
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 10h16l-1.5-6h-13L4 10z" /><path d="M5 10v10h14V10" /><path d="M9 20v-6h6v6" />
+    </svg>
+  );
+  if (type === 'area') return (
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" /><circle cx="12" cy="10" r="3" />
+    </svg>
+  );
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+/* ── ランキングバッジ（SVG） ── */
+
+const RANK_COLORS = [
+  { bg: '#E8483F', text: '#fff', shadow: 'rgba(232,72,63,0.45)' },   // 1位：なごとしゃ赤
+  { bg: '#8A96A8', text: '#fff', shadow: 'rgba(100,120,150,0.35)' }, // 2位：シルバー
+  { bg: '#B07060', text: '#fff', shadow: 'rgba(176,112,96,0.35)' },  // 3位：ブロンズ
+];
+
+function RankBadge({ rank }: { rank: number }) {
+  const c = RANK_COLORS[rank - 1];
+  if (!c) {
+    return (
+      <span
+        className="flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-black text-white"
+        style={{ background: 'rgba(7,26,77,0.65)', backdropFilter: 'blur(4px)' }}
+      >
+        {rank}
+      </span>
+    );
+  }
+  return (
+    <span
+      className="flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-black"
+      style={{
+        background: c.bg,
+        color: c.text,
+        boxShadow: `0 4px 10px ${c.shadow}`,
+      }}
+    >
+      {rank === 1 ? (
+        <span className="flex flex-col items-center gap-0">
+          <CrownIcon />
+          <span style={{ fontSize: 9, lineHeight: 1, marginTop: -1 }}>1</span>
+        </span>
+      ) : rank}
+    </span>
+  );
+}
+
+function CrownIcon() {
+  return (
+    <svg width="14" height="10" viewBox="0 0 24 16" fill="currentColor">
+      <path d="M2 14h20M2 14L4 4l5 6 3-8 3 8 5-6 2 10H2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="4" cy="4" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="1.5" r="1.5" fill="currentColor" />
+      <circle cx="20" cy="4" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function MapPinIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
     </svg>
   );
 }
@@ -345,11 +475,11 @@ function ArrowRightIcon() {
   );
 }
 
-function MapPinIcon() {
+function BookmarkIcon({ large = false }: { large?: boolean }) {
+  const size = large ? 22 : 11;
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
-      <circle cx="12" cy="10" r="2.5" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </svg>
   );
 }

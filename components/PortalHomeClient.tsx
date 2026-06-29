@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
 import Link from 'next/link';
 
 import type { FeaturedArticle } from '@/types/portal';
@@ -171,9 +171,9 @@ const FEATURE_CARDS = [
 ];
 
 const FALLBACK_ARTICLES = [
-  { id: 'mock-article-1', title: JP.articleCafe, tag: JP.focus, area: JP.nakaSakae, publishedAt: '2026.06.16', imageUrl: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80' },
-  { id: 'mock-article-2', title: JP.articleRestaurant, tag: 'NEW', area: JP.nakamuraMeieki, publishedAt: '2026.06.14', imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
-  { id: 'mock-article-3', title: JP.articleCastle, tag: JP.focus, area: JP.castleArea, publishedAt: '2026.06.10', imageUrl: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80' },
+  { id: 'mock-article-1', title: JP.articleCafe, description: '駅近で立ち寄りやすい、気分を変えるカフェ時間。', tag: JP.focus, area: JP.nakaSakae, publishedAt: '2026.06.16', imageUrl: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80' },
+  { id: 'mock-article-2', title: JP.articleRestaurant, description: '名駅で見つけたい、新しい夜ごはんの候補。', tag: 'NEW', area: JP.nakamuraMeieki, publishedAt: '2026.06.14', imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
+  { id: 'mock-article-3', title: JP.articleCastle, description: '季節の花と街歩きを楽しむ、名古屋城まわりのおでかけ。', tag: JP.focus, area: JP.castleArea, publishedAt: '2026.06.10', imageUrl: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=600&q=80' },
 ];
 
 type ArticleLike = Pick<FeaturedArticle, 'id' | 'title'> & Partial<FeaturedArticle>;
@@ -252,32 +252,87 @@ function useBottomNavAutoHide() {
   }, []);
 }
 function Header() {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+  }, [searchOpen]);
+
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchText.trim();
+    if (!query) return;
+    window.location.href = '/new?tag=' + encodeURIComponent(query);
+  };
+
   return (
     <header className="border-b border-[#f2d9d8] bg-white">
-      <div className="mx-auto flex min-h-[92px] max-w-[940px] items-center justify-between gap-1 px-2 py-2">
-        <Link href="/" className="flex min-w-0 flex-1 items-center overflow-hidden" aria-label="なごとしゃ ホーム">
-          <img
-            src="/subjects/nagotosha-header-complete.png"
-            alt="なごとしゃ 名古屋情報局 トーシャー"
-            className="block h-[78px] w-auto max-w-[calc(100vw-120px)] object-contain object-left sm:h-[86px] sm:max-w-[560px]"
-          />
+      <div className="mx-auto flex min-h-[108px] max-w-[940px] items-center justify-between gap-1 px-2 py-2">
+        <Link href="/" className="flex min-w-0 flex-1 items-center" aria-label="なごとしゃ ホーム">
+          <span className="block h-[96px] w-full max-w-[calc(100vw-112px)] sm:h-[108px] sm:max-w-[620px]">
+            <img
+              src="/subjects/nagotosha-header-complete-tight.png"
+              alt="なごとしゃ 名古屋情報局 トーシャー"
+              className="block h-full w-full object-contain object-left"
+            />
+          </span>
         </Link>
-        <nav className="flex shrink-0 items-center gap-0.5" aria-label="ヘッダーナビ">
-          <HeaderAction label="検索" href="/new" type="search" />
-          <HeaderAction label="ガチャ" href="/game" type="gacha" />
-          <HeaderAction label="メニュー" href="/area" type="menu" />
+        <nav className="flex shrink-0 items-center gap-0" aria-label="ヘッダーナビ">
+          <HeaderAction label="検索" type="search" onClick={() => { setSearchOpen((open) => !open); setMenuOpen(false); }} />
+          <HeaderAction label="ガチャ" href="#home-gacha" type="gacha" />
+          <HeaderAction label="メニュー" type="menu" onClick={() => { setMenuOpen((open) => !open); setSearchOpen(false); }} />
         </nav>
       </div>
+      {searchOpen && (
+        <form onSubmit={submitSearch} className="mx-auto flex max-w-[940px] items-center gap-2 px-4 pb-3">
+          <input
+            ref={inputRef}
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            type="search"
+            placeholder="キーワードで検索"
+            className="h-11 min-w-0 flex-1 rounded-full border border-[#f2caca] bg-[#fff8f8] px-4 text-[15px] font-bold text-[#071A4D] outline-none focus:border-[#E8483F] focus:bg-white"
+          />
+          <button type="submit" className="h-11 shrink-0 rounded-full bg-[#E8483F] px-5 text-[14px] font-black text-white shadow-[0_8px_18px_rgba(232,72,63,.22)]">
+            検索
+          </button>
+        </form>
+      )}
+      {menuOpen && (
+        <div className="mx-auto max-w-[940px] px-4 pb-4">
+          <nav className="grid grid-cols-2 gap-2 rounded-[18px] border border-[#f2d9d8] bg-[#fffafa] p-3 shadow-[0_12px_26px_rgba(7,26,77,.08)]" aria-label="メニュー">
+            {[
+              { label: 'ホーム', href: '/' },
+              { label: '新着記事', href: '/new' },
+              { label: 'イベント', href: '/event' },
+              { label: 'エリア', href: '/area' },
+              { label: '保存', href: '/saved' },
+              { label: 'ガチャ', href: '#home-gacha' },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className="flex h-12 items-center justify-center rounded-[14px] border border-[#f4cdca] bg-white text-[14px] font-black text-[#071A4D] no-underline active:scale-[0.99]"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
 
-function HeaderAction({ label, type, href }: { label: string; type: 'search' | 'gacha' | 'menu'; href?: string }) {
+function HeaderAction({ label, type, href, onClick }: { label: string; type: 'search' | 'gacha' | 'menu'; href?: string; onClick?: () => void }) {
   const icon = type === 'search' ? <SearchIcon /> : type === 'gacha' ? <GachaIcon /> : <MenuIcon />;
-  const content = <>{icon}<span style={{ fontSize: 9, fontWeight: 900, lineHeight: 1, marginTop: 2 }}>{label}</span></>;
-  const style: CSSProperties = { minWidth: 36, color: THEME.navy, textDecoration: 'none', gap: 2, padding: '4px 1px', borderRadius: 8 };
-  if (href) return <Link href={href} aria-label={label} className="flex flex-col items-center justify-center active:opacity-60 transition-opacity" style={style}>{content}</Link>;
-  return <button type="button" aria-label={label} className="flex flex-col items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{content}</button>;
+  const style: CSSProperties = { minWidth: 32, color: THEME.navy, textDecoration: 'none', padding: '8px 1px', borderRadius: 8 };
+  if (href) return <Link href={href} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={style}>{icon}</Link>;
+  return <button type="button" onClick={onClick} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{icon}</button>;
 }
 
 function CategoryTabs() {
@@ -530,19 +585,47 @@ type HomeGachaPreviewCard = {
   delay: string;
 };
 
-type GachaResult = {
+type HomeGachaResult = {
+  id: string;
   title: string;
-  category: string;
-  shopName: string;
   catchCopy: string;
+  tag: string;
   area: string;
   imageUrl: string;
   articleUrl: string;
+  sourceName: string;
 };
+
+function fitCardText(value: string | undefined, maxLength: number) {
+  const clean = (value || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxLength) return clean;
+  const sentence = clean.split(/[。！？!?.]/)[0];
+  if (sentence && sentence.length <= maxLength) return sentence;
+  return clean.slice(0, maxLength);
+}
+
+function makeGachaResult(article: ArticleLike, index: number): HomeGachaResult {
+  const fallback = FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length];
+  const title = fitCardText(article.title || fallback.title, 26);
+  const description = article.description || fallback.description || '名古屋で見つけたい、今日のおでかけ候補。';
+  const tag = article.tag || fallback.tag || JP.focus;
+  const area = article.area || fallback.area || JP.nagoya;
+
+  return {
+    id: String(article.id || fallback.id || index),
+    title,
+    catchCopy: fitCardText(description, 42),
+    tag,
+    area,
+    imageUrl: article.imageUrl || fallback.imageUrl || FEATURE_CARDS[index % FEATURE_CARDS.length].imageUrl,
+    articleUrl: article.articleUrl || '/new',
+    sourceName: fitCardText(article.storeName || title, 18),
+  };
+}
 
 function GachaSection({ articles }: { articles: ArticleLike[] }) {
   const [phase, setPhase] = useState<HomeGachaPhase>('intro');
-  const [selectedArticle, setSelectedArticle] = useState<ArticleLike | null>(null);
+  const [selectedResult, setSelectedResult] = useState<HomeGachaResult | null>(null);
   const resultTimerRef = useRef<number | null>(null);
 
   const previewCards: HomeGachaPreviewCard[] = [
@@ -580,8 +663,11 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
     },
   ];
 
-  const sourceArticles = articles.length > 0 ? articles : FALLBACK_ARTICLES;
-  const resultArticle = selectedArticle || sourceArticles[0] || FALLBACK_ARTICLES[0];
+  const gachaResults = useMemo(() => {
+    const source = articles.length > 0 ? articles : FALLBACK_ARTICLES;
+    return source.map((article, index) => makeGachaResult(article, index));
+  }, [articles]);
+  const resultCard = selectedResult || gachaResults[0];
 
   useEffect(() => {
     return () => {
@@ -589,11 +675,11 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
     };
   }, []);
 
-  const chooseArticle = () => sourceArticles[Math.floor(Math.random() * sourceArticles.length)] || FALLBACK_ARTICLES[0];
+  const chooseCard = () => gachaResults[Math.floor(Math.random() * gachaResults.length)] || makeGachaResult(FALLBACK_ARTICLES[0], 0);
 
   const startDraw = () => {
     if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
-    setSelectedArticle(chooseArticle());
+    setSelectedResult(chooseCard());
     setPhase('pack');
   };
 
@@ -610,12 +696,12 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
   const resetGacha = () => {
     if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
     resultTimerRef.current = null;
-    setSelectedArticle(null);
+    setSelectedResult(null);
     setPhase('intro');
   };
 
   return (
-    <section className="px-4 py-5">
+    <section id="home-gacha" className="scroll-mt-4 px-4 py-5">
       <div className="relative mx-auto w-full max-w-[940px] overflow-hidden rounded-[28px] border border-[#f4d9cd] bg-[linear-gradient(180deg,#fffaf1_0%,#fff1f2_100%)] px-4 pb-5 pt-5 text-center shadow-[0_16px_38px_rgba(232,72,63,0.12)]">
         <div
           className="pointer-events-none absolute inset-0 opacity-55"
@@ -667,7 +753,7 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
         )}
 
         {phase === 'result' && (
-          <GachaResultScreen article={resultArticle} onReset={resetGacha} />
+          <GachaResultScreen card={resultCard} onReset={resetGacha} />
         )}
       </div>
     </section>
@@ -707,7 +793,6 @@ function GachaPackScreen({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
       <GachaHeading />
-      <div className="pointer-events-none absolute left-1/2 top-[172px] h-[310px] w-[310px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,223,112,.62),rgba(232,72,63,.18)_46%,transparent_72%)] blur-[18px]" />
       <button type="button" onClick={onOpen} className="relative mx-auto mt-7 block h-[350px] w-[238px] select-none active:scale-[0.99]" aria-label="お出かけパックをタップして開封">
         <OdekakePackVisual />
       </button>
@@ -719,25 +804,11 @@ function GachaPackScreen({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-function OdekakePackVisual({ opening = false, part = 'full' }: { opening?: boolean; part?: 'full' | 'top' }) {
-  if (part === 'top') {
-    return (
-      <div className="relative h-full w-full overflow-hidden">
-        <img
-          src="/gacha/odekake-pack-cutout.png"
-          alt=""
-          className="absolute left-0 top-0 block w-full select-none"
-          draggable={false}
-        />
-      </div>
-    );
-  }
-
+function OdekakePackVisual({ opening = false }: { opening?: boolean }) {
   return (
     <div className="absolute inset-0 grid place-items-center" style={{ animation: opening ? undefined : 'home-gacha-pack-float 4.4s ease-in-out infinite' }}>
-      <div className="absolute inset-[-10px] rounded-[34px] bg-[radial-gradient(circle_at_50%_50%,rgba(255,226,122,.54),rgba(232,72,63,.15)_42%,transparent_72%)] blur-[18px]" />
       <img
-        src="/gacha/odekake-pack-cutout.png"
+        src="/gacha/odekake-pack-clean.png"
         alt="お出かけパック"
         className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_24px_36px_rgba(109,69,10,0.30)]"
         draggable={false}
@@ -751,89 +822,88 @@ function GachaOpeningScreen() {
     <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
       <p className="text-[28px] font-black tracking-[0.08em] text-[#0f5d3a]">開封中...</p>
       <p className="mt-1 text-sm font-black text-[#071A4D]/70">何が出るかはお楽しみ</p>
-      <div className="pointer-events-none absolute left-1/2 top-[170px] h-[320px] w-[320px] -translate-x-1/2 rounded-full bg-[conic-gradient(from_24deg,rgba(255,42,109,.50),rgba(255,220,84,.78),rgba(84,255,187,.52),rgba(88,184,255,.58),rgba(172,100,255,.54),rgba(255,42,109,.50))] blur-[24px]" style={{ animation: 'portal-rainbow-burst 1.5s ease-in-out both' }} />
-      <div className="pointer-events-none absolute left-1/2 top-[144px] h-[370px] w-[290px] -translate-x-1/2 rounded-[34px] bg-[radial-gradient(circle_at_50%_44%,rgba(255,226,122,.48),rgba(232,72,63,.18)_45%,rgba(255,159,201,.16)_58%,transparent_74%)] blur-[20px]" />
-      <div className="absolute left-1/2 top-[154px] h-[342px] w-[238px] -translate-x-1/2 opacity-82" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards', clipPath: 'inset(72px 0 0 0)' }}>
+      <div className="absolute left-1/2 top-[224px] h-[270px] w-[238px] -translate-x-1/2 opacity-82" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards' }}>
         <img
-          src="/gacha/odekake-pack-cutout.png"
+          src="/gacha/odekake-pack-body.png"
           alt="お出かけパック"
           className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_24px_36px_rgba(109,69,10,0.30)]"
           draggable={false}
         />
       </div>
-      <div className="absolute left-1/2 top-[156px] h-[76px] w-[238px] -translate-x-1/2 overflow-hidden" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
-        <OdekakePackVisual opening part="top" />
+      <div className="absolute left-1/2 top-[154px] h-[76px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
+        <img
+          src="/gacha/odekake-pack-top.png"
+          alt=""
+          className="block h-full w-full select-none object-contain drop-shadow-[0_14px_20px_rgba(109,69,10,0.22)]"
+          draggable={false}
+        />
         <div className="absolute inset-x-8 bottom-1 h-[8px] rounded-full bg-white shadow-[0_0_26px_rgba(255,238,149,.98),0_0_64px_rgba(255,80,112,.62)]" />
       </div>
-      <div className="pointer-events-none absolute left-1/2 top-[216px] h-[220px] w-[240px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,1)_0%,rgba(255,231,113,.86)_22%,rgba(255,88,111,.22)_52%,transparent_72%)]" style={{ animation: 'home-gacha-opening-light 1.18s ease-in-out .2s both' }} />
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((spark) => (
-        <span key={spark} className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-[#f7d468] shadow-[0_0_14px_rgba(255,231,130,.95)]" style={{ left: `${20 + (spark % 4) * 18}%`, top: `${230 + Math.floor(spark / 4) * 52}px`, animation: `home-gacha-particle 1.2s ease-out ${spark * .08}s both` }} />
-      ))}
-      <div className="pointer-events-none absolute inset-[-24px] bg-white" style={{ animation: 'home-gacha-white-flash 1.45s ease-in-out .45s both' }} />
     </div>
   );
 }
 
-function toGachaResult(article: ArticleLike): GachaResult {
-  const fallbackImage = 'https://upload.wikimedia.org/wikipedia/commons/5/57/%E3%81%B2%E3%81%A4%E3%81%BE%E3%81%B6%E3%81%97_%288866834170%29.jpg';
-  const storeName = (article as ArticleLike & { storeName?: string }).storeName;
-  const text = [article.title, article.description, article.tag, article.area].filter(Boolean).join(' ');
-  const cardTitle =
-    text.includes('ひつまぶし') ? 'ひつまぶし' :
-    text.includes('味噌カツ') || text.includes('みそかつ') ? '味噌カツ' :
-    text.includes('水族館') || text.includes('名古屋港') ? '名古屋港水族館' :
-    text.includes('動植物園') || text.includes('東山') || text.includes('コアラ') ? '東山動植物園' :
-    text.includes('カフェ') || text.toLowerCase().includes('cafe') ? '名古屋カフェ' :
-    text.includes('イベント') ? '名古屋イベント' :
-    text.includes('新店') || text.includes('オープン') ? '新店ニュース' :
-    (article.tag && article.tag.length <= 8 ? article.tag : '名古屋おでかけ');
+function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: () => void }) {
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, gx: 50, gy: 35 });
+  const cardStyle: CSSProperties = {
+    transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+    '--gacha-glow-x': `${tilt.gx}%`,
+    '--gacha-glow-y': `${tilt.gy}%`,
+  } as CSSProperties;
 
-  return {
-    title: cardTitle,
-    category: article.tag || '名古屋名物',
-    shopName: storeName || article.title || 'あつた蓬莱軒',
-    catchCopy: article.description || '香ばしく焼き上げた、名古屋らしい一杯で。',
-    area: article.area || '熱田',
-    imageUrl: article.imageUrl || fallbackImage,
-    articleUrl: article.articleUrl || '/card/card_010',
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    setTilt({
+      rx: (0.5 - y) * 7,
+      ry: (x - 0.5) * 8,
+      gx: x * 100,
+      gy: y * 100,
+    });
   };
-}
 
-function GachaResultScreen({ article, onReset }: { article: ArticleLike; onReset: () => void }) {
-  const result = toGachaResult(article);
+  const resetTilt = () => setTilt({ rx: 0, ry: 0, gx: 50, gy: 35 });
 
   return (
     <div className="relative z-10 mx-auto max-w-[390px] px-1 pb-1 pt-1 text-center" style={{ animation: 'home-gacha-result-in .62s cubic-bezier(.22,1,.36,1) both' }}>
       <GachaHeading />
-      <div className="pointer-events-none absolute inset-x-0 top-20 h-[330px] rounded-full bg-[radial-gradient(circle_at_50%_32%,rgba(255,232,153,.28),transparent_44%),radial-gradient(circle_at_22%_54%,rgba(255,97,116,.07),transparent_30%),radial-gradient(circle_at_85%_62%,rgba(83,150,96,.07),transparent_28%)]" />
-      <div className="relative mx-auto mt-4 w-[min(78vw,306px)] overflow-hidden rounded-[24px] border border-[#d8b15d] bg-[#102417] shadow-[0_14px_30px_rgba(7,26,77,.16),0_0_0_3px_rgba(255,232,166,.32)]">
-        <div className="pointer-events-none absolute inset-[6px] z-10 rounded-[19px] border border-[#f7df95]/70" />
-        <div className="pointer-events-none absolute inset-0 z-20 bg-[linear-gradient(115deg,transparent_0%,transparent_36%,rgba(255,255,255,.42)_45%,rgba(255,226,145,.30)_49%,transparent_60%),conic-gradient(from_120deg_at_50%_45%,rgba(255,84,130,.18),rgba(255,225,91,.20),rgba(92,255,202,.15),rgba(91,162,255,.16),rgba(203,116,255,.14),rgba(255,84,130,.18))] bg-[length:190%_190%,180%_180%] mix-blend-screen opacity-60" style={{ animation: 'portal-holo-pan 4.8s ease-in-out infinite' }} />
-        <div className="pointer-events-none absolute inset-0 z-10 opacity-[.18] bg-[radial-gradient(circle_at_18%_16%,#ffe29b_0_2px,transparent_3px),radial-gradient(circle_at_82%_20%,#fff1b7_0_2px,transparent_3px),radial-gradient(circle_at_20%_84%,#ffe29b_0_2px,transparent_3px),radial-gradient(circle_at_78%_78%,#fff1b7_0_2px,transparent_3px)]" />
-        <div className="relative h-[188px] bg-cover bg-center" style={{ backgroundImage: 'url("' + result.imageUrl + '")' }}>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,26,77,.05)_0%,rgba(7,26,77,0)_36%,rgba(7,26,77,.68)_100%)]" />
-          <div className="pointer-events-none absolute inset-0 opacity-[.16] bg-[repeating-radial-gradient(ellipse_at_top,#ffe5a3_0_1px,transparent_1px_13px)] mix-blend-screen" />
-          <span className="absolute left-4 top-4 rounded-full border border-[#e7c46e]/80 bg-[#102417]/88 px-3 py-1 text-[11px] font-black text-[#ffe6a3] shadow-[0_6px_14px_rgba(7,26,77,.18)]">
-            {result.category}
-          </span>
-          <div className="absolute bottom-4 left-4 right-4 text-left text-white">
-            <p className="line-clamp-1 text-[19px] font-black leading-tight drop-shadow">{result.shopName}</p>
-            <p className="mt-1 line-clamp-1 text-[12px] font-bold text-white/90">{result.area}</p>
-          </div>
-        </div>
+      <div className="pointer-events-none absolute inset-x-0 top-20 h-[390px] rounded-full bg-[radial-gradient(circle_at_50%_32%,rgba(255,232,153,.30),transparent_44%),radial-gradient(circle_at_22%_54%,rgba(255,97,116,.08),transparent_30%),radial-gradient(circle_at_85%_62%,rgba(83,150,96,.08),transparent_28%)]" />
+      <div className="relative mx-auto mt-4 flex justify-center">
+        <div
+          className="group relative w-[250px] overflow-hidden rounded-[24px] border-[2px] border-[#d8ad3d] bg-[#101315] text-left shadow-[0_22px_44px_rgba(7,26,77,.22),0_0_0_4px_rgba(255,232,167,.36)] transition-transform duration-150 ease-out"
+          style={cardStyle}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={resetTilt}
+        >
+          <div className="pointer-events-none absolute inset-0 z-20 opacity-70 mix-blend-screen" style={{ background: 'radial-gradient(circle at var(--gacha-glow-x) var(--gacha-glow-y), rgba(255,255,255,.58), rgba(255,222,115,.22) 18%, rgba(255,98,180,.18) 30%, rgba(82,183,255,.16) 42%, transparent 58%)' }} />
+          <div className="pointer-events-none absolute inset-0 z-20 opacity-45 mix-blend-screen" style={{ background: 'linear-gradient(120deg, transparent 12%, rgba(255,255,255,.36) 22%, rgba(255,225,105,.20) 29%, transparent 42%)', animation: 'home-gacha-card-shine 3.6s ease-in-out infinite' }} />
+          <div className="pointer-events-none absolute inset-0 z-10 opacity-22" style={{ backgroundImage: 'radial-gradient(circle at 20% 18%, rgba(255,235,160,.45) 0 1px, transparent 2px), radial-gradient(circle at 78% 34%, rgba(255,255,255,.35) 0 1px, transparent 2px), repeating-radial-gradient(circle at 50% 0%, transparent 0 15px, rgba(255,215,125,.15) 16px 17px)' }} />
 
-        <div className="relative bg-[linear-gradient(180deg,#fffaf0,#fff3dc)] p-3.5 text-left">
-          <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-[#d8b15d]/70" />
-          <h3 className="line-clamp-1 text-[17px] font-black leading-snug text-[#071A4D]">
-            {result.title}
-          </h3>
-          <p className="mt-2 line-clamp-2 text-[12.5px] font-bold leading-relaxed text-[#667085]">
-            {result.catchCopy}
-          </p>
+          <div className="relative z-10 p-[10px]">
+            <div className="relative overflow-hidden rounded-[18px] border border-[#d8ad3d]/85 bg-[#071A4D]">
+              <div className="relative h-[178px] overflow-hidden">
+                <img src={card.imageUrl} alt={card.title} className="block h-full w-full object-cover" draggable={false} />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/72" />
+                <span className="absolute left-3 top-3 rounded-full border border-[#f7d875]/80 bg-black/45 px-2.5 py-1 text-[10px] font-black text-[#ffe9a6] backdrop-blur">{card.tag}</span>
+                <div className="absolute inset-x-3 bottom-3">
+                  <h3 className="text-[16px] font-black leading-[1.24] text-white drop-shadow-[0_2px_5px_rgba(0,0,0,.75)]">{card.title}</h3>
+                  <p className="mt-1 text-[10px] font-black tracking-[0.12em] text-[#ffe8a8]">NAGOYA COLLECTION CARD</p>
+                </div>
+              </div>
+              <div className="relative bg-[linear-gradient(180deg,#fff8e6,#f4e4bd)] px-3.5 py-3 text-[#2f2415]">
+                <p className="text-[12px] font-black leading-[1.35] text-[#174B2F]">{card.sourceName}</p>
+                <p className="mt-1 min-h-[34px] text-[10px] font-bold leading-[1.48] text-[#4b3a28]">{card.catchCopy}</p>
+                <div className="mt-3 flex items-center justify-center">
+                  <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.area}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div className="relative z-10 mx-auto mt-4 grid w-[min(78vw,306px)] gap-2.5">
-        <a href={result.articleUrl} className="inline-flex h-[52px] items-center justify-center rounded-full border border-[#d6b052] bg-[linear-gradient(180deg,#ef4444,#c91723)] text-[16px] font-black text-white no-underline shadow-[0_10px_20px_rgba(185,25,31,.24),inset_0_1px_0_rgba(255,255,255,.28)]">詳細を見る<span className="ml-3 grid h-6 w-6 place-items-center rounded-full border border-white/70 text-[16px]" aria-hidden="true">{String.fromCharCode(8250)}</span></a>
+        <a href={card.articleUrl} className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full border border-[#d6b052] bg-[linear-gradient(180deg,#ef4444,#c91723)] px-5 text-[16px] font-black text-white no-underline shadow-[0_10px_20px_rgba(185,25,31,.24),inset_0_1px_0_rgba(255,255,255,.28)]">詳細を見る<span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/70 text-[16px] leading-none" aria-hidden="true">{String.fromCharCode(8250)}</span></a>
         <button type="button" onClick={onReset} className="inline-flex h-[48px] items-center justify-center rounded-full border border-[#e8483f] bg-white text-[14px] font-black text-[#e8483f] shadow-[0_7px_15px_rgba(80,20,15,.10)]">もう一度回す<span className="ml-3 text-[18px] leading-none" aria-hidden="true">↻</span></button>
       </div>
     </div>
@@ -873,8 +943,8 @@ function StoreOwnerSection() {
         <div style={{ position: 'absolute', right: 22, bottom: 22, width: 46, height: 46, borderRadius: 999, background: 'rgba(232,72,63,0.08)' }} />
         <div style={{ padding: '26px 23px 27px', position: 'relative' }}>
           <p style={{ margin: '0 0 12px', color: THEME.red, fontSize: 12, fontWeight: 950, letterSpacing: '0.18em' }}>STORE OWNER</p>
-          <h2 style={{ margin: 0, color: THEME.navy, fontSize: 24, fontWeight: 950, lineHeight: 1.32, letterSpacing: '-0.02em' }}>名古屋のお店を、<br />行きたい人へ届けませんか？</h2>
-          <p style={{ margin: '14px 0 0', color: '#6B4B4A', fontSize: 14, fontWeight: 800, lineHeight: 1.85 }}>記事掲載・NEW!掲載・Googleマップ導線・SNS投稿まで。<br />お店の魅力が届く形を一緒に作ります。</p>
+          <h2 style={{ margin: 0, color: THEME.navy, fontSize: 24, fontWeight: 950, lineHeight: 1.32, letterSpacing: '-0.02em' }}>名古屋近辺のお店を<br />行きたい人へ<br />届けませんか？</h2>
+          <p style={{ margin: '14px 0 0', color: '#6B4B4A', fontSize: 14, fontWeight: 800, lineHeight: 1.85 }}>記事掲載・NEW!掲載・Googleマップ導線・SNS投稿まで。<br />お店の魅力が届く形を<br />一緒に作ります。</p>
           <Link href="/partner" style={{ marginTop: 22, minHeight: 54, padding: '0 28px', borderRadius: 999, background: 'linear-gradient(135deg,#E8483F,#FF4F52)', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, textDecoration: 'none', fontSize: 14, fontWeight: 950, boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}>{JP.partnerCta} <ArrowRightIcon /></Link>
         </div>
       </div>
@@ -888,8 +958,9 @@ function FollowSection() {
       <div style={{ borderRadius: 26, background: 'linear-gradient(180deg,#FFFFFF 0%,#FFF8F7 100%)', border: '1px solid #F0D6D2', boxShadow: '0 8px 22px rgba(7,26,77,0.08)', padding: '24px 20px', textAlign: 'center' }}>
         <p style={{ margin: 0, color: THEME.red, fontSize: 16, fontWeight: 950, letterSpacing: '0.18em' }}>FOLLOW US</p>
         <h2 style={{ margin: '8px 0 0', color: THEME.navy, fontSize: 18, fontWeight: 950 }}>なごとしゃ公式SNS</h2>
-        <div style={{ position: 'relative', margin: '14px auto 0', maxWidth: 390, borderRadius: 20, background: '#fff', color: THEME.gray, fontSize: 12, fontWeight: 800, lineHeight: 1.65, padding: '12px 14px', boxShadow: '0 10px 22px rgba(7,26,77,0.08)' }}>
-          名古屋のおでかけ・新店・イベント情報を<br />SNSでもチェックできます。
+        <div style={{ position: 'relative', margin: '14px auto 0', maxWidth: 390, borderRadius: 20, background: '#fff', color: THEME.gray, fontSize: 11.5, fontWeight: 800, lineHeight: 1.65, padding: '12px 10px', boxShadow: '0 10px 22px rgba(7,26,77,0.08)' }}>
+          <span style={{ display: 'block', whiteSpace: 'nowrap' }}>名古屋のおでかけ・新店・イベント情報を</span>
+          <span style={{ display: 'block', whiteSpace: 'nowrap' }}>SNSでもチェックできます。</span>
           <span style={{ position: 'absolute', left: '50%', bottom: -7, width: 14, height: 14, transform: 'translateX(-50%) rotate(45deg)', background: '#fff' }} aria-hidden="true" />
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 28, marginTop: 22 }}>

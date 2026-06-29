@@ -33,55 +33,62 @@ const EVENTS = [
     id: 'event-sakae-light',
     title: '栄 光のインスタレーション',
     area: '栄',
-    period: '開催中',
     tag: '夜のおでかけ',
     description: '仕事帰りに立ち寄れる、街なかのライトアップ展示。',
     imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75',
+    startDate: '2026-06-20',
+    endDate: '2026-07-20',
   },
   {
     id: 'event-kakuozan-market',
     title: '覚王山アパートメント秋市',
     area: '覚王山',
-    period: '今週末',
     tag: 'マーケット',
     description: '雑貨、焼き菓子、クラフト品が並ぶ週末マーケット。',
     imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=600&q=75',
+    startDate: '2026-07-05',
+    endDate: '2026-07-06',
   },
   {
     id: 'event-port-family',
     title: '名古屋港ファミリーデイ',
     area: '名古屋港',
-    period: '今週末',
     tag: '家族向け',
     description: '海辺を歩きながら楽しめる、親子向けのおでかけイベント。',
     imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75',
+    startDate: '2026-07-04',
+    endDate: '2026-07-05',
   },
   {
     id: 'event-osu-food',
     title: '大須まちなか食べ歩き企画',
     area: '大須',
-    period: '開催中',
     tag: 'グルメ',
     description: '大須商店街で新店や限定メニューを巡れる企画。',
     imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=75',
+    startDate: '2026-06-15',
+    endDate: '2026-07-31',
   },
 ];
 
 const EVENT_NEXT_LINKS = [
   {
     title: '近くのエリアから探す',
-    text: 'イベント会場の近くで、グルメや寄り道スポットを探せます。',
+    text: '会場近くの寄り道を探す',
     href: '/area',
+    icon: 'map',
   },
   {
     title: '新着のおでかけ情報を見る',
-    text: '新店、イベント、話題のお店をまとめてチェックできます。',
+    text: '新店や話題のお店を確認',
     href: '/new',
+    icon: 'sparkle',
   },
   {
     title: '気になる情報を保存する',
-    text: '行きたい場所を保存して、あとから見返せます。',
+    text: 'あとから見返せるように保存',
     href: '/saved',
+    icon: 'bookmark',
   },
 ];
 
@@ -129,12 +136,18 @@ export default function EventPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-3 rounded-[14px] bg-white px-4 py-4 active:scale-[0.98] transition-transform"
+              className="flex items-center gap-3.5 rounded-[14px] bg-white px-4 py-3.5 active:scale-[0.98] transition-transform"
               style={{
                 border: '1px solid #E6ECF5',
                 boxShadow: '0 4px 12px rgba(7,26,77,0.07)',
               }}
             >
+              <div
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px]"
+                style={{ background: 'rgba(232,72,63,0.09)', color: '#E8483F' }}
+              >
+                {item.icon === 'map' ? <MapPinLgIcon /> : item.icon === 'sparkle' ? <SparkleIcon /> : <BookmarkNavIcon />}
+              </div>
               <span className="min-w-0 flex-1">
                 <span className="block text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
                   {item.title}
@@ -167,6 +180,34 @@ export default function EventPage() {
           <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             新店イベント、期間限定企画、週末集客など、名古屋のお店や主催者向けの掲載相談を受け付けています。
           </p>
+          <div
+            className="mt-4 rounded-[14px] px-4 py-4"
+            style={{
+              background: 'rgba(255,255,255,0.72)',
+              border: '1.5px solid rgba(232,72,63,0.20)',
+            }}
+          >
+            <p className="mb-1 text-[9px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
+              OPENING SERVICE
+            </p>
+            <p className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
+              9月末まで初回掲載無料
+            </p>
+            <p className="mt-1.5 text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
+              Instagram DMから相談いただいた店舗さま限定。記事掲載・Googleマップ導線・SNS紹介までお試しできます。
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {['初回掲載無料', 'Googleマップ導線つき', 'SNS紹介つき'].map(chip => (
+                <span
+                  key={chip}
+                  className="rounded-full px-2.5 py-1 text-[10px] font-black"
+                  style={{ background: 'rgba(232,72,63,0.10)', color: '#E8483F' }}
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
           <Link
             href="/partner"
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
@@ -178,6 +219,9 @@ export default function EventPage() {
             掲載について相談する
             <ArrowRightIcon />
           </Link>
+          <p className="mt-2.5 text-center text-[10px] font-medium" style={{ color: '#E8483F' }}>
+            Instagram DMから相談OK・9月末まで初回掲載無料
+          </p>
         </div>
       </section>
 
@@ -288,6 +332,31 @@ function ArrowRightIcon() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12h14" />
       <path d="M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
+function MapPinLgIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+      <circle cx="12" cy="9" r="2.5" />
+    </svg>
+  );
+}
+
+function SparkleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+function BookmarkNavIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </svg>
   );
 }

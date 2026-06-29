@@ -6,17 +6,56 @@ type EventItem = {
   id: string;
   title: string;
   area: string;
-  period: string;
   tag: string;
   description: string;
   imageUrl: string;
+  startDate?: string;
+  endDate?: string;
 };
+
+type PeriodLabel = {
+  status: string;
+  dateRange: string;
+  isActive: boolean;
+};
+
+function getEventPeriodLabel(startDate?: string, endDate?: string): PeriodLabel {
+  if (!startDate || !endDate) return { status: '開催中', dateRange: '', isActive: true };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+
+  const fmt = (d: Date) => `${d.getMonth() + 1}/${d.getDate()}`;
+  const dateRange = startDate === endDate ? fmt(start) : `${fmt(start)}〜${fmt(end)}`;
+
+  if (today > end) return { status: '終了', dateRange, isActive: false };
+  if (today < start) return { status: `${fmt(start)}〜`, dateRange, isActive: false };
+
+  // Check if overlaps with this or next weekend
+  const day = today.getDay();
+  const toSat = day === 0 ? 6 : 6 - day;
+  const nextSat = new Date(today);
+  nextSat.setDate(today.getDate() + toSat);
+  const nextSun = new Date(nextSat);
+  nextSun.setDate(nextSat.getDate() + 1);
+  const isWeekend = start <= nextSun && end >= nextSat;
+
+  if (isWeekend) return { status: '今週末', dateRange, isActive: true };
+  return { status: '開催中', dateRange, isActive: true };
+}
 
 export function EventCardClient({ event }: { event: EventItem }) {
   const mapUrl = `https://www.google.com/maps/search/?${new URLSearchParams({
     api: '1',
     query: `名古屋 ${event.area} ${event.title}`,
   }).toString()}`;
+
+  const period = getEventPeriodLabel(event.startDate, event.endDate);
+
+  if (!period.isActive && period.status === '終了') return null;
 
   return (
     <article
@@ -61,7 +100,7 @@ export function EventCardClient({ event }: { event: EventItem }) {
           {event.description}
         </p>
 
-        {/* チップ行：エリア＋開催状況＋カテゴリタグ */}
+        {/* チップ行：エリア＋開催状況＋日付＋カテゴリタグ */}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <span
             className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
@@ -73,12 +112,20 @@ export function EventCardClient({ event }: { event: EventItem }) {
           <span
             className="rounded-full px-2.5 py-1 text-[10px] font-black"
             style={{
-              color: event.period === '開催中' ? '#E8483F' : '#071A4D',
-              background: event.period === '開催中' ? 'rgba(232,72,63,0.08)' : 'rgba(7,26,77,0.08)',
+              color: period.status === '開催中' || period.status === '今週末' ? '#E8483F' : '#071A4D',
+              background: period.status === '開催中' || period.status === '今週末' ? 'rgba(232,72,63,0.08)' : 'rgba(7,26,77,0.08)',
             }}
           >
-            {event.period}
+            {period.status}
           </span>
+          {period.dateRange && (
+            <span
+              className="rounded-full px-2.5 py-1 text-[10px] font-bold"
+              style={{ color: '#667085', background: 'rgba(7,26,77,0.04)' }}
+            >
+              {period.dateRange}
+            </span>
+          )}
           <span
             className="rounded-full px-2.5 py-1 text-[10px] font-bold"
             style={{ color: '#071A4D', background: 'rgba(7,26,77,0.06)' }}
