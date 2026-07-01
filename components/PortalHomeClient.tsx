@@ -1,5 +1,7 @@
 ﻿'use client';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
 import Link from 'next/link';
 
@@ -217,16 +219,15 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
       <style>{HOME_CSS}</style>
       <Header />
       <main className="overflow-hidden pb-28">
-        <CategoryTabs />
         <HeroSection />
         <ArticlesSection articles={articles} />
-        <NewOpenSection />
-        <EventCtaSection />
-        <FeaturesSection />
         <AreaCtaSection />
+        <FeaturesSection />
+        <FreshArticlesSection articles={articles} />
+        <InstagramSection />
+        <AreaPopularSection articles={articles} />
         <GachaSection articles={articles} />
-        <StoreOwnerSection />
-        <FollowSection />
+        <HomeFooterCta />
       </main>
     </div>
   );
@@ -292,9 +293,9 @@ function Header() {
 
   return (
     <header className="border-b border-[#f2d9d8] bg-white">
-      <div className="mx-auto flex min-h-[108px] max-w-[940px] items-center justify-between gap-1 px-2 py-2">
+      <div className="mx-auto flex min-h-[100px] max-w-[940px] items-center justify-between gap-1 px-2 py-2">
         <Link href="/" className="flex min-w-0 flex-1 items-center" aria-label="なごとしゃ ホーム">
-          <span className="block h-[96px] w-full max-w-[calc(100vw-112px)] sm:h-[108px] sm:max-w-[620px]">
+          <span className="block h-[88px] w-full max-w-[calc(100vw-142px)] sm:h-[104px] sm:max-w-[620px]">
             <img
               src="/subjects/nagotosha-header-complete-tight.png"
               alt="なごとしゃ 名古屋情報局 トーシャー"
@@ -304,7 +305,8 @@ function Header() {
         </Link>
         <nav className="flex shrink-0 items-center gap-0" aria-label="ヘッダーナビ">
           <HeaderAction label="検索" type="search" onClick={() => { setSearchOpen((open) => !open); setMenuOpen(false); }} />
-          <HeaderAction label="ガチャ" href="#home-gacha" type="gacha" />
+          <HeaderAction label="エリア" href="/area" type="area" />
+          <HeaderAction label="カテゴリ" href="/new" type="category" />
           <HeaderAction label="メニュー" type="menu" onClick={() => { setMenuOpen((open) => !open); setSearchOpen(false); }} />
         </nav>
       </div>
@@ -350,9 +352,9 @@ function Header() {
   );
 }
 
-function HeaderAction({ label, type, href, onClick }: { label: string; type: 'search' | 'gacha' | 'menu'; href?: string; onClick?: () => void }) {
-  const icon = type === 'search' ? <SearchIcon /> : type === 'gacha' ? <GachaIcon /> : <MenuIcon />;
-  const style: CSSProperties = { minWidth: 32, color: THEME.navy, textDecoration: 'none', padding: '8px 1px', borderRadius: 8 };
+function HeaderAction({ label, type, href, onClick }: { label: string; type: 'search' | 'area' | 'category' | 'menu'; href?: string; onClick?: () => void }) {
+  const icon = type === 'search' ? <SearchIcon /> : type === 'area' ? <PinIcon /> : type === 'category' ? <CategoryIcon /> : <MenuIcon />;
+  const style: CSSProperties = { minWidth: 33, color: THEME.navy, textDecoration: 'none', padding: '8px 1px', borderRadius: 8 };
   if (href) return <Link href={href} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={style}>{icon}</Link>;
   return <button type="button" onClick={onClick} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{icon}</button>;
 }
@@ -374,155 +376,78 @@ function CategoryTabs() {
 }
 
 function HeroSection() {
-  const slides = useMemo(() => [HERO_SLIDES[HERO_SLIDES.length - 1], ...HERO_SLIDES, HERO_SLIDES[0]], []);
-  const [position, setPosition] = useState(1);
-  const [withTransition, setWithTransition] = useState(true);
-  const touchStartX = useRef<number | null>(null);
-  const active = position <= 0 ? HERO_SLIDES.length - 1 : position >= HERO_SLIDES.length + 1 ? 0 : position - 1;
+  const [keyword, setKeyword] = useState('');
+  const categories = ['グルメ', 'おでかけ', 'カフェ', '新店・NEW OPEN', 'イベント', 'まとめ'];
 
-  const go = (delta: number) => {
-    setWithTransition(true);
-    setPosition((current) => {
-      if (current <= 0 && delta < 0) return current;
-      if (current >= HERO_SLIDES.length + 1 && delta > 0) return current;
-      return current + delta;
-    });
-  };
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      go(1);
-    }, 4600);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const handleTransitionEnd = () => {
-    if (position === 0) {
-      setWithTransition(false);
-      setPosition(HERO_SLIDES.length);
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => setWithTransition(true));
-      });
-    }
-    if (position === HERO_SLIDES.length + 1) {
-      setWithTransition(false);
-      setPosition(1);
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => setWithTransition(true));
-      });
-    }
-  };
-
-  const jumpTo = (index: number) => {
-    setWithTransition(true);
-    setPosition(index + 1);
+  const submitHeroSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = keyword.trim();
+    window.location.href = query ? '/new?tag=' + encodeURIComponent(query) : '/new';
   };
 
   return (
-    <section className="px-3 pt-4">
+    <section className="px-3 pt-3">
       <div
-        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[26px] border border-[#f5d8cc] bg-[#fffdf8] shadow-[0_18px_40px_rgba(7,26,77,0.10)]"
-        onTouchStart={(event) => {
-          touchStartX.current = event.touches[0]?.clientX ?? null;
-        }}
-        onTouchEnd={(event) => {
-          if (touchStartX.current === null) return;
-          const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
-          const diff = endX - touchStartX.current;
-          touchStartX.current = null;
-          if (Math.abs(diff) < 36) return;
-          go(diff < 0 ? 1 : -1);
-        }}
+        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[26px] border border-[#e9d9c7] shadow-[0_18px_42px_rgba(7,26,77,0.12)]"
+        style={{ backgroundImage: 'url(/hero/nagoya-hero.webp)', backgroundSize: 'cover', backgroundPosition: 'center 40%' }}
       >
         <div
-          className={`flex ${withTransition ? 'transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)]' : ''}`}
-          style={{ transform: `translateX(-${position * 100}%)` }}
-          onTransitionEnd={(event) => {
-            if (event.currentTarget !== event.target) return;
-            handleTransitionEnd();
-          }}
-        >
-          {slides.map((slide, index) => (
-            <article
-              key={`${slide.title}-${index}`}
-              className="relative min-h-[318px] min-w-full overflow-hidden sm:min-h-[370px]"
-              style={{
-                backgroundImage: `url(${slide.imageUrl})`,
-                backgroundPosition: 'center right',
-                backgroundSize: 'cover',
-              }}
+          className="pointer-events-none absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at 50% 22%, rgba(255,253,248,0.42) 0%, rgba(255,253,248,0.12) 45%, rgba(255,253,248,0.06) 100%)' }}
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0"
+          style={{ height: '55%', background: 'linear-gradient(180deg,transparent,rgba(255,253,248,.88) 68%,#fffdf8 100%)' }}
+          aria-hidden="true"
+        />
+        <div className="relative px-5 pb-6 pt-20 text-center sm:px-12 sm:pt-28">
+          <h1 className="mx-auto max-w-[760px] text-[30px] font-black leading-[1.16] tracking-[-0.03em] text-[#071A4D] sm:text-[52px]">
+            名古屋の「今」を発見。
+          </h1>
+          <p className="mt-2 text-[13px] font-black leading-relaxed text-[#071A4D]/80 sm:text-[18px]">
+            グルメ・おでかけ・新店情報ならなごとしゃ
+          </p>
+          <div className="mx-auto mt-4 flex max-w-[660px] flex-wrap justify-center gap-2">
+            {categories.map((label) => (
+              <Link
+                key={label}
+                href={label === 'イベント' ? '/event' : '/new?tag=' + encodeURIComponent(label)}
+                className="rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-[11px] font-black text-[#071A4D] no-underline shadow-[0_4px_14px_rgba(7,26,77,.09)]"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+          <form
+            onSubmit={submitHeroSearch}
+            className="mx-auto mt-5 flex max-w-[640px] items-center gap-2 rounded-full border border-[#DDE5F0] bg-white p-2 shadow-[0_14px_30px_rgba(7,26,77,.14)]"
+          >
+            <SearchIcon />
+            <input
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              type="search"
+              aria-label="気になるキーワードで検索"
+              placeholder="気になるキーワードで検索（例：名古屋駅 ランチ）"
+              className="min-w-0 flex-1 bg-transparent text-[12px] font-bold text-[#071A4D] outline-none placeholder:text-[#8A94A6] sm:text-[14px]"
+            />
+            <button
+              type="submit"
+              className="h-10 shrink-0 rounded-full bg-[#071A4D] px-4 text-[12px] font-black text-white shadow-[0_8px_16px_rgba(7,26,77,.20)] sm:px-6 sm:text-[14px]"
             >
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(105deg, rgba(255,253,248,0.98) 0%, rgba(255,253,248,0.94) 45%, rgba(255,253,248,0.42) 72%, rgba(255,253,248,0.08) 100%)',
-                }}
-              />
-              <div
-                className="pointer-events-none absolute inset-y-0 right-0 w-[46%] opacity-85"
-                style={{
-                  background:
-                    'linear-gradient(90deg, rgba(255,253,248,0.18), rgba(255,255,255,0.02))',
-                }}
-              />
-              <div
-                className="pointer-events-none absolute left-[-84px] top-1/2 h-[300px] w-[300px] -translate-y-1/2 rounded-full opacity-[0.18]"
-                style={{ background: 'radial-gradient(circle, #F8C861 0%, transparent 68%)' }}
-              />
-              <div className="relative flex h-full min-h-[318px] flex-col justify-center px-6 py-10 text-[#071A4D] sm:min-h-[370px] sm:px-12">
-                <span className="mb-3 inline-flex w-fit items-center rounded-full bg-[#E8483F] px-3 py-1 text-[10px] font-black tracking-[0.12em] text-white shadow-[0_7px_16px_rgba(232,72,63,0.22)]">
-                  {slide.badge}
-                </span>
-                <p className="text-[12px] font-black tracking-[0.06em] text-[#667085]">
-                  {slide.eyebrow}
-                </p>
-                <h2
-                  className="mt-2 max-w-[500px] text-[29px] font-black leading-[1.18] tracking-[-0.02em] sm:text-[44px]"
-                  style={{ whiteSpace: 'pre-line' }}
-                >
-                  {slide.title}
-                </h2>
-                <p className="mt-3 max-w-[450px] text-[13px] font-bold leading-relaxed text-[#4B5565] sm:text-[15px]">
-                  {slide.copy}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {['新店', 'イベント', 'ごはん'].map((label) => (
-                    <span key={label} className="rounded-full border border-[#F1D7A6] bg-white/88 px-3 py-1 text-[11px] font-black text-[#071A4D] shadow-[0_4px_12px_rgba(7,26,77,0.06)]">
-                      {label}
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-6 flex flex-wrap gap-2.5">
-                  <Link
-                    href={slide.ctaHref}
-                    className="inline-flex min-h-[46px] items-center gap-2 rounded-full bg-[#E8483F] px-6 py-3 text-[14px] font-black text-white shadow-[0_10px_24px_rgba(232,72,63,0.30)] transition-all hover:bg-[#c91720] active:scale-95 sm:px-8 sm:text-[15px]"
-                  >
-                    {slide.ctaText}
-                    <span aria-hidden="true">→</span>
-                  </Link>
-                  <Link
-                    href="/event"
-                    className="inline-flex min-h-[46px] items-center rounded-full border border-[#DDE5F0] bg-white/92 px-5 py-3 text-[14px] font-black text-[#071A4D] no-underline shadow-[0_8px_18px_rgba(7,26,77,0.08)] active:scale-95"
-                  >
-                    イベントを見る
-                  </Link>
-                </div>
-              </div>
-            </article>
-          ))}
+              検索する
+            </button>
+          </form>
+          <div className="mt-5 flex justify-center gap-2">
+            <Link href="/new" className="rounded-full bg-[#E8483F] px-5 py-3 text-[13px] font-black text-white no-underline shadow-[0_10px_20px_rgba(232,72,63,.25)]">
+              今日の名古屋を見る →
+            </Link>
+            <Link href="/event" className="rounded-full border border-[#DDE5F0] bg-white px-5 py-3 text-[13px] font-black text-[#071A4D] no-underline">
+              イベントを見る
+            </Link>
+          </div>
         </div>
-      </div>
-      <div className="mt-3 flex justify-center gap-2">
-        {HERO_SLIDES.map((slide, index) => (
-          <button
-            key={slide.title}
-            type="button"
-            aria-label={`Go to slide ${index + 1}`}
-            onClick={() => jumpTo(index)}
-            className={`h-3 w-3 rounded-full transition ${active === index ? 'bg-[#e8212a]' : 'bg-[#c7c9cf]'}`}
-          />
-        ))}
       </div>
     </section>
   );
@@ -612,10 +537,15 @@ function NewOpenSection() {
 
 function FeaturesSection() {
   return (
-    <section className="px-2.5 py-5">
-      <CenteredHeading en="FEATURES" ja={JP.featuresSubtitle} />
-      <div className="mx-auto mt-4 grid max-w-[940px] grid-cols-2 gap-2">
-        {FEATURE_CARDS.slice(0, 4).map((item) => (
+    <section className="px-4 py-5">
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+        <SectionKicker en="FEATURES" ja="編集部イチオシ特集" align="left" />
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
+          {JP.viewAll} {String.fromCharCode(8250)}
+        </Link>
+      </div>
+      <div className="home-scroll mx-auto flex max-w-[940px] gap-3 overflow-x-auto pb-1">
+        {FEATURE_CARDS.slice(0, 3).map((item) => (
           <FeatureCard key={item.title} item={item} />
         ))}
       </div>
@@ -626,11 +556,12 @@ function FeaturesSection() {
 function FeatureCard({ item }: { item: (typeof FEATURE_CARDS)[number] }) {
   return (
     <article
-      className="relative h-[138px] min-w-0 overflow-hidden rounded-[14px] border border-white/70 bg-cover bg-center shadow-[0_10px_24px_rgba(14,24,55,0.14)] sm:h-[176px]"
-      style={{ backgroundImage: `linear-gradient(180deg, rgba(3,8,24,0.08), rgba(3,8,24,0.76)), url(${item.imageUrl})` }}
+      className="relative h-[126px] w-[252px] shrink-0 overflow-hidden rounded-[16px] border border-white/70 bg-cover bg-center shadow-[0_10px_24px_rgba(14,24,55,0.14)] sm:h-[156px] sm:w-[300px]"
+      style={{ backgroundImage: `linear-gradient(90deg, rgba(7,26,77,0.78), rgba(7,26,77,0.20)), url(${item.imageUrl})` }}
     >
-      <div className="absolute inset-x-0 bottom-0 p-3 text-white">
-        <h3 className="line-clamp-2 text-[13px] font-black leading-snug drop-shadow sm:text-[15px]">{item.title}</h3>
+      <div className="absolute inset-y-0 left-0 flex w-[72%] flex-col justify-end p-4 text-white">
+        <span className="mb-2 w-fit rounded-full bg-[#E8483F] px-2 py-0.5 text-[10px] font-black">特集</span>
+        <h3 className="line-clamp-2 text-[15px] font-black leading-snug drop-shadow sm:text-[18px]">{item.title}</h3>
         <p className="mt-1 line-clamp-1 text-[11px] font-bold text-white/88">{item.copy}</p>
       </div>
     </article>
@@ -998,22 +929,48 @@ function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: 
   );
 }
 function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
+  const ranking = articles.slice(0, 5);
   return (
-    <section style={{ padding: '26px 0 24px' }}>
+    <section style={{ padding: '22px 0 20px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <SectionKicker en="ARTICLES" ja={JP.articlesSubtitle} align="left" />
+        <SectionKicker en="RANKING" ja="みんなが見ている！人気急上昇ランキング" align="left" />
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+      </div>
+      <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
+        {ranking.map((article, index) => (
+          <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 150, borderRadius: 16, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 9px 22px rgba(7,26,77,0.10)', textDecoration: 'none', color: THEME.text }}>
+            <div style={{ position: 'relative', height: 104, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
+              <span style={{ position: 'absolute', left: 8, top: 8, width: 26, height: 26, borderRadius: 8, background: index === 0 ? '#F8C861' : '#fff', color: THEME.navy, fontSize: 13, fontWeight: 950, display: 'grid', placeItems: 'center', boxShadow: '0 5px 12px rgba(7,26,77,.14)' }}>{index + 1}</span>
+              <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
+            </div>
+            <div style={{ padding: '10px 10px 11px' }}>
+              <p style={{ margin: 0, minHeight: 38, color: THEME.text, fontSize: 12.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{article.area || JP.nagoya}</span><span>♡ {12560 - index * 1519}</span></div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FreshArticlesSection({ articles }: { articles: ArticleLike[] }) {
+  return (
+    <section style={{ padding: '20px 0 22px' }}>
+      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <SectionKicker en="NEW ARTICLES" ja="新着記事" align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 12, padding: '15px 16px 4px' }}>
         {articles.map((article, index) => (
-          <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 188, borderRadius: 20, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 9px 24px rgba(7,26,77,0.10)', textDecoration: 'none', color: THEME.text }}>
-            <div style={{ position: 'relative', height: 122, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
-              <span style={{ position: 'absolute', left: 10, top: 10, background: article.tag === 'NEW' ? THEME.red : '#FFD746', color: article.tag === 'NEW' ? '#fff' : THEME.navy, fontSize: 10, fontWeight: 950, borderRadius: 8, padding: '4px 8px' }}>{article.tag || JP.focus}</span>
+          <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 184, borderRadius: 18, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 8px 22px rgba(7,26,77,0.09)', textDecoration: 'none', color: THEME.text }}>
+            <div style={{ position: 'relative', height: 118, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
+              <span style={{ position: 'absolute', left: 10, top: 10, background: THEME.red, color: '#fff', fontSize: 9, fontWeight: 950, borderRadius: 7, padding: '4px 7px' }}>NEW</span>
               <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
             </div>
-            <div style={{ padding: '12px 13px 13px' }}>
-              <p style={{ margin: 0, minHeight: 42, color: THEME.text, fontSize: 14, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 13, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{article.area || JP.nagoya}</span><span>{formatDate(article.publishedAt)}</span></div>
+            <div style={{ padding: '12px 12px 13px' }}>
+              <p style={{ margin: 0, minHeight: 40, color: THEME.text, fontSize: 13.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 800 }}><span>{article.tag || JP.focus}</span><span>{formatDate(article.publishedAt)}</span></div>
             </div>
           </Link>
         ))}
@@ -1063,26 +1020,135 @@ function EventCtaSection() {
   );
 }
 
-function AreaCtaSection() {
+function InstagramSection() {
+  const posts = [
+    { account: '@nagoya_life_', bg: '#EAF4FF' },
+    { account: '@meieki_info', bg: '#EFF8E9' },
+    { account: '@nago_sweets', bg: '#FFF0EF' },
+    { account: '@aichi_trip', bg: '#FFF7D8' },
+    { account: '@nagoya_omiyage', bg: '#F3F0FF' },
+  ];
   return (
-    <section style={{ padding: '4px 0 18px' }}>
+    <section style={{ padding: '18px 0 22px' }}>
+      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <SectionKicker en="INSTAGRAM" ja="Instagramで人気の投稿" align="left" />
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+      </div>
+      <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
+        {posts.map((post) => (
+          <article key={post.account} style={{ flexShrink: 0, width: 118 }}>
+            <div style={{ width: 118, height: 118, borderRadius: 16, background: post.bg, border: '1px solid ' + THEME.border, boxShadow: '0 8px 18px rgba(7,26,77,.09)', display: 'grid', placeItems: 'center' }}>
+              <InstagramLogo />
+            </div>
+            <p style={{ margin: '7px 0 0', color: THEME.gray, fontSize: 10, fontWeight: 850, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{post.account}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AreaPopularSection({ articles }: { articles: ArticleLike[] }) {
+  const groups = [
+    { area: '名駅エリア', accent: '#EAF4FF', links: articles.slice(0, 3) },
+    { area: '栄エリア', accent: '#EFF8E9', links: articles.slice(1, 4) },
+    { area: '大須エリア', accent: '#FFF0EF', links: articles.slice(0, 2) },
+    { area: '名古屋城周辺', accent: '#FFF7D8', links: articles.slice(1, 3) },
+  ];
+  return (
+    <section style={{ padding: '18px 16px 24px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+        <SectionKicker en="AREA ARTICLES" ja="エリア別人気記事" align="left" />
+        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {groups.map((group) => (
+          <article key={group.area} style={{ borderRadius: 18, border: '1px solid ' + THEME.border, background: '#fff', overflow: 'hidden', boxShadow: '0 8px 20px rgba(7,26,77,.08)' }}>
+            <div style={{ padding: '10px 11px', background: group.accent }}>
+              <h3 style={{ margin: 0, color: THEME.navy, fontSize: 13, fontWeight: 950 }}>{group.area}</h3>
+            </div>
+            <div style={{ padding: '10px 11px 12px' }}>
+              {group.links.map((article, index) => (
+                <Link key={`${group.area}-${article.id || index}`} href={article.articleUrl || '/new'} style={{ display: 'block', color: THEME.text, textDecoration: 'none', fontSize: 11, fontWeight: 850, lineHeight: 1.42, marginTop: index === 0 ? 0 : 7 }}>
+                  {article.title}
+                </Link>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function HomeFooterCta() {
+  return (
+    <footer style={{ margin: '10px 12px 28px', borderRadius: 26, overflow: 'hidden', background: '#071A4D', color: '#fff', boxShadow: '0 16px 34px rgba(7,26,77,.22)' }}>
+      <div style={{ padding: '24px 20px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/subjects/nagotosha-header-complete-tight.png" alt="なごとしゃ" style={{ width: 150, height: 52, objectFit: 'contain', objectPosition: 'left' }} />
+          <p style={{ margin: 0, color: 'rgba(255,255,255,.76)', fontSize: 11, fontWeight: 800, lineHeight: 1.55 }}>名古屋の「今」を探せる<br />シティガイドメディア</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 18 }}>
+          <div>
+            <p style={{ margin: 0, color: '#F8C861', fontSize: 12, fontWeight: 950 }}>便利なリンク</p>
+            <FooterLink href="/new" label="新着記事" />
+            <FooterLink href="/event" label="イベント" />
+            <FooterLink href="/area" label="エリアから探す" />
+          </div>
+          <div>
+            <p style={{ margin: 0, color: '#F8C861', fontSize: 12, fontWeight: 950 }}>お役立ち情報</p>
+            <FooterLink href="/saved" label="保存した記事" />
+            <FooterLink href="/partner" label="掲載相談" />
+            <FooterLink href="#home-gacha" label="おでかけガチャ" />
+          </div>
+        </div>
+        <div style={{ marginTop: 18, borderRadius: 18, background: 'rgba(255,255,255,.08)', padding: 12 }}>
+          <p style={{ margin: 0, color: '#fff', fontSize: 12, fontWeight: 950 }}>メールマガジン</p>
+          <div style={{ display: 'flex', gap: 8, marginTop: 9 }}>
+            <input aria-label="メールアドレス" placeholder="メールアドレスを入力" style={{ minWidth: 0, flex: 1, border: 0, borderRadius: 999, padding: '0 12px', height: 38, fontSize: 12, fontWeight: 800 }} />
+            <button type="button" style={{ border: 0, borderRadius: 999, background: '#F8C861', color: THEME.navy, padding: '0 14px', fontSize: 12, fontWeight: 950 }}>登録する</button>
+          </div>
+        </div>
+        <p style={{ margin: '18px 0 0', color: 'rgba(255,255,255,.52)', fontSize: 10, fontWeight: 700 }}>© 2026 nagotosha. All Rights Reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+function FooterLink({ href, label }: { href: string; label: string }) {
+  return <Link href={href} style={{ display: 'block', marginTop: 8, color: 'rgba(255,255,255,.82)', textDecoration: 'none', fontSize: 12, fontWeight: 800 }}>{label}</Link>;
+}
+
+function AreaCtaSection() {
+  const areaCards = [
+    { label: '名駅エリア', count: '2,567', tone: '#EAF4FF', code: 'MEI' },
+    { label: '栄エリア', count: '1,968', tone: '#EFF8E9', code: 'SAK' },
+    { label: '大須エリア', count: '1,896', tone: '#FFF0EF', code: 'OSU' },
+    { label: '金山エリア', count: '1,327', tone: '#FFF7D8', code: 'KAN' },
+    { label: '熱田エリア', count: '743', tone: '#F3F0FF', code: 'ATU' },
+    { label: '覚王山エリア', count: '890', tone: '#EEF8F4', code: 'KAK' },
+  ];
+  return (
+    <section style={{ padding: '8px 0 18px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="AREA" ja="エリアから探す" align="left" />
         <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
           {JP.viewAll} {String.fromCharCode(8250)}
         </Link>
       </div>
-      <div className="home-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 16px 8px' }}>
-        {AREAS.map((area) => (
-          <Link key={area.label} href={area.href} style={{
-            flexShrink: 0, height: 42, padding: '0 18px', borderRadius: 999,
-            display: 'inline-flex', alignItems: 'center',
-            background: '#fff', color: THEME.navy, textDecoration: 'none',
-            fontSize: 13, fontWeight: 900, whiteSpace: 'nowrap',
-            border: '1.5px solid #DDE5F0',
-            boxShadow: '0 3px 10px rgba(7,26,77,0.07)',
+      <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '4px 16px 8px' }}>
+        {areaCards.map((area) => (
+          <Link key={area.label} href="/area" style={{
+            flexShrink: 0, width: 132, minHeight: 104, padding: '13px 12px', borderRadius: 16,
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            background: area.tone, color: THEME.navy, textDecoration: 'none',
+            border: '1px solid rgba(7,26,77,.08)',
+            boxShadow: '0 7px 18px rgba(7,26,77,0.08)',
           }}>
-            {area.label}
+            <span style={{ width: 42, height: 42, borderRadius: 14, display: 'grid', placeItems: 'center', background: '#fff', color: THEME.red, fontSize: 12, fontWeight: 950, letterSpacing: '.08em', boxShadow: '0 5px 12px rgba(7,26,77,.07)' }}>{area.code}</span>
+            <span style={{ fontSize: 13, fontWeight: 950, lineHeight: 1.25 }}>{area.label}</span>
+            <span style={{ fontSize: 10, fontWeight: 800, color: THEME.gray }}>記事数 {area.count}</span>
           </Link>
         ))}
       </div>
@@ -1143,6 +1209,7 @@ function InstagramLogo() { return <svg width="54" height="54" viewBox="0 0 24 24
 function XLogo() { return <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.4 3.6h5.1l3.55 5.05 4.5-5.05h2.5l-5.8 6.56 6.25 10.24h-5.1l-4.02-5.78-5.13 5.78H3.75l6.46-7.27L4.4 3.6Zm3.02 2.05 9.06 12.64h1.03L8.46 5.65H7.42Z" fill="currentColor"/></svg>; }
 function SearchIcon() { return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><line x1="17" y1="17" x2="22" y2="22" /></svg>; }
 function MenuIcon() { return <svg width="25" height="19" viewBox="0 0 25 19" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="2" y1="2" x2="23" y2="2" /><line x1="2" y1="9.5" x2="23" y2="9.5" /><line x1="2" y1="17" x2="23" y2="17" /></svg>; }
+function CategoryIcon() { return <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/><rect x="13.4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="13.4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/></svg>; }
 function GachaIcon() { return <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.2" fill="#EFF6FF" /><path d="M9 4v3M12 4v3M15 4v3" /><path d="M10 11.2c.2-1.2 1-2 2.3-2s2.2.8 2.2 2c0 .8-.4 1.3-1.2 1.8-.7.4-1 .8-1 1.5" /><circle cx="12.3" cy="17.1" r="1" fill="currentColor" stroke="none" /></svg>; }
 function SunIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4.2" fill="currentColor" opacity="0.18" /><circle cx="12" cy="12" r="3.6" /><line x1="12" y1="1.8" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="22.2" /><line x1="1.8" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="22.2" y2="12" /><line x1="4.8" y1="4.8" x2="7" y2="7" /><line x1="17" y1="17" x2="19.2" y2="19.2" /><line x1="19.2" y1="4.8" x2="17" y2="7" /><line x1="7" y1="17" x2="4.8" y2="19.2" /></svg>; }
 function PartyIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-14 10 10-14 4z" /><path d="M13 5l1-3" /><path d="M18 10l3-1" /><path d="M10 9l5 5" /></svg>; }
