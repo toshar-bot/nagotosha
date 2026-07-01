@@ -139,12 +139,12 @@ const CATEGORY_TABS = [
 
 const HERO_SLIDES = [
   {
-    eyebrow: '\u540d\u53e4\u5c4b\u306e\u3044\u307e\u3092\u898b\u3064\u3051\u308b',
-    title: '\u4eca\u65e5\u884c\u304d\u305f\u3044\n\u5834\u6240\u3092\u6c7a\u3081\u308b',
-    copy: '\u30b0\u30eb\u30e1\u30fb\u30ab\u30d5\u30a7\u30fbNEW OPEN\u3002\u4eca\u65e5\u306e\u304a\u3067\u304b\u3051\u5148\u304c\u3053\u3053\u3067\u898b\u3064\u304b\u308a\u307e\u3059\u3002',
+    eyebrow: '\u4eca\u65e5\u306e\u540d\u53e4\u5c4b\u3092\u5199\u771f\u3067\u63a2\u3059',
+    title: '\u540d\u53e4\u5c4b\u306e\u65b0\u5e97\u30fb\u30a4\u30d9\u30f3\u30c8\u30fb\u3054\u306f\u3093\u3092\n\u5199\u771f\u3067\u30b5\u30af\u30c3\u3068\u63a2\u305b\u308b',
+    copy: '\u4eca\u65e5\u884c\u3051\u308b\u304a\u5e97\u3001\u9031\u672b\u306e\u304a\u3067\u304b\u3051\u3001\u6c17\u306b\u306a\u308b\u65b0\u5e97\u3092\u4fdd\u5b58\u3057\u3066\u3042\u3068\u304b\u3089\u898b\u8fd4\u305b\u307e\u3059\u3002',
     imageUrl: 'https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&w=1200&q=80',
-    badge: 'TODAY',
-    ctaText: '\u4eca\u65e5\u306e\u304a\u3059\u3059\u3081\u3092\u898b\u308b',
+    badge: 'NAGOYA TODAY',
+    ctaText: '\u4eca\u65e5\u306e\u540d\u53e4\u5c4b\u3092\u898b\u308b',
     ctaHref: '/new',
   },
   {
@@ -205,15 +205,25 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
   useBottomNavAutoHide();
 
   return (
-    <div className="min-h-dvh" style={{ background: THEME.white, color: THEME.text }}>
+    <div
+      className="min-h-dvh"
+      style={{
+        background:
+          'linear-gradient(180deg, #FFFFFF 0%, #FFFDF7 34%, #FFFFFF 68%, #FFF8F7 100%)',
+        color: THEME.text,
+        overflowX: 'hidden',
+      }}
+    >
       <style>{HOME_CSS}</style>
       <Header />
-      <main className="pb-28">
+      <main className="overflow-hidden pb-28">
         <CategoryTabs />
         <HeroSection />
-        <NewOpenSection />
-        <FeaturesSection />
         <ArticlesSection articles={articles} />
+        <NewOpenSection />
+        <EventCtaSection />
+        <FeaturesSection />
+        <AreaCtaSection />
         <GachaSection articles={articles} />
         <StoreOwnerSection />
         <FollowSection />
@@ -411,7 +421,7 @@ function HeroSection() {
   return (
     <section className="px-3 pt-3">
       <div
-        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[18px] border border-[#ead7d4] bg-[#120c12] shadow-[0_16px_34px_rgba(28,18,24,0.16)]"
+        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[22px] border border-[#f1d8d4] bg-white shadow-[0_16px_34px_rgba(28,18,24,0.12)]"
         onTouchStart={(event) => {
           touchStartX.current = event.touches[0]?.clientX ?? null;
         }}
@@ -437,7 +447,7 @@ function HeroSection() {
               key={`${slide.title}-${index}`}
               className="relative min-h-[300px] min-w-full overflow-hidden sm:min-h-[360px]"
               style={{
-                backgroundImage: `linear-gradient(105deg, rgba(7,12,28,0.90) 0%, rgba(7,12,28,0.64) 52%, rgba(7,12,28,0.14) 100%), url(${slide.imageUrl})`,
+                backgroundImage: `linear-gradient(105deg, rgba(7,26,77,0.86) 0%, rgba(7,26,77,0.58) 50%, rgba(7,26,77,0.08) 100%), url(${slide.imageUrl})`,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
               }}
@@ -982,6 +992,74 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
               <p style={{ margin: 0, minHeight: 42, color: THEME.text, fontSize: 13.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 13, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{article.area || JP.nagoya}</span><span>{formatDate(article.publishedAt)}</span></div>
             </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const AREAS = [
+  { label: '名駅', href: '/area' },
+  { label: '栄', href: '/area' },
+  { label: '大須', href: '/area' },
+  { label: '名古屋城', href: '/area' },
+  { label: '覚王山', href: '/area' },
+  { label: '東山', href: '/area' },
+  { label: '金山', href: '/area' },
+  { label: '千種', href: '/area' },
+];
+
+function EventCtaSection() {
+  const items = [
+    { label: '今日行ける', sub: 'すぐ行けるスポット', href: '/event', bg: THEME.navy, shadow: '0 10px 22px rgba(7,26,77,0.22)' },
+    { label: '週末おでかけ', sub: '週末の予定に使える', href: '/event', bg: THEME.red, shadow: '0 10px 22px rgba(232,72,63,0.26)' },
+  ];
+  return (
+    <section style={{ padding: '0 16px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+        <SectionKicker en="EVENT" ja="今週のイベント・おでかけ" align="left" />
+        <Link href="/event" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
+          {JP.viewAll} {String.fromCharCode(8250)}
+        </Link>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {items.map((item) => (
+          <Link key={item.label} href={item.href} style={{
+            display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+            minHeight: 96, borderRadius: 18, padding: '15px 15px',
+            background: item.bg, color: '#fff', textDecoration: 'none',
+            boxShadow: item.shadow,
+          }}>
+            <p style={{ margin: 0, fontSize: 17, fontWeight: 950, lineHeight: 1.25 }}>{item.label}</p>
+            <p style={{ margin: '5px 0 0', fontSize: 11, fontWeight: 800, opacity: 0.80 }}>{item.sub}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AreaCtaSection() {
+  return (
+    <section style={{ padding: '4px 0 18px' }}>
+      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+        <SectionKicker en="AREA" ja="エリアから探す" align="left" />
+        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
+          {JP.viewAll} {String.fromCharCode(8250)}
+        </Link>
+      </div>
+      <div className="home-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 16px 8px' }}>
+        {AREAS.map((area) => (
+          <Link key={area.label} href={area.href} style={{
+            flexShrink: 0, height: 42, padding: '0 18px', borderRadius: 999,
+            display: 'inline-flex', alignItems: 'center',
+            background: '#fff', color: THEME.navy, textDecoration: 'none',
+            fontSize: 13, fontWeight: 900, whiteSpace: 'nowrap',
+            border: '1.5px solid #DDE5F0',
+            boxShadow: '0 3px 10px rgba(7,26,77,0.07)',
+          }}>
+            {area.label}
           </Link>
         ))}
       </div>
