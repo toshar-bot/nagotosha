@@ -11,9 +11,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const post = await getWordPressPostById(params.id);
   if (!post) return { title: '記事が見つかりません | なごとしゃ' };
 
-  const title       = decodeHtmlEntities(stripHtml(post.title.rendered));
+  const title = decodeHtmlEntities(stripHtml(post.title.rendered));
   const description = stripHtml(post.excerpt?.rendered ?? '').slice(0, 160);
-  const imageUrl    = getFeaturedMediaUrl(post);
+  const imageUrl = getFeaturedMediaUrl(post);
 
   return {
     title: `${title} | なごとしゃ`,
@@ -39,26 +39,28 @@ export default async function ArticlePage({ params }: { params: Params }) {
   const post = await getWordPressPostById(params.id);
   if (!post) notFound();
 
-  const title   = decodeHtmlEntities(stripHtml(post.title.rendered));
+  const title = decodeHtmlEntities(stripHtml(post.title.rendered));
   const excerpt = stripHtml(post.excerpt?.rendered ?? '').slice(0, 120);
   const content = post.content?.rendered ?? '';
   const imageUrl = getFeaturedMediaUrl(post);
-  const meta     = post.meta ?? {};
+  const meta = post.meta ?? {};
 
-  const area      = typeof meta.area      === 'string' && meta.area.trim()      ? meta.area.trim()      : undefined;
-  const tag       = typeof meta.category  === 'string' && meta.category.trim()  ? meta.category.trim()  : '記事';
-  const mapUrl    = typeof meta.mapUrl    === 'string' && meta.mapUrl.trim()    ? meta.mapUrl.trim()    : undefined;
+  const area = typeof meta.area === 'string' && meta.area.trim() ? meta.area.trim() : undefined;
+  const tag = typeof meta.category === 'string' && meta.category.trim() ? meta.category.trim() : '記事';
+  const mapUrl = typeof meta.mapUrl === 'string' && meta.mapUrl.trim() ? meta.mapUrl.trim() : undefined;
   const storeName = typeof meta.storeName === 'string' && meta.storeName.trim() ? meta.storeName.trim() : undefined;
-  const address   = typeof meta.address   === 'string' && meta.address.trim()   ? meta.address.trim()   : undefined;
+  const address = typeof meta.address === 'string' && meta.address.trim() ? meta.address.trim() : undefined;
+  const imageCredit = typeof meta.imageCredit === 'string' && meta.imageCredit.trim() ? meta.imageCredit.trim() : undefined;
+  const imageSourceUrl = typeof meta.imageSourceUrl === 'string' && meta.imageSourceUrl.trim() ? meta.imageSourceUrl.trim() : undefined;
 
   const publishedDate = new Date(post.date);
   const dateStr = Number.isNaN(publishedDate.getTime())
     ? ''
     : `${publishedDate.getFullYear()}.${String(publishedDate.getMonth() + 1).padStart(2, '0')}.${String(publishedDate.getDate()).padStart(2, '0')}`;
 
-  const articleId  = `wp-${post.id}`;
+  const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
-  const saveCount  = getFakeSaveCount(post.id);
+  const saveCount = getFakeSaveCount(post.id);
 
   return (
     <ArticleExperience
@@ -66,6 +68,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
       excerpt={excerpt}
       content={content}
       imageUrl={imageUrl ?? undefined}
+      imageCredit={imageCredit}
+      imageSourceUrl={imageSourceUrl}
       area={area}
       tag={tag}
       mapUrl={mapUrl}
