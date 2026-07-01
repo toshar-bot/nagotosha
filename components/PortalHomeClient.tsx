@@ -419,9 +419,9 @@ function HeroSection() {
   };
 
   return (
-    <section className="px-3 pt-3">
+    <section className="px-3 pt-4">
       <div
-        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[22px] border border-[#f1d8d4] bg-white shadow-[0_16px_34px_rgba(28,18,24,0.12)]"
+        className="relative mx-auto max-w-[940px] overflow-hidden rounded-[26px] border border-[#f5d8cc] bg-[#fffdf8] shadow-[0_18px_40px_rgba(7,26,77,0.10)]"
         onTouchStart={(event) => {
           touchStartX.current = event.touches[0]?.clientX ?? null;
         }}
@@ -445,46 +445,69 @@ function HeroSection() {
           {slides.map((slide, index) => (
             <article
               key={`${slide.title}-${index}`}
-              className="relative min-h-[300px] min-w-full overflow-hidden sm:min-h-[360px]"
+              className="relative min-h-[318px] min-w-full overflow-hidden sm:min-h-[370px]"
               style={{
-                backgroundImage: `linear-gradient(105deg, rgba(7,26,77,0.86) 0%, rgba(7,26,77,0.58) 50%, rgba(7,26,77,0.08) 100%), url(${slide.imageUrl})`,
-                backgroundPosition: 'center',
+                backgroundImage: `url(${slide.imageUrl})`,
+                backgroundPosition: 'center right',
                 backgroundSize: 'cover',
               }}
             >
-              {/* Decorative glow */}
               <div
-                className="pointer-events-none absolute left-[-80px] top-1/2 h-[280px] w-[280px] -translate-y-1/2 rounded-full opacity-[0.14]"
-                style={{ background: 'radial-gradient(circle, #E8483F 0%, transparent 70%)' }}
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(105deg, rgba(255,253,248,0.98) 0%, rgba(255,253,248,0.94) 45%, rgba(255,253,248,0.42) 72%, rgba(255,253,248,0.08) 100%)',
+                }}
               />
-              <div className="relative flex h-full min-h-[300px] flex-col justify-center px-6 py-10 text-white sm:min-h-[360px] sm:px-12">
-                {/* Badge chip */}
-                <span className="mb-3 inline-flex w-fit items-center rounded-full bg-[#E8483F] px-2.5 py-0.5 text-[10px] font-black tracking-[0.12em] text-white">
+              <div
+                className="pointer-events-none absolute inset-y-0 right-0 w-[46%] opacity-85"
+                style={{
+                  background:
+                    'linear-gradient(90deg, rgba(255,253,248,0.18), rgba(255,255,255,0.02))',
+                }}
+              />
+              <div
+                className="pointer-events-none absolute left-[-84px] top-1/2 h-[300px] w-[300px] -translate-y-1/2 rounded-full opacity-[0.18]"
+                style={{ background: 'radial-gradient(circle, #F8C861 0%, transparent 68%)' }}
+              />
+              <div className="relative flex h-full min-h-[318px] flex-col justify-center px-6 py-10 text-[#071A4D] sm:min-h-[370px] sm:px-12">
+                <span className="mb-3 inline-flex w-fit items-center rounded-full bg-[#E8483F] px-3 py-1 text-[10px] font-black tracking-[0.12em] text-white shadow-[0_7px_16px_rgba(232,72,63,0.22)]">
                   {slide.badge}
                 </span>
-                {/* Eyebrow */}
-                <p className="text-[12px] font-bold tracking-[0.06em] text-white/65 drop-shadow">
+                <p className="text-[12px] font-black tracking-[0.06em] text-[#667085]">
                   {slide.eyebrow}
                 </p>
-                {/* Title */}
                 <h2
-                  className="mt-2 max-w-[480px] text-[30px] font-black leading-[1.18] tracking-[-0.02em] drop-shadow sm:text-[44px]"
-                  style={{ whiteSpace: 'pre-line', textShadow: '0 2px 18px rgba(0,0,0,0.28)' }}
+                  className="mt-2 max-w-[500px] text-[29px] font-black leading-[1.18] tracking-[-0.02em] sm:text-[44px]"
+                  style={{ whiteSpace: 'pre-line' }}
                 >
                   {slide.title}
                 </h2>
-                {/* Copy */}
-                <p className="mt-3 max-w-[440px] text-[13px] font-medium leading-relaxed text-white/75 drop-shadow sm:text-[15px]">
+                <p className="mt-3 max-w-[450px] text-[13px] font-bold leading-relaxed text-[#4B5565] sm:text-[15px]">
                   {slide.copy}
                 </p>
-                {/* CTA */}
-                <Link
-                  href={slide.ctaHref}
-                  className="mt-6 inline-flex w-fit items-center gap-2 rounded-[14px] bg-[#E8483F] px-6 py-3 text-[14px] font-black text-white shadow-[0_10px_28px_rgba(232,72,63,0.38)] transition-all hover:bg-[#c91720] hover:shadow-[0_14px_32px_rgba(232,72,63,0.52)] active:scale-95 sm:px-8 sm:text-[15px]"
-                >
-                  {slide.ctaText}
-                  <span aria-hidden="true">→</span>
-                </Link>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {['新店', 'イベント', 'ごはん'].map((label) => (
+                    <span key={label} className="rounded-full border border-[#F1D7A6] bg-white/88 px-3 py-1 text-[11px] font-black text-[#071A4D] shadow-[0_4px_12px_rgba(7,26,77,0.06)]">
+                      {label}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2.5">
+                  <Link
+                    href={slide.ctaHref}
+                    className="inline-flex min-h-[46px] items-center gap-2 rounded-full bg-[#E8483F] px-6 py-3 text-[14px] font-black text-white shadow-[0_10px_24px_rgba(232,72,63,0.30)] transition-all hover:bg-[#c91720] active:scale-95 sm:px-8 sm:text-[15px]"
+                  >
+                    {slide.ctaText}
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                  <Link
+                    href="/event"
+                    className="inline-flex min-h-[46px] items-center rounded-full border border-[#DDE5F0] bg-white/92 px-5 py-3 text-[14px] font-black text-[#071A4D] no-underline shadow-[0_8px_18px_rgba(7,26,77,0.08)] active:scale-95"
+                  >
+                    イベントを見る
+                  </Link>
+                </div>
               </div>
             </article>
           ))}
@@ -554,11 +577,11 @@ function NewOpenSection() {
   }, []);
 
   return (
-    <section className="py-7">
+    <section className="py-6">
       <CenteredHeading en="NEW OPEN" ja={JP.newOpenSubtitle} />
       <div
         ref={scrollerRef}
-        className="mt-5 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-5 flex gap-3.5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         onMouseEnter={pause}
         onMouseLeave={resumeLater}
         onTouchStart={pause}
@@ -567,10 +590,10 @@ function NewOpenSection() {
         {stores.map((store, index) => (
           <article
             key={`${store.name}-${index}`}
-            className="flex h-[230px] w-[150px] shrink-0 flex-col overflow-hidden rounded-[14px] border border-[#eadedf] bg-white shadow-[0_10px_24px_rgba(23,34,64,0.1)] sm:w-[178px]"
+            className="flex h-[242px] w-[164px] shrink-0 flex-col overflow-hidden rounded-[16px] border border-[#eadedf] bg-white shadow-[0_10px_24px_rgba(23,34,64,0.10)] sm:w-[188px]"
           >
             <div
-              className="h-[96px] bg-cover bg-center"
+              className="h-[112px] bg-cover bg-center"
               style={{ backgroundImage: `url(${store.imageUrl})` }}
             />
             <div className="flex min-h-0 flex-1 flex-col px-3.5 py-3">
@@ -981,15 +1004,15 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
         <SectionKicker en="ARTICLES" ja={JP.articlesSubtitle} align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
       </div>
-      <div className="home-scroll flex overflow-x-auto" style={{ gap: 14, padding: '15px 16px 4px' }}>
+      <div className="home-scroll flex overflow-x-auto" style={{ gap: 12, padding: '15px 16px 4px' }}>
         {articles.map((article, index) => (
-          <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 168, borderRadius: 18, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 7px 20px rgba(7,26,77,0.09)', textDecoration: 'none', color: THEME.text }}>
-            <div style={{ position: 'relative', height: 104, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
+          <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 188, borderRadius: 20, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 9px 24px rgba(7,26,77,0.10)', textDecoration: 'none', color: THEME.text }}>
+            <div style={{ position: 'relative', height: 122, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
               <span style={{ position: 'absolute', left: 10, top: 10, background: article.tag === 'NEW' ? THEME.red : '#FFD746', color: article.tag === 'NEW' ? '#fff' : THEME.navy, fontSize: 10, fontWeight: 950, borderRadius: 8, padding: '4px 8px' }}>{article.tag || JP.focus}</span>
               <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
             </div>
-            <div style={{ padding: '12px 12px 13px' }}>
-              <p style={{ margin: 0, minHeight: 42, color: THEME.text, fontSize: 13.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
+            <div style={{ padding: '12px 13px 13px' }}>
+              <p style={{ margin: 0, minHeight: 42, color: THEME.text, fontSize: 14, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 13, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{article.area || JP.nagoya}</span><span>{formatDate(article.publishedAt)}</span></div>
             </div>
           </Link>
