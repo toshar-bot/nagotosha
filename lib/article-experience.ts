@@ -3,6 +3,37 @@ export type ArticlePoint = {
   description?: string;
 };
 
+export type ArticleExternalVisual = {
+  id: string;
+  type: 'instagram_embed' | 'permitted_image' | 'official_image' | 'placeholder';
+  title: string;
+  description?: string;
+
+  // Instagram投稿・公式ページ
+  sourceName?: string;
+  sourceAccount?: string;
+  sourceUrl?: string;
+  embedUrl?: string;
+  embedHtml?: string;
+
+  // 画像掲載用
+  imageUrl?: string;
+  imageAlt?: string;
+  imageCredit?: string;
+  imageSourceUrl?: string;
+
+  // 許可管理
+  permissionStatus: 'not_contacted' | 'requested' | 'approved' | 'rejected' | 'embed_only' | 'unknown';
+  permittedUse?: {
+    articleBody?: boolean;
+    featuredImage?: boolean;
+    listThumbnail?: boolean;
+    snsPost?: boolean;
+  };
+
+  permissionNote?: string;
+};
+
 export type ArticleRelated = {
   title: string;
   href: string;
@@ -38,6 +69,11 @@ export type ArticleExperienceData = {
   related: ArticleRelated[];
   officialUrl?: string;
   mapUrl?: string;
+
+  // 外部ビジュアル管理（Instagram埋め込み・許可済み画像）
+  externalVisuals?: ArticleExternalVisual[];
+  featuredVisual?: ArticleExternalVisual;
+  instagramCandidates?: ArticleExternalVisual[];
 };
 
 const EXPERIENCES: Record<number, ArticleExperienceData> = {
@@ -109,6 +145,90 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       },
     ],
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=七宝麻辣湯+新栄店',
+  },
+
+  56: {
+    badges: ['名駅', '手土産', 'ガイド'],
+    heroTitle: '名古屋駅で買える手土産。定番から新定番まで、もらって嬉しいお菓子ガイド',
+    lead: '出張帰りや帰省前に役立つ、名古屋駅の手土産ガイドです。売り場・予算・用途別に選び方をまとめました。',
+    quickPoints: [
+      '新幹線乗り場から近い売り場を中心に紹介',
+      '500円台〜3,000円台まで、予算別の選び方を整理',
+      '職場・訪問先・帰省など、シーン別に使い分けしやすい',
+    ],
+    highlightPoints: [
+      {
+        title: 'JR名古屋タカシマヤが起点',
+        description: 'JR名古屋駅直結で時間がないときも使いやすい',
+      },
+      {
+        title: '用途別に選びやすい',
+        description: '職場バラまき・訪問先ご挨拶・帰省土産で選び方を整理',
+      },
+    ],
+    introTitle: 'このガイドについて',
+    introBody: '名古屋駅で手土産を選ぶ際、売り場と予算だけ決めておけば迷いにくくなります。新幹線乗車前や出張帰りの短時間でも使いやすいよう、エリア別・予算別・用途別にまとめました。',
+    recommendedPoints: [
+      {
+        title: '短時間で決めやすい',
+        description: 'JR名古屋タカシマヤを起点にすると動線が短い',
+      },
+      {
+        title: '予算幅が広い',
+        description: '500円台のバラまきから3,000円台のご挨拶用まで対応',
+      },
+    ],
+    recommendedFor: [
+      '出張帰りに名古屋駅で手土産を買いたい人',
+      '新幹線に乗る前に短時間で選びたい人',
+      '訪問先に持っていく手土産で迷っている人',
+      '毎回同じ手土産になってしまう人',
+    ],
+    shopInfo: [
+      { label: '主な売り場', value: 'JR名古屋タカシマヤ・エスカ地下街・近鉄パッセ・名鉄百貨店' },
+      { label: 'エリア', value: '名古屋駅周辺' },
+      { label: '予算目安', value: '500円台〜3,000円台以上' },
+    ],
+    related: [
+      {
+        title: 'JR名古屋タカシマヤ デリシャスコートがリニューアルオープン',
+        href: '/article/39',
+        label: '名駅',
+      },
+    ],
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=JR名古屋タカシマヤ',
+
+    externalVisuals: [
+      {
+        id: 'nagoya-station-gift-instagram-slot-1',
+        type: 'instagram_embed',
+        title: '名古屋駅手土産のInstagram投稿枠',
+        description: '許可を取ったInstagram投稿をここに埋め込む想定',
+        permissionStatus: 'not_contacted',
+        permittedUse: {
+          articleBody: false,
+          featuredImage: false,
+          listThumbnail: false,
+          snsPost: false,
+        },
+        permissionNote: '投稿者へDMで使用範囲（記事本文・アイキャッチ・一覧・SNS投稿）を分けて確認してから掲載する',
+      },
+      {
+        id: 'nagoya-station-gift-featured-slot-1',
+        type: 'permitted_image',
+        title: 'アイキャッチ候補画像枠',
+        description: '許可済み画像をアイキャッチ・一覧カードに使う想定',
+        permissionStatus: 'not_contacted',
+        permittedUse: {
+          articleBody: false,
+          featuredImage: false,
+          listThumbnail: false,
+          snsPost: false,
+        },
+        permissionNote: '記事内・一覧カード・なごとしゃ公式SNS投稿での使用可否を分けて確認する',
+      },
+    ],
+    instagramCandidates: [],
   },
 
   39: {

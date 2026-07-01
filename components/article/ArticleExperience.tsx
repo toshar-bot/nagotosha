@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
-import type { ArticleExperienceData, ArticlePoint, ArticleRelated, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, ShopInfoItem } from '@/lib/article-experience';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -302,6 +302,8 @@ export function ArticleExperience({
         <SectionCard title="写真で見る" icon={<CameraIcon />}>
           <PhotoStrip imageUrl={effectiveImageUrl} title={displayTitle} />
         </SectionCard>
+
+        <ExternalVisualSection visuals={experience?.externalVisuals} />
 
         {recommendedFor.length > 0 && (
           <SectionCard title="こんな人におすすめ" accent="yellow">
@@ -656,6 +658,124 @@ function PhotoStrip({ imageUrl, title }: { imageUrl?: string; title: string }) {
   );
 }
 
+function ExternalVisualSection({ visuals }: { visuals?: ArticleExternalVisual[] }) {
+  if (!visuals || visuals.length === 0) return null;
+
+  // approvedかembed_onlyでembedHtmlまたはimageUrlがあるものだけ実表示
+  const approvedItems = visuals.filter(
+    (v) =>
+      (v.permissionStatus === 'approved' || v.permissionStatus === 'embed_only') &&
+      (v.embedHtml || v.imageUrl),
+  );
+
+  // 許可確認中（not_contacted / requested）のものが1件以上あるか
+  const hasPending = visuals.some(
+    (v) => v.permissionStatus === 'not_contacted' || v.permissionStatus === 'requested',
+  );
+
+  if (approvedItems.length === 0 && !hasPending) return null;
+
+  return (
+    <section style={{ padding: '0 14px', marginTop: 14 }}>
+      <div style={{
+        background: '#fff',
+        border: '1px solid #E6ECF5',
+        borderRadius: 22,
+        padding: '18px 16px',
+        boxShadow: '0 8px 22px rgba(7,26,77,0.06)',
+      }}>
+        {/* セクション見出し */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <span style={{ color: '#E8483F', flexShrink: 0 }}><InstagramIcon /></span>
+          <h2 style={{ margin: 0, color: '#071A4D', fontSize: 18, lineHeight: 1.35, fontWeight: 900 }}>Instagramで見る</h2>
+          <span style={{ width: 52, borderTop: '2px dotted #F8C861', flexShrink: 0 }} />
+        </div>
+
+        {/* 承認済みアイテムを表示 */}
+        {approvedItems.map((item) => (
+          <ApprovedVisualCard key={item.id} item={item} />
+        ))}
+
+        {/* 許可確認中カード（承認済みが0件 or 確認中スロットがある場合に表示） */}
+        {hasPending && (
+          <div style={{
+            marginTop: approvedItems.length > 0 ? 12 : 0,
+            borderRadius: 18,
+            border: '1.5px dashed #E6ECF5',
+            background: 'linear-gradient(135deg, #FFFDF7 0%, #FFF7D8 100%)',
+            padding: '20px 18px',
+            textAlign: 'center',
+          }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '50%', background: '#FFF0EF', marginBottom: 12 }}>
+              <HourglassIcon />
+            </div>
+            <p style={{ margin: 0, color: '#071A4D', fontSize: 14, fontWeight: 900, lineHeight: 1.45 }}>掲載許可を確認中</p>
+            <p style={{ margin: '8px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.75, fontWeight: 700 }}>
+              なごとしゃ編集部が、投稿者・公式アカウントへ掲載許可を確認しています。<br />
+              許可をいただいた写真・投稿から順次追加予定です。
+            </p>
+            <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FFF0EF', borderRadius: 999, padding: '5px 13px' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8483F', flexShrink: 0 }} />
+              <span style={{ color: '#E8483F', fontSize: 10, fontWeight: 900 }}>なごとしゃ編集部が確認中</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ApprovedVisualCard({ item }: { item: ArticleExternalVisual }) {
+  // Instagram埋め込みHTML
+  if (item.embedHtml) {
+    return (
+      <div style={{ marginBottom: 12 }}>
+        <div
+          dangerouslySetInnerHTML={{ __html: item.embedHtml }}
+          style={{ maxWidth: '100%', overflow: 'hidden' }}
+        />
+        <VisualCredit item={item} />
+      </div>
+    );
+  }
+
+  // 許可済み画像（permissionStatus === 'approved' かつ imageUrl あり）
+  if (item.imageUrl && item.permissionStatus === 'approved') {
+    return (
+      <div style={{ marginBottom: 12 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.imageUrl}
+          alt={item.imageAlt ?? item.title}
+          style={{ width: '100%', borderRadius: 16, display: 'block', border: '1px solid #E6ECF5' }}
+        />
+        <VisualCredit item={item} />
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function VisualCredit({ item }: { item: ArticleExternalVisual }) {
+  const hasCredit = item.imageCredit || item.sourceAccount || item.sourceName;
+  if (!hasCredit) return null;
+
+  return (
+    <p style={{ margin: '6px 0 0', fontSize: 11, color: '#667085', fontWeight: 700, lineHeight: 1.6 }}>
+      {'画像出典：'}
+      {item.sourceUrl ? (
+        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#667085', textDecoration: 'underline' }}>
+          {item.sourceAccount ? `@${item.sourceAccount}` : (item.sourceName ?? item.imageCredit)}
+        </a>
+      ) : (
+        item.sourceAccount ? `@${item.sourceAccount}` : (item.sourceName ?? item.imageCredit)
+      )}
+      {' ／ 許可を得て掲載'}
+    </p>
+  );
+}
+
 function PhotoPlaceholder({ label, compact }: { label: string; compact?: boolean }) {
   return (
     <div style={{
@@ -840,4 +960,12 @@ function ExternalIcon() {
 
 function UpIcon() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#071A4D" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5" /><path d="M5 12l7-7 7 7" /></svg>;
+}
+
+function InstagramIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>;
+}
+
+function HourglassIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3h14" /><path d="M5 21h14" /><path d="M5 3l7 9-7 9" /><path d="M19 3l-7 9 7 9" /></svg>;
 }
