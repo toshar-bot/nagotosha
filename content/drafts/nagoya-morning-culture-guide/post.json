@@ -1,0 +1,19 @@
+{
+  "slug": "nagoya-morning-culture-guide",
+  "title": "名古屋のモーニング文化ガイド。喫茶店の朝が特別な理由と楽しみ方",
+  "excerpt": "ドリンクを頼むと朝食がついてくる、名古屋のモーニング文化。仕組み・小倉トーストの楽しみ方・チェーンと純喫茶の選び方・シーン別の使い方を、名古屋の飲食店主がやさしく解説します。",
+  "bodyFile": "body.html",
+  "categories": ["グルメ"],
+  "tags": ["モーニング", "喫茶店", "小倉トースト", "名古屋文化"],
+  "eyecatch": {
+    "file": "eyecatch.png",
+    "filename": "nagoya-morning-culture-eyecatch.png",
+    "alt": "小倉トーストとコーヒーのイラスト",
+    "title": "名古屋のモーニング文化ガイド"
+  },
+  "meta": {
+    "area": "名古屋",
+    "category": "グルメ",
+    "mapUrl": ""
+  }
+}
