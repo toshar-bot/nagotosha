@@ -177,6 +177,8 @@ export function ArticleExperience({
   const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag });
   const related = experience?.related ?? [];
   const formattedSaveCount = saveCount.toLocaleString('ja-JP');
+  const layout = experience?.layout ?? 'store';
+  const isGuideLayout = layout === 'guide';
 
   const handleSave = useCallback(() => {
     const result = toggleSavedItem({
@@ -213,7 +215,7 @@ export function ArticleExperience({
 
   return (
     <main className="article-page">
-      <style>{GLOBAL_CSS}</style>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
       <div className="article-shell">
         <ArticleHeader mapUrl={effectiveMapUrl} />
 
@@ -241,7 +243,7 @@ export function ArticleExperience({
                 overflowWrap: 'normal',
                 textWrap: 'pretty',
               }}>
-                {displayTitle}
+                <PhraseTitle title={displayTitle} />
               </h1>
               {displayLead && (
                 <p style={{
@@ -270,8 +272,20 @@ export function ArticleExperience({
                     overflow: 'hidden',
                     flexShrink: 0,
                   }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/subjects/tosha-logo-mark.png" alt="" aria-hidden style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                    <span aria-hidden style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: '#071A4D',
+                      color: '#fff',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontSize: 17,
+                      fontWeight: 900,
+                      lineHeight: 1,
+                    }}>
+                      な
+                    </span>
                   </div>
                   <div>
                     <p style={{ margin: 0, color: '#071A4D', fontSize: 12, fontWeight: 900 }}>名古屋情報局なごとしゃ編集部</p>
@@ -311,6 +325,23 @@ export function ArticleExperience({
           onShare={handleShare}
           mapUrl={effectiveMapUrl}
         />
+
+        {isGuideLayout ? (
+          <>
+            {content && (
+              <GuideBody>
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
+              </GuideBody>
+            )}
+
+            {related.length > 0 && (
+              <RelatedSection related={related} />
+            )}
+
+            <BackToArticlesLink />
+          </>
+        ) : (
+          <>
 
         {quickPoints.length > 0 && (
           <SectionCard title="30秒でわかるポイント" icon={<ClockIcon />}>
@@ -408,13 +439,7 @@ export function ArticleExperience({
         )}
 
         {related.length > 0 && (
-          <SectionCard title="関連記事" actionHref="/new" actionLabel="もっと見る">
-            <div style={{ display: 'grid', gap: 10 }}>
-              {related.map((item) => (
-                <RelatedCard key={item.href} item={item} />
-              ))}
-            </div>
-          </SectionCard>
+          <RelatedSection related={related} />
         )}
 
         {effectiveOfficialUrl && (
@@ -439,12 +464,9 @@ export function ArticleExperience({
           </SectionCard>
         )}
 
-        <section style={{ padding: '18px 14px 8px' }}>
-          <Link href="/new" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#E8483F', fontSize: 13, fontWeight: 900, textDecoration: 'none' }}>
-            <ChevronLeftIcon />
-            新着記事一覧へ戻る
-          </Link>
-        </section>
+        <BackToArticlesLink />
+          </>
+        )}
       </div>
 
       <BottomCTA
@@ -455,6 +477,72 @@ export function ArticleExperience({
         onTop={scrollToTop}
       />
     </main>
+  );
+}
+
+function PhraseTitle({ title }: { title: string }) {
+  return (
+    <>
+      {splitTitlePhrases(title).map((phrase, index) => (
+        <span
+          key={`${phrase}-${index}`}
+          style={{
+            display: 'inline-block',
+            whiteSpace: phrase.length <= 18 ? 'nowrap' : 'normal',
+          }}
+        >
+          {phrase}
+        </span>
+      ))}
+    </>
+  );
+}
+
+function splitTitlePhrases(title: string): string[] {
+  if (title === '雨の日の名古屋どこ行く？屋内で過ごしやすいおでかけスポット7選') {
+    return ['雨の日の名古屋', 'どこ行く？', '屋内で過ごしやすい', 'おでかけスポット7選'];
+  }
+
+  const phrases = title.match(/[^？。、!?]+[？。、!?]?/g);
+  return phrases && phrases.length > 0 ? phrases : [title];
+}
+
+function GuideBody({ children }: { children: React.ReactNode }) {
+  return (
+    <section style={{ padding: '0 14px', marginTop: 14 }}>
+      <div style={{
+        background: '#fff',
+        border: '1px solid #E6ECF5',
+        borderRadius: 22,
+        padding: '18px 16px',
+        boxShadow: '0 8px 22px rgba(7,26,77,0.06)',
+      }}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function RelatedSection({ related }: { related: ArticleRelated[] }) {
+  return (
+    <SectionCard title="関連記事" actionHref="/new" actionLabel="もっと見る">
+      <div style={{ display: 'grid', gap: 10 }}>
+        {related.map((item) => (
+          <RelatedCard key={item.href} item={item} />
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function BackToArticlesLink() {
+  return (
+    <section style={{ padding: '18px 14px 8px' }}>
+      <Link href="/new" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#E8483F', fontSize: 13, fontWeight: 900, textDecoration: 'none' }}>
+        <ChevronLeftIcon />
+        新着記事一覧へ戻る
+      </Link>
+    </section>
   );
 }
 

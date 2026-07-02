@@ -55,6 +55,7 @@ export type ShopInfoItem = {
 };
 
 export type ArticleExperienceData = {
+  layout?: 'store' | 'guide';
   badges: string[];
   heroTitle?: string;
   lead: string;
@@ -232,6 +233,7 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
   },
 
   58: {
+    layout: 'guide',
     badges: ['雨の日', '名古屋', 'おでかけ'],
     lead: '雨の日の名古屋で行き先に迷ったら。水族館、鉄道館、科学館、栄・名駅・大須・ノリタケ周辺など、屋内で過ごしやすいスポットを7つ紹介します。',
     related: [
