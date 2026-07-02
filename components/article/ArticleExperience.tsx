@@ -36,11 +36,46 @@ const GLOBAL_CSS = `
   }
   .article-body h3 {
     color: #071A4D;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
-    margin: 1.4em 0 0.55em;
+    margin: 1.6em 0 0.6em;
+    padding: 9px 13px;
+    background: #FFFBF0;
+    border-left: 3px solid #F8C861;
+    border-radius: 0 10px 10px 0;
+    line-height: 1.5;
   }
   .article-body a { color: #E8483F; font-weight: 800; }
+  .article-body a[href*="google.com/maps"],
+  .article-body a[href*="maps.google.com"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #071A4D;
+    color: #fff !important;
+    font-size: 12px;
+    font-weight: 900;
+    text-decoration: none !important;
+    margin: 6px 0;
+    line-height: 1.2;
+  }
+  .article-body a[href^="https://"]:not([href*="google.com/maps"]):not([href*="maps.google.com"]):not([href*="nagotosha.com"]):not([href*="nagotosha.vercel.app"]) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1.5px solid #E8483F;
+    background: #fff;
+    color: #E8483F !important;
+    font-size: 12px;
+    font-weight: 900;
+    text-decoration: none !important;
+    margin: 4px 0;
+    line-height: 1.2;
+  }
   .article-body img {
     max-width: 100%;
     height: auto;
@@ -54,12 +89,28 @@ const GLOBAL_CSS = `
     display: block;
     overflow-x: auto;
     border-collapse: collapse;
+    border: 1px solid #E6ECF5;
+    margin: 1em 0;
   }
-  .article-body th,
+  .article-body th {
+    background: #F8FAFC;
+    color: #071A4D;
+    font-weight: 900;
+    font-size: 12px;
+    border-bottom: 1px solid #E6ECF5;
+    padding: 10px 12px;
+    text-align: left;
+  }
   .article-body td {
     border-bottom: 1px solid #E6ECF5;
     padding: 10px 12px;
     text-align: left;
+    font-size: 13px;
+    color: #334155;
+  }
+  .article-body tr:last-child td,
+  .article-body tr:last-child th {
+    border-bottom: none;
   }
 `;
 
@@ -282,7 +333,7 @@ export function ArticleExperience({
         )}
 
         {(experience?.introTitle || experience?.introBody) && (
-          <SectionCard title={experience.introTitle}>
+          <SectionCard title={experience.introTitle ?? ''}>
             <p style={{ margin: 0, color: '#334155', fontSize: 14, lineHeight: 1.9, fontWeight: 650, textWrap: 'pretty' }}>
               {experience.introBody}
             </p>

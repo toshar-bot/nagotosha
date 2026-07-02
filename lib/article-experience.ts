@@ -59,13 +59,13 @@ export type ArticleExperienceData = {
   heroTitle?: string;
   lead: string;
   visual?: ArticleVisual;
-  quickPoints: string[];
-  highlightPoints: ArticlePoint[];
-  introTitle: string;
-  introBody: string;
-  recommendedPoints: ArticlePoint[];
-  recommendedFor: string[];
-  shopInfo: ShopInfoItem[];
+  quickPoints?: string[];
+  highlightPoints?: ArticlePoint[];
+  introTitle?: string;
+  introBody?: string;
+  recommendedPoints?: ArticlePoint[];
+  recommendedFor?: string[];
+  shopInfo?: ShopInfoItem[];
   related: ArticleRelated[];
   officialUrl?: string;
   mapUrl?: string;
@@ -229,6 +229,23 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       },
     ],
     instagramCandidates: [],
+  },
+
+  58: {
+    badges: ['雨の日', '名古屋', 'おでかけ'],
+    lead: '雨の日の名古屋で行き先に迷ったら。水族館、鉄道館、科学館、栄・名駅・大須・ノリタケ周辺など、屋内で過ごしやすいスポットを7つ紹介します。',
+    related: [
+      {
+        title: '名古屋駅で買える手土産。定番から新定番まで、もらって嬉しいお菓子ガイド',
+        href: '/article/56',
+        label: '手土産',
+      },
+      {
+        title: '新栄に話題のマーラータン専門店『七宝麻辣湯』がオープン',
+        href: '/article/32',
+        label: 'NEW OPEN',
+      },
+    ],
   },
 
   39: {
