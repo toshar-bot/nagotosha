@@ -1194,13 +1194,19 @@ function CenteredHeading({ en, ja }: { en: string; ja: string }) {
 }
 
 function SectionKicker({ en, ja, align = 'center' }: { en: string; ja: string; align?: 'left' | 'center' }) {
+  const titleParts = en === 'RANKING' ? ['みんなが読んでいる！', '人気記事ランキング'] : [ja];
+
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: align === 'center' ? 'center' : 'flex-start', gap: 7, minWidth: 0 }}>
       <span style={{ width: 20, height: 20, flexShrink: 0, display: 'grid', placeItems: 'center', color: en === 'RANKING' ? '#B58B17' : THEME.navy }}>
         <SectionTitleIcon kind={en} />
       </span>
       <h2 style={{ margin: 0, color: THEME.navy, fontSize: 17.5, fontWeight: 950, lineHeight: 1.25, letterSpacing: '-0.02em', textAlign: align }}>
-        {ja}
+        {titleParts.map((part, index) => (
+          <span key={part} style={{ display: 'inline-block', whiteSpace: 'nowrap', marginRight: index < titleParts.length - 1 ? 4 : 0 }}>
+            {part}
+          </span>
+        ))}
       </h2>
     </div>
   );
