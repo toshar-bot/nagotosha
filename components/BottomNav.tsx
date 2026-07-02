@@ -18,7 +18,7 @@ const GAME_TABS = [
 
 export default function BottomNav() {
   const path = usePathname();
-  if (path.startsWith('/partner')) return null;
+  if (path.startsWith('/partner') || path.startsWith('/article')) return null;
   const isPortal = ['/', '/new', '/event', '/area', '/saved'].includes(path);
 
   if (isPortal) {
