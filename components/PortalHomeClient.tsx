@@ -354,9 +354,10 @@ function Header() {
 
 function HeaderAction({ label, type, href, onClick }: { label: string; type: 'search' | 'area' | 'category' | 'menu'; href?: string; onClick?: () => void }) {
   const icon = type === 'search' ? <SearchIcon /> : type === 'area' ? <PinIcon /> : type === 'category' ? <CategoryIcon /> : <MenuIcon />;
-  const style: CSSProperties = { minWidth: 33, color: THEME.navy, textDecoration: 'none', padding: '8px 1px', borderRadius: 8 };
-  if (href) return <Link href={href} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={style}>{icon}</Link>;
-  return <button type="button" onClick={onClick} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{icon}</button>;
+  const style: CSSProperties = { minWidth: 36, color: THEME.navy, textDecoration: 'none', padding: '5px 1px 4px', borderRadius: 8, flexDirection: 'column', gap: 2 };
+  const content = <><span style={{ display: 'grid', placeItems: 'center', height: 24 }}>{icon}</span><span style={{ fontSize: 9.5, fontWeight: 800, lineHeight: 1, whiteSpace: 'nowrap' }}>{label}</span></>;
+  if (href) return <Link href={href} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={style}>{content}</Link>;
+  return <button type="button" onClick={onClick} aria-label={label} className="flex items-center justify-center active:opacity-60 transition-opacity" style={{ ...style, border: 0, background: 'transparent' }}>{content}</button>;
 }
 
 function CategoryTabs() {
@@ -377,7 +378,7 @@ function CategoryTabs() {
 
 function HeroSection() {
   const [keyword, setKeyword] = useState('');
-  const categories = ['グルメ', 'おでかけ', 'カフェ', '新店・NEW OPEN', 'イベント', 'まとめ'];
+  const categories = ['グルメ', 'おでかけ', '新店・NEW OPEN', '手土産・おみやげ', 'イベント'];
 
   const submitHeroSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -413,7 +414,9 @@ function HeroSection() {
               <Link
                 key={label}
                 href={label === 'イベント' ? '/event' : '/new?tag=' + encodeURIComponent(label)}
-                className="rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-[11px] font-black text-[#071A4D] no-underline shadow-[0_4px_14px_rgba(7,26,77,.09)]"
+                className={label === 'グルメ'
+                  ? 'rounded-full border border-[#E8483F] bg-[#E8483F] px-3 py-1.5 text-[11px] font-black text-white no-underline shadow-[0_5px_15px_rgba(232,72,63,.24)]'
+                  : 'rounded-full border border-white/70 bg-white/90 px-3 py-1.5 text-[11px] font-black text-[#071A4D] no-underline shadow-[0_4px_14px_rgba(7,26,77,.09)]'}
               >
                 {label}
               </Link>
@@ -434,19 +437,11 @@ function HeroSection() {
             />
             <button
               type="submit"
-              className="h-10 shrink-0 rounded-full bg-[#071A4D] px-4 text-[12px] font-black text-white shadow-[0_8px_16px_rgba(7,26,77,.20)] sm:px-6 sm:text-[14px]"
+              className="h-10 shrink-0 rounded-full bg-[#E8483F] px-4 text-[12px] font-black text-white shadow-[0_8px_16px_rgba(232,72,63,.22)] sm:px-6 sm:text-[14px]"
             >
               検索する
             </button>
           </form>
-          <div className="mt-5 flex justify-center gap-2">
-            <Link href="/new" className="rounded-full bg-[#E8483F] px-5 py-3 text-[13px] font-black text-white no-underline shadow-[0_10px_20px_rgba(232,72,63,.25)]">
-              今日の名古屋を見る →
-            </Link>
-            <Link href="/event" className="rounded-full border border-[#DDE5F0] bg-white px-5 py-3 text-[13px] font-black text-[#071A4D] no-underline">
-              イベントを見る
-            </Link>
-          </div>
         </div>
       </div>
     </section>
@@ -540,8 +535,8 @@ function FeaturesSection() {
     <section className="px-4 py-5">
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="FEATURES" ja="編集部イチオシ特集" align="left" />
-        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
-          {JP.viewAll} {String.fromCharCode(8250)}
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
+          すべての特集を見る {String.fromCharCode(8250)}
         </Link>
       </div>
       <div className="home-scroll mx-auto flex max-w-[940px] gap-3 overflow-x-auto pb-1">
@@ -933,8 +928,8 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
   return (
     <section style={{ padding: '22px 0 20px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <SectionKicker en="RANKING" ja="みんなが見ている！人気急上昇ランキング" align="left" />
-        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+        <SectionKicker en="RANKING" ja="みんなが読んでいる！人気記事ランキング" align="left" />
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
         {ranking.map((article, index) => (
@@ -945,7 +940,7 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
             </div>
             <div style={{ padding: '10px 10px 11px' }}>
               <p style={{ margin: 0, minHeight: 38, color: THEME.text, fontSize: 12.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{article.area || JP.nagoya}</span><span>♡ {12560 - index * 1519}</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>♡ {12560 - index * 1519}</span></div>
             </div>
           </Link>
         ))}
@@ -959,7 +954,7 @@ function FreshArticlesSection({ articles }: { articles: ArticleLike[] }) {
     <section style={{ padding: '20px 0 22px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
         <SectionKicker en="NEW ARTICLES" ja="新着記事" align="left" />
-        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 12, padding: '15px 16px 4px' }}>
         {articles.map((article, index) => (
@@ -999,7 +994,7 @@ function EventCtaSection() {
     <section style={{ padding: '0 16px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="EVENT" ja="今週のイベント・おでかけ" align="left" />
-        <Link href="/event" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
+        <Link href="/event" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
           {JP.viewAll} {String.fromCharCode(8250)}
         </Link>
       </div>
@@ -1032,7 +1027,7 @@ function InstagramSection() {
     <section style={{ padding: '18px 0 22px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
         <SectionKicker en="INSTAGRAM" ja="Instagramで人気の投稿" align="left" />
-        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
         {posts.map((post) => (
@@ -1059,7 +1054,7 @@ function AreaPopularSection({ articles }: { articles: ArticleLike[] }) {
     <section style={{ padding: '18px 16px 24px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="AREA ARTICLES" ja="エリア別人気記事" align="left" />
-        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>{JP.viewAll} {String.fromCharCode(8250)}</Link>
+        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>すべて見る {String.fromCharCode(8250)}</Link>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {groups.map((group) => (
@@ -1133,8 +1128,8 @@ function AreaCtaSection() {
     <section style={{ padding: '8px 0 18px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="AREA" ja="エリアから探す" align="left" />
-        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3 }}>
-          {JP.viewAll} {String.fromCharCode(8250)}
+        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
+          すべてのエリアを見る {String.fromCharCode(8250)}
         </Link>
       </div>
       <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '4px 16px 8px' }}>
@@ -1199,11 +1194,39 @@ function CenteredHeading({ en, ja }: { en: string; ja: string }) {
 }
 
 function SectionKicker({ en, ja, align = 'center' }: { en: string; ja: string; align?: 'left' | 'center' }) {
-  return <div style={{ textAlign: align }}><p style={{ margin: 0, color: THEME.red, fontSize: 19, fontWeight: 950, letterSpacing: '0.18em', lineHeight: 1 }}>{en}</p><p style={{ margin: '6px 0 0', color: THEME.navy, fontSize: 14, fontWeight: 950, lineHeight: 1.25 }}>{ja}</p></div>;
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: align === 'center' ? 'center' : 'flex-start', gap: 7, minWidth: 0 }}>
+      <span style={{ width: 20, height: 20, flexShrink: 0, display: 'grid', placeItems: 'center', color: en === 'RANKING' ? '#B58B17' : THEME.navy }}>
+        <SectionTitleIcon kind={en} />
+      </span>
+      <h2 style={{ margin: 0, color: THEME.navy, fontSize: 17.5, fontWeight: 950, lineHeight: 1.25, letterSpacing: '-0.02em', textAlign: align }}>
+        {ja}
+      </h2>
+    </div>
+  );
 }
 
 function bgPhoto(url: string): CSSProperties { return { backgroundImage: 'url("' + url + '")', backgroundSize: 'cover', backgroundPosition: 'center' }; }
 function formatDate(date?: string) { if (!date) return '2026.06'; if (/^\d{4}\.\d{2}\.\d{2}$/.test(date)) return date; if (/^\d{4}-\d{2}-\d{2}/.test(date)) return date.slice(0, 10).replace(/-/g, '.'); return date; }
+
+function SectionTitleIcon({ kind }: { kind: string }) {
+  if (kind === 'RANKING') {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 9.5 9.2 13 12 6l2.8 7L19 9.5l-1.1 8.2H6.1L5 9.5Z" fill="currentColor" opacity=".95"/><path d="M6.4 20h11.2" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/></svg>;
+  }
+  if (kind === 'AREA' || kind === 'AREA ARTICLES') {
+    return <PinIcon />;
+  }
+  if (kind === 'FEATURES') {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.2 14.5 9l6.2.55-4.7 4.05 1.4 6.1L12 16.5l-5.4 3.2 1.4-6.1-4.7-4.05L9.5 9 12 3.2Z" fill="currentColor"/></svg>;
+  }
+  if (kind === 'INSTAGRAM') {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4.4" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="2"/><circle cx="16.8" cy="7.2" r="1.1" fill="currentColor"/></svg>;
+  }
+  if (kind === 'NEW ARTICLES') {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4.5h10.5L19 8v11.5H5V4.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M8 10h8M8 14h8M8 18h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>;
+  }
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2.2"/><path d="M12 8v4l2.8 2.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
 
 function InstagramLogo() { return <svg width="54" height="54" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.4" y="3.4" width="17.2" height="17.2" rx="5.2" stroke="currentColor" strokeWidth="1.9"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" strokeWidth="1.9"/><circle cx="17.1" cy="6.9" r="1.35" fill="currentColor"/></svg>; }
 function XLogo() { return <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.4 3.6h5.1l3.55 5.05 4.5-5.05h2.5l-5.8 6.56 6.25 10.24h-5.1l-4.02-5.78-5.13 5.78H3.75l6.46-7.27L4.4 3.6Zm3.02 2.05 9.06 12.64h1.03L8.46 5.65H7.42Z" fill="currentColor"/></svg>; }
