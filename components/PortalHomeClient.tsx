@@ -192,6 +192,10 @@ const FALLBACK_ARTICLES = [
 
 type ArticleLike = Pick<FeaturedArticle, 'id' | 'title'> & Partial<FeaturedArticle>;
 
+function resolveArticleHref(article: ArticleLike) {
+  return article.id.startsWith('wp-') ? `/article/${article.id.slice(3)}` : article.articleUrl || '/new';
+}
+
 export default function PortalHomeClient({ featuredArticles }: { featuredArticles: FeaturedArticle[] }) {
   const articles = useMemo<ArticleLike[]>(() => {
     const source = featuredArticles.length > 0 ? featuredArticles : FALLBACK_ARTICLES;
@@ -201,6 +205,7 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
       tag: article.tag || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].tag,
       area: article.area || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].area,
       publishedAt: article.publishedAt || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].publishedAt,
+      articleUrl: resolveArticleHref(article),
     }));
   }, [featuredArticles]);
 
