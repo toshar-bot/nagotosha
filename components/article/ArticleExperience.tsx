@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
-import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, ShopInfoItem } from '@/lib/article-experience';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -112,6 +112,102 @@ const GLOBAL_CSS = `
   .article-body tr:last-child th {
     border-bottom: none;
   }
+  .feature-article {
+    padding: 0 14px 22px;
+  }
+  .feature-card {
+    background: #fff;
+    border: 1px solid #E6ECF5;
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(7,26,77,0.07);
+  }
+  .feature-section {
+    margin-top: 16px;
+  }
+  .feature-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .feature-hero-media {
+    min-height: 230px;
+  }
+  .feature-point-box {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .feature-horizontal {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 1px 2px 6px;
+    scrollbar-width: none;
+  }
+  .feature-horizontal::-webkit-scrollbar {
+    display: none;
+  }
+  .feature-pick-grid,
+  .feature-tip-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .feature-table-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+    border: 1px solid #E6ECF5;
+    border-radius: 16px;
+  }
+  .feature-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+  }
+  .feature-table th,
+  .feature-table td {
+    border-bottom: 1px solid #E6ECF5;
+    padding: 11px 12px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .feature-table th {
+    background: #F8FAFC;
+    color: #071A4D;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .feature-table td {
+    color: #334155;
+    font-weight: 750;
+  }
+  .feature-venue-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    .article-shell {
+      width: min(100%, 980px);
+    }
+    .feature-hero {
+      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 1.1fr);
+      align-items: stretch;
+    }
+    .feature-hero-media {
+      min-height: 310px;
+    }
+    .feature-point-box {
+      grid-template-columns: 170px minmax(0, 1fr);
+      align-items: center;
+    }
+    .feature-pick-grid,
+    .feature-tip-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 `;
 
 type Props = {
@@ -212,6 +308,26 @@ export function ArticleExperience({
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  if (layout === 'feature' && experience?.feature) {
+    return (
+      <FeatureArticleExperience
+        title={displayTitle}
+        lead={displayLead}
+        dateStr={dateStr}
+        imageUrl={effectiveImageUrl}
+        imageAlt={effectiveImageAlt}
+        mapUrl={effectiveMapUrl}
+        related={related}
+        feature={experience.feature}
+        saved={saved}
+        saveCount={formattedSaveCount}
+        onSave={handleSave}
+        onShare={handleShare}
+        onTop={scrollToTop}
+      />
+    );
+  }
 
   return (
     <main className="article-page">
@@ -480,6 +596,560 @@ export function ArticleExperience({
   );
 }
 
+function FeatureArticleExperience({
+  title,
+  lead,
+  dateStr,
+  imageUrl,
+  imageAlt,
+  mapUrl,
+  related,
+  feature,
+  saved,
+  saveCount,
+  onSave,
+  onShare,
+  onTop,
+}: {
+  title: string;
+  lead: string;
+  dateStr: string;
+  imageUrl?: string;
+  imageAlt: string;
+  mapUrl?: string;
+  related: ArticleRelated[];
+  feature: FeatureArticleData;
+  saved: boolean;
+  saveCount: string;
+  onSave: () => void;
+  onShare: () => void;
+  onTop: () => void;
+}) {
+  return (
+    <main className="article-page">
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <div className="article-shell">
+        <ArticleHeader mapUrl={mapUrl} />
+        <article className="feature-article">
+          <FeatureBreadcrumb items={feature.breadcrumb} />
+
+          <section className="feature-card feature-section" style={{ padding: 16 }}>
+            <div className="feature-hero">
+              <div style={{ minWidth: 0, padding: '4px 0' }}>
+                <BadgeRow badges={feature.eyebrow.split('/').map((item) => item.trim())} />
+                <h1 style={{
+                  margin: '16px 0 0',
+                  color: '#071A4D',
+                  fontSize: 'clamp(24px, 6.3vw, 42px)',
+                  lineHeight: 1.24,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  textWrap: 'pretty',
+                  maxWidth: '100%',
+                }}>
+                  <PhraseTitle title={title} />
+                </h1>
+                <p style={{ margin: '14px 0 0', color: '#334155', fontSize: 15, lineHeight: 1.85, fontWeight: 750, textWrap: 'pretty' }}>
+                  {lead}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                  <EditorMark />
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, color: '#071A4D', fontSize: 13, fontWeight: 900 }}>なごとしゃ編集部</p>
+                    <p style={{ margin: '3px 0 0', color: '#667085', fontSize: 12, fontWeight: 800 }}>{feature.updatedLabel || dateStr} 更新</p>
+                  </div>
+                </div>
+              </div>
+              <FeatureHeroMedia imageUrl={imageUrl} imageAlt={imageAlt} caption={feature.imageCaption} />
+            </div>
+          </section>
+
+          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} />
+
+          <FeatureQuickJump count={feature.venues.length} />
+
+          <section className="feature-card feature-section" style={{ padding: 18, background: 'linear-gradient(135deg, #FFFDF8 0%, #FFF7D8 100%)', borderColor: '#F6E1A2' }}>
+            <div className="feature-point-box">
+              <div style={{ borderRight: '1px solid rgba(7,26,77,0.12)', paddingRight: 14 }}>
+                <p style={{ margin: 0, color: '#C6252D', fontSize: 34, lineHeight: 1, fontWeight: 900 }}>30</p>
+                <p style={{ margin: '6px 0 0', color: '#071A4D', fontSize: 14, lineHeight: 1.55, fontWeight: 900 }}>秒でわかる<br />ポイント</p>
+              </div>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {feature.points.map((point) => (
+                  <FeatureCheckLine key={point}>{point}</FeatureCheckLine>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <FeatureSectionTitle title="この記事はこんな人向け" icon={<UsersIcon />} />
+          <div className="feature-horizontal" aria-label="この記事はこんな人向け">
+            {feature.audience.map((item) => (
+              <span key={item} style={featureChipStyle}>{item}</span>
+            ))}
+          </div>
+
+          <FeatureSectionTitle title="まずこれを見ればOK：おすすめ3選" icon={<CrownIcon />} />
+          <div className="feature-pick-grid">
+            {feature.picks.map((pick, index) => (
+              <FeaturePickCard key={pick.name} pick={pick} index={index} imageUrl={imageUrl} />
+            ))}
+          </div>
+
+          <FeatureSectionTitle title="比較しやすい一覧表" icon={<TableIcon />} />
+          <FeatureComparisonTable venues={feature.venues} />
+
+          <FeatureSectionTitle title="地図で見る" icon={<MapPinIcon />} />
+          <FeatureMapPanel venues={feature.venues} mapUrl={mapUrl} />
+
+          <FeatureSectionTitle title="編集部の見方 / 選び方のコツ" icon={<PenIcon />} />
+          <div className="feature-tip-grid">
+            {feature.tips.map((tip, index) => (
+              <FeatureTipCard key={tip.title} tip={tip} index={index} />
+            ))}
+          </div>
+
+          <FeatureSectionTitle title="各会場詳細" icon={<ShopIcon />} />
+          <div className="feature-venue-grid">
+            {feature.venues.map((venue) => (
+              <FeatureVenueCard key={venue.name} venue={venue} />
+            ))}
+          </div>
+
+          <FeatureSourceBox notes={feature.sourceNotes} />
+
+          {related.length > 0 && <RelatedSection related={related} />}
+
+          <section className="feature-card feature-section" style={{ padding: 18, background: 'linear-gradient(135deg, #FFFDF8 0%, #FFF7D8 100%)', borderColor: '#F6E1A2' }}>
+            <div style={{ display: 'grid', gap: 14 }}>
+              <div>
+                <h2 style={{ margin: 0, color: '#071A4D', fontSize: 18, lineHeight: 1.45, fontWeight: 900 }}>{feature.ctaTitle}</h2>
+                <p style={{ margin: '8px 0 0', color: '#475467', fontSize: 13, lineHeight: 1.75, fontWeight: 750 }}>{feature.ctaBody}</p>
+              </div>
+              <Link href={feature.ctaHref} style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                minHeight: 46,
+                borderRadius: 999,
+                background: '#C6252D',
+                color: '#fff',
+                textDecoration: 'none',
+                fontSize: 13,
+                fontWeight: 900,
+                padding: '0 18px',
+              }}>
+                {feature.ctaLabel}
+                <ChevronRightIcon color="#fff" />
+              </Link>
+            </div>
+          </section>
+        </article>
+      </div>
+
+      <BottomCTA saved={saved} saveCount={saveCount} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+    </main>
+  );
+}
+
+function FeatureBreadcrumb({ items }: { items: string[] }) {
+  return (
+    <nav aria-label="パンくず" style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', padding: '12px 0 0', color: '#667085', fontSize: 12, fontWeight: 800 }}>
+      {items.map((item, index) => (
+        <span key={`${item}-${index}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
+          {index === 0 ? <Link href="/" style={{ color: '#667085', textDecoration: 'none' }}>{item}</Link> : item}
+          {index < items.length - 1 && <ChevronRightIcon color="#9BA3B0" />}
+        </span>
+      ))}
+    </nav>
+  );
+}
+
+function EditorMark() {
+  return (
+    <span style={{ width: 40, height: 40, borderRadius: '50%', background: '#071A4D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 21, fontWeight: 900, flexShrink: 0 }}>
+      な
+    </span>
+  );
+}
+
+function FeatureHeroMedia({ imageUrl, imageAlt, caption }: { imageUrl?: string; imageAlt: string; caption: string }) {
+  return (
+    <figure className="feature-hero-media" style={{ margin: 0, position: 'relative', overflow: 'hidden', borderRadius: 20, border: '1px solid #E6ECF5', background: 'linear-gradient(135deg, #071A4D 0%, #1A3D78 52%, #F8C861 100%)' }}>
+      {imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imageUrl} alt={imageAlt} style={{ width: '100%', height: '100%', minHeight: 230, objectFit: 'cover', display: 'block' }} />
+      ) : (
+        <div style={{ minHeight: 260, display: 'grid', placeItems: 'center', padding: 26, color: '#fff', textAlign: 'center' }}>
+          <div>
+            <p style={{ margin: 0, fontSize: 24, fontWeight: 900, lineHeight: 1.3 }}>名古屋の夏を<br />屋上で楽しむ</p>
+            <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 800, opacity: 0.86 }}>ビアガーデン特集</p>
+          </div>
+        </div>
+      )}
+      <figcaption style={{ position: 'absolute', left: 12, bottom: 12, borderRadius: 999, background: 'rgba(7,26,77,0.70)', color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 800 }}>
+        {caption}
+      </figcaption>
+    </figure>
+  );
+}
+
+function FeatureQuickJump({ count }: { count: number }) {
+  return (
+    <a
+      href="#feature-map"
+      className="feature-card"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        marginTop: 14,
+        padding: '13px 16px',
+        textDecoration: 'none',
+        background: '#071A4D',
+        border: '1px solid #071A4D',
+      }}
+    >
+      <span style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.14)', color: '#F8C861', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+        <ClockIcon />
+      </span>
+      <span style={{ minWidth: 0, flex: 1 }}>
+        <span style={{ display: 'block', color: '#F8C861', fontSize: 11, fontWeight: 900, letterSpacing: '0.04em' }}>タイパ重視の人へ</span>
+        <span style={{ display: 'block', color: '#fff', fontSize: 14, lineHeight: 1.5, fontWeight: 900, marginTop: 3 }}>{count}会場を地図でまとめて見る</span>
+      </span>
+      <ChevronRightIcon color="#fff" />
+    </a>
+  );
+}
+
+function FeatureCheckLine({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '22px 1fr', gap: 9, alignItems: 'start' }}>
+      <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#F8C861', color: '#071A4D', display: 'grid', placeItems: 'center', marginTop: 2 }}>
+        <CheckIcon />
+      </span>
+      <p style={{ margin: 0, color: '#071A4D', fontSize: 14, lineHeight: 1.7, fontWeight: 850 }}>{children}</p>
+    </div>
+  );
+}
+
+function FeatureSectionTitle({ title, icon }: { title: string; icon: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 20, marginBottom: 10 }}>
+      <span style={{ color: '#071A4D', display: 'inline-flex', flexShrink: 0 }}>{icon}</span>
+      <h2 style={{ margin: 0, color: '#071A4D', fontSize: 18, lineHeight: 1.4, fontWeight: 900 }}>{title}</h2>
+    </div>
+  );
+}
+
+const featureChipStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: 176,
+  minHeight: 48,
+  padding: '0 16px',
+  borderRadius: 14,
+  border: '1px solid #E6ECF5',
+  background: '#fff',
+  color: '#071A4D',
+  fontSize: 13,
+  fontWeight: 900,
+  boxShadow: '0 5px 16px rgba(7,26,77,0.05)',
+};
+
+function FeaturePickCard({ pick, index, imageUrl }: { pick: FeaturePick; index: number; imageUrl?: string }) {
+  const tone = pick.tone ?? (index === 1 ? 'red' : index === 2 ? 'gold' : 'navy');
+  const palette = {
+    navy: {
+      background: 'linear-gradient(135deg, #071A4D 0%, #123B74 58%, #4B6FA8 100%)',
+      overlay: 'linear-gradient(135deg, rgba(7,26,77,0.84) 0%, rgba(18,59,116,0.52) 62%, rgba(7,26,77,0.30) 100%)',
+      accent: '#F8C861',
+      label: '高層フロアのイメージ',
+    },
+    red: {
+      background: 'linear-gradient(135deg, #8F1D28 0%, #C6252D 55%, #F8C861 100%)',
+      overlay: 'linear-gradient(135deg, rgba(143,29,40,0.84) 0%, rgba(198,37,45,0.50) 62%, rgba(143,29,40,0.28) 100%)',
+      accent: '#FFF0EF',
+      label: '屋上BBQのイメージ',
+    },
+    gold: {
+      background: 'linear-gradient(135deg, #8A5C00 0%, #D99A18 52%, #FFF7D8 100%)',
+      overlay: 'linear-gradient(135deg, rgba(138,92,0,0.84) 0%, rgba(217,154,24,0.46) 62%, rgba(138,92,0,0.26) 100%)',
+      accent: '#071A4D',
+      label: '駅近テラスのイメージ',
+    },
+  }[tone];
+  const hasImage = Boolean(imageUrl);
+
+  return (
+    <article className="feature-card" style={{ overflow: 'hidden' }}>
+      <div style={{ minHeight: 112, padding: 14, background: palette.background, color: '#fff', position: 'relative', overflow: 'hidden' }}>
+        {hasImage && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="" aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <span aria-hidden style={{ position: 'absolute', inset: 0, background: palette.overlay }} />
+          </>
+        )}
+        <span style={{ position: 'absolute', right: -24, bottom: -24, width: 100, height: 100, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.28)' }} />
+        {!hasImage && <span style={{ position: 'absolute', right: 18, bottom: 20, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />}
+        <span style={{ width: 34, height: 34, borderRadius: '0 0 12px 0', background: tone === 'gold' ? '#071A4D' : '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 900, position: 'relative', zIndex: 1 }}>
+          {index + 1}
+        </span>
+        <p style={{ position: 'absolute', right: 12, top: 12, margin: 0, borderRadius: 999, background: hasImage ? 'rgba(7,26,77,0.55)' : 'rgba(255,255,255,0.18)', color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 900 }}>{pick.area}</p>
+        <p style={{ position: 'absolute', left: 14, bottom: 12, margin: 0, color: hasImage || tone !== 'gold' ? '#fff' : '#071A4D', background: hasImage ? 'rgba(7,26,77,0.62)' : tone === 'gold' ? 'rgba(255,255,255,0.68)' : 'rgba(255,255,255,0.16)', borderRadius: 999, padding: '5px 10px', fontSize: 10, fontWeight: 900 }}>
+          {palette.label}
+        </p>
+      </div>
+      <div style={{ padding: 14 }}>
+        <h3 style={{ margin: 0, color: '#071A4D', fontSize: 15, lineHeight: 1.45, fontWeight: 900 }}>{pick.name}</h3>
+        <p style={{ margin: '7px 0 0', color: '#475467', fontSize: 12, lineHeight: 1.7, fontWeight: 750 }}>{pick.description}</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 11 }}>
+          {pick.badges.map((badge) => <FeatureBadge key={badge}>{badge}</FeatureBadge>)}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function FeatureBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', minHeight: 24, borderRadius: 999, border: '1px solid #FFD6D2', background: '#FFF0EF', color: '#C6252D', padding: '0 9px', fontSize: 11, fontWeight: 900 }}>
+      {children}
+    </span>
+  );
+}
+
+function FeatureComparisonTable({ venues }: { venues: FeatureVenue[] }) {
+  return (
+    <div>
+      <p style={{ margin: '0 0 8px', color: '#667085', fontSize: 12, lineHeight: 1.6, fontWeight: 800 }}>
+        スマホでは表を横にスクロールできます。
+      </p>
+      <div style={{ position: 'relative' }}>
+        <div className="feature-table-scroll">
+          <table className="feature-table">
+            <thead>
+              <tr>
+                <th>スポット名</th>
+                <th>エリア</th>
+                <th>特徴</th>
+                <th>開催期間</th>
+                <th>駅近</th>
+                <th>予約</th>
+                <th>公式リンク</th>
+              </tr>
+            </thead>
+            <tbody>
+              {venues.map((venue) => (
+                <tr key={venue.name}>
+                  <td>{venue.name}</td>
+                  <td>{venue.area}</td>
+                  <td>{venue.feature}</td>
+                  <td>{venue.period}</td>
+                  <td>{venue.station}</td>
+                  <td>{venue.reservation}</td>
+                  <td>
+                    {venue.officialUrl ? (
+                      <a href={venue.officialUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#C6252D', fontWeight: 900 }}>公式サイト</a>
+                    ) : (
+                      <span style={{ color: '#667085', fontWeight: 800 }}>公式サイト情報なし</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <span aria-hidden style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: 28,
+          height: '100%',
+          pointerEvents: 'none',
+          borderRadius: '0 16px 16px 0',
+          background: 'linear-gradient(90deg, rgba(255,255,255,0), #FFFFFF)',
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function FeatureMapPanel({ venues, mapUrl }: { venues: FeatureVenue[]; mapUrl?: string }) {
+  const numbered = venues.map((venue, index) => ({ venue, number: index + 1 }));
+  const areas: { area: string; items: { venue: FeatureVenue; number: number }[] }[] = [];
+  for (const item of numbered) {
+    const existing = areas.find((zone) => zone.area === item.venue.area);
+    if (existing) existing.items.push(item);
+    else areas.push({ area: item.venue.area, items: [item] });
+  }
+
+  return (
+    <section id="feature-map" className="feature-card" style={{ padding: 16, scrollMarginTop: 76 }}>
+      <div style={{ display: 'grid', gap: 14 }}>
+        <div style={{ borderRadius: 18, border: '1px solid #E6ECF5', background: 'linear-gradient(135deg, #F8FAFC 0%, #FFF7D8 100%)', position: 'relative', overflow: 'hidden', padding: 12 }}>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(7,26,77,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(7,26,77,0.05) 1px, transparent 1px)', backgroundSize: '34px 34px' }} />
+          <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {areas.map((zone, zoneIndex) => {
+              const isLastOdd = zoneIndex === areas.length - 1 && areas.length % 2 === 1;
+              return (
+                <div key={zone.area} style={{
+                  gridColumn: isLastOdd ? '1 / -1' : undefined,
+                  border: '1px dashed rgba(7,26,77,0.35)',
+                  borderRadius: 14,
+                  background: 'rgba(255,255,255,0.78)',
+                  padding: '10px 12px',
+                  display: 'grid',
+                  gap: 8,
+                  justifyItems: isLastOdd ? 'center' : 'start',
+                }}>
+                  <p style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: 5, color: '#071A4D', fontSize: 13, fontWeight: 900 }}>
+                    <MapPinIcon />
+                    {zone.area}エリア
+                  </p>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {zone.items.map(({ number }) => (
+                      <span key={number} style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: '50%',
+                        background: '#C6252D',
+                        color: '#fff',
+                        display: 'grid',
+                        placeItems: 'center',
+                        fontSize: 12,
+                        fontWeight: 900,
+                        boxShadow: '0 6px 14px rgba(198,37,45,0.24)',
+                      }}>{number}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p style={{ position: 'relative', margin: '10px 0 0', color: '#667085', fontSize: 10, lineHeight: 1.6, fontWeight: 800 }}>
+            エリアの位置関係を簡略化した図です。実際の距離・方角は各会場のGoogleマップでご確認ください。
+          </p>
+        </div>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {numbered.map(({ venue, number }) => {
+            const row = (
+              <>
+                <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 11 }}>{number}</span>
+                <span style={{ minWidth: 0 }}>
+                  {venue.name}
+                  <span style={{ display: 'block', color: '#667085', fontSize: 11, fontWeight: 800, marginTop: 2 }}>{venue.station}</span>
+                </span>
+              </>
+            );
+            return venue.mapUrl ? (
+              <a key={venue.name} href={venue.mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', textDecoration: 'none', fontSize: 13, fontWeight: 900 }}>
+                {row}
+              </a>
+            ) : (
+              <div key={venue.name} style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', fontSize: 13, fontWeight: 900 }}>
+                {row}
+              </div>
+            );
+          })}
+        </div>
+        {mapUrl && (
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...secondaryLinkStyle, borderColor: '#071A4D' }}>
+            Googleマップでまとめて見る
+            <ChevronRightIcon color="#071A4D" />
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function FeatureTipCard({ tip, index }: { tip: FeatureTip; index: number }) {
+  return (
+    <article className="feature-card" style={{ padding: 16 }}>
+      <p style={{ margin: 0, color: '#C6252D', fontSize: 12, fontWeight: 900 }}>0{index + 1}</p>
+      <h3 style={{ margin: '6px 0 0', color: '#071A4D', fontSize: 15, lineHeight: 1.5, fontWeight: 900 }}>{tip.title}</h3>
+      <p style={{ margin: '7px 0 0', color: '#475467', fontSize: 12, lineHeight: 1.75, fontWeight: 750 }}>{tip.body}</p>
+    </article>
+  );
+}
+
+function FeatureVenueCard({ venue }: { venue: FeatureVenue }) {
+  return (
+    <article className="feature-card" style={{ padding: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 0 }}>
+          <FeatureBadge>{venue.area}</FeatureBadge>
+          <h3 style={{ margin: '9px 0 0', color: '#071A4D', fontSize: 18, lineHeight: 1.45, fontWeight: 900 }}>{venue.name}</h3>
+          <p style={{ margin: '7px 0 0', color: '#475467', fontSize: 13, lineHeight: 1.75, fontWeight: 750 }}>{venue.feature}</p>
+        </div>
+      </div>
+      <dl style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, margin: '14px 0 0' }}>
+        <FeatureInfoRow label="場所" value={venue.place} />
+        <FeatureInfoRow label="開催期間" value={venue.period} />
+        <FeatureInfoRow label="営業時間" value={venue.hours} />
+        <FeatureInfoRow label="料金目安" value={venue.price} />
+        <FeatureInfoRow label="予約方法" value={venue.booking} />
+      </dl>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14, alignItems: 'center' }}>
+        {venue.officialUrl ? (
+          <a href={venue.officialUrl} target="_blank" rel="noopener noreferrer" style={featureLinkButtonStyle}>公式サイト<ExternalIcon /></a>
+        ) : (
+          <span style={{ ...featureLinkButtonStyle, borderColor: '#E6ECF5', color: '#667085', background: '#F8FAFC' }}>公式サイト情報なし</span>
+        )}
+        {venue.mapUrl && (
+          <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>Googleマップ<MapPinIcon color="#fff" /></a>
+        )}
+      </div>
+      <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>出典: {venue.source}</p>
+      <p style={{ margin: '6px 0 0', color: '#8A5C00', fontSize: 11, lineHeight: 1.7, fontWeight: 800 }}>料金・営業時間・雨天時対応は公式サイトで最新情報をご確認ください。</p>
+    </article>
+  );
+}
+
+function FeatureInfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '86px 1fr', gap: 10, borderRadius: 12, background: '#F8FAFC', padding: '10px 11px' }}>
+      <dt style={{ color: '#667085', fontSize: 12, fontWeight: 900 }}>{label}</dt>
+      <dd style={{ margin: 0, color: '#071A4D', fontSize: 12, lineHeight: 1.65, fontWeight: 850 }}>{value}</dd>
+    </div>
+  );
+}
+
+const featureLinkButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 6,
+  minHeight: 38,
+  borderRadius: 999,
+  border: '1px solid #C6252D',
+  color: '#C6252D',
+  background: '#fff',
+  padding: '0 13px',
+  textDecoration: 'none',
+  fontSize: 12,
+  fontWeight: 900,
+};
+
+function FeatureSourceBox({ notes }: { notes: string[] }) {
+  return (
+    <section className="feature-card feature-section" style={{ padding: 16 }}>
+      <h2 style={{ margin: 0, color: '#071A4D', fontSize: 17, lineHeight: 1.45, fontWeight: 900 }}>出典・更新情報</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+        {notes.map((note) => (
+          <span key={note} style={{ display: 'inline-flex', borderRadius: 999, border: '1px solid #E6ECF5', background: '#F8FAFC', color: '#334155', padding: '7px 11px', fontSize: 12, fontWeight: 850 }}>
+            {note}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function PhraseTitle({ title }: { title: string }) {
   return (
     <>
@@ -499,6 +1169,10 @@ function PhraseTitle({ title }: { title: string }) {
 }
 
 function splitTitlePhrases(title: string): string[] {
+  if (title === '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ') {
+    return ['名古屋ビアガーデン特集2026。', '夏に行きたい', '屋上・駅近スポットまとめ'];
+  }
+
   if (title === '雨の日の名古屋どこ行く？屋内で過ごしやすいおでかけスポット7選') {
     return ['雨の日の名古屋', 'どこ行く？', '屋内で過ごしやすい', 'おでかけスポット7選'];
   }
@@ -1107,4 +1781,20 @@ function InstagramIcon() {
 
 function HourglassIcon() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3h14" /><path d="M5 21h14" /><path d="M5 3l7 9-7 9" /><path d="M19 3l-7 9 7 9" /></svg>;
+}
+
+function UsersIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#071A4D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>;
+}
+
+function CrownIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C6252D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8l4.5 4L12 4l4.5 8L21 8l-2 11H5L3 8z" /><path d="M5 19h14" /></svg>;
+}
+
+function TableIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#071A4D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18" /><path d="M9 4v16" /><path d="M15 4v16" /></svg>;
+}
+
+function PenIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#071A4D" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" /></svg>;
 }

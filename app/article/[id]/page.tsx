@@ -7,8 +7,26 @@ import { ArticleExperience } from '@/components/article/ArticleExperience';
 
 type Params = { id: string };
 
+const LOCAL_PREVIEW_POST_ID = '79';
+// dev限定プレビュー用。post 79 公開後はWPのアイキャッチが自動で使われる(なごとしゃ自身のWPメディアID 80)
+const LOCAL_PREVIEW_IMAGE_URL = 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png';
+const LOCAL_PREVIEW_TITLE = '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ';
+const LOCAL_PREVIEW_EXCERPT =
+  '名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。';
+
+function canUseLocalPreview(id: string) {
+  return process.env.NODE_ENV === 'development' && id === LOCAL_PREVIEW_POST_ID;
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getWordPressPostById(params.id);
+  if (!post && canUseLocalPreview(params.id)) {
+    return {
+      title: `${LOCAL_PREVIEW_TITLE} | なごとしゃ`,
+      description: LOCAL_PREVIEW_EXCERPT,
+      robots: { index: false, follow: false },
+    };
+  }
   if (!post) return { title: '記事が見つかりません | なごとしゃ' };
 
   const title = decodeHtmlEntities(stripHtml(post.title.rendered));
@@ -37,6 +55,29 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function ArticlePage({ params }: { params: Params }) {
   const post = await getWordPressPostById(params.id);
+  if (!post && canUseLocalPreview(params.id)) {
+    const previewPostId = Number(LOCAL_PREVIEW_POST_ID);
+    const experience = getArticleExperience(previewPostId);
+
+    return (
+      <ArticleExperience
+        title={LOCAL_PREVIEW_TITLE}
+        excerpt={LOCAL_PREVIEW_EXCERPT}
+        content=""
+        imageUrl={LOCAL_PREVIEW_IMAGE_URL}
+        tag="おでかけ"
+        mapUrl={experience?.mapUrl}
+        officialUrl={experience?.officialUrl}
+        dateStr="2026.07.03"
+        articleId={`local-preview-${previewPostId}`}
+        postId={previewPostId}
+        postLink="/article/79"
+        saveCount={getFakeSaveCount(previewPostId)}
+        experience={experience}
+      />
+    );
+  }
+
   if (!post) notFound();
 
   const title = decodeHtmlEntities(stripHtml(post.title.rendered));

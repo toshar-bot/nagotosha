@@ -54,8 +54,54 @@ export type ShopInfoItem = {
   value: string;
 };
 
+export type FeaturePick = {
+  name: string;
+  area: string;
+  description: string;
+  badges: string[];
+  tone?: 'navy' | 'red' | 'gold';
+};
+
+export type FeatureVenue = {
+  name: string;
+  area: string;
+  feature: string;
+  period: string;
+  station: string;
+  reservation: string;
+  place: string;
+  hours: string;
+  price: string;
+  booking: string;
+  officialUrl?: string;
+  mapUrl?: string;
+  source: string;
+};
+
+export type FeatureTip = {
+  title: string;
+  body: string;
+};
+
+export type FeatureArticleData = {
+  breadcrumb: string[];
+  eyebrow: string;
+  updatedLabel: string;
+  imageCaption: string;
+  points: string[];
+  audience: string[];
+  picks: FeaturePick[];
+  venues: FeatureVenue[];
+  tips: FeatureTip[];
+  sourceNotes: string[];
+  ctaTitle: string;
+  ctaBody: string;
+  ctaHref: string;
+  ctaLabel: string;
+};
+
 export type ArticleExperienceData = {
-  layout?: 'store' | 'guide';
+  layout?: 'store' | 'guide' | 'feature';
   badges: string[];
   heroTitle?: string;
   lead: string;
@@ -70,6 +116,7 @@ export type ArticleExperienceData = {
   related: ArticleRelated[];
   officialUrl?: string;
   mapUrl?: string;
+  feature?: FeatureArticleData;
 
   // 外部ビジュアル管理（Instagram埋め込み・許可済み画像）
   externalVisuals?: ArticleExternalVisual[];
@@ -266,6 +313,131 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
         label: '手土産',
       },
     ],
+  },
+
+  79: {
+    layout: 'feature',
+    badges: ['特集', '名古屋', 'おでかけ'],
+    heroTitle: '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ',
+    lead: '名駅・栄・金山で夏に行きたいビアガーデンを、公式情報ベースで編集部が整理。開催期間・アクセス・予約導線まで、行く前に知りたい情報をまとめました。',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=名古屋+ビアガーデン',
+    related: [
+      {
+        title: '雨の日の名古屋どこ行く？屋内で過ごしやすいおでかけスポット7選',
+        href: '/article/58',
+        label: '雨の日',
+      },
+      {
+        title: '名古屋のモーニング文化ガイド。喫茶店の朝が特別な理由と楽しみ方',
+        href: '/article/66',
+        label: 'モーニング',
+      },
+    ],
+    feature: {
+      breadcrumb: ['ホーム', '特集', '名古屋ビアガーデン特集2026'],
+      eyebrow: '特集 / 名古屋 / おでかけ',
+      updatedLabel: '2026.07',
+      imageCaption: 'イメージ画像: なごとしゃ編集部作成',
+      points: [
+        '名駅・栄・金山の屋上・駅近ビアガーデンを厳選',
+        '開催期間、営業時間、予約方法を公式情報ベースで確認',
+        '雨の日・駅近・期間限定など、目的別に選びやすい',
+        '公式サイトとGoogleマップへの導線つき',
+      ],
+      audience: ['週末の予定を決めたい', '名駅・栄・金山で探したい', '雨でも行きやすい場所を知りたい', '会社帰りに行きたい', '予約前に比較したい'],
+      picks: [
+        { name: '天空のビアガーデン CARVINO', area: '名駅', description: 'スカイプロムナード(44〜46F)内 / 高層展望フロア / 10月31日まで開催', badges: ['名駅', '高層階', 'WEB予約'], tone: 'navy' },
+        { name: 'ビアガーデン マイアミ 名古屋栄店', area: '栄', description: '栄駅周辺 / 体験型BBQ / 11月28日まで開催', badges: ['栄', '屋上', '公式確認'], tone: 'red' },
+        { name: 'アスナル金山ビアガーデン by Kumsan seoul', area: '金山', description: '駅徒歩約1分 / コリアンBBQ / 屋根付き席あり', badges: ['金山', '駅徒歩約1分', '屋根付き席'], tone: 'gold' },
+      ],
+      venues: [
+        {
+          name: '天空のビアガーデン CARVINO',
+          area: '名駅',
+          feature: 'スカイプロムナード(44〜46F)内 / 高層展望フロア / 10月31日まで開催',
+          period: '2026年4月20日〜10月31日',
+          station: '名古屋駅から徒歩圏',
+          reservation: 'WEB予約',
+          place: 'ミッドランドスクエア オフィス棟44〜46F 屋外展望台スカイプロムナード内',
+          hours: '平日17:00〜22:00 / 土日祝11:00〜22:00',
+          price: '大人6,500円〜(飲み放題付き)',
+          booking: 'WEBサイトより',
+          officialUrl: 'https://www.midland-square.com/beer_garden/',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=ミッドランドスクエア+スカイプロムナード',
+          source: 'ミッドランドスクエア公式サイト・名古屋コンシェルジュ(2026年7月時点)',
+        },
+        {
+          name: 'ビアガーデン マイアミ 名古屋栄店',
+          area: '栄',
+          feature: '栄駅周辺 / 体験型BBQ / 11月28日まで開催',
+          period: '2026年4月7日〜11月28日',
+          station: '栄駅周辺',
+          reservation: '公式サイト確認',
+          place: '名古屋三越 栄店 屋上',
+          hours: '平日16:00〜22:30 / 土日祝12:00〜22:30',
+          price: '公式サイト確認',
+          booking: '公式サイト確認',
+          officialUrl: 'https://www.mai-ami.jp/',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=名古屋三越栄店+ビアガーデン+マイアミ',
+          source: 'ビアガーデン マイアミ公式サイト(2026年7月時点)',
+        },
+        {
+          name: '名古屋ビアガーデン MIRAI TOWERビュー 栄店',
+          area: '栄',
+          feature: 'MIRAI TOWERビュー / ルーフトップ / BBQ',
+          period: '2026年4月1日〜10月31日',
+          station: '栄駅・久屋大通駅周辺',
+          reservation: '公式サイト確認',
+          place: '栄駅・久屋大通駅周辺のルーフトップ',
+          hours: '公式サイト確認',
+          price: '公式サイト確認',
+          booking: '公式サイト確認',
+          officialUrl: 'https://bbq-beergarden.jp/',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=名古屋ビアガーデン+MIRAI+TOWERビュー+栄',
+          source: 'Aichi Now・公式サイト(2026年7月時点)',
+        },
+        {
+          name: 'ビアガーデン&BBQテラス “URBAN” 金山駅店',
+          area: '金山',
+          feature: '金山駅1番出口より徒歩約1分 / BBQ / 17:00〜23:00',
+          period: '2026年4月1日〜10月31日',
+          station: '金山駅1番出口より徒歩約1分',
+          reservation: 'WEBまたは電話',
+          place: '名古屋市中区金山2-16-16 冨士田ビル5Fテラスフロア',
+          hours: '17:00〜23:00',
+          price: '大人4,000円〜',
+          booking: 'WEBまたは電話',
+          officialUrl: 'https://urban-bbq-beergarden.jp/',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=ビアガーデン+URBAN+金山',
+          source: '名古屋コンシェルジュ・公式サイト(2026年7月時点)',
+        },
+        {
+          name: 'アスナル金山ビアガーデン by Kumsan seoul',
+          area: '金山',
+          feature: '駅徒歩約1分 / コリアンBBQ / 屋根付き席あり',
+          period: '2026年4月10日〜11月2日',
+          station: '金山総合駅から徒歩約1分',
+          reservation: '公式サイト確認',
+          place: 'アスナル金山 屋上',
+          hours: '平日16:00〜23:00 / 土日祝12:00〜23:00(7月・8月は全日16:00〜23:00)',
+          price: '公式サイト確認',
+          booking: '公式サイト確認',
+          officialUrl: 'https://asunal-kanayama.beergardens.jp/',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=アスナル金山+ビアガーデン',
+          source: 'アスナル金山公式・Aichi Now(2026年7月時点)',
+        },
+      ],
+      tips: [
+        { title: '場所と時間で選ぶ', body: '名駅・栄・金山のどこで集まりやすいか、開始時間に合うかを先に確認すると比較しやすくなります。' },
+        { title: '条件で絞る', body: '雨天時対応、予約方法、開催期間、営業時間を先に見ると比較しやすくなります。' },
+        { title: '公式で確認する', body: '営業時間・料金・雨天時対応は変わる場合があります。予約前に公式サイトを確認してください。' },
+      ],
+      sourceNotes: ['情報は各公式サイト・施設発表をもとに確認', '2026年7月時点の情報', '内容は変更される場合があります', '予約前に公式サイトをご確認ください'],
+      ctaTitle: '掲載内容の修正・写真提供はこちら',
+      ctaBody: '掲載内容の修正、写真のご提供、掲載のご希望がありましたら、お気軽にご連絡ください。掲載は無料です。',
+      ctaHref: '/partner',
+      ctaLabel: '掲載相談を見る',
+    },
   },
 
   39: {
