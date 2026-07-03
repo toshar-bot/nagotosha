@@ -1,0 +1,28 @@
+{
+  "slug": "nagoya-beer-garden-2026",
+  "title": "名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ",
+  "excerpt": "名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。",
+  "bodyFile": "body.html",
+  "categories": [
+    "おでかけ"
+  ],
+  "tags": [
+    "ビアガーデン",
+    "夏",
+    "名駅",
+    "栄",
+    "金山",
+    "イベント"
+  ],
+  "eyecatch": {
+    "file": "eyecatch.png",
+    "filename": "nagoya-beer-garden-2026-eyecatch.png",
+    "alt": "名古屋の屋上ビアガーデンのイメージイラスト",
+    "title": "名古屋ビアガーデン特集2026"
+  },
+  "meta": {
+    "area": "名古屋",
+    "category": "おでかけ",
+    "mapUrl": "https://www.google.com/maps/search/?api=1&query=名古屋+ビアガーデン"
+  }
+}
