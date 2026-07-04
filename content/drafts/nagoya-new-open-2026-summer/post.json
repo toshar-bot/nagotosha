@@ -1,0 +1,27 @@
+{
+  "slug": "nagoya-new-open-2026-summer",
+  "title": "名古屋の新店オープン情報2026年夏版。栄・鶴舞・港区で気になる新スポットまとめ",
+  "excerpt": "2026年夏に名古屋で気になる新店・新スポットをまとめました。栄・鶴舞・港区のオープン情報を、公式発表ベースで確認できます。",
+  "bodyFile": "body.html",
+  "categories": [
+    "ニュース"
+  ],
+  "tags": [
+    "新店",
+    "名古屋",
+    "栄",
+    "鶴舞",
+    "港区"
+  ],
+  "eyecatch": {
+    "file": "eyecatch.png",
+    "filename": "nagoya-new-open-2026-summer-eyecatch.png",
+    "alt": "名古屋の新店オープン情報をまとめたイメージ",
+    "title": "名古屋の新店オープン情報2026年夏版"
+  },
+  "meta": {
+    "area": "名古屋",
+    "category": "ニュース",
+    "mapUrl": "https://www.google.com/maps/search/?api=1&query=名古屋+新店+オープン"
+  }
+}
