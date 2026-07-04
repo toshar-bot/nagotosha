@@ -229,7 +229,7 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
         <AreaCtaSection />
         <FeaturesSection />
         <FreshArticlesSection articles={articles} />
-        <InstagramSection />
+        <NewsSection />
         <AreaPopularSection articles={articles} />
         <GachaSection articles={articles} />
         <HomeFooterCta />
@@ -1032,28 +1032,61 @@ function EventCtaSection() {
   );
 }
 
-function InstagramSection() {
-  const posts = [
-    { account: '@nagoya_life_', bg: '#EAF4FF' },
-    { account: '@meieki_info', bg: '#EFF8E9' },
-    { account: '@nago_sweets', bg: '#FFF0EF' },
-    { account: '@aichi_trip', bg: '#FFF7D8' },
-    { account: '@nagoya_omiyage', bg: '#F3F0FF' },
+function NewsSection() {
+  const cards = [
+    {
+      title: '名古屋ビアガーデン特集2026',
+      description: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。',
+      href: 'https://nagotosha.com/2026/07/04/nagoya-beer-garden-2026/',
+      badge: '特集',
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
+      background: 'linear-gradient(135deg, #071A4D 0%, #123B74 58%, #F8C861 100%)',
+    },
+    {
+      title: '名古屋の新店オープン情報2026年夏版',
+      description: '栄・鶴舞・港区で気になる新店・新スポットを、公式発表ベースでまとめました。',
+      href: 'https://nagotosha.com/2026/07/04/nagoya-new-open-2026-summer/',
+      badge: '新店まとめ',
+      imageUrl: '',
+      background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
+    },
   ];
+
   return (
     <section style={{ padding: '18px 0 22px' }}>
-      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <SectionKicker en="INSTAGRAM" ja="Instagramで人気の投稿" align="left" />
-        <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
+      <div style={{ padding: '0 16px' }}>
+        <SectionKicker en="NEWS" ja="新店・名古屋ニュース" align="left" />
+        <p style={{ margin: '8px 0 0', color: THEME.gray, fontSize: 13, lineHeight: 1.7, fontWeight: 800 }}>
+          名古屋で新しくできたお店や、今行きたい特集を編集部がピックアップ。
+        </p>
       </div>
-      <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
-        {posts.map((post) => (
-          <article key={post.account} style={{ flexShrink: 0, width: 118 }}>
-            <div style={{ width: 118, height: 118, borderRadius: 16, background: post.bg, border: '1px solid ' + THEME.border, boxShadow: '0 8px 18px rgba(7,26,77,.09)', display: 'grid', placeItems: 'center' }}>
-              <InstagramLogo />
-            </div>
-            <p style={{ margin: '7px 0 0', color: THEME.gray, fontSize: 10, fontWeight: 850, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{post.account}</p>
-          </article>
+      <div className="home-scroll flex overflow-x-auto" style={{ gap: 12, padding: '14px 16px 4px' }}>
+        {cards.map((card) => (
+          <Link
+            key={card.href}
+            href={card.href}
+            style={{ flexShrink: 0, width: 264, color: 'inherit', textDecoration: 'none' }}
+            aria-label={card.title}
+          >
+            <article style={{ overflow: 'hidden', borderRadius: 18, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 10px 24px rgba(7,26,77,.10)' }}>
+              <div style={{ height: 118, position: 'relative', background: card.imageUrl ? `linear-gradient(90deg, rgba(7,26,77,.68), rgba(7,26,77,.18)), url(${card.imageUrl})` : card.background, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
+                {!card.imageUrl && (
+                  <>
+                    <span aria-hidden style={{ position: 'absolute', right: -22, bottom: -22, width: 96, height: 96, borderRadius: '50%', border: '1px solid rgba(7,26,77,.16)' }} />
+                    <span aria-hidden style={{ position: 'absolute', left: 22, top: 18, width: 1, height: 78, background: 'rgba(255,255,255,.34)', transform: 'rotate(18deg)' }} />
+                    <span aria-hidden style={{ position: 'absolute', left: 58, top: 8, width: 1, height: 96, background: 'rgba(255,255,255,.28)', transform: 'rotate(18deg)' }} />
+                  </>
+                )}
+                <span style={{ position: 'absolute', left: 12, top: 12, borderRadius: 999, background: THEME.red, color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 950 }}>
+                  {card.badge}
+                </span>
+              </div>
+              <div style={{ padding: 14 }}>
+                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 15, lineHeight: 1.45, fontWeight: 950 }}>{card.title}</h3>
+                <p style={{ margin: '7px 0 0', color: THEME.gray, fontSize: 12, lineHeight: 1.7, fontWeight: 800 }}>{card.description}</p>
+              </div>
+            </article>
+          </Link>
         ))}
       </div>
     </section>
