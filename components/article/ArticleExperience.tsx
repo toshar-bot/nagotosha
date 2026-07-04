@@ -692,7 +692,7 @@ function FeatureArticleExperience({
           <FeatureSectionTitle title="まずこれを見ればOK：おすすめ3選" icon={<CrownIcon />} />
           <div className="feature-pick-grid">
             {feature.picks.map((pick, index) => (
-              <FeaturePickCard key={pick.name} pick={pick} index={index} imageUrl={imageUrl} />
+              <FeaturePickCard key={pick.name} pick={pick} index={index} />
             ))}
           </div>
 
@@ -859,47 +859,38 @@ const featureChipStyle: React.CSSProperties = {
   boxShadow: '0 5px 16px rgba(7,26,77,0.05)',
 };
 
-function FeaturePickCard({ pick, index, imageUrl }: { pick: FeaturePick; index: number; imageUrl?: string }) {
+function FeaturePickCard({ pick, index }: { pick: FeaturePick; index: number }) {
   const tone = pick.tone ?? (index === 1 ? 'red' : index === 2 ? 'gold' : 'navy');
   const palette = {
     navy: {
-      background: 'linear-gradient(135deg, #071A4D 0%, #123B74 58%, #4B6FA8 100%)',
-      overlay: 'linear-gradient(135deg, rgba(7,26,77,0.84) 0%, rgba(18,59,116,0.52) 62%, rgba(7,26,77,0.30) 100%)',
+      background: 'radial-gradient(circle at 76% 24%, rgba(248,200,97,0.28), transparent 28%), linear-gradient(135deg, #071A4D 0%, #123B74 58%, #4B6FA8 100%)',
       accent: '#F8C861',
       label: '高層フロアのイメージ',
     },
     red: {
-      background: 'linear-gradient(135deg, #8F1D28 0%, #C6252D 55%, #F8C861 100%)',
-      overlay: 'linear-gradient(135deg, rgba(143,29,40,0.84) 0%, rgba(198,37,45,0.50) 62%, rgba(143,29,40,0.28) 100%)',
+      background: 'radial-gradient(circle at 18% 72%, rgba(255,255,255,0.20), transparent 22%), linear-gradient(135deg, #8F1D28 0%, #C6252D 55%, #F8C861 100%)',
       accent: '#FFF0EF',
       label: '屋上BBQのイメージ',
     },
     gold: {
-      background: 'linear-gradient(135deg, #8A5C00 0%, #D99A18 52%, #FFF7D8 100%)',
-      overlay: 'linear-gradient(135deg, rgba(138,92,0,0.84) 0%, rgba(217,154,24,0.46) 62%, rgba(138,92,0,0.26) 100%)',
+      background: 'radial-gradient(circle at 78% 26%, rgba(255,255,255,0.46), transparent 26%), linear-gradient(135deg, #8A5C00 0%, #D99A18 52%, #FFF7D8 100%)',
       accent: '#071A4D',
       label: '駅近テラスのイメージ',
     },
   }[tone];
-  const hasImage = Boolean(imageUrl);
-
   return (
     <article className="feature-card" style={{ overflow: 'hidden' }}>
       <div style={{ minHeight: 112, padding: 14, background: palette.background, color: '#fff', position: 'relative', overflow: 'hidden' }}>
-        {hasImage && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imageUrl} alt="" aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-            <span aria-hidden style={{ position: 'absolute', inset: 0, background: palette.overlay }} />
-          </>
-        )}
         <span style={{ position: 'absolute', right: -24, bottom: -24, width: 100, height: 100, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.28)' }} />
-        {!hasImage && <span style={{ position: 'absolute', right: 18, bottom: 20, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />}
+        <span style={{ position: 'absolute', right: 18, bottom: 20, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
+        <span style={{ position: 'absolute', left: 58, top: 20, width: 1, height: 76, background: 'rgba(255,255,255,0.24)', transform: 'rotate(18deg)', transformOrigin: 'top center' }} />
+        <span style={{ position: 'absolute', left: 92, top: 12, width: 1, height: 90, background: 'rgba(255,255,255,0.22)', transform: 'rotate(18deg)', transformOrigin: 'top center' }} />
+        <span style={{ position: 'absolute', left: 126, top: 18, width: 1, height: 72, background: tone === 'gold' ? 'rgba(7,26,77,0.20)' : 'rgba(255,255,255,0.20)', transform: 'rotate(18deg)', transformOrigin: 'top center' }} />
         <span style={{ width: 34, height: 34, borderRadius: '0 0 12px 0', background: tone === 'gold' ? '#071A4D' : '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 900, position: 'relative', zIndex: 1 }}>
           {index + 1}
         </span>
-        <p style={{ position: 'absolute', right: 12, top: 12, margin: 0, borderRadius: 999, background: hasImage ? 'rgba(7,26,77,0.55)' : 'rgba(255,255,255,0.18)', color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 900 }}>{pick.area}</p>
-        <p style={{ position: 'absolute', left: 14, bottom: 12, margin: 0, color: hasImage || tone !== 'gold' ? '#fff' : '#071A4D', background: hasImage ? 'rgba(7,26,77,0.62)' : tone === 'gold' ? 'rgba(255,255,255,0.68)' : 'rgba(255,255,255,0.16)', borderRadius: 999, padding: '5px 10px', fontSize: 10, fontWeight: 900 }}>
+        <p style={{ position: 'absolute', right: 12, top: 12, margin: 0, borderRadius: 999, background: 'rgba(255,255,255,0.18)', color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 900 }}>{pick.area}</p>
+        <p style={{ position: 'absolute', left: 14, bottom: 12, margin: 0, color: tone !== 'gold' ? '#fff' : '#071A4D', background: tone === 'gold' ? 'rgba(255,255,255,0.68)' : 'rgba(255,255,255,0.16)', borderRadius: 999, padding: '5px 10px', fontSize: 10, fontWeight: 900 }}>
           {palette.label}
         </p>
       </div>
