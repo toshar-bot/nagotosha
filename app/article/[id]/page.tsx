@@ -15,15 +15,44 @@ const LOCAL_PREVIEW_EXCERPT =
   '名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。';
 
 function canUseLocalPreview(id: string) {
-  return process.env.NODE_ENV === 'development' && id === LOCAL_PREVIEW_POST_ID;
+  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83');
+}
+
+function getLocalPreviewData(id: string) {
+  if (id === '83') {
+    return {
+      postId: 83,
+      title: 'Post83 local preview',
+      excerpt: 'Local preview for Post83.',
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-new-open-2026-summer-eyecatch.png',
+      tag: 'news',
+      dateStr: '2026.07.04',
+      postLink: '/article/83',
+    };
+  }
+
+  const postId = Number(LOCAL_PREVIEW_POST_ID);
+  return {
+    postId,
+    title: LOCAL_PREVIEW_TITLE,
+    excerpt: LOCAL_PREVIEW_EXCERPT,
+    imageUrl: LOCAL_PREVIEW_IMAGE_URL,
+    tag: 'おでかけ',
+    dateStr: '2026.07.03',
+    postLink: '/article/79',
+  };
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getWordPressPostById(params.id);
   if (!post && canUseLocalPreview(params.id)) {
+    const preview = getLocalPreviewData(params.id);
+    const experience = getArticleExperience(preview.postId);
+    const title = experience?.heroTitle ?? preview.title;
+    const description = experience?.lead ?? preview.excerpt;
     return {
-      title: `${LOCAL_PREVIEW_TITLE} | なごとしゃ`,
-      description: LOCAL_PREVIEW_EXCERPT,
+      title: `${title} | なごとしゃ`,
+      description,
       robots: { index: false, follow: false },
     };
   }
@@ -56,23 +85,23 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function ArticlePage({ params }: { params: Params }) {
   const post = await getWordPressPostById(params.id);
   if (!post && canUseLocalPreview(params.id)) {
-    const previewPostId = Number(LOCAL_PREVIEW_POST_ID);
-    const experience = getArticleExperience(previewPostId);
+    const preview = getLocalPreviewData(params.id);
+    const experience = getArticleExperience(preview.postId);
 
     return (
       <ArticleExperience
-        title={LOCAL_PREVIEW_TITLE}
-        excerpt={LOCAL_PREVIEW_EXCERPT}
+        title={experience?.heroTitle ?? preview.title}
+        excerpt={experience?.lead ?? preview.excerpt}
         content=""
-        imageUrl={LOCAL_PREVIEW_IMAGE_URL}
-        tag="おでかけ"
+        imageUrl={preview.imageUrl}
+        tag={preview.tag}
         mapUrl={experience?.mapUrl}
         officialUrl={experience?.officialUrl}
-        dateStr="2026.07.03"
-        articleId={`local-preview-${previewPostId}`}
-        postId={previewPostId}
-        postLink="/article/79"
-        saveCount={getFakeSaveCount(previewPostId)}
+        dateStr={preview.dateStr}
+        articleId={`local-preview-${preview.postId}`}
+        postId={preview.postId}
+        postLink={preview.postLink}
+        saveCount={getFakeSaveCount(preview.postId)}
         experience={experience}
       />
     );

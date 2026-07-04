@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
-import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -320,6 +320,26 @@ export function ArticleExperience({
         mapUrl={effectiveMapUrl}
         related={related}
         feature={experience.feature}
+        saved={saved}
+        saveCount={formattedSaveCount}
+        onSave={handleSave}
+        onShare={handleShare}
+        onTop={scrollToTop}
+      />
+    );
+  }
+
+  if (layout === 'news' && experience?.news) {
+    return (
+      <NewsArticleExperience
+        title={displayTitle}
+        lead={displayLead}
+        dateStr={dateStr}
+        imageUrl={effectiveImageUrl}
+        imageAlt={effectiveImageAlt}
+        mapUrl={effectiveMapUrl}
+        related={related}
+        news={experience.news}
         saved={saved}
         saveCount={formattedSaveCount}
         onSave={handleSave}
@@ -753,6 +773,417 @@ function FeatureArticleExperience({
   );
 }
 
+function NewsArticleExperience({
+  title,
+  lead,
+  dateStr,
+  imageUrl,
+  imageAlt,
+  mapUrl,
+  related,
+  news,
+  saved,
+  saveCount,
+  onSave,
+  onShare,
+  onTop,
+}: {
+  title: string;
+  lead: string;
+  dateStr: string;
+  imageUrl?: string;
+  imageAlt: string;
+  mapUrl?: string;
+  related: ArticleRelated[];
+  news: NewsArticleData;
+  saved: boolean;
+  saveCount: string;
+  onSave: () => void;
+  onShare: () => void;
+  onTop: () => void;
+}) {
+  return (
+    <main className="article-page">
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <div className="article-shell">
+        <ArticleHeader mapUrl={mapUrl} />
+        <article className="feature-article">
+          <FeatureBreadcrumb items={news.breadcrumb} />
+
+          <section className="feature-card feature-section" style={{ padding: 16 }}>
+            <div className="feature-hero">
+              <div style={{ minWidth: 0, padding: '4px 0' }}>
+                <BadgeRow badges={news.eyebrow.split('/').map((item) => item.trim())} />
+                <h1 style={{
+                  margin: '16px 0 0',
+                  color: '#071A4D',
+                  fontSize: 'clamp(24px, 6.2vw, 40px)',
+                  lineHeight: 1.25,
+                  fontWeight: 900,
+                  letterSpacing: 0,
+                  textWrap: 'pretty',
+                }}>
+                  <PhraseTitle title={title} />
+                </h1>
+                <p style={{ margin: '14px 0 0', color: '#334155', fontSize: 15, lineHeight: 1.85, fontWeight: 750, textWrap: 'pretty' }}>
+                  {lead}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                  <EditorMark />
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ margin: 0, color: '#071A4D', fontSize: 13, fontWeight: 900 }}>なごとしゃ編集部</p>
+                    <p style={{ margin: '3px 0 0', color: '#667085', fontSize: 12, fontWeight: 800 }}>{news.updatedLabel || dateStr} 更新</p>
+                  </div>
+                </div>
+              </div>
+              <FeatureHeroMedia imageUrl={imageUrl} imageAlt={imageAlt} caption={news.imageCaption} />
+            </div>
+          </section>
+
+          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} />
+
+          <a
+            href="#news-map"
+            className="feature-card"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              marginTop: 14,
+              padding: '13px 16px',
+              textDecoration: 'none',
+              background: '#071A4D',
+              border: '1px solid #071A4D',
+            }}
+          >
+            <span style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.14)', color: '#F8C861', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+              <ClockIcon />
+            </span>
+            <span style={{ minWidth: 0, flex: 1 }}>
+              <span style={{ display: 'block', color: '#F8C861', fontSize: 11, fontWeight: 900, letterSpacing: '0.04em' }}>{news.quickJumpLabel}</span>
+              <span style={{ display: 'block', color: '#fff', fontSize: 14, lineHeight: 1.5, fontWeight: 900, marginTop: 3 }}>{news.quickJumpText}</span>
+            </span>
+            <ChevronRightIcon color="#fff" />
+          </a>
+
+          <section className="feature-card feature-section" style={{ padding: 18, background: 'linear-gradient(135deg, #FFFDF8 0%, #FFF7D8 100%)', borderColor: '#F6E1A2' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <p style={{ margin: 0, color: '#C6252D', fontSize: 30, lineHeight: 1, fontWeight: 900 }}>30</p>
+              <p style={{ margin: 0, color: '#071A4D', fontSize: 14, fontWeight: 900 }}>秒でわかる要点</p>
+            </div>
+            <div className="feature-horizontal" style={{ marginTop: 12 }}>
+              {news.spots.map((spot, index) => (
+                <article key={spot.name} style={{ width: 212, flexShrink: 0, background: '#fff', border: '1px solid #F6E1A2', borderRadius: 14, padding: '12px 14px', boxShadow: '0 4px 12px rgba(7,26,77,0.05)' }}>
+                  <p style={{ margin: 0, color: '#C6252D', fontSize: 12, fontWeight: 900, letterSpacing: '0.08em' }}>{String(index + 1).padStart(2, '0')}</p>
+                  <h3 style={{ margin: '5px 0 0', color: '#071A4D', fontSize: 14, lineHeight: 1.45, fontWeight: 900, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spot.name}</h3>
+                  <p style={{ margin: '6px 0 0', color: '#C6252D', fontSize: 12, fontWeight: 900 }}>{spot.openDate} OPEN</p>
+                  <p style={{ margin: '7px 0 0', color: '#475467', fontSize: 11, lineHeight: 1.65, fontWeight: 750, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spot.summary}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <FeatureSectionTitle title="今日見るべき新店4選" icon={<ShopIcon />} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
+            {news.spots.map((spot, index) => (
+              <NewsSpotCard key={spot.name} spot={spot} index={index} />
+            ))}
+          </div>
+
+          <FeatureSectionTitle title="比較しやすい一覧表" icon={<TableIcon />} />
+          <NewsComparisonTable spots={news.spots} />
+
+          <FeatureSectionTitle title="地図でまとめて見る" icon={<MapPinIcon />} />
+          <NewsMapPanel spots={news.spots} mapUrl={mapUrl} />
+
+          <FeatureSectionTitle title="編集部の見方" icon={<PenIcon />} />
+          <div className="feature-tip-grid">
+            {news.editorTips.map((tip, index) => (
+              <FeatureTipCard key={tip.title} tip={{ title: tip.title, body: tip.description ?? '' }} index={index} />
+            ))}
+          </div>
+
+          <FeatureSourceBox notes={news.sourceNotes} />
+
+          {related.length > 0 && <RelatedSection related={related} />}
+
+          <section className="feature-card feature-section" style={{ padding: 18, background: 'linear-gradient(135deg, #FFFDF8 0%, #FFF7D8 100%)', borderColor: '#F6E1A2' }}>
+            <div style={{ display: 'grid', gap: 14 }}>
+              <div>
+                <h2 style={{ margin: 0, color: '#071A4D', fontSize: 18, lineHeight: 1.45, fontWeight: 900 }}>{news.ctaTitle}</h2>
+                <p style={{ margin: '8px 0 0', color: '#475467', fontSize: 13, lineHeight: 1.75, fontWeight: 750 }}>{news.ctaBody}</p>
+              </div>
+              <Link href={news.ctaHref} style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                minHeight: 46,
+                borderRadius: 999,
+                background: '#C6252D',
+                color: '#fff',
+                textDecoration: 'none',
+                fontSize: 13,
+                fontWeight: 900,
+                padding: '0 18px',
+              }}>
+                {news.ctaLabel}
+                <ChevronRightIcon color="#fff" />
+              </Link>
+            </div>
+          </section>
+        </article>
+      </div>
+
+      <BottomCTA saved={saved} saveCount={saveCount} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+    </main>
+  );
+}
+
+function NewsSpotCard({ spot, index }: { spot: NewsSpot; index: number }) {
+  const visual = getNewsSpotVisual(spot, index);
+  return (
+    <article className="feature-card" style={{ overflow: 'hidden' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
+        <div style={{ margin: 0, position: 'relative', height: 176, background: visual.background, overflow: 'hidden' }}>
+          {spot.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={spot.imageUrl} alt={spot.imageAlt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </>
+          ) : (
+            <>
+              <span aria-hidden style={{ position: 'absolute', right: -22, bottom: -22, width: 112, height: 112, borderRadius: '50%', border: `1px solid ${visual.ring}`, background: visual.glow }} />
+              <span aria-hidden style={{ position: 'absolute', left: 34, top: 28, width: 1, height: 118, background: visual.line, transform: 'rotate(18deg)' }} />
+              <span aria-hidden style={{ position: 'absolute', left: 76, top: 16, width: 1, height: 138, background: visual.line, transform: 'rotate(18deg)' }} />
+              <span aria-hidden style={{ position: 'absolute', left: 118, top: 34, width: 1, height: 102, background: visual.line, transform: 'rotate(18deg)' }} />
+              <div style={{ position: 'absolute', left: 16, right: 16, bottom: 15 }}>
+                <p style={{ margin: 0, color: visual.text, fontSize: 22, lineHeight: 1.25, fontWeight: 900 }}>{visual.title}</p>
+                <p style={{ margin: '6px 0 0', display: 'inline-flex', borderRadius: 999, background: visual.badgeBg, color: visual.badgeText, padding: '5px 10px', fontSize: 11, fontWeight: 900 }}>
+                  Image / {spot.area}
+                </p>
+              </div>
+            </>
+          )}
+          <span style={{ position: 'absolute', left: 12, top: 12, width: 34, height: 34, borderRadius: '0 0 12px 0', background: '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 16, fontWeight: 900 }}>
+            {index + 1}
+          </span>
+        </div>
+        <div style={{ padding: 16 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <FeatureBadge>{spot.area}</FeatureBadge>
+            <FeatureBadge>{spot.genre}</FeatureBadge>
+          </div>
+          {spot.imageCredit && (
+            <p style={{ margin: '7px 0 0', color: '#667085', fontSize: 10, lineHeight: 1.5, fontWeight: 750 }}>
+              {spot.imageCredit}
+            </p>
+          )}
+          <h3 style={{ margin: '11px 0 0', color: '#071A4D', fontSize: 18, lineHeight: 1.45, fontWeight: 900 }}>{spot.name}</h3>
+          <p style={{ margin: '9px 0 0' }}>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 10,
+              background: '#FFF0EF',
+              border: '1px solid #FFD6D2',
+              color: '#C6252D',
+              padding: '6px 12px',
+              fontSize: 15,
+              lineHeight: 1.3,
+              fontWeight: 900,
+              maxWidth: '100%',
+            }}>
+              {spot.openDate} OPEN
+            </span>
+          </p>
+          <p style={{ margin: '9px 0 0', color: '#475467', fontSize: 13, lineHeight: 1.75, fontWeight: 750 }}>{spot.summary}</p>
+          <p style={{ margin: '10px 0 0', borderRadius: 12, background: '#F8FAFC', color: '#071A4D', padding: '9px 11px', fontSize: 12, lineHeight: 1.65, fontWeight: 850 }}>
+            こんな人に: {spot.forWhom}
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
+            {spot.officialUrl && (
+              <a href={spot.officialUrl} target="_blank" rel="noopener noreferrer" style={featureLinkButtonStyle}>
+                {spot.officialLabel}
+                <ExternalIcon />
+              </a>
+            )}
+            <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>
+              Googleマップ
+              <MapPinIcon color="#fff" />
+            </a>
+          </div>
+          <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>出典: {spot.source}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function getNewsSpotVisual(spot: NewsSpot, index: number) {
+  const tone = spot.tone ?? (index === 1 ? 'cream' : index === 2 ? 'blue' : index === 3 ? 'navy' : 'warm');
+  const palettes = {
+    warm: {
+      background: 'radial-gradient(circle at 72% 24%, rgba(255,255,255,0.34), transparent 26%), linear-gradient(135deg, #8F2D1C 0%, #D86A32 52%, #F8C861 100%)',
+      text: '#fff',
+      badgeBg: 'rgba(255,255,255,0.18)',
+      badgeText: '#fff',
+      ring: 'rgba(255,255,255,0.26)',
+      line: 'rgba(255,255,255,0.24)',
+      glow: 'rgba(255,255,255,0.08)',
+    },
+    cream: {
+      background: 'radial-gradient(circle at 74% 26%, rgba(255,255,255,0.72), transparent 28%), linear-gradient(135deg, #FFFDF8 0%, #F8E6B8 58%, #D9B86C 100%)',
+      text: '#071A4D',
+      badgeBg: 'rgba(7,26,77,0.10)',
+      badgeText: '#071A4D',
+      ring: 'rgba(7,26,77,0.16)',
+      line: 'rgba(7,26,77,0.16)',
+      glow: 'rgba(255,255,255,0.28)',
+    },
+    blue: {
+      background: 'radial-gradient(circle at 78% 24%, rgba(255,255,255,0.44), transparent 27%), linear-gradient(135deg, #0E7490 0%, #38BDF8 54%, #E0F7FF 100%)',
+      text: '#fff',
+      badgeBg: 'rgba(255,255,255,0.22)',
+      badgeText: '#fff',
+      ring: 'rgba(255,255,255,0.34)',
+      line: 'rgba(255,255,255,0.28)',
+      glow: 'rgba(255,255,255,0.14)',
+    },
+    navy: {
+      background: 'radial-gradient(circle at 76% 22%, rgba(248,200,97,0.28), transparent 26%), linear-gradient(135deg, #071A4D 0%, #123B74 58%, #4B6FA8 100%)',
+      text: '#fff',
+      badgeBg: 'rgba(255,255,255,0.18)',
+      badgeText: '#fff',
+      ring: 'rgba(255,255,255,0.28)',
+      line: 'rgba(255,255,255,0.24)',
+      glow: 'rgba(248,200,97,0.08)',
+    },
+  }[tone];
+  return { ...palettes, title: spot.visualLabel ?? 'イメージビジュアル' };
+}
+
+function NewsComparisonTable({ spots }: { spots: NewsSpot[] }) {
+  return (
+    <div>
+      <p style={{ margin: '0 0 8px', color: '#667085', fontSize: 12, lineHeight: 1.6, fontWeight: 800 }}>
+        スマホでは表を横にスクロールできます。
+      </p>
+      <div style={{ position: 'relative' }}>
+        <div className="feature-table-scroll">
+          <table className="feature-table">
+            <thead>
+              <tr>
+                <th>店名</th>
+                <th>エリア</th>
+                <th>オープン日</th>
+                <th>ジャンル</th>
+                <th>こんな人に</th>
+                <th>地図</th>
+              </tr>
+            </thead>
+            <tbody>
+              {spots.map((spot) => (
+                <tr key={spot.name}>
+                  <td>{spot.name}</td>
+                  <td>{spot.area}</td>
+                  <td>{spot.openDate}</td>
+                  <td>{spot.genre}</td>
+                  <td>{spot.forWhom}</td>
+                  <td><a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#C6252D', fontWeight: 900 }}>Googleマップ</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <span aria-hidden style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: 28,
+          height: '100%',
+          pointerEvents: 'none',
+          borderRadius: '0 16px 16px 0',
+          background: 'linear-gradient(90deg, rgba(255,255,255,0), #FFFFFF)',
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function NewsMapPanel({ spots, mapUrl }: { spots: NewsSpot[]; mapUrl?: string }) {
+  const zones = ['栄', '鶴舞', '港区'].map((area) => ({
+    area,
+    items: spots.map((spot, index) => ({ spot, number: index + 1 })).filter(({ spot }) => spot.area === area),
+  }));
+
+  return (
+    <section id="news-map" className="feature-card" style={{ padding: 16, scrollMarginTop: 76 }}>
+      <div style={{ display: 'grid', gap: 14 }}>
+        <div style={{ borderRadius: 18, border: '1px solid #E6ECF5', background: 'linear-gradient(135deg, #F8FAFC 0%, #FFF7D8 100%)', position: 'relative', overflow: 'hidden', padding: 12 }}>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(7,26,77,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(7,26,77,0.05) 1px, transparent 1px)', backgroundSize: '34px 34px' }} />
+          <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+            {zones.map((zone) => (
+              <div key={zone.area} style={{
+                border: '1px dashed rgba(7,26,77,0.35)',
+                borderRadius: 14,
+                background: 'rgba(255,255,255,0.78)',
+                padding: '10px 12px',
+                display: 'grid',
+                gap: 8,
+              }}>
+                <p style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: 5, color: '#071A4D', fontSize: 13, fontWeight: 900 }}>
+                  <MapPinIcon />
+                  {zone.area}エリア
+                </p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {zone.items.length > 0 ? zone.items.map(({ number }) => (
+                    <span key={number} style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: '50%',
+                      background: '#C6252D',
+                      color: '#fff',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontSize: 12,
+                      fontWeight: 900,
+                      boxShadow: '0 6px 14px rgba(198,37,45,0.24)',
+                    }}>{number}</span>
+                  )) : (
+                    <span style={{ color: '#667085', fontSize: 12, fontWeight: 800 }}>今回の掲載なし</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p style={{ position: 'relative', margin: '10px 0 0', color: '#667085', fontSize: 10, lineHeight: 1.6, fontWeight: 800 }}>
+            位置関係を簡略化した案内です。実際の経路や距離は各Googleマップリンクでご確認ください。
+          </p>
+        </div>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {spots.map((spot, index) => (
+            <a key={spot.name} href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', textDecoration: 'none', fontSize: 13, fontWeight: 900 }}>
+              <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 11 }}>{index + 1}</span>
+              <span style={{ minWidth: 0 }}>
+                {spot.name}
+                <span style={{ display: 'block', color: '#667085', fontSize: 11, fontWeight: 800, marginTop: 2 }}>{spot.area} / {spot.genre}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+        {mapUrl && (
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...secondaryLinkStyle, borderColor: '#071A4D' }}>
+            名古屋の新店をGoogleマップで見る
+            <ChevronRightIcon color="#071A4D" />
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function FeatureBreadcrumb({ items }: { items: string[] }) {
   return (
     <nav aria-label="パンくず" style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', padding: '12px 0 0', color: '#667085', fontSize: 12, fontWeight: 800 }}>
@@ -774,7 +1205,19 @@ function EditorMark() {
   );
 }
 
-function FeatureHeroMedia({ imageUrl, imageAlt, caption }: { imageUrl?: string; imageAlt: string; caption: string }) {
+function FeatureHeroMedia({
+  imageUrl,
+  imageAlt,
+  caption,
+  fallbackTitle = '名古屋の「今」をお届け',
+  fallbackSubtitle = 'なごとしゃ',
+}: {
+  imageUrl?: string;
+  imageAlt: string;
+  caption: string;
+  fallbackTitle?: string;
+  fallbackSubtitle?: string;
+}) {
   return (
     <figure className="feature-hero-media" style={{ margin: 0, position: 'relative', overflow: 'hidden', borderRadius: 20, border: '1px solid #E6ECF5', background: 'linear-gradient(135deg, #071A4D 0%, #1A3D78 52%, #F8C861 100%)' }}>
       {imageUrl ? (
@@ -783,8 +1226,8 @@ function FeatureHeroMedia({ imageUrl, imageAlt, caption }: { imageUrl?: string; 
       ) : (
         <div style={{ minHeight: 260, display: 'grid', placeItems: 'center', padding: 26, color: '#fff', textAlign: 'center' }}>
           <div>
-            <p style={{ margin: 0, fontSize: 24, fontWeight: 900, lineHeight: 1.3 }}>名古屋の夏を<br />屋上で楽しむ</p>
-            <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 800, opacity: 0.86 }}>ビアガーデン特集</p>
+            <p style={{ margin: 0, fontSize: 24, fontWeight: 900, lineHeight: 1.3 }}>{fallbackTitle}</p>
+            <p style={{ margin: '10px 0 0', fontSize: 13, fontWeight: 800, opacity: 0.86 }}>{fallbackSubtitle}</p>
           </div>
         </div>
       )}
@@ -1338,21 +1781,16 @@ function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl }: { image
 
 function ActionButtons({ saved, onSave, onShare, mapUrl }: { saved: boolean; onSave: () => void; onShare: () => void; mapUrl?: string }) {
   return (
-    <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, padding: '12px 14px 0' }}>
+    <section style={{ display: 'grid', gridTemplateColumns: mapUrl ? '1fr 1fr 1fr' : '1fr 1fr', gap: 8, padding: '12px 14px 0' }}>
       <button type="button" onClick={onSave} aria-pressed={saved} style={{ ...actionButtonStyle, background: '#E8483F', color: '#fff', borderColor: '#E8483F' }}>
         <BookmarkIcon filled={saved} />
         保存
       </button>
-      {mapUrl ? (
+      {mapUrl && (
         <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...actionButtonStyle, textDecoration: 'none' }}>
           <MapPinIcon />
           地図を見る
         </a>
-      ) : (
-        <button type="button" disabled style={{ ...actionButtonStyle, opacity: 0.52 }}>
-          <MapPinIcon />
-          地図を見る
-        </button>
       )}
       <button type="button" onClick={onShare} style={actionButtonStyle}>
         <ShareIcon />

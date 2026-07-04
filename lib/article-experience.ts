@@ -100,8 +100,43 @@ export type FeatureArticleData = {
   ctaLabel: string;
 };
 
+export type NewsSpot = {
+  name: string;
+  area: string;
+  openDate: string;
+  genre: string;
+  summary: string;
+  forWhom: string;
+  tone?: 'warm' | 'cream' | 'blue' | 'navy';
+  visualLabel?: string;
+  imageUrl?: string;
+  imageAlt: string;
+  imageCredit?: string;
+  officialUrl?: string;
+  officialLabel: string;
+  mapUrl: string;
+  source: string;
+};
+
+export type NewsArticleData = {
+  breadcrumb: string[];
+  eyebrow: string;
+  updatedLabel: string;
+  imageCaption: string;
+  quickJumpLabel: string;
+  quickJumpText: string;
+  points: string[];
+  spots: NewsSpot[];
+  editorTips: ArticlePoint[];
+  sourceNotes: string[];
+  ctaTitle: string;
+  ctaBody: string;
+  ctaHref: string;
+  ctaLabel: string;
+};
+
 export type ArticleExperienceData = {
-  layout?: 'store' | 'guide' | 'feature';
+  layout?: 'store' | 'guide' | 'feature' | 'news';
   badges: string[];
   heroTitle?: string;
   lead: string;
@@ -117,6 +152,7 @@ export type ArticleExperienceData = {
   officialUrl?: string;
   mapUrl?: string;
   feature?: FeatureArticleData;
+  news?: NewsArticleData;
 
   // 外部ビジュアル管理（Instagram埋め込み・許可済み画像）
   externalVisuals?: ArticleExternalVisual[];
@@ -313,6 +349,125 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
         label: '手土産',
       },
     ],
+  },
+
+  83: {
+    layout: 'news',
+    badges: ['地域ニュース', '新店まとめ'],
+    heroTitle: '名古屋の新店オープン情報2026年夏版',
+    lead: '栄・鶴舞・港区で気になる新店・新スポットを、公式発表ベースでまとめました。',
+    related: [
+      {
+        title: '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ',
+        href: '/article/79',
+        label: '特集',
+      },
+      {
+        title: '名古屋のモーニング文化ガイド。喫茶店の朝が特別な理由と楽しみ方',
+        href: '/article/66',
+        label: 'グルメ',
+      },
+    ],
+    news: {
+      breadcrumb: ['ホーム', '地域ニュース', '名古屋の新店オープン情報2026年夏版'],
+      eyebrow: '地域ニュース / 新店まとめ',
+      updatedLabel: '2026.07',
+      imageCaption: 'イメージ画像: なごとしゃ編集部作成',
+      quickJumpLabel: 'まず場所で見たい人へ',
+      quickJumpText: '4件を地図でまとめて見る',
+      points: [
+        '鶴舞にパスタ専門店「PASTA MANIA 鶴舞店」がオープン',
+        '松坂屋名古屋店にバニラスイーツ専門店「バニラージュ」が東海エリア初出店',
+        '港区に「かっぱ寿司 名古屋みなと店」がオープン',
+        '栄駅直結に商業施設「HAERA」が開業',
+      ],
+      spots: [
+        {
+          name: 'PASTA MANIA 鶴舞店',
+          area: '鶴舞',
+          openDate: '2026年7月3日',
+          genre: 'パスタ専門店',
+          summary: '鶴舞エリアにオープンした、行列のできるパスタ専門店の新店舗。ランチは通常営業、ディナーは完全予約制と案内されています。',
+          forWhom: 'ランチ・ディナー候補を探している人',
+          tone: 'warm',
+          visualLabel: '鶴舞のレストラン感',
+          imageAlt: 'PASTA MANIA 鶴舞店のイメージ',
+          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/132055/7/132055-7-cf0effd0bbf17d6d8fb12ee8007114ce-2048x1365.jpg?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
+          imageCredit: '画像出典: 株式会社PASTAMANIA / PR TIMES',
+          officialUrl: 'https://prtimes.jp/main/html/rd/p/000000007.000132055.html',
+          officialLabel: 'PR TIMES',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=PASTAMANIA%20%E9%B6%B4%E8%88%9E%E5%BA%97',
+          source: 'PR TIMES「PASTA MANIA 鶴舞店」リリース',
+        },
+        {
+          name: 'バニラージュ 松坂屋名古屋店',
+          area: '栄',
+          openDate: '2026年7月1日',
+          genre: 'バニラスイーツ',
+          summary: 'バニラスイーツ専門店が松坂屋名古屋店本館地下1階にオープン。東海エリア初出店として案内されています。',
+          forWhom: '手土産や差し入れを探している人',
+          tone: 'cream',
+          visualLabel: '上品な手土産感',
+          imageAlt: 'バニラージュ 松坂屋名古屋店のブランドイメージ',
+          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/83389/74/83389-74-4db05fa7898416401da256d2a331aa5d-3048x1350.png?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
+          imageCredit: '画像出典: 若尾製菓株式会社 / PR TIMES',
+          officialUrl: 'https://prtimes.jp/main/html/rd/p/000000074.000083389.html',
+          officialLabel: 'PR TIMES / 若尾製菓公式ニュース',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%83%8B%E3%83%A9%E3%83%BC%E3%82%B8%E3%83%A5%20%E6%9D%BE%E5%9D%82%E5%B1%8B%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%BA%97',
+          source: 'PR TIMES、若尾製菓公式ニュース',
+        },
+        {
+          name: 'かっぱ寿司 名古屋みなと店',
+          area: '港区',
+          openDate: '2026年7月3日',
+          genre: '回転寿司',
+          summary: '港区方面にオープンした、かっぱ寿司の新店舗。オープン記念商品についても案内されています。',
+          forWhom: '家族・港区方面のおでかけ候補を探している人',
+          tone: 'blue',
+          visualLabel: '明るいファミリー感',
+          imageAlt: 'かっぱ寿司 名古屋みなと店のオープン記念商品のイメージ',
+          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/18731/1143/18731-1143-a9328b98a30fb22b233906e1f83b883e-649x378.jpg?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85&width=1950',
+          imageCredit: '画像出典: カッパ・クリエイト株式会社 / PR TIMES',
+          officialUrl: 'https://prtimes.jp/main/html/rd/p/000001143.000018731.html',
+          officialLabel: 'PR TIMES',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=%E3%81%8B%E3%81%A3%E3%81%B1%E5%AF%BF%E5%8F%B8%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%81%BF%E3%81%AA%E3%81%A8%E5%BA%97',
+          source: 'PR TIMES「かっぱ寿司 名古屋みなと店」リリース',
+        },
+        {
+          name: 'HAERA',
+          area: '栄',
+          openDate: '2026年6月11日',
+          genre: '商業施設',
+          summary: '栄駅直結、ザ・ランドマーク名古屋栄の地下2階から地上4階に入る新スポット。65店舗規模として案内されています。',
+          forWhom: '栄で買い物や食事をまとめて楽しみたい人',
+          tone: 'navy',
+          visualLabel: '駅直結の都会感',
+          imageAlt: 'HAERAの施設構成と周辺アクセスのイメージ',
+          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/118148/39/118148-39-b676b58b4a4879f8918bc2833540a0da-1382x593.png?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
+          imageCredit: '画像出典: J.フロント リテイリング株式会社 / PR TIMES',
+          officialUrl: 'https://haera.parco.jp/',
+          officialLabel: 'HAERA公式サイト / PR TIMES',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=HAERA%20%E5%90%8D%E5%8F%A4%E5%B1%8B%20%E6%A0%84',
+          source: 'HAERA公式サイト、PR TIMES',
+        },
+      ],
+      editorTips: [
+        { title: '手土産ならバニラージュ', description: '栄で差し入れや手土産を探すときの候補になります。' },
+        { title: 'ランチ・ディナー候補ならPASTA MANIA', description: '特に夜は完全予約制のため、訪問前の確認が大切です。' },
+        { title: '家族・港区方面ならかっぱ寿司', description: '港区方面のおでかけと合わせやすい新店です。' },
+        { title: '栄でまとめて見たいならHAERA', description: '駅直結のため、買い物や食事をまとめて楽しみやすい施設です。' },
+      ],
+      sourceNotes: [
+        '情報は公式発表・PR TIMES・公式サイトをもとに確認',
+        '2026年7月時点の情報',
+        '営業時間・定休日・商品内容は変更される場合があります',
+        '来店前に公式サイトや公式発表をご確認ください',
+      ],
+      ctaTitle: '新店・リニューアル情報の掲載相談',
+      ctaBody: '掲載内容の修正、写真のご提供、掲載希望がありましたら、掲載相談ページまたはお問い合わせよりご連絡ください。掲載は無料です。',
+      ctaHref: '/partner',
+      ctaLabel: '掲載相談を見る',
+    },
   },
 
   79: {
