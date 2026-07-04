@@ -177,7 +177,7 @@ const NEW_OPEN_STORES = [
 ];
 
 const FEATURE_CARDS = [
-  { title: JP.beerGarden, copy: JP.beerCopy, imageUrl: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=900&q=80' },
+  { title: '名古屋ビアガーデン特集2026', copy: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', href: 'https://nagotosha.com/2026/07/04/nagoya-beer-garden-2026/' },
   { title: JP.rainyCafe, copy: JP.rainyCopy, imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80' },
   { title: JP.weekendMarket, copy: JP.marketCopy, imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80' },
   { title: JP.giftSweets, copy: JP.giftCopy, imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80' },
@@ -554,7 +554,7 @@ function FeaturesSection() {
 }
 
 function FeatureCard({ item }: { item: (typeof FEATURE_CARDS)[number] }) {
-  return (
+  const card = (
     <article
       className="relative h-[126px] w-[252px] shrink-0 overflow-hidden rounded-[16px] border border-white/70 bg-cover bg-center shadow-[0_10px_24px_rgba(14,24,55,0.14)] sm:h-[156px] sm:w-[300px]"
       style={{ backgroundImage: `linear-gradient(90deg, rgba(7,26,77,0.78), rgba(7,26,77,0.20)), url(${item.imageUrl})` }}
@@ -565,6 +565,18 @@ function FeatureCard({ item }: { item: (typeof FEATURE_CARDS)[number] }) {
         <p className="mt-1 line-clamp-1 text-[11px] font-bold text-white/88">{item.copy}</p>
       </div>
     </article>
+  );
+
+  if (item.href) {
+    return (
+      <Link href={item.href} className="block shrink-0 text-inherit no-underline" aria-label={item.title}>
+        {card}
+      </Link>
+    );
+  }
+
+  return (
+    card
   );
 }
 
