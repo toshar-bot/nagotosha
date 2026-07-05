@@ -15,10 +15,23 @@ const LOCAL_PREVIEW_EXCERPT =
   '名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。';
 
 function canUseLocalPreview(id: string) {
-  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83');
+  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83' || id === '104');
 }
 
 function getLocalPreviewData(id: string) {
+  // 104 = 単品新店記事テンプレの未検証サンプル(dev限定・本番WPに存在しない)
+  if (id === '104') {
+    return {
+      postId: 104,
+      title: 'PIERRE MARCOLINI HAERA店が栄にオープン！ショコラ×カフェ×ギフトが楽しめる注目店',
+      excerpt: '単品新店記事テンプレのdevelopmentプレビュー(未検証サンプル)。',
+      imageUrl: undefined as string | undefined,
+      tag: '新店',
+      dateStr: '2026.07.04',
+      postLink: '/article/104',
+    };
+  }
+
   if (id === '83') {
     return {
       postId: 83,

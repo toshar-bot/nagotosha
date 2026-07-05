@@ -114,7 +114,7 @@ export type NewsSpot = {
   imageCredit?: string;
   officialUrl?: string;
   officialLabel: string;
-  mapUrl: string;
+  mapUrl?: string;
   source: string;
 };
 
@@ -125,6 +125,7 @@ export type NewsArticleData = {
   imageCaption: string;
   quickJumpLabel: string;
   quickJumpText: string;
+  purposeChips?: string[];
   points: string[];
   spots: NewsSpot[];
   editorTips: ArticlePoint[];
@@ -135,8 +136,43 @@ export type NewsArticleData = {
   ctaLabel: string;
 };
 
+export type ShopSpotQuickCard = {
+  icon: 'calendar' | 'food' | 'gift' | 'pin';
+  title: string;
+  body: string;
+};
+
+// 単品新店記事の共有データ。将来トップ横スライダー・新店まとめ・エリア別一覧へ再利用する
+export type ShopSpot = {
+  id: string;
+  type: 'new-open';
+  name: string;
+  title: string;
+  area: string;        // 機械用スラッグ(例: 'sakae')
+  areaLabel: string;   // 表示用(例: '栄 / HAERA B1F')
+  openDate: string;    // ISO形式 'YYYY-MM-DD'
+  genre: string[];
+  tags: string[];
+  summary: string;
+  forWhom: string[];
+  quickCards?: ShopSpotQuickCard[];
+  imageUrl?: string;   // 出典を明記できる画像URL。使用可否は記事ごとに確認する
+  imageCredit?: string;
+  galleryImages?: { url: string; credit: string }[];
+  officialUrl?: string;
+  officialLabel?: string;
+  mapUrl: string;
+  source: string;
+  relatedArticleIds: number[];
+  parentSpot?: string;
+  isFeatured: boolean;
+  publishDate: string;
+  articleUrl: string;
+};
+
 export type ArticleExperienceData = {
   layout?: 'store' | 'guide' | 'feature' | 'news';
+  shop?: ShopSpot;
   badges: string[];
   heroTitle?: string;
   lead: string;
@@ -158,6 +194,53 @@ export type ArticleExperienceData = {
   externalVisuals?: ArticleExternalVisual[];
   featuredVisual?: ArticleExternalVisual;
   instagramCandidates?: ArticleExternalVisual[];
+};
+
+// 単品新店記事レジストリ。
+// ※以下のサンプル1件は development preview 専用の未検証データ。
+//   事実項目(オープン日・場所・公式URL等)はすべて「要確認」であり、
+//   一次情報での裏取りが済むまで本番記事にしない。
+export const SHOP_SPOTS: Record<string, ShopSpot> = {
+  'shop-pierre-marcolini-haera': {
+    id: 'shop-pierre-marcolini-haera',
+    type: 'new-open',
+    name: 'PIERRE MARCOLINI HAERA店', // 要確認: 正式店舗名
+    title: 'PIERRE MARCOLINI HAERA店が栄にオープン！ショコラ×カフェ×ギフトが楽しめる注目店',
+    area: 'sakae',
+    areaLabel: '栄 / HAERA B1F', // 要確認: フロア
+    openDate: '2026-06-11', // 要確認: 開店日
+    genre: ['カフェ', 'スイーツ', '手土産'],
+    tags: ['栄', 'HAERA内', 'カフェ', 'スイーツ', '手土産'],
+    summary: 'HAERA B1Fにオープンしたショコラブランドのカフェ。ショコラや焼き菓子の販売に加え、カフェスペースも併設と案内されています。', // 要確認
+    forWhom: [
+      '栄で上質なカフェやスイーツを楽しみたい人',
+      '手土産・ギフトを探している人',
+      'ちょっと特別なカフェ時間を過ごしたい人',
+    ],
+    quickCards: [
+      { icon: 'calendar', title: '6/11オープン', body: '栄の新商業施設HAERA B1Fに新規出店' }, // 要確認
+      { icon: 'food', title: 'ショコラ&カフェ', body: '上質なショコラとカフェメニューが楽しめる' }, // 要確認
+      { icon: 'gift', title: 'ギフトにも', body: '手土産や贈り物にぴったりの定番ブランド' },
+      { icon: 'pin', title: '栄駅直結', body: 'HAERA内なのでアクセスも抜群' }, // 要確認
+    ],
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pierre-marcolini-haera.jpg',
+    imageCredit: 'HAERA公式',
+    galleryImages: [
+      {
+        url: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pierre-marcolini-haera.jpg',
+        credit: 'HAERA公式',
+      },
+    ],
+    officialUrl: 'https://haera.parco.jp/shop/detail/?cd=000032',
+    officialLabel: 'HAERA公式サイト',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=PIERRE+MARCOLINI+HAERA+%E6%A0%84',
+    source: '公式サイト(未検証サンプル・公開前に一次情報で要確認)',
+    relatedArticleIds: [83, 79],
+    parentSpot: 'HAERA',
+    isFeatured: false, // トップ横スライダー接続は別フェーズ。本番未接続
+    publishDate: '2026-07-04',
+    articleUrl: '/article/104',
+  },
 };
 
 const EXPERIENCES: Record<number, ArticleExperienceData> = {
@@ -351,6 +434,50 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
     ],
   },
 
+  // development preview 専用(未検証サンプル)。本番WPにpost 104は存在しない
+  104: {
+    layout: 'store',
+    shop: SHOP_SPOTS['shop-pierre-marcolini-haera'],
+    badges: ['NEW OPEN', '栄', 'HAERA内'],
+    heroTitle: 'PIERRE MARCOLINI HAERA店が栄にオープン！ショコラ×カフェ×ギフトが楽しめる注目店',
+    lead: 'ベルギー発のショコラブランドが、栄の新商業施設「HAERA(ヘエラ)」に登場。ショコラや焼き菓子に加えてカフェスペースも併設と案内されています。(未検証サンプル)',
+    visual: {
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pierre-marcolini-haera.jpg',
+      imageAlt: 'PIERRE MARCOLINI HAERA店の店舗イメージ',
+      imageCredit: 'HAERA公式',
+      imageSourceUrl: 'https://haera.parco.jp/shop/detail/?cd=000032',
+    },
+    introTitle: 'お店の特徴',
+    introBody:
+      'ベルギー発のショコラブランド「PIERRE MARCOLINI(ピエール マルコリーニ)」が、栄の新商業施設「HAERA(ヘエラ)」地下1階にオープン。ショコラや焼き菓子の販売に加え、落ち着いたカフェスペースも併設されていると案内されています。(要確認: フロア・業態詳細)',
+    recommendedFor: [
+      '栄で上質なカフェやスイーツを楽しみたい人',
+      '手土産・ギフトを探している人',
+      'ちょっと特別なカフェ時間を過ごしたい人',
+    ],
+    shopInfo: [
+      { label: '店名', value: 'PIERRE MARCOLINI HAERA店' },
+      { label: 'エリア', value: '栄 / HAERA B1F' },
+      { label: 'オープン日', value: '2026年6月11日(要確認)' },
+      { label: 'ジャンル', value: 'カフェ / スイーツ / 手土産' },
+      { label: '営業時間', value: '公式サイトで確認' },
+    ],
+    related: [
+      {
+        title: '名古屋の新店オープン情報2026年夏版',
+        href: '/article/83',
+        label: '新店まとめ',
+      },
+      {
+        title: '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ',
+        href: '/article/79',
+        label: '特集',
+      },
+    ],
+    officialUrl: 'https://haera.parco.jp/shop/detail/?cd=000032',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=PIERRE+MARCOLINI+HAERA+%E6%A0%84',
+  },
+
   83: {
     layout: 'news',
     badges: ['地域ニュース', '新店まとめ'],
@@ -374,7 +501,8 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       updatedLabel: '2026.07',
       imageCaption: 'イメージ画像: なごとしゃ編集部作成',
       quickJumpLabel: 'まず場所で見たい人へ',
-      quickJumpText: '4件を地図でまとめて見る',
+      quickJumpText: '6件を地図でまとめて見る',
+      purposeChips: ['カフェ', 'スイーツ', 'ランチ・ディナー', '手土産', 'ファミリー', '新スポット'],
       points: [
         '鶴舞にパスタ専門店「PASTA MANIA 鶴舞店」がオープン',
         '松坂屋名古屋店にバニラスイーツ専門店「バニラージュ」が東海エリア初出店',
@@ -383,16 +511,33 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       ],
       spots: [
         {
+          name: 'HAERA',
+          area: '栄',
+          openDate: '2026年6月11日',
+          genre: '商業施設・新スポット',
+          summary: '栄駅直結、ザ・ランドマーク名古屋栄の地下2階から地上4階に入る新スポット。65店舗規模として案内されています。',
+          forWhom: '栄で買い物や食事をまとめて楽しみたい人',
+          tone: 'navy',
+          visualLabel: '駅直結の都会感',
+          imageAlt: 'HAERAの施設構成と周辺アクセスのイメージ',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg',
+          imageCredit: '画像出典: J.フロント リテイリング株式会社 / PR TIMES',
+          officialUrl: 'https://haera.parco.jp/',
+          officialLabel: 'HAERA公式サイト / PR TIMES',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=HAERA%20%E5%90%8D%E5%8F%A4%E5%B1%8B%20%E6%A0%84',
+          source: 'HAERA公式サイト、PR TIMES',
+        },
+        {
           name: 'PASTA MANIA 鶴舞店',
           area: '鶴舞',
           openDate: '2026年7月3日',
-          genre: 'パスタ専門店',
+          genre: 'ランチ・ディナー',
           summary: '鶴舞エリアにオープンした、行列のできるパスタ専門店の新店舗。ランチは通常営業、ディナーは完全予約制と案内されています。',
           forWhom: 'ランチ・ディナー候補を探している人',
           tone: 'warm',
           visualLabel: '鶴舞のレストラン感',
           imageAlt: 'PASTA MANIA 鶴舞店のイメージ',
-          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/132055/7/132055-7-cf0effd0bbf17d6d8fb12ee8007114ce-2048x1365.jpg?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
           imageCredit: '画像出典: 株式会社PASTAMANIA / PR TIMES',
           officialUrl: 'https://prtimes.jp/main/html/rd/p/000000007.000132055.html',
           officialLabel: 'PR TIMES',
@@ -403,13 +548,13 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
           name: 'バニラージュ 松坂屋名古屋店',
           area: '栄',
           openDate: '2026年7月1日',
-          genre: 'バニラスイーツ',
+          genre: 'スイーツ・手土産',
           summary: 'バニラスイーツ専門店が松坂屋名古屋店本館地下1階にオープン。東海エリア初出店として案内されています。',
           forWhom: '手土産や差し入れを探している人',
           tone: 'cream',
           visualLabel: '上品な手土産感',
           imageAlt: 'バニラージュ 松坂屋名古屋店のブランドイメージ',
-          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/83389/74/83389-74-4db05fa7898416401da256d2a331aa5d-3048x1350.png?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-vanillage-matsuzakaya-prtimes.jpg',
           imageCredit: '画像出典: 若尾製菓株式会社 / PR TIMES',
           officialUrl: 'https://prtimes.jp/main/html/rd/p/000000074.000083389.html',
           officialLabel: 'PR TIMES / 若尾製菓公式ニュース',
@@ -417,38 +562,53 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
           source: 'PR TIMES、若尾製菓公式ニュース',
         },
         {
+          name: 'PIERRE MARCOLINI HAERA店',
+          area: '栄 / HAERA B1F',
+          openDate: '2026年6月11日',
+          genre: 'カフェ・スイーツ・手土産',
+          summary: 'HAERA地下1階に入る、ギフトにも立ち寄りにも使いやすいショコラブランド。',
+          forWhom: '栄で上質なカフェやギフトを探す人',
+          tone: 'cream',
+          visualLabel: '上質なスイーツ感',
+          imageAlt: 'PIERRE MARCOLINI HAERA店の抽象イメージ',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pierre-marcolini-haera.jpg',
+          imageCredit: '画像出典: HAERA公式',
+          officialUrl: 'https://haera.parco.jp/shop/detail/?cd=000032',
+          officialLabel: 'HAERA公式ショップページ',
+          source: 'HAERA公式',
+        },
+        {
+          name: 'スターバックス リザーブ® カフェ HAERA',
+          area: '栄 / HAERA B2F',
+          openDate: '2026年6月11日',
+          genre: 'カフェ・ベーカリー',
+          summary: 'HAERA地下2階に入る、栄駅直結で朝から夜まで使いやすいカフェ。',
+          forWhom: '朝・昼・休憩で使いやすいカフェを探す人',
+          tone: 'navy',
+          visualLabel: '駅直結カフェ感',
+          imageAlt: 'スターバックス リザーブ カフェ HAERAの抽象イメージ',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-starbucks-reserve-haera.jpg',
+          imageCredit: '画像出典: HAERA公式',
+          officialUrl: 'https://haera.parco.jp/shop/detail/?cd=000015',
+          officialLabel: 'HAERA公式ショップページ',
+          source: 'HAERA公式',
+        },
+        {
           name: 'かっぱ寿司 名古屋みなと店',
           area: '港区',
           openDate: '2026年7月3日',
-          genre: '回転寿司',
+          genre: 'ファミリー',
           summary: '港区方面にオープンした、かっぱ寿司の新店舗。オープン記念商品についても案内されています。',
-          forWhom: '家族・港区方面のおでかけ候補を探している人',
+          forWhom: '家族や港区方面のおでかけ候補を探している人',
           tone: 'blue',
           visualLabel: '明るいファミリー感',
           imageAlt: 'かっぱ寿司 名古屋みなと店のオープン記念商品のイメージ',
-          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/18731/1143/18731-1143-a9328b98a30fb22b233906e1f83b883e-649x378.jpg?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85&width=1950',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-kappasushi-minato-prtimes.jpg',
           imageCredit: '画像出典: カッパ・クリエイト株式会社 / PR TIMES',
           officialUrl: 'https://prtimes.jp/main/html/rd/p/000001143.000018731.html',
           officialLabel: 'PR TIMES',
           mapUrl: 'https://www.google.com/maps/search/?api=1&query=%E3%81%8B%E3%81%A3%E3%81%B1%E5%AF%BF%E5%8F%B8%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%81%BF%E3%81%AA%E3%81%A8%E5%BA%97',
           source: 'PR TIMES「かっぱ寿司 名古屋みなと店」リリース',
-        },
-        {
-          name: 'HAERA',
-          area: '栄',
-          openDate: '2026年6月11日',
-          genre: '商業施設',
-          summary: '栄駅直結、ザ・ランドマーク名古屋栄の地下2階から地上4階に入る新スポット。65店舗規模として案内されています。',
-          forWhom: '栄で買い物や食事をまとめて楽しみたい人',
-          tone: 'navy',
-          visualLabel: '駅直結の都会感',
-          imageAlt: 'HAERAの施設構成と周辺アクセスのイメージ',
-          imageUrl: 'https://prcdn.freetls.fastly.net/release_image/118148/39/118148-39-b676b58b4a4879f8918bc2833540a0da-1382x593.png?auto=webp&bg-color=fff&fit=bounds&format=jpeg&height=1350&quality=85%2C65&width=1950',
-          imageCredit: '画像出典: J.フロント リテイリング株式会社 / PR TIMES',
-          officialUrl: 'https://haera.parco.jp/',
-          officialLabel: 'HAERA公式サイト / PR TIMES',
-          mapUrl: 'https://www.google.com/maps/search/?api=1&query=HAERA%20%E5%90%8D%E5%8F%A4%E5%B1%8B%20%E6%A0%84',
-          source: 'HAERA公式サイト、PR TIMES',
         },
       ],
       editorTips: [

@@ -275,6 +275,7 @@ export function ArticleExperience({
   const formattedSaveCount = saveCount.toLocaleString('ja-JP');
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
+  const shop = experience?.shop;
 
   const handleSave = useCallback(() => {
     const result = toggleSavedItem({
@@ -451,6 +452,7 @@ export function ArticleExperience({
               imageAlt={effectiveImageAlt}
               imageCredit={effectiveImageCredit}
               imageSourceUrl={effectiveImageSourceUrl}
+              openDate={shop?.openDate}
             />
           </div>
         </section>
@@ -479,7 +481,21 @@ export function ArticleExperience({
         ) : (
           <>
 
-        {quickPoints.length > 0 && (
+        {shop?.quickCards && shop.quickCards.length > 0 ? (
+          <SectionCard title="30秒でわかる要点" icon={<ClockIcon />}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {shop.quickCards.map((card) => (
+                <div key={card.title} style={{ borderRadius: 14, border: '1px solid #E6ECF5', background: '#FBFCFE', padding: '12px 12px' }}>
+                  <span style={{ width: 34, height: 34, borderRadius: '50%', background: '#FFF0EF', color: '#C6252D', display: 'grid', placeItems: 'center' }}>
+                    <QuickCardIcon kind={card.icon} />
+                  </span>
+                  <p style={{ margin: '8px 0 0', color: '#071A4D', fontSize: 13, lineHeight: 1.45, fontWeight: 900 }}>{card.title}</p>
+                  <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.6, fontWeight: 750 }}>{card.body}</p>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        ) : quickPoints.length > 0 && (
           <SectionCard title="30秒でわかるポイント" icon={<ClockIcon />}>
             <div style={{ display: 'grid', gap: 11 }}>
               {quickPoints.map((point) => (
@@ -536,6 +552,28 @@ export function ArticleExperience({
         {shopInfo.length > 0 && (
           <SectionCard title="店舗情報" icon={<ShopIcon />}>
             <InfoGrid items={shopInfo} />
+            {shop?.source && (
+              <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>情報出典: {shop.source}</p>
+            )}
+            {shop?.imageCredit && (
+              <p style={{ margin: '4px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>画像出典: {shop.imageCredit}</p>
+            )}
+          </SectionCard>
+        )}
+
+        {shop?.galleryImages && shop.galleryImages.length > 0 && (
+          <SectionCard title="お店の雰囲気" icon={<CameraIcon />}>
+            <div className="feature-horizontal">
+              {shop.galleryImages.map((image) => (
+                <figure key={image.url} style={{ margin: 0, width: 216, flexShrink: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid #E6ECF5', background: '#fff' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={image.url} alt={shop.name} style={{ width: '100%', height: 150, objectFit: 'cover', display: 'block' }} />
+                  <figcaption style={{ padding: '7px 9px 8px', color: '#667085', fontSize: 10, lineHeight: 1.5, fontWeight: 750 }}>
+                    画像出典: {image.credit}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </SectionCard>
         )}
 
@@ -872,18 +910,39 @@ function NewsArticleExperience({
               <p style={{ margin: 0, color: '#071A4D', fontSize: 14, fontWeight: 900 }}>秒でわかる要点</p>
             </div>
             <div className="feature-horizontal" style={{ marginTop: 12 }}>
-              {news.spots.map((spot, index) => (
-                <article key={spot.name} style={{ width: 212, flexShrink: 0, background: '#fff', border: '1px solid #F6E1A2', borderRadius: 14, padding: '12px 14px', boxShadow: '0 4px 12px rgba(7,26,77,0.05)' }}>
+              {news.points.map((point, index) => (
+                <article key={point} style={{ width: 212, flexShrink: 0, background: '#fff', border: '1px solid #F6E1A2', borderRadius: 14, padding: '12px 14px', boxShadow: '0 4px 12px rgba(7,26,77,0.05)' }}>
                   <p style={{ margin: 0, color: '#C6252D', fontSize: 12, fontWeight: 900, letterSpacing: '0.08em' }}>{String(index + 1).padStart(2, '0')}</p>
-                  <h3 style={{ margin: '5px 0 0', color: '#071A4D', fontSize: 14, lineHeight: 1.45, fontWeight: 900, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spot.name}</h3>
-                  <p style={{ margin: '6px 0 0', color: '#C6252D', fontSize: 12, fontWeight: 900 }}>{spot.openDate} OPEN</p>
-                  <p style={{ margin: '7px 0 0', color: '#475467', fontSize: 11, lineHeight: 1.65, fontWeight: 750, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spot.summary}</p>
+                  <p style={{ margin: '7px 0 0', color: '#071A4D', fontSize: 13, lineHeight: 1.65, fontWeight: 900, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{point}</p>
                 </article>
               ))}
             </div>
           </section>
 
-          <FeatureSectionTitle title="今日見るべき新店4選" icon={<ShopIcon />} />
+          <FeatureSectionTitle title={`今日見るべき新店${news.spots.length}選`} icon={<ShopIcon />} />
+          {news.purposeChips && news.purposeChips.length > 0 && (
+            <section className="feature-card" style={{ padding: 14, marginBottom: 12, background: '#FFFDF8', borderColor: '#F6E1A2' }}>
+              <p style={{ margin: '0 0 10px', color: '#071A4D', fontSize: 13, lineHeight: 1.5, fontWeight: 900 }}>目的別に見る</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {news.purposeChips.map((chip) => (
+                  <span key={chip} style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    minHeight: 30,
+                    borderRadius: 999,
+                    border: '1px solid #E6ECF5',
+                    background: '#fff',
+                    color: '#071A4D',
+                    padding: '0 11px',
+                    fontSize: 12,
+                    fontWeight: 900,
+                  }}>
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
             {news.spots.map((spot, index) => (
               <NewsSpotCard key={spot.name} spot={spot} index={index} />
@@ -1009,10 +1068,12 @@ function NewsSpotCard({ spot, index }: { spot: NewsSpot; index: number }) {
                 <ExternalIcon />
               </a>
             )}
-            <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>
-              Googleマップ
-              <MapPinIcon color="#fff" />
-            </a>
+            {spot.mapUrl && (
+              <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>
+                Googleマップ
+                <MapPinIcon color="#fff" />
+              </a>
+            )}
           </div>
           <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>出典: {spot.source}</p>
         </div>
@@ -1091,7 +1152,13 @@ function NewsComparisonTable({ spots }: { spots: NewsSpot[] }) {
                   <td>{spot.openDate}</td>
                   <td>{spot.genre}</td>
                   <td>{spot.forWhom}</td>
-                  <td><a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#C6252D', fontWeight: 900 }}>Googleマップ</a></td>
+                  <td>
+                    {spot.mapUrl ? (
+                      <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#C6252D', fontWeight: 900 }}>Googleマップ</a>
+                    ) : (
+                      <span style={{ color: '#667085', fontWeight: 800 }}>個別地図リンク未設定</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -1115,7 +1182,7 @@ function NewsComparisonTable({ spots }: { spots: NewsSpot[] }) {
 function NewsMapPanel({ spots, mapUrl }: { spots: NewsSpot[]; mapUrl?: string }) {
   const zones = ['栄', '鶴舞', '港区'].map((area) => ({
     area,
-    items: spots.map((spot, index) => ({ spot, number: index + 1 })).filter(({ spot }) => spot.area === area),
+    items: spots.map((spot, index) => ({ spot, number: index + 1 })).filter(({ spot }) => spot.area.startsWith(area)),
   }));
 
   return (
@@ -1163,15 +1230,26 @@ function NewsMapPanel({ spots, mapUrl }: { spots: NewsSpot[]; mapUrl?: string })
           </p>
         </div>
         <div style={{ display: 'grid', gap: 8 }}>
-          {spots.map((spot, index) => (
-            <a key={spot.name} href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', textDecoration: 'none', fontSize: 13, fontWeight: 900 }}>
-              <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 11 }}>{index + 1}</span>
-              <span style={{ minWidth: 0 }}>
-                {spot.name}
-                <span style={{ display: 'block', color: '#667085', fontSize: 11, fontWeight: 800, marginTop: 2 }}>{spot.area} / {spot.genre}</span>
-              </span>
-            </a>
-          ))}
+          {spots.map((spot, index) => {
+            const row = (
+              <>
+                <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#C6252D', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 11 }}>{index + 1}</span>
+                <span style={{ minWidth: 0 }}>
+                  {spot.name}
+                  <span style={{ display: 'block', color: '#667085', fontSize: 11, fontWeight: 800, marginTop: 2 }}>{spot.area} / {spot.genre}</span>
+                </span>
+              </>
+            );
+            return spot.mapUrl ? (
+              <a key={spot.name} href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', textDecoration: 'none', fontSize: 13, fontWeight: 900 }}>
+                {row}
+              </a>
+            ) : (
+              <div key={spot.name} style={{ display: 'grid', gridTemplateColumns: '26px 1fr', gap: 8, alignItems: 'start', color: '#071A4D', fontSize: 13, fontWeight: 900 }}>
+                {row}
+              </div>
+            );
+          })}
         </div>
         {mapUrl && (
           <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...secondaryLinkStyle, borderColor: '#071A4D' }}>
@@ -1737,7 +1815,27 @@ function BadgeRow({ badges }: { badges: string[] }) {
   );
 }
 
-function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl }: { imageUrl?: string; imageAlt: string; imageCredit?: string; imageSourceUrl?: string }) {
+function QuickCardIcon({ kind }: { kind: 'calendar' | 'food' | 'gift' | 'pin' }) {
+  if (kind === 'calendar') {
+    return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="4" width="18" height="17" rx="2" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="16" y1="2" x2="16" y2="6" /></svg>;
+  }
+  if (kind === 'food') {
+    return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 11h13v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-2z" /><path d="M17 12h2a2 2 0 0 1 0 4h-2" /><path d="M8 7c0-1 .6-1.4.6-2.2M12 7c0-1 .6-1.4.6-2.2" /></svg>;
+  }
+  if (kind === 'gift') {
+    return <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="4" y="9" width="16" height="12" rx="1.6" /><line x1="12" y1="9" x2="12" y2="21" /><path d="M4 13h16" /><path d="M12 9c-1.8 0-3.6-1-3.6-2.6C8.4 5 9.5 4.4 10.4 4.7c1 .3 1.6 1.6 1.6 4.3 0-2.7.6-4 1.6-4.3.9-.3 2 .3 2 1.7C15.6 8 13.8 9 12 9z" /></svg>;
+  }
+  return <MapPinIcon />;
+}
+
+function formatOpenBadge(openDate: string): { year: string; day: string } | null {
+  const m = openDate.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!m) return null;
+  return { year: m[1], day: `${Number(m[2])}/${Number(m[3])}` };
+}
+
+function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate }: { imageUrl?: string; imageAlt: string; imageCredit?: string; imageSourceUrl?: string; openDate?: string }) {
+  const openBadge = openDate ? formatOpenBadge(openDate) : null;
   return (
     <div style={{
       position: 'relative',
@@ -1747,14 +1845,32 @@ function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl }: { image
       border: '1px solid #E6ECF5',
       background: '#FFF7D8',
     }}>
+      {openBadge && (
+        <div aria-label={`${openBadge.year}年${openBadge.day}オープン`} style={{
+          position: 'absolute',
+          right: 12,
+          top: 12,
+          zIndex: 1,
+          borderRadius: 14,
+          background: '#C6252D',
+          color: '#fff',
+          padding: '8px 12px',
+          textAlign: 'center',
+          boxShadow: '0 8px 18px rgba(198,37,45,0.32)',
+        }}>
+          <p style={{ margin: 0, fontSize: 11, lineHeight: 1.2, fontWeight: 900, opacity: 0.9 }}>{openBadge.year}</p>
+          <p style={{ margin: '1px 0 0', fontSize: 19, lineHeight: 1.15, fontWeight: 900 }}>{openBadge.day}</p>
+          <p style={{ margin: '1px 0 0', fontSize: 10, lineHeight: 1.2, fontWeight: 900, letterSpacing: '0.14em' }}>OPEN</p>
+        </div>
+      )}
       {imageUrl ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={imageUrl} alt={imageAlt} style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
           {imageCredit && (
-            <div style={{ position: 'absolute', left: 12, bottom: 12, borderRadius: 999, background: 'rgba(15,23,42,0.58)', color: '#fff', padding: '4px 9px', fontSize: 10, fontWeight: 700 }}>
-              {imageSourceUrl ? <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>画像出典：{imageCredit}</a> : `画像出典：${imageCredit}`}
-            </div>
+            <p style={{ margin: 0, padding: '8px 12px 10px', background: '#fff', color: '#667085', fontSize: 10, lineHeight: 1.5, fontWeight: 750 }}>
+              {imageSourceUrl ? <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#667085', textDecoration: 'underline' }}>画像出典: {imageCredit}</a> : `画像出典: ${imageCredit}`}
+            </p>
           )}
         </>
       ) : (
