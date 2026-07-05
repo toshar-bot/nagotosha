@@ -177,7 +177,7 @@ const NEW_OPEN_STORES = [
 ];
 
 const FEATURE_CARDS = [
-  { title: '名古屋ビアガーデン特集2026', copy: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', href: 'https://nagotosha.com/2026/07/04/nagoya-beer-garden-2026/' },
+  { title: '名古屋ビアガーデン特集2026', copy: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', href: '/article/79' },
   { title: JP.rainyCafe, copy: JP.rainyCopy, imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80' },
   { title: JP.weekendMarket, copy: JP.marketCopy, imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80' },
   { title: JP.giftSweets, copy: JP.giftCopy, imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80' },
@@ -1037,7 +1037,7 @@ function NewsSection() {
     {
       title: '名古屋ビアガーデン特集2026',
       description: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。',
-      href: 'https://nagotosha.com/2026/07/04/nagoya-beer-garden-2026/',
+      href: '/article/79',
       badge: '特集',
       imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
       background: 'linear-gradient(135deg, #071A4D 0%, #123B74 58%, #F8C861 100%)',
@@ -1045,7 +1045,7 @@ function NewsSection() {
     {
       title: '名古屋の新店オープン情報2026年夏版',
       description: '栄・鶴舞・港区で気になる新店・新スポットを、公式発表ベースでまとめました。',
-      href: 'https://nagotosha.com/2026/07/04/nagoya-new-open-2026-summer/',
+      href: '/article/83',
       badge: '新店まとめ',
       imageUrl: '',
       background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
