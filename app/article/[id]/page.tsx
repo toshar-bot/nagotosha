@@ -15,10 +15,22 @@ const LOCAL_PREVIEW_EXCERPT =
   '名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。';
 
 function canUseLocalPreview(id: string) {
-  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83' || id === '104');
+  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83' || id === '92' || id === '104');
 }
 
 function getLocalPreviewData(id: string) {
+  if (id === '92') {
+    return {
+      postId: 92,
+      title: '【鶴舞・新店】PASTA MANIA 鶴舞店がオープン。ランチは通常営業、ディナーは予約制',
+      excerpt: '鶴舞駅から徒歩約3分のパスタ専門店。ランチは通常営業、ディナーは完全予約制と案内されています。',
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
+      tag: 'グルメ',
+      dateStr: '2026.07.05',
+      postLink: '/article/92',
+    };
+  }
+
   // 104 = 単品新店記事テンプレの未検証サンプル(dev限定・本番WPに存在しない)
   if (id === '104') {
     return {

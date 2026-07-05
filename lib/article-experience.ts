@@ -116,6 +116,7 @@ export type NewsSpot = {
   officialLabel: string;
   mapUrl?: string;
   source: string;
+  articleUrl?: string;
 };
 
 export type NewsArticleData = {
@@ -201,6 +202,46 @@ export type ArticleExperienceData = {
 //   事実項目(オープン日・場所・公式URL等)はすべて「要確認」であり、
 //   一次情報での裏取りが済むまで本番記事にしない。
 export const SHOP_SPOTS: Record<string, ShopSpot> = {
+  'shop-pasta-mania-tsurumai': {
+    id: 'shop-pasta-mania-tsurumai',
+    type: 'new-open',
+    name: 'PASTA MANIA 鶴舞店',
+    title: '【鶴舞・新店】PASTA MANIA 鶴舞店がオープン。ランチは通常営業、ディナーは予約制',
+    area: 'tsurumai',
+    areaLabel: '鶴舞 / 名古屋市中区',
+    openDate: '2026-07-03',
+    genre: ['パスタ専門店', 'ランチ', 'ディナー'],
+    tags: ['新店', '鶴舞', 'パスタ', 'ランチ', 'ディナー'],
+    summary: '鶴舞駅から徒歩約3分のパスタ専門店。ランチは通常営業、ディナーは完全予約制と案内されています。',
+    forWhom: [
+      '鶴舞・千種エリアでランチやディナーの候補を探している人',
+      '本格的なパスタを食べたい人',
+      'ディナーを予約してゆっくり食事を楽しみたい人',
+      '鶴舞の新店を開拓したい人',
+    ],
+    quickCards: [
+      { icon: 'calendar', title: '7月3日オープン', body: '鶴舞にオープンしたパスタ専門店' },
+      { icon: 'food', title: '本格パスタ', body: 'パスタ専門店。ランチ・ディナーで利用可' },
+      { icon: 'pin', title: '鶴舞駅 徒歩約3分', body: '地下鉄鶴舞線「鶴舞駅」1出口から' },
+      { icon: 'calendar', title: 'ディナーは予約制', body: 'ランチは通常営業、ディナーは完全予約制' },
+    ],
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
+    imageCredit: '株式会社PASTAMANIA / PR TIMES',
+    galleryImages: [
+      {
+        url: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
+        credit: '株式会社PASTAMANIA / PR TIMES',
+      },
+    ],
+    officialUrl: 'https://www.pastamania.jp',
+    officialLabel: 'PASTA MANIA公式サイト',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=PASTA+MANIA+鶴舞店',
+    source: 'PR TIMES「PASTA MANIA」リリース（2026年7月時点）',
+    relatedArticleIds: [83],
+    isFeatured: false,
+    publishDate: '2026-07-05',
+    articleUrl: '/article/92',
+  },
   'shop-pierre-marcolini-haera': {
     id: 'shop-pierre-marcolini-haera',
     type: 'new-open',
@@ -434,6 +475,45 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
     ],
   },
 
+  92: {
+    layout: 'store',
+    shop: SHOP_SPOTS['shop-pasta-mania-tsurumai'],
+    badges: ['NEW OPEN', '鶴舞', 'パスタ'],
+    heroTitle: '【鶴舞・新店】PASTA MANIA 鶴舞店がオープン。ランチは通常営業、ディナーは予約制',
+    lead: '鶴舞駅から徒歩約3分のパスタ専門店。ランチは通常営業、ディナーは完全予約制と案内されています。',
+    visual: {
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
+      imageAlt: 'PASTA MANIA 鶴舞店のイメージ',
+      imageCredit: '株式会社PASTAMANIA / PR TIMES',
+      imageSourceUrl: 'https://prtimes.jp/main/html/rd/p/000000007.000132055.html',
+    },
+    recommendedFor: [
+      '鶴舞・千種エリアでランチやディナーの候補を探している人',
+      '本格的なパスタを食べたい人',
+      'ディナーを予約してゆっくり食事を楽しみたい人',
+      '鶴舞の新店を開拓したい人',
+    ],
+    shopInfo: [
+      { label: '店名', value: 'PASTA MANIA 鶴舞店' },
+      { label: 'エリア', value: '鶴舞 / 名古屋市中区千代田' },
+      { label: 'オープン日', value: '2026年7月3日' },
+      { label: 'ジャンル', value: 'パスタ専門店（ランチ・ディナー）' },
+      { label: 'アクセス', value: '地下鉄鶴舞線「鶴舞駅」1出口より徒歩約3分' },
+      { label: '営業時間', value: 'ランチ11:30〜15:00（L.O.14:30）／ディナー18:00〜22:30 ※オープン時点・最新は公式で確認' },
+      { label: '予約', value: 'ディナーは完全予約制（予約方法は公式でご確認ください）' },
+      { label: '定休日', value: '火曜日 ※最新は公式で確認' },
+    ],
+    related: [
+      {
+        title: '名古屋の新店オープン情報2026年夏版',
+        href: '/article/83',
+        label: '新店まとめ',
+      },
+    ],
+    officialUrl: 'https://www.pastamania.jp',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=PASTA+MANIA+鶴舞店',
+  },
+
   // development preview 専用(未検証サンプル)。本番WPにpost 104は存在しない
   104: {
     layout: 'store',
@@ -543,6 +623,7 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
           officialLabel: 'PR TIMES',
           mapUrl: 'https://www.google.com/maps/search/?api=1&query=PASTAMANIA%20%E9%B6%B4%E8%88%9E%E5%BA%97',
           source: 'PR TIMES「PASTA MANIA 鶴舞店」リリース',
+          articleUrl: '/article/92',
         },
         {
           name: 'バニラージュ 松坂屋名古屋店',

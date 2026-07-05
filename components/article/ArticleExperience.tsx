@@ -1074,6 +1074,12 @@ function NewsSpotCard({ spot, index }: { spot: NewsSpot; index: number }) {
                 <MapPinIcon color="#fff" />
               </a>
             )}
+            {spot.articleUrl && (
+              <Link href={spot.articleUrl} style={{ ...featureLinkButtonStyle, background: '#FFF7D8', borderColor: '#F6E1A2', color: '#071A4D' }}>
+                記事で詳しく見る
+                <ChevronRightIcon color="#071A4D" />
+              </Link>
+            )}
           </div>
           <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>出典: {spot.source}</p>
         </div>
