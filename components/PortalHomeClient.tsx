@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
 import Link from 'next/link';
 
+import { getFeaturedNewOpenSpots } from '@/lib/article-experience';
 import type { FeaturedArticle } from '@/types/portal';
 
 const THEME = {
@@ -1032,8 +1033,19 @@ function EventCtaSection() {
   );
 }
 
+type HomeNewsCard = {
+  title: string;
+  description: string;
+  href: string;
+  badge: string;
+  imageUrl: string;
+  background: string;
+  meta?: string;
+  imageCredit?: string;
+};
+
 function NewsSection() {
-  const cards = [
+  const curatedCards: HomeNewsCard[] = [
     {
       title: '名古屋ビアガーデン特集2026',
       description: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。',
@@ -1051,6 +1063,17 @@ function NewsSection() {
       background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
     },
   ];
+  const registryCards: HomeNewsCard[] = getFeaturedNewOpenSpots(6).map((spot) => ({
+    title: spot.name,
+    description: spot.summary,
+    href: spot.articleUrl,
+    badge: 'NEW OPEN',
+    imageUrl: spot.imageUrl || '',
+    background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
+    meta: `${formatDate(spot.openDate)} OPEN / ${spot.areaLabel}`,
+    imageCredit: spot.imageCredit,
+  }));
+  const cards = [...curatedCards, ...registryCards];
 
   return (
     <section style={{ padding: '18px 0 22px' }}>
@@ -1083,7 +1106,13 @@ function NewsSection() {
               </div>
               <div style={{ padding: 14 }}>
                 <h3 style={{ margin: 0, color: THEME.navy, fontSize: 15, lineHeight: 1.45, fontWeight: 950 }}>{card.title}</h3>
+                {card.meta && (
+                  <p style={{ margin: '6px 0 0', color: THEME.red, fontSize: 10.5, lineHeight: 1.5, fontWeight: 950 }}>{card.meta}</p>
+                )}
                 <p style={{ margin: '7px 0 0', color: THEME.gray, fontSize: 12, lineHeight: 1.7, fontWeight: 800 }}>{card.description}</p>
+                {card.imageCredit && (
+                  <p style={{ margin: '7px 0 0', color: '#8A94A6', fontSize: 10, lineHeight: 1.45, fontWeight: 750 }}>画像出典: {card.imageCredit}</p>
+                )}
               </div>
             </article>
           </Link>

@@ -238,7 +238,7 @@ export const SHOP_SPOTS: Record<string, ShopSpot> = {
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=PASTA+MANIA+鶴舞店',
     source: 'PR TIMES「PASTA MANIA」リリース（2026年7月時点）',
     relatedArticleIds: [83],
-    isFeatured: false,
+    isFeatured: true,
     publishDate: '2026-07-05',
     articleUrl: '/article/92',
   },
@@ -891,6 +891,17 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
 
 export function getArticleExperience(postId: number): ArticleExperienceData | undefined {
   return EXPERIENCES[postId];
+}
+
+export function getFeaturedNewOpenSpots(limit = 6): ShopSpot[] {
+  return Object.values(SHOP_SPOTS)
+    .filter((spot) => spot.type === 'new-open' && spot.isFeatured)
+    .sort((a, b) => {
+      const byOpenDate = b.openDate.localeCompare(a.openDate);
+      if (byOpenDate !== 0) return byOpenDate;
+      return b.publishDate.localeCompare(a.publishDate);
+    })
+    .slice(0, limit);
 }
 
 export function getFakeSaveCount(id: string | number): number {
