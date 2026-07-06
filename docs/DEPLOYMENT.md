@@ -13,6 +13,69 @@ Observed production signals:
 - `https://nagotosha.com/article/83` returns the WordPress 404 page.
 - `https://nagotosha.com/article/92` returns the WordPress 404 page.
 
+As of 2026-07-06, the Next.js version of Nagotosha is available on a production-like subdomain:
+
+- `https://app.nagotosha.com/`
+- `https://app.nagotosha.com/article/92`
+- `https://app.nagotosha.com/article/83`
+- `https://app.nagotosha.com/article/32`
+- `https://app.nagotosha.com/article/79`
+- `https://app.nagotosha.com/partner/wordpress-status`
+
+Current role split:
+
+- `https://nagotosha.com/` remains the WordPress site on XSERVER.
+- `https://app.nagotosha.com/` is the Next.js/Vercel version of Nagotosha.
+- The main `nagotosha.com` DNS and WordPress frontend have not been moved to Vercel.
+
+The `app.nagotosha.com` DNS record is:
+
+```txt
+app CNAME 11f72c0d57b143c1.vercel-dns-017.com.
+```
+
+Vercel status:
+
+- Project: `toshar-bots-projects/nagotosha`
+- `app.nagotosha.com` is attached to the `nagotosha` project.
+- `app.nagotosha.com` is a Production alias.
+- Vercel domain verification reported `configured-correctly`.
+- The Production deployment used for the 2026-07-06 check was `dpl_Xr4HJxEfA4d4LFYwr3ueaKEMSJ7G`.
+
+Vercel environment variables:
+
+- `WORDPRESS_API_BASE` is set.
+- `WORDPRESS_REVALIDATE_SECONDS` is set.
+- `WORDPRESS_USERNAME` and `WORDPRESS_APP_PASSWORD` are not set in Vercel and should not be set for public REST reads.
+
+XSERVER / WordPress REST note:
+
+- XSERVER's REST API access restriction is OFF for `nagotosha.com`.
+- Turning this restriction back ON may make Vercel runtime requests to WordPress REST return `403 Forbidden`.
+- This restriction was the cause of the previous Vercel runtime WordPress REST failure.
+
+Verified on 2026-07-06:
+
+- `/partner/wordpress-status` showed API configured, 3 posts fetched, and WordPress posts usable.
+- `/article/92` rendered from `wp-92`.
+- `/article/83` rendered from `wp-83`.
+- `/article/32` rendered from `wp-32`.
+- `/article/79` rendered from `wp-79`.
+- PASTA MANIA appeared in the home latest/ranking areas.
+- PASTA MANIA appeared in the home new-open horizontal carousel.
+- 390px and 430px viewport checks showed no page-level horizontal overflow for `/`, `/article/92`, `/article/83`, `/article/32`, and `/article/79`.
+- No console errors from `app.nagotosha.com` were observed during the final browser check.
+
+For now, use `https://app.nagotosha.com` as the public/shareable URL for the Next.js version.
+Do not move the main `nagotosha.com` domain yet.
+Routing `nagotosha.com/article/*` to Next.js should be considered later after the subdomain has been stable.
+
+Rollback for the subdomain setup:
+
+1. Remove or change the `app` CNAME record in XSERVER DNS.
+2. Remove `app.nagotosha.com` from Vercel Project Domains if needed.
+3. `nagotosha.com` itself is unaffected by this rollback because it remains on WordPress/XSERVER.
+
 Local development is different:
 
 - `http://localhost:3000/article/83` is served by Next.js.
