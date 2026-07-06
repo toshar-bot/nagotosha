@@ -41,3 +41,5 @@ next-env.d.ts
 # Local dev logs
 dev-logs/
 content/drafts/**/.wp-state.json
+
+.vercel

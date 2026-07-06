@@ -10,12 +10,16 @@ type Params = { id: string };
 const LOCAL_PREVIEW_POST_ID = '79';
 // dev限定プレビュー用。post 79 公開後はWPのアイキャッチが自動で使われる(なごとしゃ自身のWPメディアID 80)
 const LOCAL_PREVIEW_IMAGE_URL = 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png';
+const PUBLIC_EXPERIENCE_FALLBACK_IDS = new Set(['79', '83', '92']);
 const LOCAL_PREVIEW_TITLE = '名古屋ビアガーデン特集2026。夏に行きたい屋上・駅近スポットまとめ';
 const LOCAL_PREVIEW_EXCERPT =
   '名古屋のビアガーデンを公式情報ベースでまとめました。名駅・栄・金山の屋上&駅近5会場の開催期間・営業時間・予約方法を紹介。雨の日対応や幹事向けの選び方も。2026年7月時点の情報です。';
 
 function canUseLocalPreview(id: string) {
-  return process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83' || id === '92' || id === '104');
+  return (
+    PUBLIC_EXPERIENCE_FALLBACK_IDS.has(id) ||
+    (process.env.NODE_ENV === 'development' && (id === LOCAL_PREVIEW_POST_ID || id === '83' || id === '92' || id === '104'))
+  );
 }
 
 function getLocalPreviewData(id: string) {
