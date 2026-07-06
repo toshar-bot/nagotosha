@@ -242,6 +242,46 @@ export const SHOP_SPOTS: Record<string, ShopSpot> = {
     publishDate: '2026-07-05',
     articleUrl: '/article/92',
   },
+  'shop-shippo-malatang-shinsakae': {
+    id: 'shop-shippo-malatang-shinsakae',
+    type: 'new-open',
+    name: '七宝麻辣湯 新栄店',
+    title: '行列のできるマーラータン専門店『七宝麻辣湯』が新栄にオープン',
+    area: 'shinsakae',
+    areaLabel: '新栄 / 名古屋市中区',
+    openDate: '2026-06-19',
+    genre: ['マーラータン専門店', '薬膳', 'ランチ', 'ディナー'],
+    tags: ['新店', '新栄', 'マーラータン', '中華', '薬膳'],
+    summary: '新栄駅から徒歩約3分のマーラータン専門店。約50種類の具材と薬膳スープを組み合わせて楽しめます。',
+    forWhom: [
+      '新栄エリアでランチやディナーの候補を探している人',
+      'マーラータンや薬膳スープを楽しみたい人',
+      '具材や辛さを自分好みに選びたい人',
+      '中区の新店グルメを開拓したい人',
+    ],
+    quickCards: [
+      { icon: 'calendar', title: '6月19日オープン', body: '新栄にオープンしたマーラータン専門店' },
+      { icon: 'food', title: '約50種類の具材', body: '具材を選んで自分好みにカスタマイズ' },
+      { icon: 'pin', title: '新栄駅 徒歩約3分', body: '地下鉄新栄町駅から歩きやすい立地' },
+      { icon: 'calendar', title: '11:00〜23:00', body: '昼から夜まで通し営業と案内されています' },
+    ],
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/chipao-maratan016.jpg',
+    imageCredit: 'なごとしゃ掲載画像',
+    galleryImages: [
+      {
+        url: 'https://nagotosha.com/wp-content/uploads/2026/06/chipao-maratan016.jpg',
+        credit: 'なごとしゃ掲載画像',
+      },
+    ],
+    officialUrl: 'https://maratan.com/七宝麻辣湯　新栄店',
+    officialLabel: '七宝麻辣湯公式サイト',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=七宝麻辣湯%20新栄店',
+    source: '七宝麻辣湯公式 新栄店ページ、公式6月新店オープン告知',
+    relatedArticleIds: [83],
+    isFeatured: true,
+    publishDate: '2026-06-19',
+    articleUrl: '/article/32',
+  },
   'shop-pierre-marcolini-haera': {
     id: 'shop-pierre-marcolini-haera',
     type: 'new-open',
@@ -286,73 +326,42 @@ export const SHOP_SPOTS: Record<string, ShopSpot> = {
 
 const EXPERIENCES: Record<number, ArticleExperienceData> = {
   32: {
+    layout: 'store',
+    shop: SHOP_SPOTS['shop-shippo-malatang-shinsakae'],
     badges: ['NEW OPEN', '新栄', '中華'],
-    heroTitle: '新栄に話題のマーラータン専門店『七宝麻辣湯』がオープン',
-    lead: '薬膳スープと多彩な具材を自分好みにカスタム。ヘルシーで満足感たっぷりの新定番が新栄に登場！',
-    quickPoints: [
-      '新栄駅から徒歩圏内の好立地にオープン',
-      '薬膳スープ×自由カスタムが魅力のマーラータン専門店',
-      '低カロリーで栄養たっぷり、女性にも大人気',
-    ],
-    highlightPoints: [
-      {
-        title: '選べる具材が豊富',
-        description: '野菜・きのこ・海鮮・お肉まで自由に選べる',
-      },
-      {
-        title: '薬膳スープを選べる',
-        description: '旨辛・白湯・トマトなど、その日の気分で楽しめる',
-      },
-      {
-        title: '追加トッピングも充実',
-        description: 'ヘルシーだけど満足感のある一杯にできる',
-      },
-    ],
-    introTitle: 'どんなお店？',
-    introBody:
-      '2025年6月、新栄エリアにマーラータン専門店「七宝麻辣湯 新栄店」がオープン。好きな具材を選び、自分だけの一杯を楽しめるのが魅力です。薬膳の力で体の内側から温まる、今注目の新店です。',
-    recommendedPoints: [
-      {
-        title: '自分好みにカスタムできる',
-        description: '辛さ・具材・スープを自由に選べる',
-      },
-      {
-        title: 'ヘルシーで罪悪感なし',
-        description: '野菜たっぷりで低カロリー、高たんぱくも狙える',
-      },
-      {
-        title: 'テイクアウトOK',
-        description: '忙しい日でも手軽に楽しめる',
-      },
-    ],
+    heroTitle: '行列のできるマーラータン専門店『七宝麻辣湯』が新栄にオープン',
+    lead: '新栄駅から徒歩約3分。約50種類の具材と薬膳スープを組み合わせて楽しめるマーラータン専門店です。',
+    visual: {
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/chipao-maratan016.jpg',
+      imageAlt: '七宝麻辣湯 新栄店のマーラータン',
+      imageCredit: 'なごとしゃ掲載画像',
+      imageSourceUrl: 'https://nagotosha.com/2026/06/19/shippo-malatang-shinsakae-new-open/',
+    },
     recommendedFor: [
-      'ヘルシー志向のランチを探している方',
-      '辛いもの・薬膳好きな方',
-      '自分だけのオリジナルメニューを楽しみたい方',
-      '新しいグルメを開拓したい方',
+      '新栄エリアでランチやディナーの候補を探している人',
+      'マーラータンや薬膳スープを楽しみたい人',
+      '具材や辛さを自分好みに選びたい人',
+      '中区の新店グルメを開拓したい人',
     ],
     shopInfo: [
       { label: '店名', value: '七宝麻辣湯 新栄店' },
-      { label: 'エリア', value: '新栄エリア' },
-      { label: '営業時間', value: '公式情報で確認' },
-      { label: '定休日', value: '公式情報で確認' },
-      { label: '予算目安', value: '¥1,000〜¥1,800' },
-      { label: '住所', value: '公式情報で確認' },
-      { label: 'ジャンル', value: '中華 / マーラータン' },
+      { label: 'エリア', value: '新栄 / 名古屋市中区' },
+      { label: 'オープン日', value: '2026年6月19日' },
+      { label: 'ジャンル', value: 'マーラータン専門店 / 薬膳 / ランチ / ディナー' },
+      { label: 'アクセス', value: '地下鉄新栄町駅 徒歩3分' },
+      { label: '営業時間', value: '11:00〜23:00（L.O.22:30）' },
+      { label: '定休日', value: '年中無休（年末年始は休みの場合あり）' },
+      { label: '住所', value: '愛知県名古屋市中区新栄1-6-7' },
     ],
     related: [
       {
-        title: '名古屋駅で話題のベーカリーエリアがリニューアル',
-        href: '/article/39',
-        label: 'NEW OPEN',
-      },
-      {
-        title: '栄エリアの新店カフェまとめ',
-        href: '/article/8',
-        label: 'グルメ',
+        title: '名古屋の新店オープン情報2026年夏版',
+        href: '/article/83',
+        label: '新店まとめ',
       },
     ],
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=七宝麻辣湯+新栄店',
+    officialUrl: 'https://maratan.com/七宝麻辣湯　新栄店',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=七宝麻辣湯%20新栄店',
   },
 
   56: {
