@@ -3,9 +3,15 @@ import './globals.css';
 import BottomNav from '@/components/BottomNav';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 
+const googleSiteVerification =
+  process.env.GOOGLE_SITE_VERIFICATION ?? 'BDpiHCojyBHSJEc3Rg0fGZMOr6oPqrqOl6-mNZ5xMHY';
+
 export const metadata: Metadata = {
   title: 'NAGOTOSHA - 名古屋メシ図鑑',
   description: '名古屋メシをカードで集めるスマホWeb図鑑ゲーム。今日の1パックを開封しよう。',
+  verification: {
+    google: googleSiteVerification,
+  },
 };
 
 export const viewport: Viewport = {
