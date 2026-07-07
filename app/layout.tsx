@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 export const metadata: Metadata = {
   title: 'NAGOTOSHA - 名古屋メシ図鑑',
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/packs/dinner.webp" as="image" type="image/webp" />
       </head>
       <body className="bg-bg text-[#2b2118] antialiased">
+        <GoogleAnalytics />
         <div className="app-shell max-w-md mx-auto min-h-dvh relative shadow-[0_0_80px_rgba(93,58,24,0.16)]">
           {children}
         </div>
