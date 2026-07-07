@@ -919,7 +919,7 @@ function NewsArticleExperience({
             </div>
           </section>
 
-          <FeatureSectionTitle title={`今日見るべき新店${news.spots.length}選`} icon={<ShopIcon />} />
+          <FeatureSectionTitle title={news.spotsTitle ?? `今日見るべき新店${news.spots.length}選`} icon={<ShopIcon />} />
           {news.purposeChips && news.purposeChips.length > 0 && (
             <section className="feature-card" style={{ padding: 14, marginBottom: 12, background: '#FFFDF8', borderColor: '#F6E1A2' }}>
               <p style={{ margin: '0 0 10px', color: '#071A4D', fontSize: 13, lineHeight: 1.5, fontWeight: 900 }}>目的別に見る</p>
@@ -949,10 +949,10 @@ function NewsArticleExperience({
             ))}
           </div>
 
-          <FeatureSectionTitle title="比較しやすい一覧表" icon={<TableIcon />} />
+          <FeatureSectionTitle title={news.comparisonTitle ?? '比較しやすい一覧表'} icon={<TableIcon />} />
           <NewsComparisonTable spots={news.spots} />
 
-          <FeatureSectionTitle title="地図でまとめて見る" icon={<MapPinIcon />} />
+          <FeatureSectionTitle title={news.mapTitle ?? '地図でまとめて見る'} icon={<MapPinIcon />} />
           <NewsMapPanel spots={news.spots} mapUrl={mapUrl} />
 
           <FeatureSectionTitle title="編集部の見方" icon={<PenIcon />} />
@@ -1186,7 +1186,8 @@ function NewsComparisonTable({ spots }: { spots: NewsSpot[] }) {
 }
 
 function NewsMapPanel({ spots, mapUrl }: { spots: NewsSpot[]; mapUrl?: string }) {
-  const zones = ['栄', '鶴舞', '港区'].map((area) => ({
+  const areaNames = Array.from(new Set(spots.map((spot) => spot.area.split('/')[0].trim()).filter(Boolean)));
+  const zones = areaNames.map((area) => ({
     area,
     items: spots.map((spot, index) => ({ spot, number: index + 1 })).filter(({ spot }) => spot.area.startsWith(area)),
   }));

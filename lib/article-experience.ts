@@ -127,6 +127,9 @@ export type NewsArticleData = {
   quickJumpLabel: string;
   quickJumpText: string;
   purposeChips?: string[];
+  spotsTitle?: string;
+  comparisonTitle?: string;
+  mapTitle?: string;
   points: string[];
   spots: NewsSpot[];
   editorTips: ArticlePoint[];
@@ -846,55 +849,104 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
   },
 
   39: {
+    layout: 'news',
     badges: ['名駅', 'ベーカリー', 'NEW OPEN'],
-    lead: 'JR名古屋タカシマヤの地下フードフロアに、人気ベーカリーブランドが集まるリニューアルエリアが登場。',
-    quickPoints: [
-      '名古屋駅直結で立ち寄りやすい',
-      '人気ベーカリーをまとめて楽しめる',
-      '手土産や雨の日のおでかけにも便利',
-    ],
-    highlightPoints: [
-      {
-        title: '駅直結でアクセスしやすい',
-        description: '買い物や移動の合間にも立ち寄りやすい立地です。',
-      },
-      {
-        title: '手土産にも使いやすい',
-        description: 'パン好きへのギフトや自分用のご褒美にも向いています。',
-      },
-    ],
-    introTitle: 'どんなスポット？',
-    introBody:
-      'JR名古屋駅直結の便利なフロアで、話題のベーカリーを気軽に楽しめる注目エリアです。',
-    recommendedPoints: [
-      {
-        title: '移動前後に寄りやすい',
-        description: '駅直結なので、天気を気にせず使いやすいのが魅力です。',
-      },
-      {
-        title: '複数ブランドを比べられる',
-        description: '気になるパンを少しずつ選べます。',
-      },
-    ],
-    recommendedFor: [
-      'パンが好きな方',
-      '名古屋駅で手土産を探している方',
-      '雨の日でも使いやすいスポットを探している方',
-    ],
-    shopInfo: [
-      { label: '施設', value: 'JR名古屋タカシマヤ' },
-      { label: 'エリア', value: '名古屋駅' },
-      { label: 'ジャンル', value: 'ベーカリー / 手土産' },
-    ],
+    heroTitle: 'JR名古屋タカシマヤ デリシャスコートがベーカリーゾーンとしてリニューアル',
+    lead: '名古屋駅直結のジェイアール名古屋タカシマヤ1階「デリシャスコート」に、人気ベーカリーブランドが集まるリニューアルエリアが登場。手土産や駅前の立ち寄り先として見ておきたい商業施設ニュースです。',
+    visual: {
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/takashimaya-bakery-202606001.jpg',
+      imageAlt: 'JR名古屋タカシマヤ デリシャスコートのベーカリーリニューアルイメージ',
+      imageCredit: 'なごとしゃ掲載画像',
+    },
     related: [
       {
-        title: '新栄に話題のマーラータン専門店がオープン',
-        href: '/article/32',
-        label: 'NEW OPEN',
+        title: '名古屋の新店オープン情報2026年夏版',
+        href: '/article/83',
+        label: '新店まとめ',
       },
     ],
-    officialUrl: 'https://www.jr-takashimaya.co.jp/',
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=JR名古屋タカシマヤ',
+    officialUrl: 'https://www.jr-takashimaya.co.jp/floor/',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=ジェイアール名古屋タカシマヤ%20デリシャスコート',
+    news: {
+      breadcrumb: ['ホーム', '地域ニュース', '名駅ベーカリーリニューアル'],
+      eyebrow: '地域ニュース / 名駅 / ベーカリー',
+      updatedLabel: '2026.06',
+      imageCaption: '画像出典: なごとしゃ掲載画像',
+      quickJumpLabel: '名駅で立ち寄りたい人へ',
+      quickJumpText: 'デリシャスコートの場所を地図で見る',
+      purposeChips: ['名駅', 'ベーカリー', '手土産', 'テイクアウト', '百貨店', 'リニューアル'],
+      spotsTitle: 'デリシャスコートで見たい3ブランド',
+      comparisonTitle: 'ブランド別に見やすく整理',
+      mapTitle: '場所を確認する',
+      points: [
+        'ジェイアール名古屋タカシマヤ1階「デリシャスコート」のベーカリーゾーンがリニューアル',
+        'BOUL’ANGE、MAISON KAYSER、POMPADOURの3ブランドをまとめて見られる構成',
+        '名古屋駅直結で、買い物ついでや移動前後にも立ち寄りやすい',
+        '手土産や朝食・ランチ用のパンを探したい人にも使いやすいニュース',
+      ],
+      spots: [
+        {
+          name: 'BOUL’ANGE',
+          area: '名駅',
+          openDate: '2026年6月19日',
+          genre: 'ベーカリー',
+          summary: 'デリシャスコートのリニューアルで注目したいベーカリーブランド。本文では復刻商品や新作商品にも触れられています。',
+          forWhom: '駅前で話題性のあるパンを選びたい人',
+          tone: 'warm',
+          visualLabel: 'ベーカリー',
+          imageAlt: 'BOUL’ANGEのベーカリーイメージ',
+          officialUrl: 'https://www.jr-takashimaya.co.jp/floor/',
+          officialLabel: 'フロアガイド',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=ジェイアール名古屋タカシマヤ%20デリシャスコート',
+          source: 'なごとしゃ掲載記事 / JR名古屋タカシマヤ フロアガイド',
+        },
+        {
+          name: 'MAISON KAYSER',
+          area: '名駅',
+          openDate: '2026年6月19日',
+          genre: 'ベーカリー / 手土産',
+          summary: '本文では、青柳総本家との名古屋らしいコラボ商品が紹介されています。手土産候補としても見やすいブランドです。',
+          forWhom: '名駅で手土産や差し入れ向きのパンを探す人',
+          tone: 'cream',
+          visualLabel: '手土産',
+          imageAlt: 'MAISON KAYSERのベーカリーイメージ',
+          officialUrl: 'https://www.jr-takashimaya.co.jp/floor/',
+          officialLabel: 'フロアガイド',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=ジェイアール名古屋タカシマヤ%20デリシャスコート',
+          source: 'なごとしゃ掲載記事 / JR名古屋タカシマヤ フロアガイド',
+        },
+        {
+          name: 'POMPADOUR',
+          area: '名駅',
+          openDate: '2026年6月19日',
+          genre: 'ベーカリー / テイクアウト',
+          summary: '本文では、名古屋・愛知らしさのある限定メニューが紹介されています。駅前で地域感のあるパンを選びたいときの候補です。',
+          forWhom: '名古屋らしい味や限定感のあるパンを見たい人',
+          tone: 'navy',
+          visualLabel: '限定パン',
+          imageAlt: 'POMPADOURのベーカリーイメージ',
+          officialUrl: 'https://www.jr-takashimaya.co.jp/floor/',
+          officialLabel: 'フロアガイド',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=ジェイアール名古屋タカシマヤ%20デリシャスコート',
+          source: 'なごとしゃ掲載記事 / JR名古屋タカシマヤ フロアガイド',
+        },
+      ],
+      editorTips: [
+        { title: '名駅で選ぶ', description: '駅直結の百貨店内なので、移動前後や買い物の流れで立ち寄りやすいニュースです。' },
+        { title: '目的で見る', description: '朝食、ランチ、手土産、差し入れなど、用途からブランドを見比べると選びやすくなります。' },
+        { title: '公式で確認する', description: '営業時間や取り扱い商品は変わる場合があります。来店前に施設公式情報をご確認ください。' },
+      ],
+      sourceNotes: [
+        '情報はなごとしゃ掲載記事とJR名古屋タカシマヤ公式フロア情報をもとに整理しています。',
+        '2026年6月時点の情報です。',
+        '営業時間、販売商品、限定商品の有無は変更される場合があります。',
+        '来店前にジェイアール名古屋タカシマヤ公式サイトをご確認ください。',
+      ],
+      ctaTitle: '掲載内容の修正・写真提供はこちら',
+      ctaBody: '掲載内容の修正、写真のご提供、掲載のご希望がありましたら、お気軽にご連絡ください。掲載は無料です。',
+      ctaHref: '/partner',
+      ctaLabel: '掲載相談を見る',
+    },
   },
 };
 
