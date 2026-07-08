@@ -477,7 +477,7 @@ export function ArticleExperience({
             )}
 
             {highlightPoints.length > 0 && (
-              <SectionCard title="シーン別おすすめ4選" icon={<SparkIcon />}>
+              <SectionCard title={experience?.highlightTitle ?? 'シーン別おすすめ4選'} icon={<SparkIcon />}>
                 <div style={{ display: 'grid', gap: 10 }}>
                   {highlightPoints.map((point, index) => (
                     <PointBlock key={point.title} point={point} index={index} tone="red" />
@@ -487,7 +487,7 @@ export function ArticleExperience({
             )}
 
             {recommendedPoints.length > 0 && (
-              <SectionCard title="買う前チェックリスト" icon={<CheckIcon />}>
+              <SectionCard title={experience?.recommendedTitle ?? '買う前チェックリスト'} icon={<CheckIcon />}>
                 <div style={{ display: 'grid', gap: 11 }}>
                   {recommendedPoints.map((point) => (
                     <SimplePoint key={point.title}>
@@ -500,7 +500,7 @@ export function ArticleExperience({
             )}
 
             {recommendedFor.length > 0 && (
-              <SectionCard title="掲載情報について" accent="yellow">
+              <SectionCard title={experience?.recommendedForTitle ?? '掲載情報について'} accent="yellow">
                 <div style={{ display: 'grid', gap: 11 }}>
                   {recommendedFor.map((item) => (
                     <SimplePoint key={item}>{item}</SimplePoint>

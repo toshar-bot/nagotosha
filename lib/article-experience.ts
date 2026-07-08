@@ -182,10 +182,13 @@ export type ArticleExperienceData = {
   lead: string;
   visual?: ArticleVisual;
   quickPoints?: string[];
+  highlightTitle?: string;
   highlightPoints?: ArticlePoint[];
   introTitle?: string;
   introBody?: string;
+  recommendedTitle?: string;
   recommendedPoints?: ArticlePoint[];
+  recommendedForTitle?: string;
   recommendedFor?: string[];
   shopInfo?: ShopInfoItem[];
   related: ArticleRelated[];
@@ -471,22 +474,68 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
 
   66: {
     layout: 'guide',
-    badges: ['モーニング', '名古屋', 'グルメ'],
-    lead: 'ドリンクを頼むと朝食がついてくる、名古屋のモーニング文化。仕組み・小倉トーストの楽しみ方・チェーンと純喫茶の選び方・シーン別の使い方を、名古屋の飲食店主がやさしく解説します。',
-    related: [
+    badges: ['保存版ガイド', '名古屋モーニング', '喫茶店'],
+    heroTitle: '名古屋のモーニング文化ガイド',
+    lead: '初めてでも楽しめる喫茶店の朝時間。名古屋モーニングの基本と、公式情報を確認できる実名候補を整理します。',
+    visual: {
+      imageAlt: '小倉トーストとコーヒーのイラスト',
+      imageCredit: 'なごとしゃ編集部作成のイメージ',
+    },
+    quickPoints: [
+      '初心者なら、分かりやすく選びやすいコメダ珈琲店から。',
+      '老舗喫茶らしさを味わうなら、コンパルが候補。',
+      '小倉あん系の地元感を楽しみたいなら、BUCYO Coffeeもチェック。',
+      '時間・内容・価格は店ごとに違うため、事前確認が大切。',
+    ],
+    highlightTitle: '実名で見る名古屋モーニング候補3選',
+    highlightPoints: [
       {
-        title: '雨の日の名古屋どこ行く？屋内で過ごしやすいおでかけスポット7選',
-        href: '/article/58',
-        label: 'おでかけ',
+        title: '初心者向け定番: コメダ珈琲店',
+        description: '毎朝開店から午前11時まで、ドリンク注文でパンと具材を選べるモーニングサービスを公式情報で確認。おぐらあんも選べます。',
       },
       {
-        title: '名古屋駅で買える手土産。定番から新定番まで、もらって嬉しいお菓子ガイド',
-        href: '/article/56',
+        title: '老舗喫茶らしさ: コンパル',
+        description: '昭和22年創業の老舗喫茶。公式メニューで「モーニングセット（ハムエッグトースト）」と、好きなドリンク+200円を確認。提供時間は店舗確認がおすすめです。',
+      },
+      {
+        title: '小倉あん系・地元感: BUCYO Coffee',
+        description: '名駅南の喫茶店。公式サイトで営業時間7:15〜17:00、名物の小倉あん・きなこバターを確認。モーニング条件は公式や店頭で確認してください。',
+      },
+    ],
+    recommendedTitle: '初めて行く前のチェックリスト',
+    recommendedPoints: [
+      { title: '提供時間', description: '何時までモーニングを頼めるかを確認。' },
+      { title: '定休日', description: '臨時休業や年末年始の営業もチェック。' },
+      { title: '混雑しやすい時間', description: '週末や観光シーズンの朝は余裕を持って。' },
+      { title: 'モーニングの条件', description: 'ドリンク注文だけで付くのか、追加料金が必要かを確認。' },
+      { title: '価格', description: 'セット内容と追加料金は店舗ごとに異なります。' },
+      { title: '小倉あん系か、食事系か', description: '名古屋らしさ重視なら小倉あん、しっかり朝食なら食事系。' },
+      { title: '駅からの行きやすさ', description: '旅行中や出勤前は、名駅・栄など移動しやすい場所が便利。' },
+    ],
+    recommendedForTitle: '掲載情報について',
+    recommendedFor: [
+      '価格・提供時間・内容は変更される場合があります。',
+      '最新情報は公式サイトや店頭で確認してください。',
+      'この記事では商品画像は使用せず、公式画像の転載も行っていません。',
+    ],
+    related: [
+      {
+        title: '名古屋の手土産、結局なにを選べばいい？地元民向けの差し入れガイド',
+        href: '/article/73',
         label: '手土産',
+      },
+      {
+        title: 'JR名古屋タカシマヤ デリシャスコートのリニューアル情報',
+        href: '/article/39',
+        label: '名駅',
+      },
+      {
+        title: '名古屋の新店オープン情報2026年夏版',
+        href: '/article/83',
+        label: '新店まとめ',
       },
     ],
   },
-
   73: {
     layout: 'guide',
     badges: ['保存版ガイド', '名古屋手土産', '差し入れ'],
