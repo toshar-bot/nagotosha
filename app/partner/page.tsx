@@ -1,120 +1,174 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-const description = '名古屋のお店向けに、記事掲載、Googleマップ送客、来店促進プランの相談を受け付けています。';
+const description =
+  '名古屋のお店向けに、初回無料掲載、店舗紹介記事、Googleマップ導線、公式URL導線、掲載相談を受け付けています。';
 
 export const metadata: Metadata = {
-  title: '店舗掲載・集客相談｜なごとしゃ',
+  title: '店舗掲載・無料掲載相談｜なごとしゃ',
   description,
   openGraph: {
-    title: '店舗掲載・集客相談｜なごとしゃ',
+    title: '店舗掲載・無料掲載相談｜なごとしゃ',
     description,
     type: 'website',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '店舗掲載・集客相談｜なごとしゃ',
+    title: '店舗掲載・無料掲載相談｜なごとしゃ',
     description,
     images: ['/opengraph-image'],
   },
 };
 
+const INSTAGRAM_URL = 'https://www.instagram.com/nagotosha/';
+const CONTACT_MAILTO = `mailto:hello@nagotosha.com?subject=${encodeURIComponent(
+  'なごとしゃ掲載相談',
+)}&body=${encodeURIComponent(`店舗名:
+ご担当者名:
+メールアドレス:
+Instagram / 公式URL:
+掲載したい内容:
+写真提供の有無:
+`)}`;
+
+const HERO_BADGES = ['初回掲載無料', 'Instagram DM相談OK', 'Googleマップ導線つき'];
+
 const SUPPORT_ITEMS = [
   {
     title: '店舗紹介記事',
-    text: 'お店の魅力、看板メニュー、利用シーンを読者が行きたくなる形で整理します。',
+    text: 'お店の特徴、メニュー、使いやすいシーンを、読者が行きたくなる形で整理します。',
     icon: 'article',
   },
   {
-    title: 'NEW! オープン掲載',
-    text: '新店や新メニューをトップページの注目導線に乗せ、早い認知獲得を支援します。',
-    icon: 'spark',
+    title: '写真掲載',
+    text: '店舗外観、料理、商品、店内など、提供写真を記事内で見やすく掲載します。',
+    icon: 'photo',
   },
   {
     title: 'Googleマップ導線',
-    text: '記事を読んだ人が迷わず来店検討できるよう、地図クリックまで設計します。',
+    text: '記事を読んだ人が迷わず来店検討できるよう、地図リンクを分かりやすく置きます。',
     icon: 'map',
   },
   {
-    title: 'SNS投稿サポート',
-    text: 'X投稿向けの文章や画像構成まで、記事と一緒に使える素材として整えます。',
+    title: '公式URL導線',
+    text: '公式サイト、Instagram、予約ページなど、次に見てほしい場所へつなげます。',
+    icon: 'link',
+  },
+  {
+    title: '関連記事・まとめ導線',
+    text: '新店まとめや関連記事からも見つけやすくし、記事単体で終わらせません。',
+    icon: 'spark',
+  },
+  {
+    title: 'トップ新店枠掲載',
+    text: '新店や注目情報は、なごとしゃ内の新店枠・記事枠でも紹介します。',
     icon: 'share',
   },
 ];
 
-const PLANS = [
+const EXAMPLES = [
   {
-    name: 'ライトプラン',
-    price: '15,000円〜',
-    lead: 'まずは掲載を始めたい店舗向け',
-    features: ['店舗紹介記事', 'Googleマップ導線', 'NEW! ラベル掲載'],
+    title: 'PASTA MANIA 鶴舞店',
+    href: '/article/92',
+    label: '新店記事',
+    area: '鶴舞',
+    text: '店舗写真、OPENバッジ、30秒ポイント、基本情報、地図導線を整理した単品店舗記事。',
   },
   {
-    name: 'スタンダード',
-    price: '35,000円〜',
-    lead: '認知と来店導線をまとめて作りたい店舗向け',
-    featured: true,
-    features: ['トップ注目枠', 'みんなの注目記事', 'X投稿用画像/文章', '簡易レポート'],
+    title: '七宝麻辣湯 新栄店',
+    href: '/article/32',
+    label: '新店記事',
+    area: '新栄',
+    text: '駅近・営業時間・店舗情報を見やすくまとめ、トップ新店枠にも掲載した記事。',
   },
   {
-    name: 'プレミアム',
-    price: '70,000円〜',
-    lead: '継続的に集客改善したい店舗向け',
-    features: ['トップ掲載強化', 'ランキング枠', 'ショート動画台本', '月次改善提案'],
+    title: 'JR名古屋タカシマヤ デリシャスコート',
+    href: '/article/39',
+    label: '施設ニュース',
+    area: '名駅',
+    text: '複数ブランドを含むリニューアル情報を、商業施設ニュースとして整理した記事。',
   },
 ];
 
-const STRENGTHS = [
-  '名古屋特化',
-  'スマホで見やすい',
-  'NEW!訴求が強い',
-  'Googleマップクリックを重視',
-  'AIで記事・SNS・レポートまで高速化',
-];
-
-const CONTACT_FIELDS = [
+const PREP_ITEMS = [
   '店舗名',
-  'ご担当者名',
-  'メールアドレス',
-  '掲載したい内容',
+  '住所',
+  '営業時間',
+  '定休日',
+  '写真',
+  '公式URL / Instagram',
+  'おすすめ商品',
+  'オープン日 / キャンペーン内容',
 ];
 
-const CONTACT_PLAN_OPTIONS = [
-  'ライト',
-  'スタンダード',
-  'プレミアム',
-  'まだ決めていない',
+const FLOW_ITEMS = [
+  {
+    title: 'Instagram DMまたはメールで相談',
+    text: '掲載したい内容が固まっていなくても大丈夫です。まずはお店の情報を送ってください。',
+  },
+  {
+    title: '店舗情報・写真を共有',
+    text: '住所、営業時間、写真、公式URLなど、記事化に必要な情報を確認します。',
+  },
+  {
+    title: 'なごとしゃ側で記事化',
+    text: '読者が迷わず理解できるよう、見出し、地図導線、公式リンクを整理します。',
+  },
+  {
+    title: '内容確認',
+    text: '営業時間や住所など、間違いがあると困る情報を中心に確認します。',
+  },
+  {
+    title: '掲載・記事URL共有',
+    text: '公開後は記事URLを共有します。新店枠や関連記事導線にも活用します。',
+  },
 ];
 
-const RECOMMENDED_STORE_CASES = [
+const PAID_MENU = [
   {
-    title: 'NEWオープン・リニューアル店',
-    text: 'オープン直後の認知づくり、初回来店、Googleマップ導線をまとめて強化します。',
+    name: 'ライト相談',
+    price: '15,000円〜',
+    text: '無料掲載後に、写真追加や導線強化を軽く試したい店舗向け。',
   },
   {
-    title: '週末の来店を増やしたいお店',
-    text: '金曜から日曜に向けて、記事・地図クリック・保存導線で来店候補に入りやすくします。',
+    name: '本格PR相談',
+    price: '35,000円〜',
+    text: '記事掲載、トップ導線、SNS文面、簡易レポートまでまとめて設計。',
   },
   {
-    title: 'Googleマップ経由の来店を増やしたいお店',
-    text: '記事内の地図導線やクリック計測を活用して、検索後の来店行動につなげます。',
+    name: '特集・スポンサー相談',
+    price: '70,000円〜',
+    text: '季節特集、スポンサー枠、継続的な露出設計を相談したい場合に。',
   },
 ];
 
-const CONTACT_MAILTO = `mailto:hello@nagotosha.com?subject=${encodeURIComponent(
-  'なごとしゃ掲載相談',
-)}&body=${encodeURIComponent(`店舗名：
-ご担当者名：
-メールアドレス：
-掲載したい内容：
-希望プラン：`)}`;
+const FAQ_ITEMS = [
+  {
+    question: '無料掲載は本当に無料ですか？',
+    answer: '初回掲載は無料相談から受け付けます。内容や時期により掲載可否は編集部で確認します。',
+  },
+  {
+    question: '写真が少なくても相談できますか？',
+    answer: '相談できます。外観、商品、店内など、使える写真があるほど記事の魅力は伝わりやすくなります。',
+  },
+  {
+    question: '新店以外でも掲載できますか？',
+    answer: '季節メニュー、イベント、リニューアル、手土産、地域の話題なども相談できます。',
+  },
+  {
+    question: 'PR表記はどうなりますか？',
+    answer: '広告・PR・提供を含む場合は、読者に分かる形で明記します。',
+  },
+  {
+    question: '掲載後のレポートはありますか？',
+    answer: '本格PR相談では、閲覧や地図導線などをもとに簡易レポートを提案できます。',
+  },
+];
 
 export default function PartnerPage() {
   return (
     <main className="min-h-dvh pb-12" style={{ background: '#ffffff' }}>
-
-      {/* ── ページヘッダー ── */}
       <section className="px-5 pt-7 pb-8">
         <Link
           href="/"
@@ -132,51 +186,61 @@ export default function PartnerPage() {
           <h1 className="text-[30px] font-black leading-[1.14] tracking-tight" style={{ color: '#071A4D' }}>
             名古屋のお店を、
             <br />
-            行きたい人へ届ける。
+            なごとしゃで無料掲載しませんか？
           </h1>
           <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#667085' }}>
-            なごとしゃは、記事掲載だけでなく、NEW!掲載・Googleマップ導線・SNS投稿までまとめて支援する名古屋特化メディアです。
+            新店・季節メニュー・手土産・イベント情報などを、名古屋の読者に届く形で紹介します。まずは初回無料掲載から相談できます。
           </p>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {HERO_BADGES.map(badge => (
+            <span
+              key={badge}
+              className="rounded-full px-3 py-1.5 text-[11px] font-black"
+              style={{ color: '#071A4D', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
+            >
+              {badge}
+            </span>
+          ))}
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
           <a
-            href="#contact"
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
             className="flex items-center justify-center gap-2 rounded-full px-5 py-4 text-[14px] font-black text-white active:scale-[0.98] transition-transform"
-            style={{
-              background: '#E8483F',
-              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
-            }}
+            style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
           >
-            掲載について相談する
+            Instagram DMで相談する
             <ArrowRightIcon />
           </a>
           <a
-            href="#plans"
-            className="flex items-center justify-center rounded-full px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
-            style={{
-              color: '#071A4D',
-              background: '#ffffff',
-              border: '1.5px solid #E6ECF5',
-            }}
+            href={CONTACT_MAILTO}
+            className="flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
+            style={{ color: '#071A4D', background: '#ffffff', border: '1.5px solid #E6ECF5' }}
           >
-            まずは内容を見る
+            メールで掲載相談する
+          </a>
+          <a
+            href="#examples"
+            className="flex items-center justify-center rounded-full px-5 py-3 text-[13px] font-black active:scale-[0.98] transition-transform"
+            style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)' }}
+          >
+            掲載実例を見る
           </a>
         </div>
       </section>
 
-      {/* ── できること ── */}
       <section className="px-4 pt-2">
-        <SectionTitle eyebrow="SUPPORT">なごとしゃでできること</SectionTitle>
+        <SectionTitle eyebrow="SUPPORT">掲載でできること</SectionTitle>
         <div className="mt-4 grid grid-cols-2 gap-3">
           {SUPPORT_ITEMS.map(item => (
             <article
               key={item.title}
               className="rounded-[14px] bg-white p-4"
-              style={{
-                border: '1px solid #E6ECF5',
-                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
-              }}
+              style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
             >
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-xl"
@@ -195,258 +259,224 @@ export default function PartnerPage() {
         </div>
       </section>
 
-      {/* ── 掲載プラン ── */}
-      <section id="plans" className="px-4 pt-8">
-        <SectionTitle eyebrow="PLAN">掲載プラン</SectionTitle>
+      <section id="examples" className="px-4 pt-8">
+        <SectionTitle eyebrow="EXAMPLES">掲載実例</SectionTitle>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+          実際の記事では、写真・OPENバッジ・基本情報・Googleマップ導線・関連記事を組み合わせて紹介します。
+        </p>
         <div className="mt-4 flex flex-col gap-3">
-          {PLANS.map(plan => (
-            <article
-              key={plan.name}
-              className="rounded-[14px] bg-white p-4"
-              style={{
-                border: plan.featured ? '1.5px solid rgba(232,72,63,0.26)' : '1px solid #E6ECF5',
-                boxShadow: plan.featured
-                  ? '0 8px 24px rgba(232,72,63,0.10)'
-                  : '0 4px 16px rgba(7,26,77,0.06)',
-              }}
+          {EXAMPLES.map(example => (
+            <Link
+              key={example.href}
+              href={example.href}
+              className="block rounded-[14px] bg-white p-4 active:scale-[0.99] transition-transform"
+              style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-[16px] font-black" style={{ color: '#071A4D' }}>
-                    {plan.name}
-                  </h2>
-                  <p className="mt-1 text-[11px] font-bold" style={{ color: '#667085' }}>
-                    {plan.lead}
-                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <span
+                      className="rounded-full px-2.5 py-1 text-[10px] font-black"
+                      style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)' }}
+                    >
+                      {example.label}
+                    </span>
+                    <span
+                      className="rounded-full px-2.5 py-1 text-[10px] font-black"
+                      style={{ color: '#071A4D', background: '#F8FAFC' }}
+                    >
+                      {example.area}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-[16px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                    {example.title}
+                  </h3>
                 </div>
-                {plan.featured && (
-                  <span
-                    className="shrink-0 rounded-full px-3 py-1 text-[10px] font-black tracking-[0.12em]"
-                    style={{ color: '#ffffff', background: '#E8483F' }}
-                  >
-                    BASIC
-                  </span>
-                )}
+                <span className="mt-1 shrink-0" style={{ color: '#E8483F' }}>
+                  <ArrowRightIcon />
+                </span>
               </div>
-              <p className="mt-4 text-[26px] font-black tracking-tight" style={{ color: '#071A4D' }}>
-                {plan.price}
+              <p className="mt-3 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+                {example.text}
               </p>
-              <ul className="mt-3 flex flex-col gap-2">
-                {plan.features.map(feature => (
-                  <li key={feature} className="flex items-center gap-2 text-[13px] font-bold" style={{ color: '#071A4D' }}>
-                    <span style={{ color: '#E8483F' }}><CheckIcon /></span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* ── なごとしゃが強い理由 ── */}
       <section className="px-4 pt-8">
-        <SectionTitle eyebrow="WHY NAGOTOSHA">なごとしゃが強い理由</SectionTitle>
+        <SectionTitle eyebrow="CHECKLIST">店舗側で用意するもの</SectionTitle>
         <div
           className="mt-4 rounded-[14px] bg-white p-4"
-          style={{
-            border: '1px solid #E6ECF5',
-            boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
-          }}
+          style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
         >
-          <div className="flex flex-col gap-2.5">
-            {STRENGTHS.map(strength => (
-              <div key={strength} className="flex items-center gap-3">
-                <span
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: 'rgba(232,72,63,0.08)', color: '#E8483F' }}
-                >
+          <div className="grid grid-cols-2 gap-2">
+            {PREP_ITEMS.map(item => (
+              <div
+                key={item}
+                className="flex min-h-[44px] items-center gap-2 rounded-[10px] px-3 py-2"
+                style={{ background: '#F8FAFC', border: '1px solid #E6ECF5' }}
+              >
+                <span className="shrink-0" style={{ color: '#E8483F' }}>
                   <CheckIcon />
                 </span>
-                <p className="text-[13px] font-black" style={{ color: '#071A4D' }}>
-                  {strength}
-                </p>
+                <span className="text-[12px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                  {item}
+                </span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── PR表記について ── */}
-      <section className="px-4 pt-8">
-        <div
-          className="rounded-[14px] p-5"
-          style={{
-            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
-            border: '1.5px solid rgba(232,72,63,0.14)',
-          }}
-        >
-          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
-            PR POLICY
-          </p>
-          <h2 className="mt-2 text-[17px] font-black" style={{ color: '#071A4D' }}>
-            PR表記について
-          </h2>
-          <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
-            広告・PRの場合は、読者に分かるように明確に表記します。短期的な露出だけでなく、信頼を落とさない紹介を大切にします。
+          <p className="mt-4 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+            すべて揃っていなくても相談できます。まずは分かる範囲で送ってください。
           </p>
         </div>
       </section>
 
-      {/* ── こんなお店に ── */}
       <section className="px-4 pt-8">
-        <SectionTitle eyebrow="RECOMMEND">こんなお店におすすめです</SectionTitle>
+        <SectionTitle eyebrow="FLOW">掲載までの流れ</SectionTitle>
         <div className="mt-4 flex flex-col gap-3">
-          {RECOMMENDED_STORE_CASES.map(item => (
+          {FLOW_ITEMS.map((item, index) => (
             <article
               key={item.title}
-              className="rounded-[14px] bg-white p-4"
-              style={{
-                border: '1px solid #E6ECF5',
-                boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
-              }}
+              className="flex gap-3 rounded-[14px] bg-white p-4"
+              style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
             >
-              <h3 className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
-                {item.title}
-              </h3>
-              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
-                {item.text}
-              </p>
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                style={{ background: '#E8483F' }}
+              >
+                {index + 1}
+              </span>
+              <div>
+                <h3 className="text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+                  {item.text}
+                </p>
+              </div>
             </article>
           ))}
         </div>
-
-        <div
-          className="mt-4 rounded-[14px] p-4"
-          style={{
-            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
-            border: '1.5px solid rgba(232,72,63,0.14)',
-          }}
-        >
-          <h3 className="text-[17px] font-black leading-snug" style={{ color: '#071A4D' }}>
-            まずは掲載内容を相談する
-          </h3>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
-            お店の業態、エリア、集客したい曜日に合わせて、記事掲載・地図導線・週末集客の組み合わせを提案します。
-          </p>
-          <a
-            href={CONTACT_MAILTO}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
-            style={{
-              background: '#E8483F',
-              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
-            }}
-          >
-            掲載について相談する
-            <ArrowRightIcon />
-          </a>
-        </div>
       </section>
 
-      {/* ── お問い合わせ ── */}
-      <section id="contact" className="px-4 pt-8 pb-2">
+      <section id="contact" className="px-4 pt-8">
         <div
           className="rounded-[18px] p-5"
           style={{
-            background: '#ffffff',
-            border: '1px solid #E6ECF5',
-            boxShadow: '0 10px 28px rgba(7,26,77,0.08)',
+            background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 48%, #FFF4D7 100%)',
+            border: '1.5px solid rgba(232,72,63,0.14)',
           }}
         >
           <p className="text-[10px] font-black tracking-[0.2em]" style={{ color: '#E8483F' }}>
-            CONTACT
+            FREE CONSULTATION
           </p>
           <h2 className="mt-2 text-[21px] font-black leading-snug" style={{ color: '#071A4D' }}>
-            掲載について相談する
+            まずは初回無料で掲載相談できます
           </h2>
           <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
-            新店オープン、イベント告知、Googleマップ導線、SNS投稿まで、まずは気軽にご相談ください。
+            新店オープン、季節メニュー、イベント告知、手土産情報など、掲載できるか迷う内容も気軽にご相談ください。
           </p>
-
           <div className="mt-5 flex flex-col gap-3">
-            {CONTACT_FIELDS.map(field => (
-              <FieldPreview key={field} label={field} />
-            ))}
-
-            <div>
-              <p className="mb-2 text-[11px] font-black" style={{ color: '#071A4D' }}>
-                希望プラン
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {CONTACT_PLAN_OPTIONS.map((plan, index) => (
-                  <div
-                    key={plan}
-                    className="rounded-[10px] px-3 py-3 text-center text-[12px] font-black"
-                    style={{
-                      color: index === 3 ? '#667085' : '#071A4D',
-                      background: index === 1 ? 'rgba(232,72,63,0.07)' : '#F8FAFC',
-                      border: index === 1
-                        ? '1.5px solid rgba(232,72,63,0.22)'
-                        : '1px solid #E6ECF5',
-                    }}
-                  >
-                    {plan}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[14px] font-black text-white active:scale-[0.98] transition-transform"
+              style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
+            >
+              Instagram DMで相談する
+              <ArrowRightIcon />
+            </a>
+            <a
+              href={CONTACT_MAILTO}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
+              style={{ color: '#071A4D', border: '1.5px solid rgba(7,26,77,0.12)' }}
+            >
+              メールで掲載相談する
+            </a>
           </div>
+        </div>
+      </section>
 
-          <a
-            href={CONTACT_MAILTO}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[14px] font-black text-white active:scale-[0.98] transition-transform"
-            style={{
-              background: '#E8483F',
-              boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
-            }}
-          >
-            掲載について相談する
-            <ArrowRightIcon />
-          </a>
-          <p className="mt-3 text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
-            内容を確認後、掲載可否・プラン・進行方法についてご連絡します。広告・PR掲載の場合は、読者に分かる形で明確に表記します。
+      <section className="px-4 pt-8">
+        <SectionTitle eyebrow="PAID MENU">今後の有料メニュー例</SectionTitle>
+        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+          今は初回無料掲載を主役にしています。継続露出や本格PRが必要な場合だけ、相談内容に合わせて提案します。
+        </p>
+        <div className="mt-4 flex flex-col gap-3">
+          {PAID_MENU.map(menu => (
+            <article
+              key={menu.name}
+              className="rounded-[14px] bg-white p-4"
+              style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="text-[15px] font-black" style={{ color: '#071A4D' }}>
+                  {menu.name}
+                </h3>
+                <span className="shrink-0 text-[14px] font-black" style={{ color: '#E8483F' }}>
+                  {menu.price}
+                </span>
+              </div>
+              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+                {menu.text}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-8">
+        <SectionTitle eyebrow="FAQ">よくある質問</SectionTitle>
+        <div className="mt-4 flex flex-col gap-3">
+          {FAQ_ITEMS.map(item => (
+            <article
+              key={item.question}
+              className="rounded-[14px] bg-white p-4"
+              style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 16px rgba(7,26,77,0.06)' }}
+            >
+              <h3 className="text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
+                {item.question}
+              </h3>
+              <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+                {item.answer}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 pt-8 pb-2">
+        <div
+          className="rounded-[18px] bg-white p-5"
+          style={{ border: '1px solid #E6ECF5', boxShadow: '0 10px 28px rgba(7,26,77,0.08)' }}
+        >
+          <p className="text-[10px] font-black tracking-[0.2em]" style={{ color: '#E8483F' }}>
+            TRUST
+          </p>
+          <h2 className="mt-2 text-[20px] font-black leading-snug" style={{ color: '#071A4D' }}>
+            PR表記や掲載後レポートも確認できます
+          </h2>
+          <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
+            広告・PRを含む場合は読者に分かる形で明記します。掲載後の反応イメージもサンプルで確認できます。
           </p>
           <Link
             href="/partner/report-sample"
             className="mt-4 inline-flex w-full items-center justify-center rounded-[12px] px-4 py-3 text-[12px] font-black active:scale-[0.98] transition-transform"
-            style={{
-              color: '#071A4D',
-              background: '#F8FAFC',
-              border: '1px solid #E6ECF5',
-            }}
+            style={{ color: '#071A4D', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
           >
-            掲載レポートサンプルを見る
+            掲載後レポート例を見る
           </Link>
           <Link
             href="/partner/ad-policy"
             className="mt-2 inline-flex w-full items-center justify-center rounded-[12px] px-4 py-3 text-[12px] font-black active:scale-[0.98] transition-transform"
-            style={{
-              color: '#071A4D',
-              background: '#F8FAFC',
-              border: '1px solid #E6ECF5',
-            }}
+            style={{ color: '#071A4D', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
           >
-            PR表記・広告掲載について
-          </Link>
-          <Link
-            href="/partner/wordpress-status"
-            className="mt-2 inline-flex w-full flex-col items-center justify-center rounded-[12px] px-4 py-3 text-center active:scale-[0.98] transition-transform"
-            style={{
-              color: '#071A4D',
-              background: '#F8FAFC',
-              border: '1px solid #E6ECF5',
-            }}
-          >
-            <span className="text-[12px] font-black">
-              WordPress接続ステータスを確認
-            </span>
-            <span className="mt-1 text-[10px] font-bold" style={{ color: '#667085' }}>
-              記事取得やフォールバック状態を確認できます。
-            </span>
+            PR表記・広告掲載方針を見る
           </Link>
         </div>
       </section>
-
     </main>
   );
 }
@@ -468,27 +498,9 @@ function FeatureIcon({ name }: { name: string }) {
   if (name === 'map') return <MapIcon />;
   if (name === 'share') return <ShareIcon />;
   if (name === 'spark') return <SparkIcon />;
+  if (name === 'link') return <LinkIcon />;
+  if (name === 'photo') return <PhotoIcon />;
   return <ArticleIcon />;
-}
-
-function FieldPreview({ label }: { label: string }) {
-  return (
-    <div>
-      <p className="mb-2 text-[11px] font-black" style={{ color: '#071A4D' }}>
-        {label}
-      </p>
-      <div
-        className="rounded-[10px] px-3 py-3.5 text-[12px] font-bold"
-        style={{
-          color: '#9BA3B0',
-          background: '#F8FAFC',
-          border: '1px solid #E6ECF5',
-        }}
-      >
-        メール作成画面で入力してください
-      </div>
-    </div>
-  );
 }
 
 function ArticleIcon() {
@@ -528,6 +540,25 @@ function ShareIcon() {
       <circle cx="18" cy="19" r="3" />
       <path d="M8.6 10.5l6.8-4" />
       <path d="M8.6 13.5l6.8 4" />
+    </svg>
+  );
+}
+
+function LinkIcon() {
+  return (
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1" />
+      <path d="M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1.1-1.1" />
+    </svg>
+  );
+}
+
+function PhotoIcon() {
+  return (
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="8.5" cy="10" r="1.5" />
+      <path d="M21 15l-4.5-4.5L9 18" />
     </svg>
   );
 }
