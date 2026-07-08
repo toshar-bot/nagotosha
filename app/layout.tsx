@@ -7,6 +7,7 @@ const googleSiteVerification =
   process.env.GOOGLE_SITE_VERIFICATION ?? 'BDpiHCojyBHSJEc3Rg0fGZMOr6oPqrqOl6-mNZ5xMHY';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://app.nagotosha.com'),
   title: 'NAGOTOSHA - 名古屋メシ図鑑',
   description: '名古屋メシをカードで集めるスマホWeb図鑑ゲーム。今日の1パックを開封しよう。',
   verification: {
