@@ -466,6 +466,49 @@ export function ArticleExperience({
 
         {isGuideLayout ? (
           <>
+            {quickPoints.length > 0 && (
+              <SectionCard title="30秒でわかる要点" icon={<ClockIcon />} accent="yellow">
+                <div style={{ display: 'grid', gap: 11 }}>
+                  {quickPoints.map((point) => (
+                    <SimplePoint key={point}>{point}</SimplePoint>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
+            {highlightPoints.length > 0 && (
+              <SectionCard title="シーン別おすすめ4選" icon={<SparkIcon />}>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  {highlightPoints.map((point, index) => (
+                    <PointBlock key={point.title} point={point} index={index} tone="red" />
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
+            {recommendedPoints.length > 0 && (
+              <SectionCard title="買う前チェックリスト" icon={<CheckIcon />}>
+                <div style={{ display: 'grid', gap: 11 }}>
+                  {recommendedPoints.map((point) => (
+                    <SimplePoint key={point.title}>
+                      <strong>{point.title}</strong>
+                      {point.description ? `: ${point.description}` : ''}
+                    </SimplePoint>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
+            {recommendedFor.length > 0 && (
+              <SectionCard title="掲載情報について" accent="yellow">
+                <div style={{ display: 'grid', gap: 11 }}>
+                  {recommendedFor.map((item) => (
+                    <SimplePoint key={item}>{item}</SimplePoint>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
             {content && (
               <GuideBody>
                 <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
