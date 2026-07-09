@@ -178,11 +178,10 @@ const NEW_OPEN_STORES = [
 ];
 
 const FEATURE_CARDS = [
-  { title: '名古屋ビアガーデン特集2026', copy: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', href: '/article/79' },
-  { title: JP.rainyCafe, copy: JP.rainyCopy, imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80' },
-  { title: JP.weekendMarket, copy: JP.marketCopy, imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80' },
-  { title: JP.giftSweets, copy: JP.giftCopy, imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80' },
-  { title: JP.dinner, copy: JP.dinnerCopy, imageUrl: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=80' },
+  { title: '名古屋ビアガーデン特集2026', copy: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', href: '/article/79', tag: '夏のおでかけ' },
+  { title: '雨の日の屋内スポット7選', copy: '子連れ・デート・ひとりで使いやすい屋内スポットを紹介。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/codex-clipboard-1bb1e995-d46b-4fc8-bfa6-69e6dd6cf39d.png', href: '/article/58', tag: '雨の日' },
+  { title: '名古屋の手土産ガイド', copy: '職場・取引先・帰省で選びやすい名古屋手土産を整理。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-omiyage-eyecatch.png', href: '/article/73', tag: '手土産' },
+  { title: '名古屋モーニング文化ガイド', copy: '初めてでも楽しめる喫茶店の朝時間を紹介。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-morning-culture-eyecatch.png', href: '/article/66', tag: 'モーニング' },
 ];
 
 const FALLBACK_ARTICLES = [
@@ -236,11 +235,11 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
       <Header />
       <main className="overflow-hidden pb-28">
         <HeroSection />
-        <ArticlesSection articles={articles} />
-        <AreaCtaSection />
-        <FeaturesSection />
         <FreshArticlesSection articles={articles} />
         <NewsSection />
+        <FeaturesSection />
+        <AreaCtaSection />
+        <ArticlesSection articles={articles} />
         <GachaSection articles={articles} />
         <HomeFooterCta />
       </main>
@@ -551,11 +550,11 @@ function FeaturesSection() {
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="FEATURES" ja="編集部イチオシ特集" align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
-          すべての特集を見る {String.fromCharCode(8250)}
+          新着記事を見る {String.fromCharCode(8250)}
         </Link>
       </div>
-      <div className="home-scroll mx-auto flex max-w-[940px] gap-3 overflow-x-auto pb-1">
-        {FEATURE_CARDS.slice(0, 3).map((item) => (
+      <div className="mx-auto grid max-w-[940px] grid-cols-2 gap-3">
+        {FEATURE_CARDS.map((item) => (
           <FeatureCard key={item.title} item={item} />
         ))}
       </div>
@@ -564,29 +563,23 @@ function FeaturesSection() {
 }
 
 function FeatureCard({ item }: { item: (typeof FEATURE_CARDS)[number] }) {
-  const card = (
+  return (
+    <Link href={item.href} className="block min-w-0 text-inherit no-underline" aria-label={item.title}>
     <article
-      className="relative h-[126px] w-[252px] shrink-0 overflow-hidden rounded-[16px] border border-white/70 bg-cover bg-center shadow-[0_10px_24px_rgba(14,24,55,0.14)] sm:h-[156px] sm:w-[300px]"
-      style={{ backgroundImage: `linear-gradient(90deg, rgba(7,26,77,0.78), rgba(7,26,77,0.20)), url(${item.imageUrl})` }}
+      className="relative flex h-[194px] min-w-0 flex-col overflow-hidden rounded-[16px] border border-[#E6ECF5] bg-white shadow-[0_10px_24px_rgba(14,24,55,0.10)] sm:h-[230px]"
     >
-      <div className="absolute inset-y-0 left-0 flex w-[72%] flex-col justify-end p-4 text-white">
-        <span className="mb-2 w-fit rounded-full bg-[#E8483F] px-2 py-0.5 text-[10px] font-black">特集</span>
-        <h3 className="line-clamp-2 text-[15px] font-black leading-snug drop-shadow sm:text-[18px]">{item.title}</h3>
-        <p className="mt-1 line-clamp-1 text-[11px] font-bold text-white/88">{item.copy}</p>
+      <div className="relative h-[98px] overflow-hidden sm:h-[128px]">
+        <img src={item.imageUrl} alt={item.title} className="h-full w-full object-cover" loading="lazy" />
+        <span className="absolute left-2 top-2 rounded-full bg-[#E8483F] px-2 py-0.5 text-[9px] font-black text-white shadow-[0_4px_10px_rgba(7,26,77,.16)]">
+          {item.tag}
+        </span>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col p-3">
+        <h3 className="line-clamp-2 text-[13px] font-black leading-snug text-[#071A4D] sm:text-[15px]">{item.title}</h3>
+        <p className="mt-1 line-clamp-2 text-[10.5px] font-bold leading-relaxed text-[#667085] sm:text-[12px]">{item.copy}</p>
       </div>
     </article>
-  );
-
-  if (item.href) {
-    return (
-      <Link href={item.href} className="block shrink-0 text-inherit no-underline" aria-label={item.title}>
-        {card}
-      </Link>
-    );
-  }
-
-  return (
-    card
+    </Link>
   );
 }
 
@@ -963,7 +956,6 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
           <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 150, borderRadius: 16, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 9px 22px rgba(7,26,77,0.10)', textDecoration: 'none', color: THEME.text }}>
             <div style={{ position: 'relative', height: 104, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
               <span style={{ position: 'absolute', left: 8, top: 8, borderRadius: 999, background: '#fff', color: THEME.navy, fontSize: 10, fontWeight: 950, padding: '5px 8px', boxShadow: '0 5px 12px rgba(7,26,77,.14)' }}>{article.tag || JP.focus}</span>
-              <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
             </div>
             <div style={{ padding: '10px 10px 11px' }}>
               <p style={{ margin: 0, minHeight: 38, color: THEME.text, fontSize: 12.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
@@ -988,7 +980,6 @@ function FreshArticlesSection({ articles }: { articles: ArticleLike[] }) {
           <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 184, borderRadius: 18, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 8px 22px rgba(7,26,77,0.09)', textDecoration: 'none', color: THEME.text }}>
             <div style={{ position: 'relative', height: 118, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
               <span style={{ position: 'absolute', left: 10, top: 10, background: THEME.red, color: '#fff', fontSize: 9, fontWeight: 950, borderRadius: 7, padding: '4px 7px' }}>NEW</span>
-              <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
             </div>
             <div style={{ padding: '12px 12px 13px' }}>
               <p style={{ margin: 0, minHeight: 40, color: THEME.text, fontSize: 13.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
@@ -1165,12 +1156,12 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 function AreaCtaSection() {
   const areaCards = [
-    { label: '名駅エリア', hint: '駅近グルメ・手土産', tone: '#EAF4FF', code: 'MEI' },
-    { label: '栄エリア', hint: '新店・イベント', tone: '#EFF8E9', code: 'SAK' },
-    { label: '大須エリア', hint: '街歩き・カルチャー', tone: '#FFF0EF', code: 'OSU' },
-    { label: '金山エリア', hint: '夜ごはん・おでかけ', tone: '#FFF7D8', code: 'KAN' },
-    { label: '熱田エリア', hint: '観光・名古屋めし', tone: '#F3F0FF', code: 'ATU' },
-    { label: '覚王山エリア', hint: 'カフェ・散歩', tone: '#EEF8F4', code: 'KAK' },
+    { label: '名駅エリア', hint: '駅近グルメ・手土産', tone: '#EAF4FF', visual: 'meieki' },
+    { label: '栄エリア', hint: '新店・イベント', tone: '#EFF8E9', visual: 'sakae' },
+    { label: '大須エリア', hint: '街歩き・カルチャー', tone: '#FFF0EF', visual: 'osu' },
+    { label: '金山エリア', hint: '夜ごはん・おでかけ', tone: '#FFF7D8', visual: 'kanayama' },
+    { label: '今池エリア', hint: '喫茶・音楽・夜の街', tone: '#F3F0FF', visual: 'imaike' },
+    { label: '覚王山エリア', hint: 'カフェ・散歩', tone: '#EEF8F4', visual: 'kakuozan' },
   ];
   return (
     <section style={{ padding: '8px 0 18px' }}>
@@ -1183,19 +1174,73 @@ function AreaCtaSection() {
       <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '4px 16px 8px' }}>
         {areaCards.map((area) => (
           <Link key={area.label} href="/area" style={{
-            flexShrink: 0, width: 132, minHeight: 104, padding: '13px 12px', borderRadius: 16,
+            flexShrink: 0, width: 154, minHeight: 132, padding: '12px', borderRadius: 18,
             display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             background: area.tone, color: THEME.navy, textDecoration: 'none',
             border: '1px solid rgba(7,26,77,.08)',
             boxShadow: '0 7px 18px rgba(7,26,77,0.08)',
           }}>
-            <span style={{ width: 42, height: 42, borderRadius: 14, display: 'grid', placeItems: 'center', background: '#fff', color: THEME.red, fontSize: 12, fontWeight: 950, letterSpacing: '.08em', boxShadow: '0 5px 12px rgba(7,26,77,.07)' }}>{area.code}</span>
+            <AreaVisual kind={area.visual} />
             <span style={{ fontSize: 13, fontWeight: 950, lineHeight: 1.25 }}>{area.label}</span>
             <span style={{ fontSize: 10, fontWeight: 800, color: THEME.gray }}>{area.hint}</span>
           </Link>
         ))}
       </div>
     </section>
+  );
+}
+
+function AreaVisual({ kind }: { kind: string }) {
+  const base = {
+    width: '100%',
+    height: 62,
+    borderRadius: 14,
+    background: 'linear-gradient(180deg,#FFFFFF 0%,rgba(255,255,255,.72) 100%)',
+    position: 'relative' as const,
+    overflow: 'hidden' as const,
+    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.07), 0 5px 12px rgba(7,26,77,.06)',
+  };
+  return (
+    <span aria-hidden style={base}>
+      <span style={{ position: 'absolute', inset: 0, background: kind === 'imaike' ? 'linear-gradient(180deg,#21194D 0%,#44306C 58%,#FFF3C4 100%)' : 'linear-gradient(180deg,#EAF7FF 0%,#FFFFFF 62%,#FFEFD6 100%)', opacity: kind === 'imaike' ? 0.88 : 1 }} />
+      {(kind === 'meieki' || kind === 'sakae') && (
+        <>
+          <span style={{ position: 'absolute', left: 18, bottom: 13, width: 16, height: kind === 'meieki' ? 40 : 30, borderRadius: '4px 4px 0 0', background: '#071A4D' }} />
+          <span style={{ position: 'absolute', left: 39, bottom: 13, width: 20, height: kind === 'meieki' ? 50 : 38, borderRadius: '5px 5px 0 0', background: '#E8483F' }} />
+          <span style={{ position: 'absolute', left: 64, bottom: 13, width: 15, height: 28, borderRadius: '4px 4px 0 0', background: '#F8C861' }} />
+          {kind === 'sakae' && <span style={{ position: 'absolute', right: 24, bottom: 13, width: 18, height: 44, borderRadius: 999, border: '3px solid #071A4D' }} />}
+        </>
+      )}
+      {kind === 'osu' && (
+        <>
+          <span style={{ position: 'absolute', left: 16, top: 12, width: 62, height: 24, borderRadius: '999px 999px 10px 10px', border: '4px solid #E8483F', borderBottom: 'none' }} />
+          <span style={{ position: 'absolute', left: 20, bottom: 14, width: 58, height: 18, borderRadius: 6, background: '#071A4D' }} />
+          <span style={{ position: 'absolute', right: 20, bottom: 17, width: 24, height: 24, borderRadius: '50% 50% 44% 44%', background: '#F8C861' }} />
+        </>
+      )}
+      {kind === 'kanayama' && (
+        <>
+          <span style={{ position: 'absolute', left: 18, bottom: 17, width: 86, height: 7, borderRadius: 99, background: '#071A4D' }} />
+          <span style={{ position: 'absolute', left: 26, bottom: 27, width: 66, height: 18, borderRadius: 6, background: '#E8483F' }} />
+          <span style={{ position: 'absolute', right: 18, top: 15, width: 14, height: 14, borderRadius: '50%', background: '#F8C861' }} />
+        </>
+      )}
+      {kind === 'imaike' && (
+        <>
+          <span style={{ position: 'absolute', left: 18, bottom: 15, width: 26, height: 32, borderRadius: 6, background: '#F8C861' }} />
+          <span style={{ position: 'absolute', left: 52, bottom: 15, width: 14, height: 42, borderRadius: 6, background: '#FFF' }} />
+          <span style={{ position: 'absolute', right: 24, bottom: 18, width: 34, height: 18, borderRadius: 999, border: '3px solid #E8483F' }} />
+        </>
+      )}
+      {kind === 'kakuozan' && (
+        <>
+          <span style={{ position: 'absolute', left: 18, bottom: 15, width: 48, height: 28, borderRadius: '9px 9px 4px 4px', background: '#071A4D' }} />
+          <span style={{ position: 'absolute', left: 28, top: 13, width: 28, height: 24, transform: 'rotate(45deg)', borderRadius: 5, background: '#E8483F' }} />
+          <span style={{ position: 'absolute', right: 18, bottom: 18, width: 24, height: 24, borderRadius: '50%', background: '#F8C861' }} />
+        </>
+      )}
+      <span style={{ position: 'absolute', left: 0, right: 0, bottom: 12, height: 2, background: 'rgba(7,26,77,.16)' }} />
+    </span>
   );
 }
 
