@@ -193,13 +193,23 @@ const FALLBACK_ARTICLES = [
 
 type ArticleLike = Pick<FeaturedArticle, 'id' | 'title'> & Partial<FeaturedArticle>;
 
+const ARCHIVE_ARTICLE_URLS = new Set(['/article/8']);
+const ARCHIVE_ARTICLE_IDS = new Set(['8', 'wp-8']);
+
 function resolveArticleHref(article: ArticleLike) {
   return article.id.startsWith('wp-') ? `/article/${article.id.slice(3)}` : article.articleUrl || '/new';
 }
 
+function isArchiveArticle(article: ArticleLike) {
+  const href = resolveArticleHref(article);
+  return ARCHIVE_ARTICLE_URLS.has(href) || ARCHIVE_ARTICLE_IDS.has(article.id);
+}
+
 export default function PortalHomeClient({ featuredArticles }: { featuredArticles: FeaturedArticle[] }) {
   const articles = useMemo<ArticleLike[]>(() => {
-    const source = featuredArticles.length > 0 ? featuredArticles : FALLBACK_ARTICLES;
+    const source = (featuredArticles.length > 0 ? featuredArticles : FALLBACK_ARTICLES).filter(
+      (article) => !isArchiveArticle(article),
+    );
     return source.slice(0, 6).map((article, index) => ({
       ...article,
       imageUrl: article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl,
@@ -231,7 +241,6 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
         <FeaturesSection />
         <FreshArticlesSection articles={articles} />
         <NewsSection />
-        <AreaPopularSection articles={articles} />
         <GachaSection articles={articles} />
         <HomeFooterCta />
       </main>
@@ -1116,39 +1125,6 @@ function NewsSection() {
               </div>
             </article>
           </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AreaPopularSection({ articles }: { articles: ArticleLike[] }) {
-  const groups = [
-    { area: '名駅エリア', accent: '#EAF4FF', links: articles.slice(0, 3) },
-    { area: '栄エリア', accent: '#EFF8E9', links: articles.slice(1, 4) },
-    { area: '大須エリア', accent: '#FFF0EF', links: articles.slice(0, 2) },
-    { area: '名古屋城周辺', accent: '#FFF7D8', links: articles.slice(1, 3) },
-  ];
-  return (
-    <section style={{ padding: '18px 16px 24px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
-        <SectionKicker en="AREA ARTICLES" ja="エリア別人気記事" align="left" />
-        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>すべて見る {String.fromCharCode(8250)}</Link>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        {groups.map((group) => (
-          <article key={group.area} style={{ borderRadius: 18, border: '1px solid ' + THEME.border, background: '#fff', overflow: 'hidden', boxShadow: '0 8px 20px rgba(7,26,77,.08)' }}>
-            <div style={{ padding: '10px 11px', background: group.accent }}>
-              <h3 style={{ margin: 0, color: THEME.navy, fontSize: 13, fontWeight: 950 }}>{group.area}</h3>
-            </div>
-            <div style={{ padding: '10px 11px 12px' }}>
-              {group.links.map((article, index) => (
-                <Link key={`${group.area}-${article.id || index}`} href={article.articleUrl || '/new'} style={{ display: 'block', color: THEME.text, textDecoration: 'none', fontSize: 11, fontWeight: 850, lineHeight: 1.42, marginTop: index === 0 ? 0 : 7 }}>
-                  {article.title}
-                </Link>
-              ))}
-            </div>
-          </article>
         ))}
       </div>
     </section>

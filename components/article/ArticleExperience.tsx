@@ -227,7 +227,6 @@ type Props = {
   articleId: string;
   postId: number;
   postLink: string;
-  saveCount: number;
   experience?: ArticleExperienceData;
 };
 
@@ -248,7 +247,6 @@ export function ArticleExperience({
   articleId,
   postId,
   postLink,
-  saveCount,
   experience,
 }: Props) {
   const [saved, setSaved] = useState(false);
@@ -272,7 +270,6 @@ export function ArticleExperience({
   const recommendedFor = experience?.recommendedFor ?? [];
   const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag });
   const related = experience?.related ?? [];
-  const formattedSaveCount = saveCount.toLocaleString('ja-JP');
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
   const shop = experience?.shop;
@@ -322,7 +319,6 @@ export function ArticleExperience({
         related={related}
         feature={experience.feature}
         saved={saved}
-        saveCount={formattedSaveCount}
         onSave={handleSave}
         onShare={handleShare}
         onTop={scrollToTop}
@@ -342,7 +338,6 @@ export function ArticleExperience({
         related={related}
         news={experience.news}
         saved={saved}
-        saveCount={formattedSaveCount}
         onSave={handleSave}
         onShare={handleShare}
         onTop={scrollToTop}
@@ -442,7 +437,7 @@ export function ArticleExperience({
                   fontWeight: 900,
                 }}>
                   <BookmarkIcon filled={saved} />
-                  {formattedSaveCount} 保存
+                  <span>保存</span>
                 </div>
               </div>
             </div>
@@ -688,7 +683,6 @@ export function ArticleExperience({
 
       <BottomCTA
         saved={saved}
-        saveCount={formattedSaveCount}
         onSave={handleSave}
         mapUrl={effectiveMapUrl}
         onTop={scrollToTop}
@@ -707,7 +701,6 @@ function FeatureArticleExperience({
   related,
   feature,
   saved,
-  saveCount,
   onSave,
   onShare,
   onTop,
@@ -721,7 +714,6 @@ function FeatureArticleExperience({
   related: ArticleRelated[];
   feature: FeatureArticleData;
   saved: boolean;
-  saveCount: string;
   onSave: () => void;
   onShare: () => void;
   onTop: () => void;
@@ -849,7 +841,7 @@ function FeatureArticleExperience({
         </article>
       </div>
 
-      <BottomCTA saved={saved} saveCount={saveCount} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
     </main>
   );
 }
@@ -864,7 +856,6 @@ function NewsArticleExperience({
   related,
   news,
   saved,
-  saveCount,
   onSave,
   onShare,
   onTop,
@@ -878,7 +869,6 @@ function NewsArticleExperience({
   related: ArticleRelated[];
   news: NewsArticleData;
   saved: boolean;
-  saveCount: string;
   onSave: () => void;
   onShare: () => void;
   onTop: () => void;
@@ -1037,7 +1027,7 @@ function NewsArticleExperience({
         </article>
       </div>
 
-      <BottomCTA saved={saved} saveCount={saveCount} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
     </main>
   );
 }
@@ -1934,9 +1924,6 @@ function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate 
           <div style={{ textAlign: 'center', maxWidth: 280 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/subjects/nagotosha-header-complete-tight.png" alt="" aria-hidden style={{ width: 166, opacity: 0.14, margin: '0 auto 14px', display: 'block' }} />
-            <p style={{ margin: 0, color: '#071A4D', fontSize: 15, fontWeight: 900 }}>公式写真を確認中</p>
-            <p style={{ margin: '7px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.7, fontWeight: 700 }}>掲載許可を確認できた写真から追加予定</p>
-            <p style={{ margin: '10px auto 0', display: 'inline-flex', alignItems: 'center', borderRadius: 999, background: '#FFF0EF', color: '#E8483F', padding: '5px 11px', fontSize: 10, fontWeight: 900 }}>なごとしゃ編集部が確認中</p>
           </div>
         </div>
       )}
@@ -2043,24 +2030,12 @@ function PointBlock({ point, index, tone }: { point: ArticlePoint; index: number
 }
 
 function PhotoStrip({ imageUrl, title }: { imageUrl?: string; title: string }) {
-  if (imageUrl) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 8 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUrl} alt={title} style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 16, border: '1px solid #E6ECF5' }} />
-        <div style={{ display: 'grid', gap: 8 }}>
-          <PhotoPlaceholder compact label="店内写真を確認中" />
-          <PhotoPlaceholder compact label="メニュー写真を確認中" />
-        </div>
-      </div>
-    );
-  }
+  if (!imageUrl) return null;
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-      <PhotoPlaceholder label="外観" />
-      <PhotoPlaceholder label="メニュー" />
-      <PhotoPlaceholder label="店内" />
+    <div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={imageUrl} alt={title} style={{ width: '100%', height: 168, objectFit: 'cover', borderRadius: 16, border: '1px solid #E6ECF5', display: 'block' }} />
     </div>
   );
 }
@@ -2075,12 +2050,7 @@ function ExternalVisualSection({ visuals }: { visuals?: ArticleExternalVisual[] 
       (v.embedHtml || v.imageUrl),
   );
 
-  // 許可確認中（not_contacted / requested）のものが1件以上あるか
-  const hasPending = visuals.some(
-    (v) => v.permissionStatus === 'not_contacted' || v.permissionStatus === 'requested',
-  );
-
-  if (approvedItems.length === 0 && !hasPending) return null;
+  if (approvedItems.length === 0) return null;
 
   return (
     <section style={{ padding: '0 14px', marginTop: 14 }}>
@@ -2103,30 +2073,6 @@ function ExternalVisualSection({ visuals }: { visuals?: ArticleExternalVisual[] 
           <ApprovedVisualCard key={item.id} item={item} />
         ))}
 
-        {/* 許可確認中カード（承認済みが0件 or 確認中スロットがある場合に表示） */}
-        {hasPending && (
-          <div style={{
-            marginTop: approvedItems.length > 0 ? 12 : 0,
-            borderRadius: 18,
-            border: '1.5px dashed #E6ECF5',
-            background: 'linear-gradient(135deg, #FFFDF7 0%, #FFF7D8 100%)',
-            padding: '20px 18px',
-            textAlign: 'center',
-          }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '50%', background: '#FFF0EF', marginBottom: 12 }}>
-              <HourglassIcon />
-            </div>
-            <p style={{ margin: 0, color: '#071A4D', fontSize: 14, fontWeight: 900, lineHeight: 1.45 }}>掲載許可を確認中</p>
-            <p style={{ margin: '8px 0 0', color: '#667085', fontSize: 12, lineHeight: 1.75, fontWeight: 700 }}>
-              なごとしゃ編集部が、投稿者・公式アカウントへ掲載許可を確認しています。<br />
-              許可をいただいた写真・投稿から順次追加予定です。
-            </p>
-            <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FFF0EF', borderRadius: 999, padding: '5px 13px' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#E8483F', flexShrink: 0 }} />
-              <span style={{ color: '#E8483F', fontSize: 10, fontWeight: 900 }}>なごとしゃ編集部が確認中</span>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -2183,23 +2129,6 @@ function VisualCredit({ item }: { item: ArticleExternalVisual }) {
   );
 }
 
-function PhotoPlaceholder({ label, compact }: { label: string; compact?: boolean }) {
-  return (
-    <div style={{
-      minHeight: compact ? 71 : 104,
-      borderRadius: 16,
-      border: '1px solid #E6ECF5',
-      background: 'linear-gradient(135deg, #FFFDF7 0%, #FFF7D8 100%)',
-      display: 'grid',
-      placeItems: 'center',
-      padding: 8,
-      textAlign: 'center',
-    }}>
-      <span style={{ color: '#667085', fontSize: 11, lineHeight: 1.45, fontWeight: 800 }}>{label}</span>
-    </div>
-  );
-}
-
 function InfoGrid({ items }: { items: ShopInfoItem[] }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0, border: '1px solid #E6ECF5', borderRadius: 16, overflow: 'hidden' }}>
@@ -2245,7 +2174,7 @@ function RelatedCard({ item }: { item: ArticleRelated }) {
   );
 }
 
-function BottomCTA({ saved, saveCount, onSave, mapUrl, onTop }: { saved: boolean; saveCount: string; onSave: () => void; mapUrl?: string; onTop: () => void }) {
+function BottomCTA({ saved, onSave, mapUrl, onTop }: { saved: boolean; onSave: () => void; mapUrl?: string; onTop: () => void }) {
   return (
     <div style={{
       position: 'fixed',
@@ -2275,7 +2204,6 @@ function BottomCTA({ saved, saveCount, onSave, mapUrl, onTop }: { saved: boolean
           cursor: 'pointer',
         }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12 }}><BookmarkIcon filled={saved} />{saved ? '保存済み' : '保存する'}</span>
-          <span style={{ fontSize: 10, opacity: 0.82 }}>{saveCount}人が保存中</span>
         </button>
         {mapUrl && (
           <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{
@@ -2377,10 +2305,6 @@ function UpIcon() {
 
 function InstagramIcon() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>;
-}
-
-function HourglassIcon() {
-  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8483F" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3h14" /><path d="M5 21h14" /><path d="M5 3l7 9-7 9" /><path d="M19 3l-7 9 7 9" /></svg>;
 }
 
 function UsersIcon() {

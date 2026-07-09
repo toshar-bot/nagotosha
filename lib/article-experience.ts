@@ -1225,8 +1225,3 @@ export function getFeaturedNewOpenSpots(limit = 6): ShopSpot[] {
     })
     .slice(0, limit);
 }
-
-export function getFakeSaveCount(id: string | number): number {
-  const n = Number(id) || 1;
-  return 8200 + ((n * 137) % 6200);
-}

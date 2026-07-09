@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getWordPressPostById } from '@/lib/wordpress-fetch';
 import { stripHtml, decodeHtmlEntities, getFeaturedMediaUrl } from '@/lib/wordpress';
-import { getArticleExperience, getFakeSaveCount } from '@/lib/article-experience';
+import { getArticleExperience } from '@/lib/article-experience';
 import { ArticleExperience } from '@/components/article/ArticleExperience';
 
 type Params = { id: string };
@@ -130,7 +130,6 @@ export default async function ArticlePage({ params }: { params: Params }) {
         articleId={`local-preview-${preview.postId}`}
         postId={preview.postId}
         postLink={preview.postLink}
-        saveCount={getFakeSaveCount(preview.postId)}
         experience={experience}
       />
     );
@@ -159,7 +158,6 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
-  const saveCount = getFakeSaveCount(post.id);
 
   return (
     <ArticleExperience
@@ -179,7 +177,6 @@ export default async function ArticlePage({ params }: { params: Params }) {
       articleId={articleId}
       postId={post.id}
       postLink={post.link}
-      saveCount={saveCount}
       experience={experience}
     />
   );
