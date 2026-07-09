@@ -942,23 +942,23 @@ function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: 
   );
 }
 function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
-  const ranking = articles.slice(0, 5);
+  const picks = articles.slice(0, 5);
   return (
     <section style={{ padding: '22px 0 20px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <SectionKicker en="RANKING" ja="みんなが読んでいる！人気記事ランキング" align="left" />
+        <SectionKicker en="PICKS" ja="編集部おすすめ記事" align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
-        {ranking.map((article, index) => (
+        {picks.map((article, index) => (
           <Link key={article.id || index} href={article.articleUrl || '/new'} style={{ flexShrink: 0, width: 150, borderRadius: 16, overflow: 'hidden', background: '#fff', border: '1px solid ' + THEME.border, boxShadow: '0 9px 22px rgba(7,26,77,0.10)', textDecoration: 'none', color: THEME.text }}>
             <div style={{ position: 'relative', height: 104, ...bgPhoto(article.imageUrl || FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length].imageUrl || '') }}>
-              <span style={{ position: 'absolute', left: 8, top: 8, width: 26, height: 26, borderRadius: 8, background: index === 0 ? '#F8C861' : '#fff', color: THEME.navy, fontSize: 13, fontWeight: 950, display: 'grid', placeItems: 'center', boxShadow: '0 5px 12px rgba(7,26,77,.14)' }}>{index + 1}</span>
+              <span style={{ position: 'absolute', left: 8, top: 8, borderRadius: 999, background: '#fff', color: THEME.navy, fontSize: 10, fontWeight: 950, padding: '5px 8px', boxShadow: '0 5px 12px rgba(7,26,77,.14)' }}>{article.tag || JP.focus}</span>
               <span style={{ position: 'absolute', right: 10, top: 10, width: 24, height: 24, borderRadius: 999, background: 'rgba(7,26,77,0.46)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BookmarkIcon /></span>
             </div>
             <div style={{ padding: '10px 10px 11px' }}>
               <p style={{ margin: 0, minHeight: 38, color: THEME.text, fontSize: 12.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>♡ {12560 - index * 1519}</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 750 }}><span>{formatDate(article.publishedAt)}</span></div>
             </div>
           </Link>
         ))}
@@ -1177,13 +1177,6 @@ function HomeFooterCta() {
             <FooterLink href="#home-gacha" label="おでかけガチャ" />
           </div>
         </div>
-        <div style={{ marginTop: 18, borderRadius: 18, background: 'rgba(255,255,255,.08)', padding: 12 }}>
-          <p style={{ margin: 0, color: '#fff', fontSize: 12, fontWeight: 950 }}>メールマガジン</p>
-          <div style={{ display: 'flex', gap: 8, marginTop: 9 }}>
-            <input aria-label="メールアドレス" placeholder="メールアドレスを入力" style={{ minWidth: 0, flex: 1, border: 0, borderRadius: 999, padding: '0 12px', height: 38, fontSize: 12, fontWeight: 800 }} />
-            <button type="button" style={{ border: 0, borderRadius: 999, background: '#F8C861', color: THEME.navy, padding: '0 14px', fontSize: 12, fontWeight: 950 }}>登録する</button>
-          </div>
-        </div>
         <p style={{ margin: '18px 0 0', color: 'rgba(255,255,255,.52)', fontSize: 10, fontWeight: 700 }}>© 2026 nagotosha. All Rights Reserved.</p>
       </div>
     </footer>
@@ -1196,12 +1189,12 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 function AreaCtaSection() {
   const areaCards = [
-    { label: '名駅エリア', count: '2,567', tone: '#EAF4FF', code: 'MEI' },
-    { label: '栄エリア', count: '1,968', tone: '#EFF8E9', code: 'SAK' },
-    { label: '大須エリア', count: '1,896', tone: '#FFF0EF', code: 'OSU' },
-    { label: '金山エリア', count: '1,327', tone: '#FFF7D8', code: 'KAN' },
-    { label: '熱田エリア', count: '743', tone: '#F3F0FF', code: 'ATU' },
-    { label: '覚王山エリア', count: '890', tone: '#EEF8F4', code: 'KAK' },
+    { label: '名駅エリア', hint: '駅近グルメ・手土産', tone: '#EAF4FF', code: 'MEI' },
+    { label: '栄エリア', hint: '新店・イベント', tone: '#EFF8E9', code: 'SAK' },
+    { label: '大須エリア', hint: '街歩き・カルチャー', tone: '#FFF0EF', code: 'OSU' },
+    { label: '金山エリア', hint: '夜ごはん・おでかけ', tone: '#FFF7D8', code: 'KAN' },
+    { label: '熱田エリア', hint: '観光・名古屋めし', tone: '#F3F0FF', code: 'ATU' },
+    { label: '覚王山エリア', hint: 'カフェ・散歩', tone: '#EEF8F4', code: 'KAK' },
   ];
   return (
     <section style={{ padding: '8px 0 18px' }}>
@@ -1222,7 +1215,7 @@ function AreaCtaSection() {
           }}>
             <span style={{ width: 42, height: 42, borderRadius: 14, display: 'grid', placeItems: 'center', background: '#fff', color: THEME.red, fontSize: 12, fontWeight: 950, letterSpacing: '.08em', boxShadow: '0 5px 12px rgba(7,26,77,.07)' }}>{area.code}</span>
             <span style={{ fontSize: 13, fontWeight: 950, lineHeight: 1.25 }}>{area.label}</span>
-            <span style={{ fontSize: 10, fontWeight: 800, color: THEME.gray }}>記事数 {area.count}</span>
+            <span style={{ fontSize: 10, fontWeight: 800, color: THEME.gray }}>{area.hint}</span>
           </Link>
         ))}
       </div>
@@ -1273,7 +1266,7 @@ function CenteredHeading({ en, ja }: { en: string; ja: string }) {
 }
 
 function SectionKicker({ en, ja, align = 'center' }: { en: string; ja: string; align?: 'left' | 'center' }) {
-  const titleParts = en === 'RANKING' ? ['みんなが読んでいる！', '人気記事ランキング'] : [ja];
+  const titleParts = [ja];
 
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: align === 'center' ? 'center' : 'flex-start', gap: 7, minWidth: 0 }}>
