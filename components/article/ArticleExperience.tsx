@@ -1435,23 +1435,25 @@ function FeaturePickCard({ pick, index }: { pick: FeaturePick; index: number }) 
   const palette = {
     navy: {
       background: 'radial-gradient(circle at 76% 24%, rgba(248,200,97,0.28), transparent 28%), linear-gradient(135deg, #071A4D 0%, #123B74 58%, #4B6FA8 100%)',
-      accent: '#F8C861',
-      label: '高層フロアのイメージ',
     },
     red: {
       background: 'radial-gradient(circle at 18% 72%, rgba(255,255,255,0.20), transparent 22%), linear-gradient(135deg, #8F1D28 0%, #C6252D 55%, #F8C861 100%)',
-      accent: '#FFF0EF',
-      label: '屋上BBQのイメージ',
     },
     gold: {
       background: 'radial-gradient(circle at 78% 26%, rgba(255,255,255,0.46), transparent 26%), linear-gradient(135deg, #8A5C00 0%, #D99A18 52%, #FFF7D8 100%)',
-      accent: '#071A4D',
-      label: '駅近テラスのイメージ',
     },
   }[tone];
+  const imageAlt = pick.imageAlt ?? pick.name;
   return (
     <article className="feature-card" style={{ overflow: 'hidden' }}>
-      <div style={{ minHeight: 112, padding: 14, background: palette.background, color: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ minHeight: 132, padding: 14, background: palette.background, color: '#fff', position: 'relative', overflow: 'hidden' }}>
+        {pick.imageUrl && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={pick.imageUrl} alt={imageAlt} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', zIndex: 0 }} />
+            <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(7,26,77,0.10) 0%, rgba(7,26,77,0.44) 100%)', zIndex: 0 }} />
+          </>
+        )}
         <span style={{ position: 'absolute', right: -24, bottom: -24, width: 100, height: 100, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.28)' }} />
         <span style={{ position: 'absolute', right: 18, bottom: 20, width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
         <span style={{ position: 'absolute', left: 58, top: 20, width: 1, height: 76, background: 'rgba(255,255,255,0.24)', transform: 'rotate(18deg)', transformOrigin: 'top center' }} />
@@ -1461,9 +1463,6 @@ function FeaturePickCard({ pick, index }: { pick: FeaturePick; index: number }) 
           {index + 1}
         </span>
         <p style={{ position: 'absolute', right: 12, top: 12, margin: 0, borderRadius: 999, background: 'rgba(255,255,255,0.18)', color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 900 }}>{pick.area}</p>
-        <p style={{ position: 'absolute', left: 14, bottom: 12, margin: 0, color: tone !== 'gold' ? '#fff' : '#071A4D', background: tone === 'gold' ? 'rgba(255,255,255,0.68)' : 'rgba(255,255,255,0.16)', borderRadius: 999, padding: '5px 10px', fontSize: 10, fontWeight: 900 }}>
-          {palette.label}
-        </p>
       </div>
       <div style={{ padding: 14 }}>
         <h3 style={{ margin: 0, color: '#071A4D', fontSize: 15, lineHeight: 1.45, fontWeight: 900 }}>{pick.name}</h3>
@@ -2215,10 +2214,13 @@ function InfoGrid({ items }: { items: ShopInfoItem[] }) {
 }
 
 function RelatedCard({ item }: { item: ArticleRelated }) {
+  const imageUrl = item.imageUrl;
+  const hasImage = Boolean(imageUrl);
+  const imageAlt = item.imageAlt ?? item.title;
   return (
     <Link href={item.href} style={{
       display: 'grid',
-      gridTemplateColumns: '82px 1fr 18px',
+      gridTemplateColumns: hasImage ? '82px 1fr 18px' : '1fr 18px',
       alignItems: 'center',
       gap: 11,
       borderRadius: 18,
@@ -2228,9 +2230,12 @@ function RelatedCard({ item }: { item: ArticleRelated }) {
       textDecoration: 'none',
       minWidth: 0,
     }}>
-      <div style={{ height: 64, borderRadius: 13, background: 'linear-gradient(135deg, #FFF0EF 0%, #FFF7D8 100%)', display: 'grid', placeItems: 'center' }}>
-        <CameraIcon />
-      </div>
+      {imageUrl && (
+        <div style={{ height: 64, borderRadius: 13, background: '#F8FAFC', overflow: 'hidden' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imageUrl} alt={imageAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+      )}
       <div style={{ minWidth: 0 }}>
         {item.label && <span style={{ display: 'inline-flex', borderRadius: 999, background: '#FFF0EF', color: '#E8483F', padding: '3px 8px', fontSize: 10, fontWeight: 900 }}>{item.label}</span>}
         <p style={{ margin: '6px 0 0', color: '#071A4D', fontSize: 13, lineHeight: 1.45, fontWeight: 900, wordBreak: 'normal', overflowWrap: 'normal', textWrap: 'pretty' }}>{item.title}</p>

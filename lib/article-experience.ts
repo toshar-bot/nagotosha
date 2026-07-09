@@ -38,6 +38,8 @@ export type ArticleRelated = {
   title: string;
   href: string;
   label?: string;
+  imageUrl?: string;
+  imageAlt?: string;
 };
 
 export type ArticleVisual = {
@@ -60,6 +62,9 @@ export type FeaturePick = {
   description: string;
   badges: string[];
   tone?: 'navy' | 'red' | 'gold';
+  imageUrl?: string;
+  imageAlt?: string;
+  imageCredit?: string;
 };
 
 export type FeatureVenue = {
@@ -139,6 +144,48 @@ export type NewsArticleData = {
   ctaHref: string;
   ctaLabel: string;
 };
+
+const ARTICLE_THUMBNAILS: Record<string, { imageUrl: string; imageAlt: string }> = {
+  '/article/32': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/chipao-maratan016.jpg',
+    imageAlt: '七宝麻辣湯 新栄店のマーラータン',
+  },
+  '/article/39': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/takashimaya-bakery-202606001.jpg',
+    imageAlt: 'JR名古屋タカシマヤ デリシャスコートのベーカリーリニューアルイメージ',
+  },
+  '/article/58': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/codex-clipboard-1bb1e995-d46b-4fc8-bfa6-69e6dd6cf39d.png',
+    imageAlt: '雨の日の名古屋で屋内スポットを探すイメージ',
+  },
+  '/article/66': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-morning-culture-eyecatch.png',
+    imageAlt: '小倉トーストとコーヒーのイラスト',
+  },
+  '/article/73': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-omiyage-eyecatch.png',
+    imageAlt: '明るい室内で包装された手土産と焼き菓子を並べたイメージ',
+  },
+  '/article/79': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
+    imageAlt: '名古屋の屋上ビアガーデンのイメージイラスト',
+  },
+  '/article/83': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg',
+    imageAlt: '名古屋の新店オープン情報2026年夏版',
+  },
+  '/article/92': {
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg',
+    imageAlt: 'PASTA MANIA 鶴舞店のイメージ',
+  },
+};
+
+function withRelatedThumbnails(related: ArticleRelated[]): ArticleRelated[] {
+  return related.map((item) => ({
+    ...ARTICLE_THUMBNAILS[item.href],
+    ...item,
+  }));
+}
 
 export type ShopSpotQuickCard = {
   icon: 'calendar' | 'food' | 'gift' | 'pin';
@@ -935,9 +982,36 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       ],
       audience: ['週末の予定を決めたい', '名駅・栄・金山で探したい', '雨でも行きやすい場所を知りたい', '会社帰りに行きたい', '予約前に比較したい'],
       picks: [
-        { name: '天空のビアガーデン CARVINO', area: '名駅', description: 'スカイプロムナード(44〜46F)内 / 高層展望フロア / 10月31日まで開催', badges: ['名駅', '高層階', 'WEB予約'], tone: 'navy' },
-        { name: 'ビアガーデン マイアミ 名古屋栄店', area: '栄', description: '栄駅周辺 / 体験型BBQ / 11月28日まで開催', badges: ['栄', '屋上', '公式確認'], tone: 'red' },
-        { name: 'アスナル金山ビアガーデン by Kumsan seoul', area: '金山', description: '駅徒歩約1分 / コリアンBBQ / 屋根付き席あり', badges: ['金山', '駅徒歩約1分', '屋根付き席'], tone: 'gold' },
+        {
+          name: '天空のビアガーデン CARVINO',
+          area: '名駅',
+          description: 'スカイプロムナード(44〜46F)内 / 高層展望フロア / 10月31日まで開催',
+          badges: ['名駅', '高層階', 'WEB予約'],
+          tone: 'navy',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
+          imageAlt: '天空のビアガーデン CARVINOを含む名古屋ビアガーデン特集のイメージ',
+          imageCredit: 'なごとしゃ編集部作成',
+        },
+        {
+          name: 'ビアガーデン マイアミ 名古屋栄店',
+          area: '栄',
+          description: '栄駅周辺 / 体験型BBQ / 11月28日まで開催',
+          badges: ['栄', '屋上', '公式確認'],
+          tone: 'red',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
+          imageAlt: 'ビアガーデン マイアミ 名古屋栄店を含む名古屋ビアガーデン特集のイメージ',
+          imageCredit: 'なごとしゃ編集部作成',
+        },
+        {
+          name: 'アスナル金山ビアガーデン by Kumsan seoul',
+          area: '金山',
+          description: '駅徒歩約1分 / コリアンBBQ / 屋根付き席あり',
+          badges: ['金山', '駅徒歩約1分', '屋根付き席'],
+          tone: 'gold',
+          imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
+          imageAlt: 'アスナル金山ビアガーデンを含む名古屋ビアガーデン特集のイメージ',
+          imageCredit: 'なごとしゃ編集部作成',
+        },
       ],
       venues: [
         {
@@ -1132,7 +1206,13 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
 };
 
 export function getArticleExperience(postId: number): ArticleExperienceData | undefined {
-  return EXPERIENCES[postId];
+  const experience = EXPERIENCES[postId];
+  if (!experience) return undefined;
+
+  return {
+    ...experience,
+    related: withRelatedThumbnails(experience.related),
+  };
 }
 
 export function getFeaturedNewOpenSpots(limit = 6): ShopSpot[] {
