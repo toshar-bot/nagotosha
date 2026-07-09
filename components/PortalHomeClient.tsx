@@ -184,6 +184,35 @@ const FEATURE_CARDS = [
   { title: '名古屋モーニング文化ガイド', copy: '初めてでも楽しめる喫茶店の朝時間を紹介。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-morning-culture-eyecatch.png', href: '/article/66', tag: 'モーニング' },
 ];
 
+const AREA_ARTICLE_LOOKUP = {
+  '79': { href: '/article/79', title: '名古屋ビアガーデン特集2026', label: '夏のおでかけ' },
+  '73': { href: '/article/73', title: '名古屋の手土産ガイド', label: '手土産' },
+  '66': { href: '/article/66', title: '名古屋モーニング文化ガイド', label: '喫茶店' },
+  '58': { href: '/article/58', title: '雨の日の屋内スポット7選', label: '雨の日' },
+  '39': { href: '/article/39', title: 'タカシマヤ デリシャスコート', label: '名駅ニュース' },
+  '32': { href: '/article/32', title: '七宝麻辣湯 新栄店', label: '新店' },
+  '92': { href: '/article/92', title: 'PASTA MANIA 鶴舞店', label: '新店' },
+  '83': { href: '/article/83', title: '名古屋の新店オープン情報', label: 'まとめ' },
+} as const;
+
+const AREA_EXPLORE_CARDS = [
+  { key: 'meieki', name: '名駅', hint: '駅近・手土産・百貨店', color: '#F05F6A', articleIds: ['73', '66', '39'] },
+  { key: 'sakae', name: '栄', hint: '夜ごはん・買い物・イベント', color: '#73B56B', articleIds: ['79', '58'] },
+  { key: 'osu', name: '大須', hint: '街歩き・カルチャー', color: '#F28A8A', articleIds: [] },
+  { key: 'kanayama', name: '金山', hint: '駅近・夏のおでかけ', color: '#F3C64F', articleIds: ['79'] },
+  { key: 'castle', name: '名古屋城周辺', hint: '観光・歴史さんぽ', color: '#79B58D', articleIds: [] },
+  { key: 'imaike', name: '今池', hint: '喫茶・音楽・夜の街', color: '#8B7CCB', articleIds: [] },
+  { key: 'kakuozan', name: '覚王山', hint: 'カフェ・散歩', color: '#71BDA1', articleIds: [] },
+  { key: 'shinsakae', name: '新栄', hint: '新店・ランチ', color: '#F08C45', articleIds: ['32'] },
+] as const;
+
+const AREA_POPULAR_GROUPS = [
+  { key: 'meieki', name: '名駅エリア', icon: 'tower', color: '#F05F6A', articleIds: ['73', '66', '39'] },
+  { key: 'sakae', name: '栄エリア', icon: 'wheel', color: '#73B56B', articleIds: ['79', '58'] },
+  { key: 'shinsakae', name: '新栄エリア', icon: 'shrine', color: '#F08C45', articleIds: ['32'] },
+  { key: 'tsurumai', name: '鶴舞エリア', icon: 'castle', color: '#6AA4D8', articleIds: ['92'] },
+] as const;
+
 const FALLBACK_ARTICLES = [
   { id: 'mock-article-1', title: JP.articleCafe, description: '駅近で立ち寄りやすい、気分を変えるカフェ時間。', tag: JP.focus, area: JP.nakaSakae, publishedAt: '2026.06.16', imageUrl: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80' },
   { id: 'mock-article-2', title: JP.articleRestaurant, description: '名駅で見つけたい、新しい夜ごはんの候補。', tag: 'NEW', area: JP.nakamuraMeieki, publishedAt: '2026.06.14', imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80' },
@@ -1155,34 +1184,47 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 }
 
 function AreaCtaSection() {
-  const areaCards = [
-    { label: '名駅エリア', hint: '駅近グルメ・手土産', tone: '#EAF4FF', visual: 'meieki' },
-    { label: '栄エリア', hint: '新店・イベント', tone: '#EFF8E9', visual: 'sakae' },
-    { label: '大須エリア', hint: '街歩き・カルチャー', tone: '#FFF0EF', visual: 'osu' },
-    { label: '金山エリア', hint: '夜ごはん・おでかけ', tone: '#FFF7D8', visual: 'kanayama' },
-    { label: '今池エリア', hint: '喫茶・音楽・夜の街', tone: '#F3F0FF', visual: 'imaike' },
-    { label: '覚王山エリア', hint: 'カフェ・散歩', tone: '#EEF8F4', visual: 'kakuozan' },
-  ];
   return (
-    <section style={{ padding: '8px 0 18px' }}>
+    <>
+      <AreaExploreSection />
+      <AreaPopularArticlesSection />
+    </>
+  );
+}
+
+function AreaExploreSection() {
+  return (
+    <section style={{ padding: '10px 0 18px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
         <SectionKicker en="AREA" ja="エリアから探す" align="left" />
         <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
           すべてのエリアを見る {String.fromCharCode(8250)}
         </Link>
       </div>
-      <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '4px 16px 8px' }}>
-        {areaCards.map((area) => (
-          <Link key={area.label} href="/area" style={{
-            flexShrink: 0, width: 154, minHeight: 132, padding: '12px', borderRadius: 18,
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            background: area.tone, color: THEME.navy, textDecoration: 'none',
+      <div className="home-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '4px 16px 10px' }}>
+        {AREA_EXPLORE_CARDS.map((area) => (
+          <Link key={area.key} href="/area" style={{
+            flexShrink: 0,
+            width: 146,
+            minHeight: 166,
+            padding: 10,
+            borderRadius: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#fff',
+            color: THEME.navy,
+            textDecoration: 'none',
             border: '1px solid rgba(7,26,77,.08)',
-            boxShadow: '0 7px 18px rgba(7,26,77,0.08)',
+            boxShadow: '0 10px 24px rgba(7,26,77,0.09)',
           }}>
-            <AreaVisual kind={area.visual} />
-            <span style={{ fontSize: 13, fontWeight: 950, lineHeight: 1.25 }}>{area.label}</span>
-            <span style={{ fontSize: 10, fontWeight: 800, color: THEME.gray }}>{area.hint}</span>
+            <AreaMapVisual areaKey={area.key} color={area.color} />
+            <span style={{ marginTop: 10, fontSize: 14, fontWeight: 950, lineHeight: 1.2 }}>{area.name}エリア</span>
+            <span style={{ marginTop: 4, minHeight: 28, fontSize: 10.5, fontWeight: 800, lineHeight: 1.35, color: THEME.gray }}>{area.hint}</span>
+            {area.articleIds.length > 0 && (
+              <span style={{ marginTop: 8, width: 'fit-content', borderRadius: 999, background: '#FFF4D7', color: '#8A6400', fontSize: 10, fontWeight: 950, padding: '4px 8px' }}>
+                掲載中 {area.articleIds.length}本
+              </span>
+            )}
           </Link>
         ))}
       </div>
@@ -1190,56 +1232,124 @@ function AreaCtaSection() {
   );
 }
 
-function AreaVisual({ kind }: { kind: string }) {
+function AreaPopularArticlesSection() {
+  return (
+    <section style={{ padding: '2px 16px 22px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+        <SectionKicker en="AREA ARTICLES" ja="エリア別人気記事" align="left" />
+        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
+          すべて見る {String.fromCharCode(8250)}
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {AREA_POPULAR_GROUPS.map((group) => {
+          const articles = group.articleIds
+            .map((id) => AREA_ARTICLE_LOOKUP[id as keyof typeof AREA_ARTICLE_LOOKUP])
+            .filter(Boolean)
+            .slice(0, 3);
+
+          return (
+            <article key={group.key} style={{
+              minWidth: 0,
+              borderRadius: 18,
+              background: '#fff',
+              border: '1px solid rgba(7,26,77,.08)',
+              boxShadow: '0 9px 22px rgba(7,26,77,0.08)',
+              padding: 12,
+              overflow: 'hidden',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <AreaMiniIcon kind={group.icon} color={group.color} />
+                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 12.5, fontWeight: 950, lineHeight: 1.25 }}>{group.name}</h3>
+              </div>
+              <div style={{ display: 'grid', gap: 8 }}>
+                {articles.map((article) => (
+                  <Link key={article.href} href={article.href} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 7, alignItems: 'start', color: THEME.text, textDecoration: 'none' }}>
+                    <span style={{ marginTop: 2, width: 6, height: 6, borderRadius: 999, background: group.color, boxShadow: '0 0 0 3px rgba(7,26,77,.05)' }} />
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: 'block', color: THEME.red, fontSize: 9, fontWeight: 950, lineHeight: 1.2 }}>{article.label}</span>
+                      <span style={{ display: 'block', marginTop: 2, color: THEME.text, fontSize: 11, fontWeight: 850, lineHeight: 1.38 }}>{article.title}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function AreaMapVisual({ areaKey, color }: { areaKey: string; color: string }) {
   const base = {
     width: '100%',
-    height: 62,
+    height: 92,
     borderRadius: 14,
-    background: 'linear-gradient(180deg,#FFFFFF 0%,rgba(255,255,255,.72) 100%)',
+    background: 'linear-gradient(180deg,#F8FBFF 0%,#FFFFFF 100%)',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.07), 0 5px 12px rgba(7,26,77,.06)',
+    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.07)',
   };
+  const shapes = getAreaMapShapes(areaKey);
+
   return (
     <span aria-hidden style={base}>
-      <span style={{ position: 'absolute', inset: 0, background: kind === 'imaike' ? 'linear-gradient(180deg,#21194D 0%,#44306C 58%,#FFF3C4 100%)' : 'linear-gradient(180deg,#EAF7FF 0%,#FFFFFF 62%,#FFEFD6 100%)', opacity: kind === 'imaike' ? 0.88 : 1 }} />
-      {(kind === 'meieki' || kind === 'sakae') && (
-        <>
-          <span style={{ position: 'absolute', left: 18, bottom: 13, width: 16, height: kind === 'meieki' ? 40 : 30, borderRadius: '4px 4px 0 0', background: '#071A4D' }} />
-          <span style={{ position: 'absolute', left: 39, bottom: 13, width: 20, height: kind === 'meieki' ? 50 : 38, borderRadius: '5px 5px 0 0', background: '#E8483F' }} />
-          <span style={{ position: 'absolute', left: 64, bottom: 13, width: 15, height: 28, borderRadius: '4px 4px 0 0', background: '#F8C861' }} />
-          {kind === 'sakae' && <span style={{ position: 'absolute', right: 24, bottom: 13, width: 18, height: 44, borderRadius: 999, border: '3px solid #071A4D' }} />}
-        </>
-      )}
-      {kind === 'osu' && (
-        <>
-          <span style={{ position: 'absolute', left: 16, top: 12, width: 62, height: 24, borderRadius: '999px 999px 10px 10px', border: '4px solid #E8483F', borderBottom: 'none' }} />
-          <span style={{ position: 'absolute', left: 20, bottom: 14, width: 58, height: 18, borderRadius: 6, background: '#071A4D' }} />
-          <span style={{ position: 'absolute', right: 20, bottom: 17, width: 24, height: 24, borderRadius: '50% 50% 44% 44%', background: '#F8C861' }} />
-        </>
-      )}
-      {kind === 'kanayama' && (
-        <>
-          <span style={{ position: 'absolute', left: 18, bottom: 17, width: 86, height: 7, borderRadius: 99, background: '#071A4D' }} />
-          <span style={{ position: 'absolute', left: 26, bottom: 27, width: 66, height: 18, borderRadius: 6, background: '#E8483F' }} />
-          <span style={{ position: 'absolute', right: 18, top: 15, width: 14, height: 14, borderRadius: '50%', background: '#F8C861' }} />
-        </>
-      )}
-      {kind === 'imaike' && (
-        <>
-          <span style={{ position: 'absolute', left: 18, bottom: 15, width: 26, height: 32, borderRadius: 6, background: '#F8C861' }} />
-          <span style={{ position: 'absolute', left: 52, bottom: 15, width: 14, height: 42, borderRadius: 6, background: '#FFF' }} />
-          <span style={{ position: 'absolute', right: 24, bottom: 18, width: 34, height: 18, borderRadius: 999, border: '3px solid #E8483F' }} />
-        </>
-      )}
-      {kind === 'kakuozan' && (
-        <>
-          <span style={{ position: 'absolute', left: 18, bottom: 15, width: 48, height: 28, borderRadius: '9px 9px 4px 4px', background: '#071A4D' }} />
-          <span style={{ position: 'absolute', left: 28, top: 13, width: 28, height: 24, transform: 'rotate(45deg)', borderRadius: 5, background: '#E8483F' }} />
-          <span style={{ position: 'absolute', right: 18, bottom: 18, width: 24, height: 24, borderRadius: '50%', background: '#F8C861' }} />
-        </>
-      )}
-      <span style={{ position: 'absolute', left: 0, right: 0, bottom: 12, height: 2, background: 'rgba(7,26,77,.16)' }} />
+      <span style={{ position: 'absolute', inset: 9, borderRadius: 12, background: 'linear-gradient(135deg, rgba(7,26,77,.04), rgba(232,72,63,.03))' }} />
+      <span style={{ position: 'absolute', left: 14, top: 20, right: 14, height: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(-10deg)' }} />
+      <span style={{ position: 'absolute', left: 18, bottom: 22, right: 18, height: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(8deg)' }} />
+      <span style={{ position: 'absolute', left: 38, top: 12, bottom: 14, width: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(8deg)' }} />
+      <span style={{ position: 'absolute', right: 34, top: 16, bottom: 12, width: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(-6deg)' }} />
+      {shapes.map((shape, index) => (
+        <span key={index} style={{
+          position: 'absolute',
+          left: shape.left,
+          top: shape.top,
+          width: shape.width,
+          height: shape.height,
+          borderRadius: shape.radius,
+          background: index === 0 ? color : shape.color,
+          opacity: index === 0 ? 0.95 : 0.24,
+          transform: `rotate(${shape.rotate}deg)`,
+          boxShadow: index === 0 ? '0 8px 16px rgba(7,26,77,.12)' : 'none',
+        }} />
+      ))}
+      <span style={{ position: 'absolute', right: 12, top: 12, width: 18, height: 18, borderRadius: 999, background: '#fff', display: 'grid', placeItems: 'center', color, boxShadow: '0 5px 12px rgba(7,26,77,.10)' }}>
+        <PinIcon />
+      </span>
+    </span>
+  );
+}
+
+function getAreaMapShapes(areaKey: string) {
+  const shared = [
+    { left: 18, top: 16, width: 44, height: 36, radius: '36% 58% 42% 48%', rotate: -10, color: '#E8483F' },
+    { left: 60, top: 18, width: 34, height: 32, radius: '44% 38% 52% 42%', rotate: 12, color: '#73B56B' },
+    { left: 34, top: 52, width: 42, height: 28, radius: '42% 44% 54% 38%', rotate: 7, color: '#F3C64F' },
+    { left: 78, top: 50, width: 30, height: 26, radius: '44% 55% 39% 52%', rotate: -8, color: '#6AA4D8' },
+  ];
+
+  const focus: Record<string, number> = {
+    meieki: 0,
+    sakae: 1,
+    osu: 2,
+    kanayama: 3,
+    castle: 0,
+    imaike: 1,
+    kakuozan: 2,
+    shinsakae: 3,
+  };
+  const focusIndex = focus[areaKey] ?? 0;
+  return [shared[focusIndex], ...shared.filter((_, index) => index !== focusIndex)];
+}
+
+function AreaMiniIcon({ kind, color }: { kind: string; color: string }) {
+  return (
+    <span aria-hidden style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, background: color + '1F', color, display: 'grid', placeItems: 'center' }}>
+      {kind === 'tower' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 7 21h10L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12h6M8 17h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
+      {kind === 'wheel' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 5v14M5 12h14M7.1 7.1l9.8 9.8M16.9 7.1l-9.8 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+      {kind === 'shrine' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 10h14L12 4 5 10Z" fill="currentColor" opacity=".2"/><path d="M5 10h14M7 10v9M17 10v9M9 14h6M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      {kind === 'castle' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 20V9l3 2 3-2 3 2 3-2v11H6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 20v-5h6v5M8 6h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
     </span>
   );
 }
