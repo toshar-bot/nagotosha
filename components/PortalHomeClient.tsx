@@ -184,16 +184,11 @@ const FEATURE_CARDS = [
   { title: '名古屋モーニング文化ガイド', copy: '初めてでも楽しめる喫茶店の朝時間を紹介。', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-morning-culture-eyecatch.png', href: '/article/66', tag: 'モーニング' },
 ];
 
-const AREA_ARTICLE_LOOKUP = {
-  '79': { href: '/article/79', title: '名古屋ビアガーデン特集2026', label: '夏のおでかけ' },
-  '73': { href: '/article/73', title: '名古屋の手土産ガイド', label: '手土産' },
-  '66': { href: '/article/66', title: '名古屋モーニング文化ガイド', label: '喫茶店' },
-  '58': { href: '/article/58', title: '雨の日の屋内スポット7選', label: '雨の日' },
-  '39': { href: '/article/39', title: 'タカシマヤ デリシャスコート', label: '名駅ニュース' },
-  '32': { href: '/article/32', title: '七宝麻辣湯 新栄店', label: '新店' },
-  '92': { href: '/article/92', title: 'PASTA MANIA 鶴舞店', label: '新店' },
-  '83': { href: '/article/83', title: '名古屋の新店オープン情報', label: 'まとめ' },
-} as const;
+const EDITOR_CHOICE_CARDS = [
+  { title: '名古屋ビアガーデン特集2026', href: '/article/79', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', tag: '夏のおでかけ' },
+  { title: '名古屋の新店オープン情報2026年夏版', href: '/article/83', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg', tag: '新店まとめ' },
+  { title: 'PASTA MANIA 鶴舞店', href: '/article/92', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg', tag: '鶴舞' },
+] as const;
 
 const AREA_EXPLORE_CARDS = [
   { key: 'meieki', name: '名駅', hint: '駅近・手土産・百貨店', color: '#F05F6A', articleIds: ['73', '66', '39'] },
@@ -204,13 +199,6 @@ const AREA_EXPLORE_CARDS = [
   { key: 'imaike', name: '今池', hint: '喫茶・音楽・夜の街', color: '#8B7CCB', articleIds: [] },
   { key: 'kakuozan', name: '覚王山', hint: 'カフェ・散歩', color: '#71BDA1', articleIds: [] },
   { key: 'shinsakae', name: '新栄', hint: '新店・ランチ', color: '#F08C45', articleIds: ['32'] },
-] as const;
-
-const AREA_POPULAR_GROUPS = [
-  { key: 'meieki', name: '名駅エリア', icon: 'tower', color: '#F05F6A', articleIds: ['73', '66', '39'] },
-  { key: 'sakae', name: '栄エリア', icon: 'wheel', color: '#73B56B', articleIds: ['79', '58'] },
-  { key: 'shinsakae', name: '新栄エリア', icon: 'shrine', color: '#F08C45', articleIds: ['32'] },
-  { key: 'tsurumai', name: '鶴舞エリア', icon: 'castle', color: '#6AA4D8', articleIds: ['92'] },
 ] as const;
 
 const FALLBACK_ARTICLES = [
@@ -266,6 +254,7 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
         <HeroSection />
         <FreshArticlesSection articles={articles} />
         <NewsSection />
+        <EditorChoiceSection />
         <FeaturesSection />
         <AreaCtaSection />
         <ArticlesSection articles={articles} />
@@ -573,6 +562,29 @@ function NewOpenSection() {
   );
 }
 
+function EditorChoiceSection() {
+  return (
+    <section style={{ padding: '18px 16px 16px' }}>
+      <div style={{ marginBottom: 12 }}>
+        <SectionKicker en="EDITOR'S CHOICE" ja="編集部が今推す3本" align="left" />
+      </div>
+      <div className="grid grid-cols-3 gap-2.5">
+        {EDITOR_CHOICE_CARDS.map((item) => (
+          <Link key={item.href} href={item.href} className="block min-w-0 text-inherit no-underline" aria-label={item.title}>
+            <article style={{ overflow: 'hidden', borderRadius: 16, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 8px 18px rgba(7,26,77,.08)' }}>
+              <div style={{ height: 72, ...bgPhoto(item.imageUrl) }} />
+              <div style={{ padding: '8px 8px 9px' }}>
+                <p style={{ display: 'inline-flex', margin: 0, borderRadius: 999, background: '#FFF4D7', color: '#8A6400', padding: '3px 6px', fontSize: 9, lineHeight: 1, fontWeight: 900 }}>{item.tag}</p>
+                <h3 style={{ margin: '6px 0 0', color: THEME.navy, fontSize: 11.2, fontWeight: 950, lineHeight: 1.34 }}>{item.title}</h3>
+              </div>
+            </article>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FeaturesSection() {
   return (
     <section className="px-4 py-5">
@@ -669,7 +681,7 @@ function GachaSection({ articles }: { articles: ArticleLike[] }) {
   const previewCards: HomeGachaPreviewCard[] = [
     {
       title: '東山動植物園',
-      category: '人気の動物園',
+      category: '動物園',
       imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Koala_in_Higashiyama_Zoo_-_4.jpg',
       className: 'left-[6%] bottom-[8%]',
       rotate: '-9deg',
@@ -1064,13 +1076,11 @@ function EventCtaSection() {
 
 type HomeNewsCard = {
   title: string;
-  description: string;
   href: string;
-  badge: string;
   imageUrl: string;
   background: string;
-  meta?: string;
-  imageCredit?: string;
+  openLabel: string;
+  areaTag: string;
 };
 
 function NewsSection() {
@@ -1078,24 +1088,22 @@ function NewsSection() {
   const resumeTimerRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
   const roundupCard: HomeNewsCard = {
-      title: '名古屋の新店オープン情報2026年夏版',
-      description: '栄・鶴舞・新栄で気になる新店を、公式情報ベースでまとめました。',
-      href: '/article/83',
-      badge: '新店まとめ',
-      imageUrl: '',
-      background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
-    };
+    title: '名古屋の新店オープン情報',
+    href: '/article/83',
+    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg',
+    background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
+    openLabel: '2026夏版',
+    areaTag: '名古屋',
+  };
   const storeCards: HomeNewsCard[] = getFeaturedNewOpenSpots(8)
     .filter((spot) => spot.articleUrl === '/article/92' || spot.articleUrl === '/article/32')
     .map((spot) => ({
       title: spot.name,
-      description: spot.summary,
       href: spot.articleUrl,
-      badge: 'NEW OPEN',
       imageUrl: spot.imageUrl || '',
       background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
-      meta: `${formatDate(spot.openDate)} OPEN / ${spot.areaLabel}`,
-      imageCredit: spot.imageCredit,
+      openLabel: `${formatDate(spot.openDate)} OPEN`,
+      areaTag: normalizeAreaTag(spot.areaLabel),
     }));
   const cards = [roundupCard, ...storeCards];
   const loopCards = [...cards, ...cards];
@@ -1138,17 +1146,14 @@ function NewsSection() {
   }, []);
 
   return (
-    <section style={{ padding: '18px 0 22px' }}>
+    <section style={{ padding: '16px 0 18px' }}>
       <div style={{ padding: '0 16px' }}>
         <SectionKicker en="NEW OPEN" ja="新店舗情報" align="left" />
-        <p style={{ margin: '8px 0 0', color: THEME.gray, fontSize: 13, lineHeight: 1.7, fontWeight: 800 }}>
-          名古屋で新しくできたお店と、新店まとめだけをゆっくり横に流します。
-        </p>
       </div>
       <div
         ref={scrollerRef}
         className="home-scroll flex overflow-x-auto"
-        style={{ gap: 12, padding: '14px 16px 4px', scrollBehavior: 'auto' }}
+        style={{ gap: 10, padding: '12px 16px 4px', scrollBehavior: 'auto' }}
         onTouchStart={pause}
         onTouchEnd={resumeLater}
         onPointerDown={pause}
@@ -1158,11 +1163,11 @@ function NewsSection() {
           <Link
             key={`${card.href}-${index}`}
             href={card.href}
-            style={{ flexShrink: 0, width: 264, color: 'inherit', textDecoration: 'none' }}
+            style={{ flexShrink: 0, width: 154, color: 'inherit', textDecoration: 'none' }}
             aria-label={card.title}
           >
-            <article style={{ overflow: 'hidden', borderRadius: 18, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 10px 24px rgba(7,26,77,.10)' }}>
-              <div style={{ height: 118, position: 'relative', background: card.imageUrl ? `linear-gradient(90deg, rgba(7,26,77,.68), rgba(7,26,77,.18)), url(${card.imageUrl})` : card.background, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
+            <article style={{ overflow: 'hidden', borderRadius: 16, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 7px 18px rgba(7,26,77,.08)' }}>
+              <div style={{ height: 88, position: 'relative', background: card.imageUrl ? `url(${card.imageUrl})` : card.background, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
                 {!card.imageUrl && (
                   <>
                     <span aria-hidden style={{ position: 'absolute', right: -22, bottom: -22, width: 96, height: 96, borderRadius: '50%', border: '1px solid rgba(7,26,77,.16)' }} />
@@ -1170,19 +1175,11 @@ function NewsSection() {
                     <span aria-hidden style={{ position: 'absolute', left: 58, top: 8, width: 1, height: 96, background: 'rgba(255,255,255,.28)', transform: 'rotate(18deg)' }} />
                   </>
                 )}
-                <span style={{ position: 'absolute', left: 12, top: 12, borderRadius: 999, background: THEME.red, color: '#fff', padding: '5px 10px', fontSize: 11, fontWeight: 950 }}>
-                  {card.badge}
-                </span>
               </div>
-              <div style={{ padding: 14 }}>
-                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 15, lineHeight: 1.45, fontWeight: 950 }}>{card.title}</h3>
-                {card.meta && (
-                  <p style={{ margin: '6px 0 0', color: THEME.red, fontSize: 10.5, lineHeight: 1.5, fontWeight: 950 }}>{card.meta}</p>
-                )}
-                <p style={{ margin: '7px 0 0', color: THEME.gray, fontSize: 12, lineHeight: 1.7, fontWeight: 800 }}>{card.description}</p>
-                {card.imageCredit && (
-                  <p style={{ margin: '7px 0 0', color: '#8A94A6', fontSize: 10, lineHeight: 1.45, fontWeight: 750 }}>画像出典: {card.imageCredit}</p>
-                )}
+              <div style={{ padding: '9px 10px 10px' }}>
+                <p style={{ margin: 0, color: THEME.red, fontSize: 10, lineHeight: 1.1, fontWeight: 950, letterSpacing: '0.02em' }}>{card.openLabel}</p>
+                <h3 style={{ margin: '5px 0 0', color: THEME.navy, fontSize: 13, lineHeight: 1.28, fontWeight: 950, minHeight: 34 }}>{card.title}</h3>
+                <p style={{ display: 'inline-flex', margin: '7px 0 0', borderRadius: 999, background: '#F4F7FB', color: THEME.gray, padding: '3px 7px', fontSize: 10, lineHeight: 1, fontWeight: 900 }}>{card.areaTag}</p>
               </div>
             </article>
           </Link>
@@ -1225,12 +1222,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 }
 
 function AreaCtaSection() {
-  return (
-    <>
-      <AreaExploreSection />
-      <AreaPopularArticlesSection />
-    </>
-  );
+  return <AreaExploreSection />;
 }
 
 function AreaExploreSection() {
@@ -1268,55 +1260,6 @@ function AreaExploreSection() {
             )}
           </Link>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function AreaPopularArticlesSection() {
-  return (
-    <section style={{ padding: '0 16px 16px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 9 }}>
-        <SectionKicker en="AREA PICKS" ja="エリア別人気記事" align="left" />
-        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
-          すべて見る {String.fromCharCode(8250)}
-        </Link>
-      </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        {AREA_POPULAR_GROUPS.map((group) => {
-          const articles = group.articleIds
-            .map((id) => AREA_ARTICLE_LOOKUP[id as keyof typeof AREA_ARTICLE_LOOKUP])
-            .filter(Boolean)
-            .slice(0, 3);
-
-          return (
-            <article key={group.key} style={{
-              minWidth: 0,
-              borderRadius: 14,
-              background: '#fff',
-              border: '1px solid rgba(7,26,77,.08)',
-              boxShadow: '0 7px 16px rgba(7,26,77,0.07)',
-              padding: '8px 8px 9px',
-              overflow: 'hidden',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <AreaMiniIcon kind={group.icon} color={group.color} />
-                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 11.5, fontWeight: 950, lineHeight: 1.2 }}>{group.name}</h3>
-              </div>
-              <div style={{ display: 'grid', gap: 4 }}>
-                {articles.map((article) => (
-                  <Link key={article.href} href={article.href} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 4, alignItems: 'center', color: THEME.text, textDecoration: 'none' }}>
-                    <span style={{ width: 4, height: 4, borderRadius: 999, background: group.color, boxShadow: '0 0 0 2px rgba(7,26,77,.05)' }} />
-                    <span style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                      <span style={{ flexShrink: 0, color: THEME.red, fontSize: 8, fontWeight: 950, lineHeight: 1.15 }}>{article.label}</span>
-                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: THEME.text, fontSize: 9.8, fontWeight: 850, lineHeight: 1.35 }}>{article.title}</span>
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </article>
-          );
-        })}
       </div>
     </section>
   );
@@ -1396,17 +1339,6 @@ function getAreaMapShapes(areaKey: string) {
   return [shared[focusIndex], ...shared.filter((_, index) => index !== focusIndex)];
 }
 
-function AreaMiniIcon({ kind, color }: { kind: string; color: string }) {
-  return (
-    <span aria-hidden style={{ width: 25, height: 25, borderRadius: 9, flexShrink: 0, background: color + '1F', color, display: 'grid', placeItems: 'center' }}>
-      {kind === 'tower' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3 7 21h10L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12h6M8 17h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
-      {kind === 'wheel' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 5v14M5 12h14M7.1 7.1l9.8 9.8M16.9 7.1l-9.8 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-      {kind === 'shrine' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M5 10h14L12 4 5 10Z" fill="currentColor" opacity=".2"/><path d="M5 10h14M7 10v9M17 10v9M9 14h6M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-      {kind === 'castle' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 20V9l3 2 3-2 3 2 3-2v11H6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 20v-5h6v5M8 6h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
-    </span>
-  );
-}
-
 function StoreOwnerSection() {
   return (
     <section style={{ padding: '20px 16px 18px' }}>
@@ -1464,6 +1396,16 @@ function SectionKicker({ en, ja, align = 'center' }: { en: string; ja: string; a
 
 function bgPhoto(url: string): CSSProperties { return { backgroundImage: 'url("' + url + '")', backgroundSize: 'cover', backgroundPosition: 'center' }; }
 function formatDate(date?: string) { if (!date) return '2026.06'; if (/^\d{4}\.\d{2}\.\d{2}$/.test(date)) return date; if (/^\d{4}-\d{2}-\d{2}/.test(date)) return date.slice(0, 10).replace(/-/g, '.'); return date; }
+function normalizeAreaTag(area?: string) {
+  if (!area) return '名古屋';
+  if (area.includes('鶴舞')) return '鶴舞';
+  if (area.includes('新栄')) return '新栄';
+  if (area.includes('名駅') || area.includes('名古屋駅')) return '名駅';
+  if (area.includes('栄')) return '栄';
+  if (area.includes('大須')) return '大須';
+  if (area.includes('金山')) return '金山';
+  return area.split(/[ /／・]/)[0] || area;
+}
 
 function SectionTitleIcon({ kind }: { kind: string }) {
   if (kind === 'RANKING') {
