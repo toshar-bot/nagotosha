@@ -246,7 +246,6 @@ export function ArticleExperience({
   dateStr,
   articleId,
   postId,
-  postLink,
   experience,
 }: Props) {
   const [saved, setSaved] = useState(false);
@@ -662,13 +661,6 @@ export function ArticleExperience({
             </a>
           </section>
         )}
-
-        <section style={{ padding: '0 14px', marginTop: 14 }}>
-          <a href={postLink} target="_blank" rel="noopener noreferrer" style={secondaryLinkStyle}>
-            WordPress記事ページを開く
-            <ExternalIcon />
-          </a>
-        </section>
 
         {content && (
           <SectionCard title="本文">
