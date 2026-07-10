@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
 import Link from 'next/link';
 
+import { MoodPicksSection } from '@/components/MoodPicksSection';
 import { getFeaturedNewOpenSpots } from '@/lib/article-experience';
 import type { FeaturedArticle } from '@/types/portal';
 
@@ -188,17 +189,6 @@ const EDITOR_CHOICE_CARDS = [
   { title: '名古屋ビアガーデン特集2026', href: '/article/79', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png', tag: '夏のおでかけ' },
   { title: '名古屋の新店オープン情報2026年夏版', href: '/article/83', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg', tag: '新店まとめ' },
   { title: 'PASTA MANIA 鶴舞店', href: '/article/92', imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-pasta-mania-tsurumai-prtimes.jpg', tag: '鶴舞' },
-] as const;
-
-const AREA_EXPLORE_CARDS = [
-  { key: 'meieki', name: '名駅', hint: '駅近・手土産・百貨店', color: '#F05F6A', articleIds: ['73', '66', '39'] },
-  { key: 'sakae', name: '栄', hint: '夜ごはん・買い物・イベント', color: '#73B56B', articleIds: ['79', '58'] },
-  { key: 'osu', name: '大須', hint: '街歩き・カルチャー', color: '#F28A8A', articleIds: [] },
-  { key: 'kanayama', name: '金山', hint: '駅近・夏のおでかけ', color: '#F3C64F', articleIds: ['79'] },
-  { key: 'castle', name: '名古屋城周辺', hint: '観光・歴史さんぽ', color: '#79B58D', articleIds: [] },
-  { key: 'imaike', name: '今池', hint: '喫茶・音楽・夜の街', color: '#8B7CCB', articleIds: [] },
-  { key: 'kakuozan', name: '覚王山', hint: 'カフェ・散歩', color: '#71BDA1', articleIds: [] },
-  { key: 'shinsakae', name: '新栄', hint: '新店・ランチ', color: '#F08C45', articleIds: ['32'] },
 ] as const;
 
 const FALLBACK_ARTICLES = [
@@ -1222,121 +1212,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 }
 
 function AreaCtaSection() {
-  return <AreaExploreSection />;
-}
-
-function AreaExploreSection() {
-  return (
-    <section style={{ padding: '8px 0 12px' }}>
-      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 9 }}>
-        <SectionKicker en="AREA" ja="エリアから探す" align="left" />
-        <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
-          すべてのエリアを見る {String.fromCharCode(8250)}
-        </Link>
-      </div>
-      <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '3px 16px 8px' }}>
-        {AREA_EXPLORE_CARDS.map((area) => (
-          <Link key={area.key} href="/area" style={{
-            flexShrink: 0,
-            width: 126,
-            minHeight: 128,
-            padding: 8,
-            borderRadius: 17,
-            display: 'flex',
-            flexDirection: 'column',
-            background: '#fff',
-            color: THEME.navy,
-            textDecoration: 'none',
-            border: '1px solid rgba(7,26,77,.08)',
-            boxShadow: '0 8px 18px rgba(7,26,77,0.08)',
-          }}>
-            <AreaMapVisual areaKey={area.key} color={area.color} />
-            <span style={{ marginTop: 6, fontSize: 12.5, fontWeight: 950, lineHeight: 1.2 }}>{area.name}エリア</span>
-            <span style={{ marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 800, lineHeight: 1.35, color: THEME.gray }}>{area.hint}</span>
-            {area.articleIds.length > 0 && (
-              <span style={{ marginTop: 5, width: 'fit-content', borderRadius: 999, background: '#FFF4D7', color: '#8A6400', fontSize: 9, fontWeight: 950, padding: '2px 6px' }}>
-                掲載中 {area.articleIds.length}本
-              </span>
-            )}
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AreaMapVisual({ areaKey, color }: { areaKey: string; color: string }) {
-  const base = {
-    width: '100%',
-    height: 62,
-    borderRadius: 12,
-    background: 'linear-gradient(180deg,#F7FBF5 0%,#FDF7EE 100%)',
-    position: 'relative' as const,
-    overflow: 'hidden' as const,
-    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.075)',
-  };
-  const shapes = getAreaMapShapes(areaKey);
-
-  return (
-    <span aria-hidden style={base}>
-      <span style={{ position: 'absolute', inset: 6, borderRadius: 10, background: 'linear-gradient(135deg, rgba(255,255,255,.70), rgba(7,26,77,.025))' }} />
-      <span style={{ position: 'absolute', left: -12, top: 24, width: 138, height: 3, borderRadius: 999, background: 'rgba(255,255,255,.92)', boxShadow: '0 0 0 1px rgba(7,26,77,.035)', transform: 'rotate(-11deg)' }} />
-      <span style={{ position: 'absolute', left: 8, bottom: 16, width: 116, height: 2, borderRadius: 999, background: 'rgba(255,255,255,.9)', boxShadow: '0 0 0 1px rgba(7,26,77,.035)', transform: 'rotate(7deg)' }} />
-      <span style={{ position: 'absolute', left: 37, top: -8, height: 88, width: 2, borderRadius: 999, background: 'rgba(255,255,255,.86)', boxShadow: '0 0 0 1px rgba(7,26,77,.03)', transform: 'rotate(7deg)' }} />
-      <span style={{ position: 'absolute', right: 31, top: -6, height: 86, width: 2, borderRadius: 999, background: 'rgba(255,255,255,.86)', boxShadow: '0 0 0 1px rgba(7,26,77,.03)', transform: 'rotate(-8deg)' }} />
-      {shapes.map((shape, index) => (
-        <span key={index} style={{
-          position: 'absolute',
-          left: shape.left,
-          top: shape.top,
-          width: shape.width,
-          height: shape.height,
-          borderRadius: 6,
-          clipPath: shape.clipPath,
-          background: index === 0 ? color : shape.color,
-          opacity: index === 0 ? 0.92 : 0.42,
-          transform: `rotate(${shape.rotate}deg)`,
-          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.68), 0 1px 4px rgba(7,26,77,.06)',
-        }} />
-      ))}
-      <span style={{ position: 'absolute', right: 8, top: 7, width: 14, height: 14, borderRadius: 999, background: '#fff', display: 'grid', placeItems: 'center', color, boxShadow: '0 4px 10px rgba(7,26,77,.10)' }}>
-        <PinIcon />
-      </span>
-    </span>
-  );
-}
-
-type AreaMapShape = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  rotate: number;
-  color: string;
-  clipPath: string;
-};
-
-function getAreaMapShapes(areaKey: string) {
-  const shared: AreaMapShape[] = [
-    { left: 12, top: 11, width: 38, height: 29, rotate: -7, color: '#E8483F', clipPath: 'polygon(10% 18%, 70% 4%, 94% 36%, 74% 90%, 18% 82%, 0 42%)' },
-    { left: 49, top: 8, width: 35, height: 30, rotate: 8, color: '#73B56B', clipPath: 'polygon(8% 6%, 82% 16%, 100% 60%, 62% 98%, 18% 76%, 0 34%)' },
-    { left: 23, top: 37, width: 43, height: 25, rotate: 5, color: '#F3C64F', clipPath: 'polygon(0 18%, 55% 0, 100% 34%, 78% 100%, 20% 86%)' },
-    { left: 69, top: 34, width: 35, height: 25, rotate: -6, color: '#6AA4D8', clipPath: 'polygon(16% 0, 90% 10%, 100% 62%, 54% 100%, 4% 72%, 0 28%)' },
-    { left: 83, top: 12, width: 24, height: 22, rotate: 4, color: '#F0A75B', clipPath: 'polygon(14% 0, 100% 20%, 86% 84%, 28% 100%, 0 44%)' },
-  ];
-
-  const focus: Record<string, number> = {
-    meieki: 0,
-    sakae: 1,
-    osu: 2,
-    kanayama: 3,
-    castle: 0,
-    imaike: 1,
-    kakuozan: 2,
-    shinsakae: 3,
-  };
-  const focusIndex = focus[areaKey] ?? 0;
-  return [shared[focusIndex], ...shared.filter((_, index) => index !== focusIndex)];
+  return <MoodPicksSection />;
 }
 
 function StoreOwnerSection() {
