@@ -577,7 +577,7 @@ function FeaturesSection() {
   return (
     <section className="px-4 py-5">
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
-        <SectionKicker en="FEATURES" ja="編集部イチオシ特集" align="left" />
+        <SectionKicker en="FEATURE" ja="特集" align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
           新着記事を見る {String.fromCharCode(8250)}
         </Link>
@@ -977,7 +977,7 @@ function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
   return (
     <section style={{ padding: '22px 0 20px' }}>
       <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <SectionKicker en="PICKS" ja="編集部おすすめ記事" align="left" />
+        <SectionKicker en="EDITOR'S PICK" ja="編集部おすすめ記事" align="left" />
         <Link href="/new" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>もっと見る {String.fromCharCode(8250)}</Link>
       </div>
       <div className="home-scroll flex overflow-x-auto" style={{ gap: 10, padding: '14px 16px 4px' }}>
@@ -1074,48 +1074,89 @@ type HomeNewsCard = {
 };
 
 function NewsSection() {
-  const curatedCards: HomeNewsCard[] = [
-    {
-      title: '名古屋ビアガーデン特集2026',
-      description: '名駅・栄・金山で夏に行きたい屋上・駅近ビアガーデンを、公式情報ベースで整理。',
-      href: '/article/79',
-      badge: '特集',
-      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/nagoya-beer-garden-2026-eyecatch.png',
-      background: 'linear-gradient(135deg, #071A4D 0%, #123B74 58%, #F8C861 100%)',
-    },
-    {
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const resumeTimerRef = useRef<number | null>(null);
+  const pausedRef = useRef(false);
+  const roundupCard: HomeNewsCard = {
       title: '名古屋の新店オープン情報2026年夏版',
-      description: '栄・鶴舞・港区で気になる新店・新スポットを、公式発表ベースでまとめました。',
+      description: '栄・鶴舞・新栄で気になる新店を、公式情報ベースでまとめました。',
       href: '/article/83',
       badge: '新店まとめ',
       imageUrl: '',
       background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
-    },
-  ];
-  const registryCards: HomeNewsCard[] = getFeaturedNewOpenSpots(6).map((spot) => ({
-    title: spot.name,
-    description: spot.summary,
-    href: spot.articleUrl,
-    badge: 'NEW OPEN',
-    imageUrl: spot.imageUrl || '',
-    background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
-    meta: `${formatDate(spot.openDate)} OPEN / ${spot.areaLabel}`,
-    imageCredit: spot.imageCredit,
-  }));
-  const cards = [...curatedCards, ...registryCards];
+    };
+  const storeCards: HomeNewsCard[] = getFeaturedNewOpenSpots(8)
+    .filter((spot) => spot.articleUrl === '/article/92' || spot.articleUrl === '/article/32')
+    .map((spot) => ({
+      title: spot.name,
+      description: spot.summary,
+      href: spot.articleUrl,
+      badge: 'NEW OPEN',
+      imageUrl: spot.imageUrl || '',
+      background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
+      meta: `${formatDate(spot.openDate)} OPEN / ${spot.areaLabel}`,
+      imageCredit: spot.imageCredit,
+    }));
+  const cards = [roundupCard, ...storeCards];
+  const loopCards = [...cards, ...cards];
+
+  const pause = () => {
+    pausedRef.current = true;
+    if (resumeTimerRef.current !== null) {
+      window.clearTimeout(resumeTimerRef.current);
+    }
+  };
+
+  const resumeLater = () => {
+    if (resumeTimerRef.current !== null) {
+      window.clearTimeout(resumeTimerRef.current);
+    }
+    resumeTimerRef.current = window.setTimeout(() => {
+      pausedRef.current = false;
+    }, 1200);
+  };
+
+  useEffect(() => {
+    const speed = 1.2;
+    const interval = window.setInterval(() => {
+      const el = scrollerRef.current;
+      if (el && !pausedRef.current && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft += speed;
+        const half = el.scrollWidth / 2;
+        if (half > 0 && el.scrollLeft >= half) {
+          el.scrollLeft -= half;
+        }
+      }
+    }, 50);
+
+    return () => {
+      window.clearInterval(interval);
+      if (resumeTimerRef.current !== null) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section style={{ padding: '18px 0 22px' }}>
       <div style={{ padding: '0 16px' }}>
-        <SectionKicker en="NEWS" ja="新店・名古屋ニュース" align="left" />
+        <SectionKicker en="NEW OPEN" ja="新店舗情報" align="left" />
         <p style={{ margin: '8px 0 0', color: THEME.gray, fontSize: 13, lineHeight: 1.7, fontWeight: 800 }}>
-          名古屋で新しくできたお店や、今行きたい特集を編集部がピックアップ。
+          名古屋で新しくできたお店と、新店まとめだけをゆっくり横に流します。
         </p>
       </div>
-      <div className="home-scroll flex overflow-x-auto" style={{ gap: 12, padding: '14px 16px 4px' }}>
-        {cards.map((card) => (
+      <div
+        ref={scrollerRef}
+        className="home-scroll flex overflow-x-auto"
+        style={{ gap: 12, padding: '14px 16px 4px', scrollBehavior: 'auto' }}
+        onTouchStart={pause}
+        onTouchEnd={resumeLater}
+        onPointerDown={pause}
+        onPointerUp={resumeLater}
+      >
+        {loopCards.map((card, index) => (
           <Link
-            key={card.href}
+            key={`${card.href}-${index}`}
             href={card.href}
             style={{ flexShrink: 0, width: 264, color: 'inherit', textDecoration: 'none' }}
             aria-label={card.title}
@@ -1194,34 +1235,34 @@ function AreaCtaSection() {
 
 function AreaExploreSection() {
   return (
-    <section style={{ padding: '10px 0 18px' }}>
-      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
+    <section style={{ padding: '8px 0 12px' }}>
+      <div style={{ padding: '0 16px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 9 }}>
         <SectionKicker en="AREA" ja="エリアから探す" align="left" />
         <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
           すべてのエリアを見る {String.fromCharCode(8250)}
         </Link>
       </div>
-      <div className="home-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '4px 16px 10px' }}>
+      <div className="home-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', padding: '3px 16px 8px' }}>
         {AREA_EXPLORE_CARDS.map((area) => (
           <Link key={area.key} href="/area" style={{
             flexShrink: 0,
-            width: 146,
-            minHeight: 166,
-            padding: 10,
-            borderRadius: 20,
+            width: 126,
+            minHeight: 128,
+            padding: 8,
+            borderRadius: 17,
             display: 'flex',
             flexDirection: 'column',
             background: '#fff',
             color: THEME.navy,
             textDecoration: 'none',
             border: '1px solid rgba(7,26,77,.08)',
-            boxShadow: '0 10px 24px rgba(7,26,77,0.09)',
+            boxShadow: '0 8px 18px rgba(7,26,77,0.08)',
           }}>
             <AreaMapVisual areaKey={area.key} color={area.color} />
-            <span style={{ marginTop: 10, fontSize: 14, fontWeight: 950, lineHeight: 1.2 }}>{area.name}エリア</span>
-            <span style={{ marginTop: 4, minHeight: 28, fontSize: 10.5, fontWeight: 800, lineHeight: 1.35, color: THEME.gray }}>{area.hint}</span>
+            <span style={{ marginTop: 6, fontSize: 12.5, fontWeight: 950, lineHeight: 1.2 }}>{area.name}エリア</span>
+            <span style={{ marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 800, lineHeight: 1.35, color: THEME.gray }}>{area.hint}</span>
             {area.articleIds.length > 0 && (
-              <span style={{ marginTop: 8, width: 'fit-content', borderRadius: 999, background: '#FFF4D7', color: '#8A6400', fontSize: 10, fontWeight: 950, padding: '4px 8px' }}>
+              <span style={{ marginTop: 5, width: 'fit-content', borderRadius: 999, background: '#FFF4D7', color: '#8A6400', fontSize: 9, fontWeight: 950, padding: '2px 6px' }}>
                 掲載中 {area.articleIds.length}本
               </span>
             )}
@@ -1234,14 +1275,14 @@ function AreaExploreSection() {
 
 function AreaPopularArticlesSection() {
   return (
-    <section style={{ padding: '2px 16px 22px' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
-        <SectionKicker en="AREA ARTICLES" ja="エリア別人気記事" align="left" />
+    <section style={{ padding: '0 16px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 9 }}>
+        <SectionKicker en="AREA PICKS" ja="エリア別人気記事" align="left" />
         <Link href="/area" style={{ color: THEME.red, fontSize: 12, fontWeight: 950, textDecoration: 'none', paddingBottom: 3, whiteSpace: 'nowrap', flexShrink: 0 }}>
           すべて見る {String.fromCharCode(8250)}
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         {AREA_POPULAR_GROUPS.map((group) => {
           const articles = group.articleIds
             .map((id) => AREA_ARTICLE_LOOKUP[id as keyof typeof AREA_ARTICLE_LOOKUP])
@@ -1251,24 +1292,24 @@ function AreaPopularArticlesSection() {
           return (
             <article key={group.key} style={{
               minWidth: 0,
-              borderRadius: 18,
+              borderRadius: 14,
               background: '#fff',
               border: '1px solid rgba(7,26,77,.08)',
-              boxShadow: '0 9px 22px rgba(7,26,77,0.08)',
-              padding: 12,
+              boxShadow: '0 7px 16px rgba(7,26,77,0.07)',
+              padding: '8px 8px 9px',
               overflow: 'hidden',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                 <AreaMiniIcon kind={group.icon} color={group.color} />
-                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 12.5, fontWeight: 950, lineHeight: 1.25 }}>{group.name}</h3>
+                <h3 style={{ margin: 0, color: THEME.navy, fontSize: 11.5, fontWeight: 950, lineHeight: 1.2 }}>{group.name}</h3>
               </div>
-              <div style={{ display: 'grid', gap: 8 }}>
+              <div style={{ display: 'grid', gap: 4 }}>
                 {articles.map((article) => (
-                  <Link key={article.href} href={article.href} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 7, alignItems: 'start', color: THEME.text, textDecoration: 'none' }}>
-                    <span style={{ marginTop: 2, width: 6, height: 6, borderRadius: 999, background: group.color, boxShadow: '0 0 0 3px rgba(7,26,77,.05)' }} />
-                    <span style={{ minWidth: 0 }}>
-                      <span style={{ display: 'block', color: THEME.red, fontSize: 9, fontWeight: 950, lineHeight: 1.2 }}>{article.label}</span>
-                      <span style={{ display: 'block', marginTop: 2, color: THEME.text, fontSize: 11, fontWeight: 850, lineHeight: 1.38 }}>{article.title}</span>
+                  <Link key={article.href} href={article.href} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 4, alignItems: 'center', color: THEME.text, textDecoration: 'none' }}>
+                    <span style={{ width: 4, height: 4, borderRadius: 999, background: group.color, boxShadow: '0 0 0 2px rgba(7,26,77,.05)' }} />
+                    <span style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                      <span style={{ flexShrink: 0, color: THEME.red, fontSize: 8, fontWeight: 950, lineHeight: 1.15 }}>{article.label}</span>
+                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: THEME.text, fontSize: 9.8, fontWeight: 850, lineHeight: 1.35 }}>{article.title}</span>
                     </span>
                   </Link>
                 ))}
@@ -1284,22 +1325,22 @@ function AreaPopularArticlesSection() {
 function AreaMapVisual({ areaKey, color }: { areaKey: string; color: string }) {
   const base = {
     width: '100%',
-    height: 92,
-    borderRadius: 14,
-    background: 'linear-gradient(180deg,#F8FBFF 0%,#FFFFFF 100%)',
+    height: 62,
+    borderRadius: 12,
+    background: 'linear-gradient(180deg,#F7FBF5 0%,#FDF7EE 100%)',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.07)',
+    boxShadow: 'inset 0 0 0 1px rgba(7,26,77,.075)',
   };
   const shapes = getAreaMapShapes(areaKey);
 
   return (
     <span aria-hidden style={base}>
-      <span style={{ position: 'absolute', inset: 9, borderRadius: 12, background: 'linear-gradient(135deg, rgba(7,26,77,.04), rgba(232,72,63,.03))' }} />
-      <span style={{ position: 'absolute', left: 14, top: 20, right: 14, height: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(-10deg)' }} />
-      <span style={{ position: 'absolute', left: 18, bottom: 22, right: 18, height: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(8deg)' }} />
-      <span style={{ position: 'absolute', left: 38, top: 12, bottom: 14, width: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(8deg)' }} />
-      <span style={{ position: 'absolute', right: 34, top: 16, bottom: 12, width: 2, background: 'rgba(7,26,77,.08)', transform: 'rotate(-6deg)' }} />
+      <span style={{ position: 'absolute', inset: 6, borderRadius: 10, background: 'linear-gradient(135deg, rgba(255,255,255,.70), rgba(7,26,77,.025))' }} />
+      <span style={{ position: 'absolute', left: -12, top: 24, width: 138, height: 3, borderRadius: 999, background: 'rgba(255,255,255,.92)', boxShadow: '0 0 0 1px rgba(7,26,77,.035)', transform: 'rotate(-11deg)' }} />
+      <span style={{ position: 'absolute', left: 8, bottom: 16, width: 116, height: 2, borderRadius: 999, background: 'rgba(255,255,255,.9)', boxShadow: '0 0 0 1px rgba(7,26,77,.035)', transform: 'rotate(7deg)' }} />
+      <span style={{ position: 'absolute', left: 37, top: -8, height: 88, width: 2, borderRadius: 999, background: 'rgba(255,255,255,.86)', boxShadow: '0 0 0 1px rgba(7,26,77,.03)', transform: 'rotate(7deg)' }} />
+      <span style={{ position: 'absolute', right: 31, top: -6, height: 86, width: 2, borderRadius: 999, background: 'rgba(255,255,255,.86)', boxShadow: '0 0 0 1px rgba(7,26,77,.03)', transform: 'rotate(-8deg)' }} />
       {shapes.map((shape, index) => (
         <span key={index} style={{
           position: 'absolute',
@@ -1307,26 +1348,38 @@ function AreaMapVisual({ areaKey, color }: { areaKey: string; color: string }) {
           top: shape.top,
           width: shape.width,
           height: shape.height,
-          borderRadius: shape.radius,
+          borderRadius: 6,
+          clipPath: shape.clipPath,
           background: index === 0 ? color : shape.color,
-          opacity: index === 0 ? 0.95 : 0.24,
+          opacity: index === 0 ? 0.92 : 0.42,
           transform: `rotate(${shape.rotate}deg)`,
-          boxShadow: index === 0 ? '0 8px 16px rgba(7,26,77,.12)' : 'none',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.68), 0 1px 4px rgba(7,26,77,.06)',
         }} />
       ))}
-      <span style={{ position: 'absolute', right: 12, top: 12, width: 18, height: 18, borderRadius: 999, background: '#fff', display: 'grid', placeItems: 'center', color, boxShadow: '0 5px 12px rgba(7,26,77,.10)' }}>
+      <span style={{ position: 'absolute', right: 8, top: 7, width: 14, height: 14, borderRadius: 999, background: '#fff', display: 'grid', placeItems: 'center', color, boxShadow: '0 4px 10px rgba(7,26,77,.10)' }}>
         <PinIcon />
       </span>
     </span>
   );
 }
 
+type AreaMapShape = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  rotate: number;
+  color: string;
+  clipPath: string;
+};
+
 function getAreaMapShapes(areaKey: string) {
-  const shared = [
-    { left: 18, top: 16, width: 44, height: 36, radius: '36% 58% 42% 48%', rotate: -10, color: '#E8483F' },
-    { left: 60, top: 18, width: 34, height: 32, radius: '44% 38% 52% 42%', rotate: 12, color: '#73B56B' },
-    { left: 34, top: 52, width: 42, height: 28, radius: '42% 44% 54% 38%', rotate: 7, color: '#F3C64F' },
-    { left: 78, top: 50, width: 30, height: 26, radius: '44% 55% 39% 52%', rotate: -8, color: '#6AA4D8' },
+  const shared: AreaMapShape[] = [
+    { left: 12, top: 11, width: 38, height: 29, rotate: -7, color: '#E8483F', clipPath: 'polygon(10% 18%, 70% 4%, 94% 36%, 74% 90%, 18% 82%, 0 42%)' },
+    { left: 49, top: 8, width: 35, height: 30, rotate: 8, color: '#73B56B', clipPath: 'polygon(8% 6%, 82% 16%, 100% 60%, 62% 98%, 18% 76%, 0 34%)' },
+    { left: 23, top: 37, width: 43, height: 25, rotate: 5, color: '#F3C64F', clipPath: 'polygon(0 18%, 55% 0, 100% 34%, 78% 100%, 20% 86%)' },
+    { left: 69, top: 34, width: 35, height: 25, rotate: -6, color: '#6AA4D8', clipPath: 'polygon(16% 0, 90% 10%, 100% 62%, 54% 100%, 4% 72%, 0 28%)' },
+    { left: 83, top: 12, width: 24, height: 22, rotate: 4, color: '#F0A75B', clipPath: 'polygon(14% 0, 100% 20%, 86% 84%, 28% 100%, 0 44%)' },
   ];
 
   const focus: Record<string, number> = {
@@ -1345,11 +1398,11 @@ function getAreaMapShapes(areaKey: string) {
 
 function AreaMiniIcon({ kind, color }: { kind: string; color: string }) {
   return (
-    <span aria-hidden style={{ width: 34, height: 34, borderRadius: 12, flexShrink: 0, background: color + '1F', color, display: 'grid', placeItems: 'center' }}>
-      {kind === 'tower' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 7 21h10L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12h6M8 17h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
-      {kind === 'wheel' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 5v14M5 12h14M7.1 7.1l9.8 9.8M16.9 7.1l-9.8 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-      {kind === 'shrine' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 10h14L12 4 5 10Z" fill="currentColor" opacity=".2"/><path d="M5 10h14M7 10v9M17 10v9M9 14h6M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-      {kind === 'castle' && <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 20V9l3 2 3-2 3 2 3-2v11H6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 20v-5h6v5M8 6h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
+    <span aria-hidden style={{ width: 25, height: 25, borderRadius: 9, flexShrink: 0, background: color + '1F', color, display: 'grid', placeItems: 'center' }}>
+      {kind === 'tower' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3 7 21h10L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12h6M8 17h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
+      {kind === 'wheel' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 5v14M5 12h14M7.1 7.1l9.8 9.8M16.9 7.1l-9.8 9.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+      {kind === 'shrine' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M5 10h14L12 4 5 10Z" fill="currentColor" opacity=".2"/><path d="M5 10h14M7 10v9M17 10v9M9 14h6M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      {kind === 'castle' && <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 20V9l3 2 3-2 3 2 3-2v11H6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M9 20v-5h6v5M8 6h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>}
     </span>
   );
 }
@@ -1397,19 +1450,13 @@ function CenteredHeading({ en, ja }: { en: string; ja: string }) {
 }
 
 function SectionKicker({ en, ja, align = 'center' }: { en: string; ja: string; align?: 'left' | 'center' }) {
-  const titleParts = [ja];
-
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: align === 'center' ? 'center' : 'flex-start', gap: 7, minWidth: 0 }}>
-      <span style={{ width: 20, height: 20, flexShrink: 0, display: 'grid', placeItems: 'center', color: en === 'RANKING' ? '#B58B17' : THEME.navy }}>
-        <SectionTitleIcon kind={en} />
-      </span>
-      <h2 style={{ margin: 0, color: THEME.navy, fontSize: 17.5, fontWeight: 950, lineHeight: 1.25, letterSpacing: '-0.02em', textAlign: align }}>
-        {titleParts.map((part, index) => (
-          <span key={part} style={{ display: 'inline-block', whiteSpace: 'nowrap', marginRight: index < titleParts.length - 1 ? 4 : 0 }}>
-            {part}
-          </span>
-        ))}
+    <div style={{ display: 'inline-flex', minWidth: 0, flexDirection: 'column', alignItems: align === 'center' ? 'center' : 'flex-start' }}>
+      <p style={{ margin: 0, color: THEME.red, fontSize: 18, fontWeight: 950, lineHeight: 1, letterSpacing: '0.12em', textAlign: align, textTransform: 'uppercase' }}>
+        {en}
+      </p>
+      <h2 style={{ margin: '5px 0 0', color: THEME.navy, fontSize: 13.5, fontWeight: 950, lineHeight: 1.25, letterSpacing: '-0.01em', textAlign: align }}>
+        <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>{ja}</span>
       </h2>
     </div>
   );
