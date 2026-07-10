@@ -165,7 +165,6 @@ export default async function NewPage({
                 article={article}
                 imageUrl={article.imageUrl ?? getFallbackArticleImageUrl(article, index)}
                 hookLine={getArticleHookLine(article)}
-                views={article.views ?? getStableViews(article)}
               />
             ))}
           </div>
@@ -361,10 +360,6 @@ function getArticleHookLine(article: FeaturedArticle): string {
     return '\u5199\u771f\u3067\u898b\u305f\u3089\u6c17\u306b\u306a\u308b\u3001\u540d\u53e4\u5c4b\u306e\u8a71\u984c\u5e97\u3002';
   }
   return '\u3053\u308c\u306f\u884c\u304d\u305f\u3044\u3002\u540d\u53e4\u5c4b\u306e\u6c17\u306b\u306a\u308b\u8a71\u984c\u3002';
-}
-
-function getStableViews(article: FeaturedArticle): number {
-  return 1200 + (getStableHash(`${article.id}-${article.title}`) % 7200);
 }
 
 function getStableHash(value: string): number {

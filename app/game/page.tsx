@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -219,20 +219,7 @@ function HomeScreen({
         ) : (
           <div className="flex flex-col items-center gap-4 w-full max-w-xs">
             <p className="text-white/40 text-sm text-center">今日の探索は済んでいます</p>
-            <Link
-              href="/zukan"
-              className="w-full py-4 rounded-2xl font-black text-white/70 text-base text-center active:scale-95 transition-transform bg-white/8 border border-white/15"
-            >
-              シール帳を見る
-            </Link>
           </div>
-        )}
-
-        {/* シール帳への導線（探索可能時も表示） */}
-        {canHunt && (
-          <Link href="/zukan" className="text-white/25 text-xs tracking-widest underline underline-offset-2">
-            シール帳を開く
-          </Link>
         )}
       </main>
     </div>

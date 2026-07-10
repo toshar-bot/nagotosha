@@ -89,6 +89,12 @@ export default function ReportSamplePage() {
           >
             これはサンプル表示です。実際の数値は掲載内容・期間により変動します。
           </p>
+          <p
+            className="mt-2 rounded-[12px] px-4 py-3 text-[11px] font-bold leading-5"
+            style={{ color: '#667085', background: '#FFFDF8', border: '1px solid #F6E1A2' }}
+          >
+            このページの数値は掲載後レポートの見せ方を説明するサンプルです。実在店舗の実績値ではありません。
+          </p>
         </div>
       </section>
 

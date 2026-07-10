@@ -10,8 +10,8 @@ export function EventSaveButton(props: Props) {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setSaved(isSaved(props.id));
-  }, [props.id]);
+    setSaved(isSaved({ id: props.id, type: props.type }));
+  }, [props.id, props.type]);
 
   const toggle = () => {
     const result = toggleSavedItem(props);

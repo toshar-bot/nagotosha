@@ -33,7 +33,7 @@ const AREAS: {
   description: string;
   tags: string[];
   href: string;
-  imageUrl: string;
+  imageUrl?: string;
   iconType: AreaIconType;
 }[] = [
   {
@@ -97,7 +97,7 @@ const AREAS: {
     description: '音楽、居酒屋、個性ある夜の楽しみが見つかるエリア。',
     tags: ['音楽', '居酒屋', '夜'],
     href: '/new?area=%E4%BB%8A%E6%B1%A0',
-    imageUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e6785?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '',
     iconType: 'station',
   },
 ];
@@ -276,14 +276,17 @@ function AreaCard({ area }: { area: typeof AREAS[number] }) {
         className="relative h-[150px] overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)' }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={area.imageUrl}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-        />
+        {area.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={area.imageUrl}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+            loading="lazy"
+          />
+        )}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.28) 100%)' }}

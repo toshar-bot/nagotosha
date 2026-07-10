@@ -26,10 +26,9 @@ type Props = {
   article: FeaturedArticle;
   imageUrl?: string;
   hookLine: string;
-  views: number;
 };
 
-export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Props) {
+export function NewArticleCardClient({ article, imageUrl, hookLine }: Props) {
   const articleHref = article.id.startsWith('wp-')
     ? `/article/${article.id.slice(3)}`
     : (article.articleUrl ?? '#');
@@ -38,7 +37,7 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
   const chips = useMemo(() => getArticleChips(article), [article]);
 
   useEffect(() => {
-    setSaved(isSaved(article.id));
+    setSaved(isSaved({ id: article.id, type: 'article' }));
   }, [article.id]);
 
   const toggleSaved = () => {
@@ -134,10 +133,6 @@ export function NewArticleCardClient({ article, imageUrl, hookLine, views }: Pro
               {formatPublishedAt(article.publishedAt)}
             </span>
           )}
-          <span className="flex items-center gap-1 text-[10px] font-bold" style={{ color: '#9BA3B0' }}>
-            <EyeIcon />
-            {views.toLocaleString()}
-          </span>
           <button
             type="button"
             onClick={toggleSaved}
@@ -283,15 +278,6 @@ function MapPinIcon() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
       <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  );
-}
-
-function EyeIcon() {
-  return (
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
     </svg>
   );
 }

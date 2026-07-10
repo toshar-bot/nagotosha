@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { clearSavedItems, getSavedItems, removeSavedItem } from '@/lib/saved';
+import { clearSavedItems, getSavedItems, removeSavedItem, SAVED_ITEMS_UPDATED_EVENT } from '@/lib/saved';
 import type { SavedItem } from '@/types/portal';
 
 const TYPE_LABELS: Record<SavedItem['type'], string> = {
@@ -12,33 +12,6 @@ const TYPE_LABELS: Record<SavedItem['type'], string> = {
   area: 'エリア',
 };
 
-const POPULAR_SAVED_SPOTS = [
-  {
-    rank: 1,
-    title: '大須スペシャルティコーヒー',
-    area: '大須',
-    saves: 312,
-    imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=75',
-    href: '/new',
-  },
-  {
-    rank: 2,
-    title: '覚王山アパートメント秋市',
-    area: '覚王山',
-    saves: 204,
-    imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=400&q=75',
-    href: '/event',
-  },
-  {
-    rank: 3,
-    title: '栄 光のインスタレーション',
-    area: '栄',
-    saves: 128,
-    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=75',
-    href: '/event',
-  },
-];
-
 const EMPTY_STATE_LINKS = [
   { href: '/new', label: '新着記事を探す' },
   { href: '/event', label: 'イベントを探す' },
@@ -46,14 +19,31 @@ const EMPTY_STATE_LINKS = [
 ];
 
 export default function SavedPage() {
-  const [items, setItems] = useState<SavedItem[]>([]);
+  const [items, setItems] = useState<SavedItem[] | null>(null);
 
   useEffect(() => {
-    setItems(getSavedItems());
+    const syncItems = () => setItems(getSavedItems());
+    syncItems();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') syncItems();
+    };
+
+    window.addEventListener(SAVED_ITEMS_UPDATED_EVENT, syncItems);
+    window.addEventListener('focus', syncItems);
+    window.addEventListener('storage', syncItems);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener(SAVED_ITEMS_UPDATED_EVENT, syncItems);
+      window.removeEventListener('focus', syncItems);
+      window.removeEventListener('storage', syncItems);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
-  const handleRemove = (id: string) => {
-    setItems(removeSavedItem(id));
+  const handleRemove = (item: SavedItem) => {
+    setItems(removeSavedItem(item));
   };
 
   const handleClear = () => {
@@ -80,7 +70,9 @@ export default function SavedPage() {
 
       {/* ── 保存リスト ── */}
       <section className="px-4 pt-3">
-        {items.length > 0 ? (
+        {items === null ? (
+          <LoadingState />
+        ) : items.length > 0 ? (
           <div>
             <div className="mb-4 flex items-center justify-between gap-3">
               <p className="text-[12px] font-black" style={{ color: '#071A4D' }}>
@@ -102,7 +94,7 @@ export default function SavedPage() {
 
             <div className="flex flex-col gap-4">
               {items.map(item => (
-                <SavedCard key={item.id} item={item} onRemove={handleRemove} />
+                <SavedCard key={`${item.type}-${item.id}`} item={item} onRemove={handleRemove} />
               ))}
             </div>
           </div>
@@ -111,12 +103,11 @@ export default function SavedPage() {
         )}
       </section>
 
-      <PopularSavedSpots savedCount={items.length} />
     </main>
   );
 }
 
-function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string) => void }) {
+function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (item: SavedItem) => void }) {
   const dest = item.articleUrl || '/new';
   return (
     <article
@@ -212,7 +203,7 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
           )}
           <button
             type="button"
-            onClick={() => onRemove(item.id)}
+            onClick={() => onRemove(item)}
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-black active:scale-95 transition-transform"
             style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)', border: '1px solid rgba(232,72,63,0.18)' }}
           >
@@ -221,99 +212,6 @@ function SavedCard({ item, onRemove }: { item: SavedItem; onRemove: (id: string)
         </div>
       </div>
     </article>
-  );
-}
-
-function PopularSavedSpots({ savedCount }: { savedCount: number }) {
-  return (
-    <section className="px-4 pt-8">
-      <div className="mb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
-              SAVED RANKING
-            </p>
-            <h2 className="mt-1 text-[19px] font-black tracking-tight" style={{ color: '#071A4D' }}>
-              保存されている人気スポット
-            </h2>
-          </div>
-          {savedCount > 0 && (
-            <span
-              className="shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black"
-              style={{ color: '#E8483F', background: 'rgba(232,72,63,0.08)', border: '1px solid rgba(232,72,63,0.18)' }}
-            >
-              あなたの保存 {savedCount}件
-            </span>
-          )}
-        </div>
-        <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
-          みんながあとで見返したいお店やイベントを、今後ここに集計していきます。
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-4">
-        {POPULAR_SAVED_SPOTS.map((item) => (
-          <a
-            key={item.rank}
-            href={item.href}
-            className="relative overflow-hidden rounded-[18px] bg-white block active:scale-[0.98] transition-transform"
-            style={{
-              border: item.rank === 1 ? '1.5px solid rgba(232,72,63,0.22)' : '1px solid #E6ECF5',
-              boxShadow: item.rank === 1 ? '0 10px 28px rgba(232,72,63,0.12)' : '0 6px 18px rgba(7,26,77,0.07)',
-              textDecoration: 'none',
-            }}
-          >
-            {/* 写真 */}
-            <div
-              className="relative h-[120px] overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #FFF1ED 0%, #FFE0DD 100%)' }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.imageUrl}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-              />
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.30) 100%)' }}
-              />
-              {/* 順位バッジ（SVG） */}
-              <div className="absolute left-3 top-3">
-                <RankBadge rank={item.rank} />
-              </div>
-              {/* 保存数バッジ */}
-              <div className="absolute right-3 bottom-3">
-                <span
-                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black text-white"
-                  style={{ background: 'rgba(0,0,0,0.42)', backdropFilter: 'blur(4px)' }}
-                >
-                  <BookmarkIcon />
-                  {item.saves.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* テキスト */}
-            <div className="px-4 py-3">
-              <h3 className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
-                {item.title}
-              </h3>
-              <p className="mt-1 flex items-center gap-1 text-[11px] font-bold" style={{ color: '#667085' }}>
-                <MapPinIcon />
-                {item.area}
-              </p>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <p className="mt-4 text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
-        現在はサンプル表示です。今後、実際の保存数をもとにランキング化していきます。
-      </p>
-    </section>
   );
 }
 
@@ -351,6 +249,19 @@ function EmptyState() {
           </Link>
         ))}
       </div>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div
+      className="rounded-[18px] bg-white p-5 text-center"
+      style={{ border: '1px solid #E6ECF5', boxShadow: '0 8px 24px rgba(7,26,77,0.08)' }}
+    >
+      <p className="text-[13px] font-black" style={{ color: '#071A4D' }}>
+        保存した記事を読み込んでいます
+      </p>
     </div>
   );
 }
@@ -403,56 +314,6 @@ function FallbackIcon({ type }: { type: string }) {
   return (
     <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
-/* ── ランキングバッジ（SVG） ── */
-
-const RANK_COLORS = [
-  { bg: '#E8483F', text: '#fff', shadow: 'rgba(232,72,63,0.45)' },   // 1位：なごとしゃ赤
-  { bg: '#8A96A8', text: '#fff', shadow: 'rgba(100,120,150,0.35)' }, // 2位：シルバー
-  { bg: '#B07060', text: '#fff', shadow: 'rgba(176,112,96,0.35)' },  // 3位：ブロンズ
-];
-
-function RankBadge({ rank }: { rank: number }) {
-  const c = RANK_COLORS[rank - 1];
-  if (!c) {
-    return (
-      <span
-        className="flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-black text-white"
-        style={{ background: 'rgba(7,26,77,0.65)', backdropFilter: 'blur(4px)' }}
-      >
-        {rank}
-      </span>
-    );
-  }
-  return (
-    <span
-      className="flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-black"
-      style={{
-        background: c.bg,
-        color: c.text,
-        boxShadow: `0 4px 10px ${c.shadow}`,
-      }}
-    >
-      {rank === 1 ? (
-        <span className="flex flex-col items-center gap-0">
-          <CrownIcon />
-          <span style={{ fontSize: 9, lineHeight: 1, marginTop: -1 }}>1</span>
-        </span>
-      ) : rank}
-    </span>
-  );
-}
-
-function CrownIcon() {
-  return (
-    <svg width="14" height="10" viewBox="0 0 24 16" fill="currentColor">
-      <path d="M2 14h20M2 14L4 4l5 6 3-8 3 8 5-6 2 10H2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <circle cx="4" cy="4" r="1.5" fill="currentColor" />
-      <circle cx="12" cy="1.5" r="1.5" fill="currentColor" />
-      <circle cx="20" cy="4" r="1.5" fill="currentColor" />
     </svg>
   );
 }

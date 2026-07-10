@@ -1,8 +1,10 @@
 import type { SavedItem } from '@/types/portal';
 
 const SAVED_ITEMS_STORAGE_KEY = 'nagotosha:saved-items';
+export const SAVED_ITEMS_UPDATED_EVENT = 'nagotosha:saved-items-updated';
 
 type UnsavedItem = Omit<SavedItem, 'savedAt'>;
+type SavedItemIdentity = Pick<SavedItem, 'id' | 'type'>;
 
 export function getSavedItems(): SavedItem[] {
   const storage = getStorage();
@@ -24,34 +26,37 @@ export function getSavedItems(): SavedItem[] {
 export function saveItem(item: UnsavedItem): SavedItem[] {
   const currentItems = getSavedItems();
   const savedItem: SavedItem = {
-    ...item,
+    ...normalizeUnsavedItem(item),
     savedAt: new Date().toISOString(),
   };
 
   const nextItems = [
     savedItem,
-    ...currentItems.filter(currentItem => currentItem.id !== item.id),
+    ...currentItems.filter(currentItem => !isSameSavedItem(currentItem, savedItem)),
   ];
 
-  writeSavedItems(nextItems);
-  return nextItems;
+  return writeSavedItems(nextItems) ? nextItems : currentItems;
 }
 
-export function removeSavedItem(id: string): SavedItem[] {
-  const nextItems = getSavedItems().filter(item => item.id !== id);
-  writeSavedItems(nextItems);
-  return nextItems;
+export function removeSavedItem(target: SavedItemIdentity): SavedItem[] {
+  const nextItems = getSavedItems().filter(item => !isSameSavedItem(item, target));
+  return writeSavedItems(nextItems) ? nextItems : getSavedItems();
 }
 
-export function isSaved(id: string): boolean {
-  return getSavedItems().some(item => item.id === id);
+export function isSaved(target: SavedItemIdentity | string): boolean {
+  return getSavedItems().some(item => {
+    if (typeof target === 'string') return String(item.id) === String(target);
+    return isSameSavedItem(item, target);
+  });
 }
 
 export function toggleSavedItem(item: UnsavedItem): { saved: boolean; items: SavedItem[] } {
-  if (isSaved(item.id)) {
+  const target = normalizeUnsavedItem(item);
+
+  if (isSaved(target)) {
     return {
       saved: false,
-      items: removeSavedItem(item.id),
+      items: removeSavedItem(target),
     };
   }
 
@@ -67,25 +72,57 @@ export function clearSavedItems(): void {
 
   try {
     storage.removeItem(SAVED_ITEMS_STORAGE_KEY);
+    dispatchSavedItemsUpdated();
   } catch {
     // Ignore storage write failures so UI actions do not crash the app.
   }
 }
 
-function writeSavedItems(items: SavedItem[]) {
+function writeSavedItems(items: SavedItem[]): boolean {
   const storage = getStorage();
-  if (!storage) return;
+  if (!storage) return false;
 
   try {
-    storage.setItem(SAVED_ITEMS_STORAGE_KEY, JSON.stringify(items));
+    const payload = JSON.stringify(items);
+    storage.setItem(SAVED_ITEMS_STORAGE_KEY, payload);
+    const didWrite = storage.getItem(SAVED_ITEMS_STORAGE_KEY) === payload;
+    if (didWrite) dispatchSavedItemsUpdated();
+    return didWrite;
   } catch {
     // Ignore quota and permission failures. Callers still receive the computed list.
+    return false;
   }
 }
 
 function getStorage(): Storage | null {
   if (typeof window === 'undefined') return null;
-  return window.localStorage;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeUnsavedItem(item: UnsavedItem): UnsavedItem {
+  return {
+    id: String(item.id),
+    type: item.type,
+    title: item.title,
+    area: item.area,
+    category: item.category,
+    articleUrl: item.articleUrl,
+    mapUrl: item.mapUrl,
+    imageUrl: item.imageUrl,
+  };
+}
+
+function isSameSavedItem(item: SavedItemIdentity, target: SavedItemIdentity): boolean {
+  return item.type === target.type && String(item.id) === String(target.id);
+}
+
+function dispatchSavedItemsUpdated() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(SAVED_ITEMS_UPDATED_EVENT));
 }
 
 function isSavedItem(value: unknown): value is SavedItem {

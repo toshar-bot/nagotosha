@@ -252,7 +252,7 @@ export function ArticleExperience({
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setSaved(isSaved(articleId));
+    setSaved(isSaved({ id: articleId, type: 'article' }));
   }, [articleId]);
 
   const displayTitle = experience?.heroTitle ?? title;
@@ -914,7 +914,9 @@ function NewsArticleExperience({
           <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} />
 
           <a
-            href="#news-map"
+            href={mapUrl || '#news-map'}
+            target={mapUrl ? '_blank' : undefined}
+            rel={mapUrl ? 'noopener noreferrer' : undefined}
             className="feature-card"
             style={{
               display: 'flex',

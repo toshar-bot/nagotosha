@@ -356,7 +356,6 @@ function Header() {
               { label: 'イベント', href: '/event' },
               { label: 'エリア', href: '/area' },
               { label: '保存', href: '/saved' },
-              { label: 'ガチャ', href: '#home-gacha' },
             ].map((item) => (
               <Link
                 key={item.label}
@@ -1198,7 +1197,6 @@ function HomeFooterCta() {
             <p style={{ margin: 0, color: '#F8C861', fontSize: 12, fontWeight: 950 }}>お役立ち情報</p>
             <FooterLink href="/saved" label="保存した記事" />
             <FooterLink href="/partner" label="掲載相談" />
-            <FooterLink href="#home-gacha" label="おでかけガチャ" />
           </div>
         </div>
         <p style={{ margin: '18px 0 0', color: 'rgba(255,255,255,.52)', fontSize: 10, fontWeight: 700 }}>© 2026 nagotosha. All Rights Reserved.</p>

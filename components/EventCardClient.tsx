@@ -77,6 +77,7 @@ export function EventCardClient({ event }: { event: EventItem }) {
             alt=""
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             loading="lazy"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
