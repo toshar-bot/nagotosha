@@ -138,16 +138,18 @@ export function EventCardClient({ event }: { event: EventItem }) {
         {/* ボタン行 */}
         <div className="mt-4 flex flex-wrap gap-2">
           <a
-            href="/new"
+            href={mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-black active:scale-95 transition-transform"
             style={{
-              color: '#ffffff',
-              background: '#E8483F',
-              boxShadow: '0 6px 14px rgba(232,72,63,0.25)',
+              color: '#071A4D',
+              background: 'rgba(7,26,77,0.06)',
+              border: '1px solid #E6ECF5',
             }}
           >
-            詳細を見る
-            <ArrowRightIcon />
+            地図で見る
+            <MapPinIcon />
           </a>
           <a
             href={mapUrl}
@@ -184,15 +186,6 @@ function MapPinIcon() {
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" />
       <circle cx="12" cy="10" r="2.5" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14" />
-      <path d="M13 6l6 6-6 6" />
     </svg>
   );
 }
