@@ -111,6 +111,76 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
+/* ── WP記事本文からの店舗情報抽出（experience未定義の記事用） ──
+   標準記事テンプレの「ラベル: 値」「<th>ラベル</th><td>値</td>」両形式に対応。
+   取得できない項目は非表示にする（「確認中」等のプレースホルダは採用しない） */
+
+const PLACEHOLDER_VALUE_PATTERN = /確認中|未定|不明|TBD|ダミー|サンプル/;
+const NAGOYA_AREAS = [
+  '名駅', '名古屋駅', '栄', '大須', '金山', '鶴舞', '新栄', '伏見', '久屋大通',
+  '覚王山', '今池', '千種', '熱田', '名古屋港', '東山', '矢場町', '上前津', '丸の内', '納屋橋',
+];
+
+function extractBodyField(html: string, labels: string[]): string | undefined {
+  for (const label of labels) {
+    // 形式1: <th>ラベル</th><td>値</td> / <dt>ラベル</dt><dd>値</dd>
+    const cellRe = new RegExp(
+      `<(?:th|dt)[^>]*>\\s*${label}\\s*</(?:th|dt)>\\s*<(?:td|dd)[^>]*>([\\s\\S]*?)</(?:td|dd)>`,
+    );
+    const cellMatch = html.match(cellRe);
+    if (cellMatch) {
+      const value = stripHtml(cellMatch[1]).trim();
+      if (isUsableValue(value)) return value;
+    }
+    // 形式2: ラベル: 値（本文テキスト）
+    const text = html.replace(/<[^>]*>/g, '\n');
+    const lineRe = new RegExp(`${label}\\s*[:：]\\s*([^\\n]+)`);
+    const lineMatch = text.match(lineRe);
+    if (lineMatch) {
+      const value = lineMatch[1].trim();
+      if (isUsableValue(value)) return value;
+    }
+  }
+  return undefined;
+}
+
+function isUsableValue(value: string): boolean {
+  return value.length > 0 && value.length <= 80 && !PLACEHOLDER_VALUE_PATTERN.test(value);
+}
+
+function deriveArea(address: string | undefined, title: string): string | undefined {
+  for (const source of [address, title]) {
+    if (!source) continue;
+    for (const areaName of NAGOYA_AREAS) {
+      if (source.includes(areaName)) {
+        return areaName === '名古屋駅' ? '名駅' : areaName;
+      }
+    }
+  }
+  return undefined;
+}
+
+const GENERIC_CATEGORY_NAMES = new Set(['記事', '未分類', 'uncategorized', 'blog']);
+
+function deriveCategory(post: { _embedded?: { 'wp:term'?: unknown[][] } }, metaCategory?: string): string {
+  if (metaCategory && !GENERIC_CATEGORY_NAMES.has(metaCategory)) return metaCategory;
+  const termGroups = post._embedded?.['wp:term'] ?? [];
+  for (const group of termGroups) {
+    if (!Array.isArray(group)) continue;
+    for (const term of group) {
+      if (!term || typeof term !== 'object') continue;
+      const t = term as { taxonomy?: unknown; name?: unknown };
+      if (t.taxonomy !== 'category' || typeof t.name !== 'string') continue;
+      const name = t.name.trim();
+      if (name && !GENERIC_CATEGORY_NAMES.has(name.toLowerCase()) && !GENERIC_CATEGORY_NAMES.has(name)) {
+        return name;
+      }
+    }
+  }
+  // 意味のある分類が取れない場合は「記事」ではなく「グルメ」に寄せる
+  return 'グルメ';
+}
+
 export default async function ArticlePage({ params }: { params: Params }) {
   const post = await getWordPressPostById(params.id);
   if (!post && canUseLocalPreview(params.id)) {
@@ -143,13 +213,34 @@ export default async function ArticlePage({ params }: { params: Params }) {
   const imageUrl = getFeaturedMediaUrl(post);
   const meta = post.meta ?? {};
 
-  const area = typeof meta.area === 'string' && meta.area.trim() ? meta.area.trim() : undefined;
-  const tag = typeof meta.category === 'string' && meta.category.trim() ? meta.category.trim() : '記事';
-  const mapUrl = typeof meta.mapUrl === 'string' && meta.mapUrl.trim() ? meta.mapUrl.trim() : undefined;
-  const storeName = typeof meta.storeName === 'string' && meta.storeName.trim() ? meta.storeName.trim() : undefined;
-  const address = typeof meta.address === 'string' && meta.address.trim() ? meta.address.trim() : undefined;
+  const metaArea = typeof meta.area === 'string' && meta.area.trim() ? meta.area.trim() : undefined;
+  const metaCategory = typeof meta.category === 'string' && meta.category.trim() ? meta.category.trim() : undefined;
+  const metaMapUrl = typeof meta.mapUrl === 'string' && meta.mapUrl.trim() ? meta.mapUrl.trim() : undefined;
+  const metaStoreName = typeof meta.storeName === 'string' && meta.storeName.trim() ? meta.storeName.trim() : undefined;
+  const metaAddress = typeof meta.address === 'string' && meta.address.trim() ? meta.address.trim() : undefined;
   const imageCredit = typeof meta.imageCredit === 'string' && meta.imageCredit.trim() ? meta.imageCredit.trim() : undefined;
   const imageSourceUrl = typeof meta.imageSourceUrl === 'string' && meta.imageSourceUrl.trim() ? meta.imageSourceUrl.trim() : undefined;
+
+  // meta未設定でも本文の標準構成（店舗情報）からUIに反映する
+  const storeName = metaStoreName ?? extractBodyField(content, ['店名', '店舗名']);
+  const address = metaAddress ?? extractBodyField(content, ['住所', '所在地']);
+  const hours = extractBodyField(content, ['営業時間']);
+  const closed = extractBodyField(content, ['定休日', '休業日']);
+  const price = extractBodyField(content, ['価格帯', '予算']);
+  const openDate = extractBodyField(content, ['オープン日', 'オープン予定', '開店日']);
+  const area = metaArea ?? deriveArea(address, title);
+  const tag = deriveCategory(post, metaCategory);
+  const mapUrl = metaMapUrl
+    ?? (storeName || address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([storeName, address].filter(Boolean).join(' '))}`
+      : undefined);
+
+  const extraShopInfo = [
+    openDate ? { label: 'オープン日', value: openDate } : undefined,
+    hours ? { label: '営業時間', value: hours } : undefined,
+    closed ? { label: '定休日', value: closed } : undefined,
+    price ? { label: '価格帯', value: price } : undefined,
+  ].filter(Boolean) as { label: string; value: string }[];
 
   const publishedDate = new Date(post.date);
   const dateStr = Number.isNaN(publishedDate.getTime())
@@ -173,6 +264,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       officialUrl={experience?.officialUrl}
       storeName={storeName}
       address={address}
+      extraShopInfo={extraShopInfo.length > 0 ? extraShopInfo : undefined}
       dateStr={dateStr}
       articleId={articleId}
       postId={post.id}

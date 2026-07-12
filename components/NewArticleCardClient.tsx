@@ -106,9 +106,11 @@ export function NewArticleCardClient({ article, imageUrl, hookLine }: Props) {
             {article.title}
           </h2>
 
-          <p className="mt-2 text-[13px] font-black leading-5" style={{ color: '#071A4D' }}>
-            {hookLine}
-          </p>
+          {hookLine && (
+            <p className="mt-2 text-[13px] font-black leading-5" style={{ color: '#071A4D' }}>
+              {hookLine}
+            </p>
+          )}
 
           {article.description && (
             <p

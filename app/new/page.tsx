@@ -346,6 +346,9 @@ function pickFromCandidates(candidates: FeaturedArticle[], seed: string): Featur
 }
 
 function getArticleHookLine(article: FeaturedArticle): string {
+  // 記事ごとのexcerpt(description)があるカードには汎用フックを重ねない。
+  // 全カードが同じ一文になる「自動量産感」を防ぐ。
+  if (article.description && article.description.trim()) return '';
   const source = normalizeSearchText(`${article.title} ${article.description ?? ''} ${article.tag} ${article.area ?? ''}`);
   if (article.isNew || JP.openWords.some(word => source.includes(normalizeSearchText(word)))) {
     return '\u9031\u672b\u306b\u3061\u3087\u3046\u3069\u3044\u3044\u3001\u540d\u53e4\u5c4b\u306e\u65b0\u30b9\u30dd\u30c3\u30c8\u3002';

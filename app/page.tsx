@@ -17,7 +17,9 @@ function buildGuaranteedArticles(): FeaturedArticle[] {
     return {
       id: `wp-${id}`,
       title: exp?.heroTitle ?? '',
+      description: shop?.summary ?? exp?.lead ?? '',
       tag,
+      articleUrl: `/article/${id}`,
       area: shop?.areaLabel ?? '名古屋',
       imageUrl: shop?.imageUrl ?? exp?.visual?.imageUrl ?? '',
       publishedAt: shop?.publishDate ?? '2026-07-04',
@@ -51,14 +53,23 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
+function toTime(publishedAt: string | undefined): number {
+  if (!publishedAt) return 0;
+  const t = new Date(publishedAt).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
 export default async function PortalPage() {
   const wpArticles = await getLatestPortalArticles();
+  const gachaSourceArticles = await getLatestPortalArticles({ perPage: 30 });
   const guaranteed = buildGuaranteedArticles();
-  const seen = new Set(guaranteed.map((a) => a.id));
-  // 保証枠(79/83/92)を先頭に、WP取得分から重複を除いて続ける。
-  // WP取得が失敗しても保証枠だけは必ず新着に出る(モックには落とさない)。
-  const merged = [...guaranteed, ...wpArticles.filter((a) => !seen.has(a.id))];
+  const wpIds = new Set(wpArticles.map((a) => a.id));
+  // WP取得分を正とし、保証枠(79/83/92)はWP取得に含まれない場合のみ補完する。
+  // 「新着記事」の名に合わせ、必ず公開日の降順に並べる(保証枠を先頭に固定しない)。
+  const merged = [...wpArticles, ...guaranteed.filter((a) => !wpIds.has(a.id))].sort(
+    (a, b) => toTime(b.publishedAt) - toTime(a.publishedAt),
+  );
   const featuredArticles = merged.length > 0 ? merged : FEATURED_ARTICLES;
 
-  return <PortalHomeClient featuredArticles={featuredArticles} />;
+  return <PortalHomeClient featuredArticles={featuredArticles} gachaSourceArticles={gachaSourceArticles} />;
 }

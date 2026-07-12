@@ -1,335 +1,37 @@
-﻿'use client';
-
-import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CARDS, TOTAL_CARDS } from '@/data/cards';
-import { loadCollection, saveCollection, todayStr, yesterdayStr, CollectionState } from '@/lib/storage';
-import { hunt } from '@/lib/sticker';
-import { Card } from '@/types/card';
-import { RARITY_CONFIG } from '@/lib/rarity';
-import ScanScreen from '@/components/ScanScreen';
-import StickerReveal from '@/components/StickerReveal';
-import StickerVisual from '@/components/StickerVisual';
 
-type HomePhase = 'idle' | 'scanning' | 'revealing' | 'result';
+import { GachaExperience } from '@/components/GachaExperience';
+import { buildGachaPool } from '@/lib/gacha-pool';
+import { getLatestPortalArticles } from '@/lib/wordpress-fetch';
 
-export default function GamePage() {
-  const [col, setCol]               = useState<CollectionState | null>(null);
-  const [phase, setPhase]           = useState<HomePhase>('idle');
-  const [foundCards, setFoundCards] = useState<Card[]>([]);
-  const [isNewHunt, setIsNewHunt]   = useState(false);
+export const revalidate = 300;
 
-  useEffect(() => {
-    const c = loadCollection();
-    if (!c.tutorialDone) {
-      const updated = { ...c, tutorialDone: true };
-      saveCollection(updated);
-      setCol(updated);
-    } else {
-      setCol(c);
-    }
-    if (c.lastDrawDate === todayStr() && c.lastDrawnCardIds.length) {
-      const cards = c.lastDrawnCardIds
-        .map(id => CARDS.find(card => card.id === id))
-        .filter(Boolean) as Card[];
-      setFoundCards(cards);
-      setPhase('result');
-      setIsNewHunt(false);
-    }
-  }, []);
+export default async function GamePage() {
+  const articles = await getLatestPortalArticles({ perPage: 30 });
+  const gachaArticles = buildGachaPool(articles);
 
-  const canHunt = col ? col.lastDrawDate !== todayStr() : false;
+  return (
+    <main className="min-h-dvh bg-[linear-gradient(180deg,#FFFFFF_0%,#FFFDF7_45%,#FFF7F6_100%)] px-4 pb-28 pt-5 text-[#0F172A]">
+      <div className="mx-auto w-full max-w-[520px]">
+        <Link
+          href="/"
+          className="inline-flex h-10 items-center justify-center rounded-full border border-[#E6ECF5] bg-white px-4 text-[13px] font-black text-[#071A4D] no-underline shadow-[0_8px_18px_rgba(7,26,77,0.07)]"
+        >
+          ← トップへ戻る
+        </Link>
 
-  const handleStartHunt = useCallback(() => {
-    if (!col || !canHunt) return;
-    const cards = hunt(CARDS, col.ownedCardIds, 5);
-    const today     = todayStr();
-    const yesterday = yesterdayStr();
-    const newStreak = col.lastDrawDate === yesterday ? col.streak + 1 : 1;
-    const ownedCardIds = Array.from(new Set([...col.ownedCardIds, ...cards.map(c => c.id)]));
-    const cardCounts = { ...col.cardCounts };
-    cards.forEach(c => { cardCounts[c.id] = (cardCounts[c.id] ?? 0) + 1; });
+        <header className="pb-4 pt-6">
+          <p className="text-[11px] font-black tracking-[0.22em] text-[#E8483F]">TODAY PICK</p>
+          <h1 className="mt-2 text-[28px] font-black leading-tight text-[#071A4D]">
+            今日の一軒ガチャ
+          </h1>
+          <p className="mt-3 text-[14px] font-bold leading-relaxed text-[#667085]">
+            行き先を決めきれない日に、公開中の記事から1本だけ引ける軽い入口です。
+          </p>
+        </header>
 
-    const updated: CollectionState = {
-      ...col,
-      ownedCardIds,
-      cardCounts,
-      lastDrawDate: today,
-      lastDrawnCardId: cards[cards.length - 1]?.id ?? null,
-      lastDrawnCardIds: cards.map(c => c.id),
-      streak: newStreak,
-      bestStreak: Math.max(col.bestStreak, newStreak),
-      totalDraws: (col.totalDraws ?? 0) + cards.length,
-    };
-    setCol(updated);
-    saveCollection(updated);
-    setFoundCards(cards);
-    setIsNewHunt(true);
-    setPhase('scanning');
-  }, [col, canHunt]);
-
-  const handleDevReset = () => {
-    const reset = { ...col!, lastDrawDate: null, lastDrawnCardId: null, lastDrawnCardIds: [] };
-    setCol(reset);
-    saveCollection(reset);
-    setFoundCards([]);
-    setPhase('idle');
-  };
-
-  if (!col) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center bg-[#030108]">
-        <div className="toshar-avatar animate-toshar-float" />
+        <GachaExperience articles={gachaArticles} location="game" />
       </div>
-    );
-  }
-
-  const ownedCount = col.ownedCardIds.length;
-
-  return (
-    <div className="flex flex-col min-h-dvh bg-[#030108]">
-      {phase === 'idle' && (
-        <HomeScreen
-          streak={col.streak}
-          ownedCount={ownedCount}
-          canHunt={canHunt}
-          onHunt={handleStartHunt}
-        />
-      )}
-      {phase === 'scanning' && foundCards.length > 0 && (
-        <ScanScreen cards={foundCards} onComplete={() => setPhase('revealing')} />
-      )}
-      {phase === 'revealing' && foundCards.length > 0 && (
-        <StickerReveal cards={foundCards} onComplete={() => setPhase('result')} />
-      )}
-      {phase === 'result' && foundCards.length > 0 && (
-        <HuntResult cards={foundCards} col={col} isNew={isNewHunt} onReroll={handleDevReset} />
-      )}
-
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-20 right-4 z-50">
-          <button onClick={handleDevReset}
-            className="text-white/20 text-[9px] underline">
-            [dev] リセット
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── HOME画面 ── */
-function HomeScreen({
-  streak, ownedCount, canHunt, onHunt,
-}: {
-  streak: number;
-  ownedCount: number;
-  canHunt: boolean;
-  onHunt: () => void;
-}) {
-  return (
-    <div className="flex flex-col min-h-dvh" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-      {/* 背景の召喚陣（静的） */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 80% 55% at 50% 38%, rgba(110,65,10,0.18) 0%, transparent 65%)',
-        }} />
-        {[90, 148, 206].map((r, i) => (
-          <div key={i} style={{
-            position: 'absolute', left: '50%', top: '42%',
-            width: r * 2, height: r * 2, borderRadius: '50%',
-            border: `1px solid rgba(175,125,28,${0.10 - i * 0.028})`,
-            transform: 'translate(-50%, -50%)',
-          }} />
-        ))}
-        <div style={{
-          position: 'absolute', left: '50%', top: '42%',
-          width: 340, height: 340, borderRadius: '50%',
-          border: '1px solid rgba(175,125,28,0.07)',
-          transform: 'translate(-50%, -50%)',
-          animation: 'spin-slow 32s linear infinite',
-        }} />
-      </div>
-
-      {/* ヘッダー */}
-      <header className="relative z-10 flex items-center justify-between px-4 pt-5 pb-3 flex-shrink-0"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)' }}>
-        <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5 bg-white/8 border border-white/12">
-          <span className="game-icon" />
-          <span className="font-black text-sm text-white/90">{streak}日</span>
-          <span className="text-xs text-white/45">連続</span>
-        </div>
-        <div className="text-center">
-          <p className="text-[9px] tracking-[0.18em] font-bold text-white/35">今日のおでかけが決まる</p>
-          <p className="font-black text-sm tracking-widest text-white/85">おでかけガチャ</p>
-        </div>
-        <div className="flex items-center gap-1 rounded-full px-3 py-1.5 bg-white/8 border border-white/12">
-          <span className="font-black text-sm text-white/90">{ownedCount}</span>
-          <span className="text-xs text-white/45">/ {TOTAL_CARDS}</span>
-          <span className="game-icon book ml-1" />
-        </div>
-      </header>
-
-      {/* メインコンテンツ */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 gap-8 pb-24 animate-fade-up">
-        {/* 博士の吹き出し */}
-        <div className="w-full max-w-xs">
-          <div className="relative rounded-2xl px-5 py-4 bg-white/6 border border-white/10"
-            style={{ backdropFilter: 'blur(8px)' }}>
-            <p className="text-white/80 text-sm font-bold leading-relaxed text-center">
-              {canHunt
-                ? '今日のおでかけ先を\n探しに行くぞ！'
-                : '今日の探索は完了じゃ。\nまた明日な！'}
-            </p>
-            {/* 吹き出しの矢印 */}
-            <div style={{
-              position: 'absolute', bottom: -8, left: '50%', transform: 'translateX(-50%)',
-              width: 16, height: 8,
-              background: 'rgba(255,255,255,0.06)',
-              clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
-            }} />
-          </div>
-          {/* 博士アバター */}
-          <div className="flex justify-center mt-3">
-            <div className="toshar-avatar flex items-center justify-center">
-              <span style={{ fontSize: '1.6rem', lineHeight: 1 }}>🧑‍🍳</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 探索ボタン or 完了状態 */}
-        {canHunt ? (
-          <button
-            onClick={onHunt}
-            className="w-full max-w-xs py-5 rounded-2xl font-black text-white text-lg tracking-wide active:scale-95 transition-transform relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #b8872f, #7a4a14)',
-              boxShadow: '0 0 40px rgba(184,135,47,0.45), 0 4px 0 rgba(0,0,0,0.35)',
-            }}
-          >
-            {/* ボタン光沢 */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to bottom, rgba(255,255,255,0.14), transparent)',
-              pointerEvents: 'none',
-            }} />
-            <span className="relative">今日のおでかけ先を探す</span>
-          </button>
-        ) : (
-          <div className="flex flex-col items-center gap-4 w-full max-w-xs">
-            <p className="text-white/40 text-sm text-center">今日の探索は済んでいます</p>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-}
-
-/* ── 探索結果 ── */
-function HuntResult({
-  cards,
-  col,
-  isNew,
-  onReroll,
-}: {
-  cards: Card[];
-  col: CollectionState;
-  isNew: boolean;
-  onReroll: () => void;
-}) {
-  const topCard = [...cards].sort((a, b) => {
-    const rank: Record<string, number> = { N: 1, R: 2, SR: 3, SSR: 4, UR: 5 };
-    return rank[b.rarity] - rank[a.rarity];
-  })[0];
-  const cfg = RARITY_CONFIG[topCard.rarity];
-  const isTopNew = isNew && (col.cardCounts[topCard.id] ?? 0) <= 1;
-  const topIndex = cards.findIndex(card => card.id === topCard.id);
-
-  return (
-    <div
-      className="fixed inset-0 z-40 flex items-center justify-center select-none px-4 py-6"
-      style={{
-        background: 'rgba(12,10,12,0.52)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
-      }}
-    >
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `radial-gradient(circle at 24% 18%, ${cfg.glowColor} 0%, transparent 18%), radial-gradient(circle at 78% 72%, rgba(255,210,120,0.20) 0%, transparent 20%), linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,245,230,0.56))`,
-      }} />
-
-      <section
-        className="relative z-10 w-full max-w-[390px] rounded-[28px] bg-white/90 shadow-2xl animate-fade-up"
-        style={{
-          border: '1px solid rgba(255,255,255,0.82)',
-          boxShadow: `0 24px 80px rgba(40,20,8,0.22), 0 0 38px ${cfg.glowColor}`,
-        }}
-      >
-        <div className="px-5 pt-5 pb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-[10px] font-black tracking-[0.24em] text-neutral-400">PACK RESULT</p>
-              <h2 className="text-xl font-black text-neutral-900">おでかけカードを発見</h2>
-            </div>
-            <span className="rounded-full px-3 py-1 text-xs font-black" style={{ color: cfg.color, background: `${cfg.color}18` }}>
-              {topCard.rarity}
-            </span>
-          </div>
-
-          <div className="rounded-2xl bg-white p-4 shadow-[0_12px_34px_rgba(20,12,8,0.14)]">
-            <div className="flex justify-center">
-              <StickerVisual
-                card={topCard}
-                size="lg"
-                discovered
-                isNew={isTopNew}
-              />
-            </div>
-            <div className="mt-4">
-              <p className="text-xs font-bold text-neutral-500">{topCard.shopName}</p>
-              <h3 className="mt-1 text-lg font-black leading-tight text-neutral-950">{topCard.name}</h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-neutral-700">
-                {topCard.description}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-center gap-1.5">
-            {cards.map((card, i) => (
-              <span
-                key={`${card.id}-${i}`}
-                className="h-2 rounded-full transition-all"
-                style={{
-                  width: i === topIndex ? 22 : 8,
-                  background: i === topIndex ? cfg.color : 'rgba(20,20,20,0.18)',
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="mt-5 grid gap-3">
-            <Link
-              href={`/card/${topCard.id}`}
-              className="w-full rounded-full py-4 text-center text-base font-black text-white active:scale-[0.98] transition-transform"
-              style={{ background: `linear-gradient(135deg, ${cfg.color}, ${cfg.color}bb)` }}
-            >
-              詳細を見る
-            </Link>
-            <button
-              type="button"
-              onClick={onReroll}
-              className="w-full rounded-full border py-4 text-base font-black active:scale-[0.98] transition-transform"
-              style={{ borderColor: `${cfg.color}88`, color: cfg.color, background: 'rgba(255,255,255,0.74)' }}
-            >
-              もう一度回す
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
+    </main>
   );
 }

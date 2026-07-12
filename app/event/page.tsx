@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { EventCardClient } from '@/components/EventCardClient';
 
 const description = '今日行けるイベントや週末のおでかけ情報など、名古屋の注目イベントを探せます。';
 
@@ -27,49 +26,6 @@ const EVENT_FILTERS = [
   { label: '雨の日でも楽しめる', text: '屋内や駅近で過ごしやすい催し',   icon: 'umbrella' },
   { label: '家族で行きたい',    text: '親子で楽しみやすい名古屋イベント', icon: 'heart' },
 ] as const;
-
-const EVENTS = [
-  {
-    id: 'event-sakae-light',
-    title: '栄 光のインスタレーション',
-    area: '栄',
-    tag: '夜のおでかけ',
-    description: '仕事帰りに立ち寄れる、街なかのライトアップ展示。',
-    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=75',
-    startDate: '2026-06-20',
-    endDate: '2026-07-20',
-  },
-  {
-    id: 'event-kakuozan-market',
-    title: '覚王山アパートメント秋市',
-    area: '覚王山',
-    tag: 'マーケット',
-    description: '雑貨、焼き菓子、クラフト品が並ぶ週末マーケット。',
-    imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=600&q=75',
-    startDate: '2026-07-05',
-    endDate: '2026-07-06',
-  },
-  {
-    id: 'event-port-family',
-    title: '名古屋港ファミリーデイ',
-    area: '名古屋港',
-    tag: '家族向け',
-    description: '海辺を歩きながら楽しめる、親子向けのおでかけイベント。',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75',
-    startDate: '2026-07-04',
-    endDate: '2026-07-05',
-  },
-  {
-    id: 'event-osu-food',
-    title: '大須まちなか食べ歩き企画',
-    area: '大須',
-    tag: 'グルメ',
-    description: '大須商店街で新店や限定メニューを巡れる企画。',
-    imageUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=75',
-    startDate: '2026-06-15',
-    endDate: '2026-07-31',
-  },
-];
 
 const EVENT_NEXT_LINKS = [
   {
@@ -118,13 +74,27 @@ export default function EventPage() {
         </div>
       </section>
 
-      {/* ── イベント一覧 ── */}
+      {/* ── イベント一覧（公式確認済みのみ掲載。準備中） ── */}
       <section className="px-4 pt-7">
         <SectionTitle eyebrow="EVENT LIST">開催中・今週末のイベント</SectionTitle>
-        <div className="mt-4 flex flex-col gap-4">
-          {EVENTS.map(event => (
-            <EventCardClient key={event.id} event={event} />
-          ))}
+        <div
+          className="mt-4 rounded-[18px] bg-white px-5 py-8 text-center"
+          style={{ border: '1px solid #E6ECF5', boxShadow: '0 8px 24px rgba(7,26,77,0.07)' }}
+        >
+          <p className="text-[15px] font-black" style={{ color: '#071A4D' }}>
+            イベント情報は準備中です
+          </p>
+          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+            公式に確認できたイベントだけを掲載します。近日公開予定です。
+          </p>
+          <Link
+            href="/new"
+            className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-3 text-[13px] font-black text-white no-underline active:scale-[0.98] transition-transform"
+            style={{ background: '#E8483F', boxShadow: '0 10px 20px rgba(232,72,63,0.24)' }}
+          >
+            新着記事を見る
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 

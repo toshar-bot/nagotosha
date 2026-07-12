@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import {
+  assertNoForbiddenPhrases,
   buildEditUrl,
   buildPostPayload,
   fail,
@@ -18,6 +19,14 @@ const env = validateRuntimeEnv({ dryRun });
 if (!env.ok) process.exit(env.exitCode);
 
 const draft = await loadDraft(postJsonPath);
+
+// 公開前NGワード検査: 内部指示・プレースホルダを含む記事は draft 作成前に止める
+assertNoForbiddenPhrases({
+  title: draft.post.title,
+  excerpt: draft.post.excerpt,
+  content: draft.content,
+  meta: draft.post.meta ?? {},
+});
 
 if (dryRun) {
   const operation = draft.state?.postId ? 'would-check-state-before-update' : 'would-check-slug-before-create';
