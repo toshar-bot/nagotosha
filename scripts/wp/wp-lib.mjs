@@ -90,8 +90,48 @@ export function validatePostSchema(post) {
     fail('post.json categories must be a non-empty array.', 'Add at least one category name.');
   }
 
+  // カテゴリ「記事」単独は分類として無意味なので禁止(新店/グルメ等に寄せる)
+  const categoryNames = post.categories.map((c) => String(c).trim());
+  if (categoryNames.length === 1 && categoryNames[0] === '記事') {
+    fail('Category must not be just 「記事」.', 'Use a meaningful category such as 新店 / グルメ / カフェ / イベント.');
+  }
+
   if (!Array.isArray(post.tags)) {
     fail('post.json tags must be an array.', 'Use an empty array or tag names.');
+  }
+}
+
+/* ── 公開前NGワード検査 ──
+   編集者向けの内部指示・プレースホルダが公開されるのを防ぐ。
+   タイトル・抜粋・本文・メタのいずれかに含まれていたら draft 作成前に停止する */
+const FORBIDDEN_PHRASES = [
+  '削除してください',
+  '過去形へ更新してください',
+  '確認中',
+  '仮',
+  'ダミー',
+  'サンプル',
+  'TODO',
+  'Image:',
+  '画像タイトル',
+];
+
+export function findForbiddenPhrases({ title = '', excerpt = '', content = '', meta = {} }) {
+  const metaText = Object.values(meta)
+    .filter((value) => typeof value === 'string')
+    .join('\n');
+  const haystack = [title, excerpt, content, metaText].join('\n');
+
+  return FORBIDDEN_PHRASES.filter((phrase) => haystack.includes(phrase));
+}
+
+export function assertNoForbiddenPhrases(postLike) {
+  const found = findForbiddenPhrases(postLike);
+  if (found.length > 0) {
+    fail(
+      `Forbidden editorial phrases found: ${found.join(' / ')}`,
+      'Remove internal instructions and placeholders from the article before submitting.',
+    );
   }
 }
 

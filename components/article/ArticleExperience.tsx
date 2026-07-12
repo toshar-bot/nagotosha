@@ -223,6 +223,8 @@ type Props = {
   officialUrl?: string;
   storeName?: string;
   address?: string;
+  /** 本文から抽出した店舗情報(営業時間・定休日・価格帯など)。experience未定義のWP記事用 */
+  extraShopInfo?: ShopInfoItem[];
   dateStr: string;
   articleId: string;
   postId: number;
@@ -243,6 +245,7 @@ export function ArticleExperience({
   officialUrl,
   storeName,
   address,
+  extraShopInfo,
   dateStr,
   articleId,
   postId,
@@ -267,7 +270,7 @@ export function ArticleExperience({
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
-  const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag });
+  const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag }, extraShopInfo);
   const related = experience?.related ?? [];
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
@@ -391,37 +394,9 @@ export function ArticleExperience({
                 </p>
               )}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginTop: 15 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    background: '#FFF7D8',
-                    border: '1px solid #F8C861',
-                    display: 'grid',
-                    placeItems: 'center',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                  }}>
-                    <span aria-hidden style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: '50%',
-                      background: '#071A4D',
-                      color: '#fff',
-                      display: 'grid',
-                      placeItems: 'center',
-                      fontSize: 17,
-                      fontWeight: 900,
-                      lineHeight: 1,
-                    }}>
-                      な
-                    </span>
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, color: '#071A4D', fontSize: 12, fontWeight: 900 }}>名古屋情報局なごとしゃ編集部</p>
-                    <p style={{ margin: '2px 0 0', color: '#667085', fontSize: 11, fontWeight: 700 }}>{dateStr} 更新</p>
-                  </div>
+                <div>
+                  <p style={{ margin: 0, color: '#071A4D', fontSize: 12, fontWeight: 900 }}>なごとしゃ編集部</p>
+                  <p style={{ margin: '2px 0 0', color: '#667085', fontSize: 11, fontWeight: 700 }}>{dateStr} 更新</p>
                 </div>
                 <div style={{
                   display: 'inline-flex',
@@ -1765,15 +1740,28 @@ function BackToArticlesLink() {
   );
 }
 
-function mergeShopInfo(items: ShopInfoItem[], fallback: { storeName?: string; area?: string; address?: string; tag?: string }) {
+function mergeShopInfo(
+  items: ShopInfoItem[],
+  fallback: { storeName?: string; area?: string; address?: string; tag?: string },
+  extra?: ShopInfoItem[],
+) {
   if (items.length > 0) return items;
 
-  return [
+  const base = [
     fallback.storeName ? { label: '店名', value: fallback.storeName } : undefined,
     fallback.area ? { label: 'エリア', value: fallback.area } : undefined,
     fallback.tag ? { label: 'ジャンル', value: fallback.tag } : undefined,
     fallback.address ? { label: '住所', value: fallback.address } : undefined,
   ].filter(Boolean) as ShopInfoItem[];
+
+  // 本文抽出の追加項目(営業時間・定休日など)。既出ラベルは重複させない
+  const seen = new Set(base.map((item) => item.label));
+  for (const item of extra ?? []) {
+    if (!item.value || seen.has(item.label)) continue;
+    seen.add(item.label);
+    base.push(item);
+  }
+  return base;
 }
 
 function ArticleHeader({ mapUrl }: { mapUrl?: string }) {

@@ -2,11 +2,12 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import Link from 'next/link';
 
+import { GachaExperience } from '@/components/GachaExperience';
 import { MoodPicksSection } from '@/components/MoodPicksSection';
-import { getFeaturedNewOpenSpots } from '@/lib/article-experience';
+import { buildGachaPool } from '@/lib/gacha-pool';
 import type { FeaturedArticle } from '@/types/portal';
 
 const THEME = {
@@ -42,15 +43,6 @@ const JP = {
   detail: '\u8a73\u3057\u304f\u898b\u308b',
   newOpenSubtitle: '\u4eca\u6708\u30aa\u30fc\u30d7\u30f3\u306e\u30cb\u30e5\u30fc\u30b9\u30dd\u30c3\u30c8',
   featuresSubtitle: '\u5b63\u7bc0\u30fb\u30c6\u30fc\u30de\u5225\u306e\u7279\u96c6',
-  gachaTitle: '\u304a\u3067\u304b\u3051\u30ac\u30c1\u30e3',
-  gachaDescA: '\u540d\u53e4\u5c4b\u306e\u6ce8\u76ee\u30b0\u30eb\u30e1\u3084',
-  gachaDescB: '\u304a\u3067\u304b\u3051\u5148\u3092\u30e9\u30f3\u30c0\u30e0\u3067',
-  gachaDescC: '\u3054\u7d39\u4ecb\u3057\u307e\u3059\uff01',
-  gachaCta: '\u30ac\u30c1\u30e3\u3092\u5f15\u304f',
-  gachaSpinCta: '\u30ac\u30c1\u30e3\u3092\u56de\u3057\u3066\u307f\u308b',
-  gachaBubbleA: '\u304a\u3067\u304b\u3051\u5148\u3092\u30e9\u30f3\u30c0\u30e0\u3067\u3054\u7d39\u4ecb\u3002',
-  gachaBubbleB: '\u4f55\u304c\u51fa\u308b\u304b\u306f\u304a\u697d\u3057\u307f\uff01',
-  gachaBubbleC: '\u60c5\u5831\u304c\u5f53\u305f\u308b\uff01',
   hitsumabushi: '\u3072\u3064\u307e\u3076\u3057',
   misoKatsu: '\u5473\u564c\u30ab\u30c4',
   tebasaki: '\u624b\u7fbd\u5148',
@@ -211,7 +203,14 @@ function isArchiveArticle(article: ArticleLike) {
   return ARCHIVE_ARTICLE_URLS.has(href) || ARCHIVE_ARTICLE_IDS.has(article.id);
 }
 
-export default function PortalHomeClient({ featuredArticles }: { featuredArticles: FeaturedArticle[] }) {
+export default function PortalHomeClient({
+  featuredArticles,
+  gachaSourceArticles,
+}: {
+  featuredArticles: FeaturedArticle[];
+  gachaSourceArticles: FeaturedArticle[];
+}) {
+  const gachaArticles = useMemo(() => buildGachaPool(gachaSourceArticles), [gachaSourceArticles]);
   const articles = useMemo<ArticleLike[]>(() => {
     const source = (featuredArticles.length > 0 ? featuredArticles : FALLBACK_ARTICLES).filter(
       (article) => !isArchiveArticle(article),
@@ -243,12 +242,18 @@ export default function PortalHomeClient({ featuredArticles }: { featuredArticle
       <main className="overflow-hidden pb-28">
         <HeroSection />
         <FreshArticlesSection articles={articles} />
-        <NewsSection />
+        <NewsSection articles={featuredArticles} />
         <EditorChoiceSection />
         <FeaturesSection />
         <AreaCtaSection />
         <ArticlesSection articles={articles} />
-        <GachaSection articles={articles} />
+        {gachaArticles.length > 0 && (
+          <section id="home-gacha" className="scroll-mt-4 px-4 py-5">
+            <div className="mx-auto w-full max-w-[940px]">
+              <GachaExperience articles={gachaArticles} location="home" />
+            </div>
+          </section>
+        )}
         <HomeFooterCta />
       </main>
     </div>
@@ -613,366 +618,6 @@ function FeatureCard({ item }: { item: (typeof FEATURE_CARDS)[number] }) {
   );
 }
 
-type HomeGachaPhase = 'intro' | 'pack' | 'opening' | 'result';
-
-type HomeGachaPreviewCard = {
-  title: string;
-  category: string;
-  imageUrl: string;
-  className: string;
-  rotate: string;
-  delay: string;
-};
-
-type HomeGachaResult = {
-  id: string;
-  title: string;
-  catchCopy: string;
-  tag: string;
-  area: string;
-  imageUrl: string;
-  articleUrl: string;
-  sourceName: string;
-};
-
-function fitCardText(value: string | undefined, maxLength: number) {
-  const clean = (value || '').replace(/\s+/g, ' ').trim();
-  if (clean.length <= maxLength) return clean;
-  const sentence = clean.split(/[。！？!?.]/)[0];
-  if (sentence && sentence.length <= maxLength) return sentence;
-  return clean.slice(0, maxLength);
-}
-
-function makeGachaResult(article: ArticleLike, index: number): HomeGachaResult {
-  const fallback = FALLBACK_ARTICLES[index % FALLBACK_ARTICLES.length];
-  const title = fitCardText(article.title || fallback.title, 26);
-  const description = article.description || fallback.description || '名古屋で見つけたい、今日のおでかけ候補。';
-  const tag = article.tag || fallback.tag || JP.focus;
-  const area = article.area || fallback.area || JP.nagoya;
-
-  return {
-    id: String(article.id || fallback.id || index),
-    title,
-    catchCopy: fitCardText(description, 42),
-    tag,
-    area,
-    imageUrl: article.imageUrl || fallback.imageUrl || FEATURE_CARDS[index % FEATURE_CARDS.length].imageUrl,
-    articleUrl: article.articleUrl || '/new',
-    sourceName: fitCardText(article.storeName || title, 18),
-  };
-}
-
-function GachaSection({ articles }: { articles: ArticleLike[] }) {
-  const [phase, setPhase] = useState<HomeGachaPhase>('intro');
-  const [selectedResult, setSelectedResult] = useState<HomeGachaResult | null>(null);
-  const resultTimerRef = useRef<number | null>(null);
-
-  const previewCards: HomeGachaPreviewCard[] = [
-    {
-      title: '東山動植物園',
-      category: '動物園',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Koala_in_Higashiyama_Zoo_-_4.jpg',
-      className: 'left-[6%] bottom-[8%]',
-      rotate: '-9deg',
-      delay: '0s',
-    },
-    {
-      title: '名古屋港水族館',
-      category: '海のおでかけ',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Killer_whale_at_Port_of_Nagoya_Public_Aquarium_2.jpg',
-      className: 'right-[5%] top-[9%]',
-      rotate: '8deg',
-      delay: '.18s',
-    },
-    {
-      title: 'ひつまぶし',
-      category: '名古屋名物',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/5/57/%E3%81%B2%E3%81%A4%E3%81%BE%E3%81%B6%E3%81%97_%288866834170%29.jpg',
-      className: 'left-[6%] top-[9%]',
-      rotate: '-7deg',
-      delay: '.34s',
-    },
-    {
-      title: '味噌カツ',
-      category: '名古屋グルメ',
-      imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1d/Miso-Katsu-Teishoku-1.jpg',
-      className: 'right-[6%] bottom-[8%]',
-      rotate: '9deg',
-      delay: '.52s',
-    },
-  ];
-
-  const gachaResults = useMemo(() => {
-    const source = articles.length > 0 ? articles : FALLBACK_ARTICLES;
-    return source.map((article, index) => makeGachaResult(article, index));
-  }, [articles]);
-  const resultCard = selectedResult || gachaResults[0];
-
-  useEffect(() => {
-    return () => {
-      if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
-    };
-  }, []);
-
-  const chooseCard = () => gachaResults[Math.floor(Math.random() * gachaResults.length)] || makeGachaResult(FALLBACK_ARTICLES[0], 0);
-
-  const startDraw = () => {
-    if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
-    setSelectedResult(chooseCard());
-    setPhase('pack');
-  };
-
-  const openPack = () => {
-    if (phase !== 'pack') return;
-    setPhase('opening');
-    if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
-    resultTimerRef.current = window.setTimeout(() => {
-      setPhase('result');
-      resultTimerRef.current = null;
-    }, 1450);
-  };
-
-  const resetGacha = () => {
-    if (resultTimerRef.current !== null) window.clearTimeout(resultTimerRef.current);
-    resultTimerRef.current = null;
-    setSelectedResult(null);
-    setPhase('intro');
-  };
-
-  return (
-    <section id="home-gacha" className="scroll-mt-4 px-4 py-5">
-      <div className="relative mx-auto w-full max-w-[940px] overflow-hidden rounded-[28px] border border-[#f4d9cd] bg-[linear-gradient(180deg,#fffaf1_0%,#fff1f2_100%)] px-4 pb-5 pt-5 text-center shadow-[0_16px_38px_rgba(232,72,63,0.12)]">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-55"
-          style={{
-            backgroundImage:
-              'linear-gradient(135deg, transparent 0 13px, rgba(151,105,28,0.14) 13px 14px, transparent 14px 26px), linear-gradient(45deg, transparent 0 13px, rgba(151,105,28,0.10) 13px 14px, transparent 14px 26px)',
-            backgroundSize: '42px 42px',
-          }}
-          aria-hidden="true"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,226,148,.48),transparent_31%),linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.20)_42%,rgba(255,238,240,.40))]" />
-
-        {phase === 'intro' && (
-          <div className="relative z-10">
-            <GachaHeading />
-            <div className="relative z-10 mx-auto mt-3 max-w-[430px] rounded-[24px] bg-white px-5 py-3 text-[14px] font-black leading-relaxed text-[#071A4D] shadow-[0_14px_28px_rgba(7,26,77,0.10)] sm:text-[16px]">
-              <p>名古屋の魅力がつまった</p>
-              <p>お出かけ先をランダムで紹介！</p>
-              <p>何が出るかはお楽しみ！</p>
-              <span className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-white" aria-hidden="true" />
-            </div>
-
-            <div className="relative mx-auto mt-5 h-[316px] max-w-[560px] sm:h-[370px]">
-              <div className="pointer-events-none absolute left-1/2 top-[48%] h-[246px] w-[246px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-xl sm:h-[300px] sm:w-[300px]" style={{ background: 'conic-gradient(from 20deg, rgba(255,42,109,0.55), rgba(255,199,57,0.58), rgba(85,255,178,0.42), rgba(72,176,255,0.50), rgba(169,95,255,0.48), rgba(255,42,109,0.55))' }} />
-              <div className="pointer-events-none absolute left-1/2 top-[48%] h-[178px] w-[178px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/62 blur-md sm:h-[222px] sm:w-[222px]" />
-
-              {previewCards.map((card) => (
-                <GachaPreviewCard key={card.title} card={card} />
-              ))}
-
-              <div className="absolute left-1/2 top-[49%] grid h-[140px] w-[98px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[20px] border-[3px] border-white bg-[linear-gradient(145deg,#fff7b5,#ffdb35_22%,#d39400_54%,#f2c000_78%,#fff9c9)] text-[62px] font-black text-[#071A4D] shadow-[0_24px_48px_rgba(148,92,0,0.36),0_0_34px_rgba(255,74,167,0.30),0_0_48px_rgba(77,183,255,0.26)] sm:h-[164px] sm:w-[116px] sm:text-[76px]" style={{ animation: 'gacha-card-pulse 3.8s ease-in-out infinite' }}>
-                ?
-              </div>
-            </div>
-
-            <button type="button" onClick={startDraw} className="relative z-10 mx-auto mt-3 inline-flex h-[54px] min-w-[240px] items-center justify-center rounded-full bg-[#e8483f] px-8 text-[17px] font-black text-white shadow-[0_15px_30px_rgba(232,72,63,0.30)]" style={{ animation: 'home-gacha-cta 3.2s ease-in-out infinite' }}>
-              カードを引く
-              <span className="ml-3" aria-hidden="true">{String.fromCharCode(8594)}</span>
-            </button>
-          </div>
-        )}
-
-        {phase === 'pack' && (
-          <GachaPackScreen onOpen={openPack} />
-        )}
-
-        {phase === 'opening' && (
-          <GachaOpeningScreen />
-        )}
-
-        {phase === 'result' && (
-          <GachaResultScreen card={resultCard} onReset={resetGacha} />
-        )}
-      </div>
-    </section>
-  );
-}
-
-function GachaHeading() {
-  return (
-    <div className="relative flex items-center justify-center gap-4">
-      <span className="h-px flex-1 border-t border-dashed border-[#e8483f]/45" />
-      <div>
-        <p className="text-[44px] font-black leading-none tracking-[0.22em] text-[#e72f39] sm:text-[48px]">GACHA</p>
-        <h2 className="mt-3 text-[23px] font-black leading-none text-[#071A4D] sm:text-[28px]">おでかけガチャ</h2>
-      </div>
-      <span className="h-px flex-1 border-t border-dashed border-[#e8483f]/45" />
-    </div>
-  );
-}
-
-function GachaPreviewCard({ card }: { card: HomeGachaPreviewCard }) {
-  return (
-    <div
-      className={'absolute h-[130px] w-[92px] overflow-hidden rounded-[15px] border-[2px] border-[#d8ad3d] bg-[#fff8dc] text-left shadow-[0_16px_30px_rgba(7,26,77,0.22)] ring-1 ring-[#fff1a8]/70 sm:h-[158px] sm:w-[110px] ' + card.className}
-      style={{ '--rotate': card.rotate, transform: 'rotate(' + card.rotate + ')', animation: 'home-gacha-card-float 4.4s ease-in-out infinite ' + card.delay } as CSSProperties}
-    >
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("' + card.imageUrl + '")' }} />
-      <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-[#fff8e0]/94" />
-      <div className="absolute inset-x-2 bottom-2 text-[#06391e]">
-        <p className="rounded border border-[#d6ac43]/70 bg-white/90 px-1 py-1 text-center text-[10px] font-black leading-[1.12] tracking-[-0.04em] shadow-sm sm:text-[12px]">{card.title}</p>
-        <p className="mt-0.5 text-center text-[6px] font-black tracking-[0.12em] text-[#9a6a08] sm:text-[7px]">{card.category}</p>
-      </div>
-    </div>
-  );
-}
-
-function GachaPackScreen({ onOpen }: { onOpen: () => void }) {
-  return (
-    <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
-      <GachaHeading />
-      <button type="button" onClick={onOpen} className="relative mx-auto mt-7 block h-[350px] w-[238px] select-none active:scale-[0.99]" aria-label="お出かけパックをタップして開封">
-        <OdekakePackVisual />
-      </button>
-      <button type="button" onClick={onOpen} className="relative z-10 mx-auto mt-2 inline-flex h-[52px] min-w-[220px] items-center justify-center rounded-full bg-[#e8483f] px-8 text-[16px] font-black text-white shadow-[0_15px_30px_rgba(232,72,63,0.28)]">
-        パックを開ける
-      </button>
-      <p className="relative z-10 mt-3 text-[12px] font-black text-[#667085]">スワイプ / タップで開封</p>
-    </div>
-  );
-}
-
-function OdekakePackVisual({ opening = false }: { opening?: boolean }) {
-  return (
-    <div className="absolute inset-0 grid place-items-center" style={{ animation: opening ? undefined : 'home-gacha-pack-float 4.4s ease-in-out infinite' }}>
-      <img
-        src="/gacha/odekake-pack-clean.png"
-        alt="お出かけパック"
-        className="relative z-10 block h-full w-full select-none object-contain drop-shadow-[0_18px_28px_rgba(109,69,10,0.22)]"
-        draggable={false}
-      />
-    </div>
-  );
-}
-
-function GachaOpeningScreen() {
-  return (
-    <div className="relative z-10 mx-auto min-h-[560px] max-w-[360px] pt-2 text-center">
-      <p className="text-[28px] font-black tracking-[0.08em] text-[#0f5d3a]">開封中...</p>
-      <p className="mt-1 text-sm font-black text-[#071A4D]/70">何が出るかはお楽しみ</p>
-      <div className="absolute left-1/2 top-[224px] h-[270px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-sink 1.35s ease forwards' }}>
-        <img
-          src="/gacha/odekake-pack-body.png"
-          alt="お出かけパック"
-          className="relative z-10 block h-full w-full select-none object-contain"
-          draggable={false}
-        />
-        <div
-          className="pointer-events-none absolute left-1/2 top-[-148px] z-0 h-[220px] w-[312px] -translate-x-1/2"
-          style={{
-            animation: 'home-gacha-sun-burst 1.24s ease-out both',
-            background: [
-              'radial-gradient(ellipse at 50% 100%, rgba(255,255,255,.96) 0%, rgba(255,246,188,.74) 16%, rgba(255,211,94,.26) 42%, transparent 70%)',
-              'linear-gradient(72deg, transparent 0%, transparent 31%, rgba(255,255,255,.58) 43%, rgba(255,231,143,.32) 50%, transparent 62%, transparent 100%)',
-              'linear-gradient(108deg, transparent 0%, transparent 33%, rgba(255,255,255,.50) 45%, rgba(255,231,143,.26) 52%, transparent 64%, transparent 100%)',
-              'linear-gradient(90deg, transparent 0%, rgba(255,238,168,.28) 38%, rgba(255,255,255,.50) 50%, rgba(255,238,168,.28) 62%, transparent 100%)',
-            ].join(','),
-            WebkitMaskImage: 'linear-gradient(0deg, #000 0%, rgba(0,0,0,.92) 42%, rgba(0,0,0,.45) 72%, transparent 100%)',
-            maskImage: 'linear-gradient(0deg, #000 0%, rgba(0,0,0,.92) 42%, rgba(0,0,0,.45) 72%, transparent 100%)',
-          }}
-        />
-        <div
-          className="pointer-events-none absolute left-1/2 top-[-64px] z-0 h-[128px] w-[238px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,.96)_0%,rgba(255,239,160,.72)_28%,rgba(255,184,72,.24)_58%,transparent_76%)] blur-[14px]"
-          style={{ animation: 'home-gacha-core-glow 1.18s ease-out both' }}
-        />
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <span
-            key={i}
-            className="pointer-events-none absolute z-0 h-1.5 w-1.5 rounded-full bg-[#ffd66b] shadow-[0_0_10px_rgba(255,214,107,.95)]"
-            style={{
-              left: `${34 + i * 7}%`,
-              top: `${4 + (i % 2) * 12}px`,
-              animation: `home-gacha-dust-rise ${0.82 + i * 0.08}s ease-out ${0.08 + i * 0.04}s both`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="absolute left-1/2 top-[154px] h-[76px] w-[238px] -translate-x-1/2" style={{ animation: 'home-gacha-pack-cut 1.05s cubic-bezier(.17,.95,.22,1) .18s both', transformOrigin: '50% 100%' }}>
-        <img
-          src="/gacha/odekake-pack-top.png"
-          alt=""
-          className="block h-full w-full select-none object-contain"
-          draggable={false}
-        />
-      </div>
-    </div>
-  );
-}
-
-function GachaResultScreen({ card, onReset }: { card: HomeGachaResult; onReset: () => void }) {
-  const [tilt, setTilt] = useState({ rx: 0, ry: 0, gx: 50, gy: 35 });
-  const cardStyle: CSSProperties = {
-    transform: `perspective(900px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
-    '--gacha-glow-x': `${tilt.gx}%`,
-    '--gacha-glow-y': `${tilt.gy}%`,
-  } as CSSProperties;
-
-  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    setTilt({
-      rx: (0.5 - y) * 7,
-      ry: (x - 0.5) * 8,
-      gx: x * 100,
-      gy: y * 100,
-    });
-  };
-
-  const resetTilt = () => setTilt({ rx: 0, ry: 0, gx: 50, gy: 35 });
-
-  return (
-    <div className="relative z-10 mx-auto max-w-[390px] px-1 pb-1 pt-1 text-center" style={{ animation: 'home-gacha-result-in .62s cubic-bezier(.22,1,.36,1) both' }}>
-      <GachaHeading />
-      <div className="pointer-events-none absolute inset-x-0 top-20 h-[390px] rounded-full bg-[radial-gradient(circle_at_50%_32%,rgba(255,232,153,.30),transparent_44%),radial-gradient(circle_at_22%_54%,rgba(255,97,116,.08),transparent_30%),radial-gradient(circle_at_85%_62%,rgba(83,150,96,.08),transparent_28%)]" />
-      <div className="relative mx-auto mt-4 flex justify-center">
-        <div
-          className="group relative w-[250px] overflow-hidden rounded-[24px] border-[2px] border-[#d8ad3d] bg-[#101315] text-left shadow-[0_22px_44px_rgba(7,26,77,.22),0_0_0_4px_rgba(255,232,167,.36)] transition-transform duration-150 ease-out"
-          style={cardStyle}
-          onPointerMove={handlePointerMove}
-          onPointerLeave={resetTilt}
-        >
-          <div className="pointer-events-none absolute inset-0 z-20 opacity-70 mix-blend-screen" style={{ background: 'radial-gradient(circle at var(--gacha-glow-x) var(--gacha-glow-y), rgba(255,255,255,.58), rgba(255,222,115,.22) 18%, rgba(255,98,180,.18) 30%, rgba(82,183,255,.16) 42%, transparent 58%)' }} />
-          <div className="pointer-events-none absolute inset-0 z-20 opacity-45 mix-blend-screen" style={{ background: 'linear-gradient(120deg, transparent 12%, rgba(255,255,255,.36) 22%, rgba(255,225,105,.20) 29%, transparent 42%)', animation: 'home-gacha-card-shine 3.6s ease-in-out infinite' }} />
-          <div className="pointer-events-none absolute inset-0 z-10 opacity-22" style={{ backgroundImage: 'radial-gradient(circle at 20% 18%, rgba(255,235,160,.45) 0 1px, transparent 2px), radial-gradient(circle at 78% 34%, rgba(255,255,255,.35) 0 1px, transparent 2px), repeating-radial-gradient(circle at 50% 0%, transparent 0 15px, rgba(255,215,125,.15) 16px 17px)' }} />
-
-          <div className="relative z-10 p-[10px]">
-            <div className="relative overflow-hidden rounded-[18px] border border-[#d8ad3d]/85 bg-[#071A4D]">
-              <div className="relative h-[178px] overflow-hidden">
-                <img src={card.imageUrl} alt={card.title} className="block h-full w-full object-cover" draggable={false} />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-black/12" />
-              </div>
-              <div className="relative bg-[linear-gradient(180deg,#fff8e6,#f4e4bd)] px-3.5 py-3 text-[#2f2415]">
-                <h3 className="text-[15px] font-black leading-[1.28] text-[#071A4D]">{card.title}</h3>
-                <p className="mt-1 text-[11px] font-black leading-[1.35] text-[#174B2F]">{card.sourceName}</p>
-                <p className="mt-1 min-h-[30px] text-[10px] font-bold leading-[1.45] text-[#4b3a28]">{card.catchCopy}</p>
-                <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
-                  <span className="rounded-full border border-[#c9a746] bg-[#174B2F] px-2.5 py-1 text-[10px] font-black text-[#fff3bd]">{card.area}</span>
-                  <span className="rounded-full border border-[#c9a746]/50 bg-[#174B2F]/65 px-2 py-0.5 text-[9px] font-black text-[#fff3bd]/85">{card.tag}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="relative z-10 mx-auto mt-4 grid w-[min(78vw,306px)] gap-2.5">
-        <a href={card.articleUrl} className="inline-flex h-[52px] items-center justify-center gap-2 rounded-full border border-[#d6b052] bg-[linear-gradient(180deg,#ef4444,#c91723)] px-5 text-[16px] font-black text-white no-underline shadow-[0_10px_20px_rgba(185,25,31,.24),inset_0_1px_0_rgba(255,255,255,.28)]">詳細を見る<span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/70 text-[16px] leading-none" aria-hidden="true">{String.fromCharCode(8250)}</span></a>
-        <button type="button" onClick={onReset} className="inline-flex h-[48px] items-center justify-center rounded-full border border-[#e8483f] bg-white text-[14px] font-black text-[#e8483f] shadow-[0_7px_15px_rgba(80,20,15,.10)]">もう一度回す<span className="ml-3 text-[18px] leading-none" aria-hidden="true">↻</span></button>
-      </div>
-    </div>
-  );
-}
 function ArticlesSection({ articles }: { articles: ArticleLike[] }) {
   const picks = articles.slice(0, 5);
   return (
@@ -1072,30 +717,44 @@ type HomeNewsCard = {
   areaTag: string;
 };
 
-function NewsSection() {
+const NEW_OPEN_PATTERN = /新店|オープン|NEW\s*OPEN|open/i;
+const CLOSED_PATTERN = /閉店|終了|クローズ/;
+
+function isNewOpenArticle(article: ArticleLike): boolean {
+  const haystack = `${article.tag ?? ''} ${article.title}`;
+  if (CLOSED_PATTERN.test(haystack)) return false;
+  return NEW_OPEN_PATTERN.test(haystack) || article.isNew === true;
+}
+
+function toArticleTime(publishedAt?: string): number {
+  if (!publishedAt) return 0;
+  const t = new Date(publishedAt.replace(/\./g, '-')).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+function NewsSection({ articles }: { articles: ArticleLike[] }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const resumeTimerRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
-  const roundupCard: HomeNewsCard = {
-    title: '名古屋の新店オープン情報',
-    href: '/article/83',
-    imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/new-open-haera-prtimes.jpg',
-    background: 'radial-gradient(circle at 75% 25%, rgba(255,255,255,.44), transparent 30%), linear-gradient(135deg, #E8483F 0%, #F8C861 55%, #FFF7D8 100%)',
-    openLabel: '2026夏版',
-    areaTag: '名古屋',
-  };
-  const storeCards: HomeNewsCard[] = getFeaturedNewOpenSpots(8)
-    .filter((spot) => spot.articleUrl === '/article/92' || spot.articleUrl === '/article/32')
-    .map((spot) => ({
-      title: spot.name,
-      href: spot.articleUrl,
-      imageUrl: spot.imageUrl || '',
-      background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
-      openLabel: `${formatDate(spot.openDate)} OPEN`,
-      areaTag: normalizeAreaTag(spot.areaLabel),
-    }));
-  const cards = [roundupCard, ...storeCards];
-  const loopCards = [...cards, ...cards];
+  // 固定カードを廃止し、取得済み記事から新店系を公開日降順で自動抽出する。
+  // 新しい新店記事が公開されれば、このスライダーに自動で並ぶ。
+  const cards: HomeNewsCard[] = useMemo(() => {
+    return articles
+      .filter(isNewOpenArticle)
+      .filter((article) => !isArchiveArticle(article))
+      .sort((a, b) => toArticleTime(b.publishedAt) - toArticleTime(a.publishedAt))
+      .slice(0, 8)
+      .map((article) => ({
+        title: article.title,
+        href: resolveArticleHref(article),
+        imageUrl: article.imageUrl || '',
+        background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
+        openLabel: `${formatDate(article.publishedAt)} 掲載`,
+        areaTag: normalizeAreaTag(article.area),
+      }));
+  }, [articles]);
+  // 無限ループ演出用の複製。元データが実記事であることが前提。
+  const loopCards = cards.length > 0 ? [...cards, ...cards] : [];
 
   const pause = () => {
     pausedRef.current = true;
@@ -1133,6 +792,8 @@ function NewsSection() {
       }
     };
   }, []);
+
+  if (cards.length === 0) return null;
 
   return (
     <section style={{ padding: '16px 0 18px' }}>

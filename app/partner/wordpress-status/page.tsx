@@ -1,7 +1,11 @@
+import { notFound } from 'next/navigation';
 import { getWordPressApiBase, getWordPressPosts } from '@/lib/wordpress-fetch';
 import type { WordPressPost } from '@/types/portal';
 
 export default async function WordPressStatusPage() {
+  // 内部確認用ページ。本番では公開しない(開発環境限定)
+  if (process.env.NODE_ENV === 'production') notFound();
+
   const hasApiBase = Boolean(getWordPressApiBase());
   const posts = await getWordPressPosts({ perPage: 3 });
   const hasPosts = posts.length > 0;
