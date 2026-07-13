@@ -225,6 +225,10 @@ type Props = {
   address?: string;
   /** 本文から抽出した店舗情報(営業時間・定休日・価格帯など)。experience未定義のWP記事用 */
   extraShopInfo?: ShopInfoItem[];
+  /** WP本文から自動抽出した要点。experience側の定義があればそちらを優先 */
+  quickPoints?: string[];
+  /** WP記事一覧から自動選定した関連記事。experience側の定義があればそちらを優先 */
+  related?: ArticleRelated[];
   dateStr: string;
   articleId: string;
   postId: number;
@@ -246,6 +250,8 @@ export function ArticleExperience({
   storeName,
   address,
   extraShopInfo,
+  quickPoints: autoQuickPoints,
+  related: autoRelated,
   dateStr,
   articleId,
   postId,
@@ -266,12 +272,12 @@ export function ArticleExperience({
   const effectiveMapUrl = mapUrl ?? experience?.mapUrl;
   const effectiveOfficialUrl = officialUrl ?? experience?.officialUrl;
   const badges = experience?.badges ?? [area, tag].filter(Boolean) as string[];
-  const quickPoints = experience?.quickPoints ?? [];
+  const quickPoints = experience?.quickPoints ?? autoQuickPoints ?? [];
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
   const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag }, extraShopInfo);
-  const related = experience?.related ?? [];
+  const related = experience?.related ?? autoRelated ?? [];
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
   const shop = experience?.shop;

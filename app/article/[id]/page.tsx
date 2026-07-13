@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getWordPressPostById } from '@/lib/wordpress-fetch';
+import { getWordPressPostById, getWordPressPosts } from '@/lib/wordpress-fetch';
 import { stripHtml, decodeHtmlEntities, getFeaturedMediaUrl } from '@/lib/wordpress';
-import { getArticleExperience } from '@/lib/article-experience';
+import { getArticleExperience, type ArticleRelated } from '@/lib/article-experience';
 import { ArticleExperience } from '@/components/article/ArticleExperience';
 
 type Params = { id: string };
@@ -160,6 +160,62 @@ function deriveArea(address: string | undefined, title: string): string | undefi
   return undefined;
 }
 
+/* ── 30秒要点UIへの自動抽出 ──
+   本文の「まず3行でわかる」(なければ「ここがポイント」)配下の箇条書きを要点として使う。
+   該当が取れない記事では要点UI自体を非表示にする */
+
+const QUICK_POINT_HEADINGS = ['まず3行でわかる', 'ここがポイント'];
+
+function extractQuickPoints(html: string): string[] {
+  for (const heading of QUICK_POINT_HEADINGS) {
+    const sectionRe = new RegExp(
+      `<h[23][^>]*>\\s*${heading}\\s*</h[23]>\\s*(?:<ul[^>]*>([\\s\\S]*?)</ul>|<p[^>]*>([\\s\\S]*?)</p>)`,
+    );
+    const match = html.match(sectionRe);
+    if (!match) continue;
+    const points = (match[1] ?? match[2] ?? '')
+      .split(/<br\s*\/?>|<\/li>/)
+      .map((part) => stripHtml(part).replace(/^[・•\s]+/, '').trim())
+      .filter((point) => point.length > 0 && point.length <= 60 && !PLACEHOLDER_VALUE_PATTERN.test(point));
+    if (points.length >= 2) return points.slice(0, 4);
+  }
+  return [];
+}
+
+/* ── 関連記事の自動選定 ──
+   同エリア > 同カテゴリ > 新しい順でスコアリングし3件返す。
+   該当が少ない場合も新着順で自然に3件まで補完される */
+
+async function buildRelatedArticles(
+  currentPostId: number,
+  currentArea: string | undefined,
+  currentTag: string,
+): Promise<ArticleRelated[]> {
+  const posts = await getWordPressPosts({ perPage: 20 });
+  const scored = posts
+    .filter((p) => p.id !== currentPostId && !stripHtml(p.title.rendered).includes('【TEST】'))
+    .map((p) => {
+      const title = decodeHtmlEntities(stripHtml(p.title.rendered));
+      const area = deriveArea(undefined, title);
+      const tag = deriveCategory(p, undefined);
+      let score = 0;
+      if (currentArea && area === currentArea) score += 2;
+      if (tag === currentTag) score += 1;
+      return { post: p, title, area, tag, score };
+    });
+
+  scored.sort(
+    (a, b) => b.score - a.score || Date.parse(b.post.date) - Date.parse(a.post.date),
+  );
+
+  return scored.slice(0, 3).map(({ post: p, title, area, tag }) => ({
+    title,
+    href: `/article/${p.id}`,
+    label: area ?? tag,
+    imageUrl: getFeaturedMediaUrl(p) ?? undefined,
+  }));
+}
+
 const GENERIC_CATEGORY_NAMES = new Set(['記事', '未分類', 'uncategorized', 'blog']);
 
 function deriveCategory(post: { _embedded?: { 'wp:term'?: unknown[][] } }, metaCategory?: string): string {
@@ -249,6 +305,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
+  const quickPoints = extractQuickPoints(content);
+  const related = await buildRelatedArticles(post.id, area, tag);
 
   return (
     <ArticleExperience
@@ -265,6 +323,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
       storeName={storeName}
       address={address}
       extraShopInfo={extraShopInfo.length > 0 ? extraShopInfo : undefined}
+      quickPoints={quickPoints.length > 0 ? quickPoints : undefined}
+      related={related.length > 0 ? related : undefined}
       dateStr={dateStr}
       articleId={articleId}
       postId={post.id}
