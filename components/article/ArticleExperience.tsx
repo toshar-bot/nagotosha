@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { trackGa4Event } from '@/lib/ga4';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
+import { buildGoogleMapsSearchUrl } from '@/lib/tracking';
 import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 
 const GLOBAL_CSS = `
@@ -50,16 +52,32 @@ const GLOBAL_CSS = `
   .article-body a[href*="maps.google.com"] {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: #071A4D;
-    color: #fff !important;
-    font-size: 12px;
+    gap: 8px;
+    max-width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid #FFD6D2;
+    background: #fff;
+    color: #C6252D !important;
+    font-size: 13px;
     font-weight: 900;
     text-decoration: none !important;
     margin: 6px 0;
-    line-height: 1.2;
+    line-height: 1.35;
+    vertical-align: middle;
+    box-shadow: 0 4px 14px rgba(198,37,45,0.08);
+  }
+  .article-body a[href*="google.com/maps"]::before,
+  .article-body a[href*="maps.google.com"]::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    background: #E8483F;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M12%2021s7-5.2%207-11a7%207%200%200%200-14%200c0%205.8%207%2011%207%2011z%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2710%27%20r%3D%272.5%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.2%27/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M12%2021s7-5.2%207-11a7%207%200%200%200-14%200c0%205.8%207%2011%207%2011z%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.2%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27/%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2710%27%20r%3D%272.5%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.2%27/%3E%3C/svg%3E") center / contain no-repeat;
   }
   .article-body a[href^="https://"]:not([href*="google.com/maps"]):not([href*="maps.google.com"]):not([href*="nagotosha.com"]):not([href*="nagotosha.vercel.app"]) {
     display: inline-flex;
@@ -210,6 +228,141 @@ const GLOBAL_CSS = `
   }
 `;
 
+const ADDRESS_SECTION_HEADINGS = new Set(['基本情報まとめ', '店舗情報']);
+const ADDRESS_STOP_LABELS = new Set([
+  '店名',
+  'エリア',
+  'オープン日',
+  'オープン予定日',
+  '予約開始日',
+  '予約',
+  '予約状況',
+  'ジャンル',
+  '場所',
+  '住所',
+  '所在地',
+  'アクセス',
+  '営業時間',
+  '定休日',
+  '休業日',
+  '電話番号',
+  '問い合わせ',
+  '業態',
+  '座席',
+  '個室',
+  '出店区分',
+  '出店形態',
+  '主な商品',
+  '主な商品と価格',
+  '主な提供予定',
+  '価格の目安',
+  '利用方法',
+  'オープン企画',
+  '実施期間',
+  '情報出典',
+]);
+
+function cleanArticleText(input: string): string {
+  return input
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(?:p|div|li|tr|td|th|h[1-6])>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#039;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function articleLines(html: string): string[] {
+  return cleanArticleText(html)
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+}
+
+function isStopLabelLine(line: string): boolean {
+  if (ADDRESS_STOP_LABELS.has(line) || line.startsWith('情報出典')) return true;
+  for (const label of Array.from(ADDRESS_STOP_LABELS)) {
+    if (line.startsWith(`${label} `) || line.startsWith(`${label}:`) || line.startsWith(`${label}：`)) return true;
+  }
+  return false;
+}
+
+function isAddressLike(value: string): boolean {
+  const cleaned = value.trim();
+  if (!cleaned || /^〒?\d{3}-?\d{4}$/.test(cleaned)) return false;
+  return /(?:都|道|府|県|市|区|町|村|郡|丁目|\d)/.test(cleaned);
+}
+
+function normalizeAddress(value: string): string | undefined {
+  const cleaned = value
+    .replace(/^住所\s*[:：]?\s*/, '')
+    .replace(/^所在地\s*[:：]?\s*/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return isAddressLike(cleaned) ? cleaned : undefined;
+}
+
+function extractLabeledTextFromContent(html: string, labels: string[]): string | undefined {
+  const labelSet = new Set(labels);
+  const lines = articleLines(html);
+  let inTargetSection = false;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (ADDRESS_SECTION_HEADINGS.has(line)) {
+      inTargetSection = true;
+      continue;
+    }
+    if (!inTargetSection) continue;
+
+    for (const label of labels) {
+      if (!line.startsWith(label)) continue;
+      const inlineValue = line.slice(label.length).trim();
+      if (inlineValue) return inlineValue;
+    }
+
+    if (!labelSet.has(line)) continue;
+    const values: string[] = [];
+    for (let next = index + 1; next < lines.length; next += 1) {
+      const nextLine = lines[next];
+      if (isStopLabelLine(nextLine)) break;
+      values.push(nextLine);
+    }
+    if (values.length > 0) return values.join(' ').trim();
+  }
+
+  return undefined;
+}
+
+function extractAddressFromContent(html: string): string | undefined {
+  const value = extractLabeledTextFromContent(html, ['住所', '所在地']);
+  return value ? normalizeAddress(value) : undefined;
+}
+
+function extractStoreNameFromContent(html: string): string | undefined {
+  return extractLabeledTextFromContent(html, ['店名'])?.trim() || undefined;
+}
+
+function normalizeMapQueryText(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function isNameOnlyGoogleMapsSearchUrl(mapUrl: string | undefined, names: Array<string | undefined>): boolean {
+  if (!mapUrl) return false;
+  try {
+    const url = new URL(mapUrl);
+    if (!url.hostname.includes('google.') || !url.pathname.includes('/maps/search')) return false;
+    const query = normalizeMapQueryText(url.searchParams.get('query') ?? '');
+    if (!query) return false;
+    return names.some((name) => name && query === normalizeMapQueryText(name));
+  } catch {
+    return false;
+  }
+}
+
 type Props = {
   title: string;
   excerpt: string;
@@ -269,18 +422,35 @@ export function ArticleExperience({
   const effectiveImageAlt = experience?.visual?.imageAlt ?? displayTitle;
   const effectiveImageCredit = imageCredit ?? experience?.visual?.imageCredit;
   const effectiveImageSourceUrl = imageSourceUrl ?? experience?.visual?.imageSourceUrl;
-  const effectiveMapUrl = mapUrl ?? experience?.mapUrl;
+  const contentAddress = address ?? extractAddressFromContent(content);
+  const contentStoreName = storeName ?? extractStoreNameFromContent(content);
+  const generatedMapUrl = contentAddress
+    ? buildGoogleMapsSearchUrl([contentStoreName ?? displayTitle, contentAddress].filter(Boolean).join(' '))
+    : undefined;
+  const propMapUrl = contentAddress || !isNameOnlyGoogleMapsSearchUrl(mapUrl, [contentStoreName, displayTitle])
+    ? mapUrl
+    : undefined;
+  const effectiveMapUrl = propMapUrl ?? experience?.mapUrl ?? generatedMapUrl;
   const effectiveOfficialUrl = officialUrl ?? experience?.officialUrl;
   const badges = experience?.badges ?? [area, tag].filter(Boolean) as string[];
   const quickPoints = experience?.quickPoints ?? autoQuickPoints ?? [];
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
-  const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName, area, address, tag }, extraShopInfo);
+  const shopInfo = mergeShopInfo(experience?.shopInfo ?? [], { storeName: contentStoreName, area, address: contentAddress, tag }, extraShopInfo);
   const related = experience?.related ?? autoRelated ?? [];
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
   const shop = experience?.shop;
+
+  const handleMapClick = useCallback(() => {
+    if (!effectiveMapUrl) return;
+    trackGa4Event('map_click', {
+      article_id: articleId,
+      article_title: displayTitle,
+      map_url: effectiveMapUrl,
+    });
+  }, [articleId, displayTitle, effectiveMapUrl]);
 
   const handleSave = useCallback(() => {
     const result = toggleSavedItem({
@@ -324,6 +494,7 @@ export function ArticleExperience({
         imageUrl={effectiveImageUrl}
         imageAlt={effectiveImageAlt}
         mapUrl={effectiveMapUrl}
+        onMapClick={handleMapClick}
         related={related}
         feature={experience.feature}
         saved={saved}
@@ -343,6 +514,7 @@ export function ArticleExperience({
         imageUrl={effectiveImageUrl}
         imageAlt={effectiveImageAlt}
         mapUrl={effectiveMapUrl}
+        onMapClick={handleMapClick}
         related={related}
         news={experience.news}
         saved={saved}
@@ -357,7 +529,7 @@ export function ArticleExperience({
     <main className="article-page">
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
       <div className="article-shell">
-        <ArticleHeader mapUrl={effectiveMapUrl} />
+        <ArticleHeader mapUrl={effectiveMapUrl} onMapClick={handleMapClick} />
 
         <section style={{ padding: '12px 14px 0' }}>
           <div style={{
@@ -437,6 +609,7 @@ export function ArticleExperience({
           onSave={handleSave}
           onShare={handleShare}
           mapUrl={effectiveMapUrl}
+          onMapClick={handleMapClick}
         />
 
         {isGuideLayout ? (
@@ -597,34 +770,32 @@ export function ArticleExperience({
 
         {effectiveMapUrl && (
           <section style={{ padding: '0 14px', marginTop: 14 }}>
-            <a href={effectiveMapUrl} target="_blank" rel="noopener noreferrer" style={{
+            <a href={effectiveMapUrl} target="_blank" rel="noopener noreferrer" onClick={handleMapClick} style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 12,
-              minHeight: 82,
-              borderRadius: 22,
-              background: '#071A4D',
-              color: '#fff',
-              padding: '16px 18px',
+              minHeight: 56,
+              borderRadius: 16,
+              border: '1px solid #FFD6D2',
+              background: '#fff',
+              color: '#C6252D',
+              padding: '12px 14px',
               textDecoration: 'none',
-              boxShadow: '0 12px 28px rgba(7,26,77,0.22)',
+              boxShadow: '0 6px 18px rgba(198,37,45,0.08)',
             }}>
-              <div>
-                <p style={{ margin: 0, fontSize: 18, lineHeight: 1.25, fontWeight: 900 }}>Googleマップで見る</p>
-                <p style={{ margin: '6px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.74)', fontWeight: 700 }}>ルート検索・周辺情報をチェック</p>
-              </div>
+              <GoogleMapButtonContent />
               <span style={{
-                width: 38,
-                height: 38,
+                width: 32,
+                height: 32,
                 borderRadius: '50%',
-                background: '#fff',
-                color: '#071A4D',
+                background: '#FFF0EF',
+                color: '#C6252D',
                 display: 'grid',
                 placeItems: 'center',
                 flexShrink: 0,
               }}>
-                <ChevronRightIcon color="#071A4D" />
+                <ChevronRightIcon color="#C6252D" />
               </span>
             </a>
           </section>
@@ -658,6 +829,7 @@ export function ArticleExperience({
         saved={saved}
         onSave={handleSave}
         mapUrl={effectiveMapUrl}
+        onMapClick={handleMapClick}
         onTop={scrollToTop}
       />
     </main>
@@ -677,6 +849,7 @@ function FeatureArticleExperience({
   onSave,
   onShare,
   onTop,
+  onMapClick,
 }: {
   title: string;
   lead: string;
@@ -684,6 +857,7 @@ function FeatureArticleExperience({
   imageUrl?: string;
   imageAlt: string;
   mapUrl?: string;
+  onMapClick?: () => void;
   related: ArticleRelated[];
   feature: FeatureArticleData;
   saved: boolean;
@@ -695,7 +869,7 @@ function FeatureArticleExperience({
     <main className="article-page">
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
       <div className="article-shell">
-        <ArticleHeader mapUrl={mapUrl} />
+        <ArticleHeader mapUrl={mapUrl} onMapClick={onMapClick} />
         <article className="feature-article">
           <FeatureBreadcrumb items={feature.breadcrumb} />
 
@@ -730,7 +904,7 @@ function FeatureArticleExperience({
             </div>
           </section>
 
-          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} />
+          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} onMapClick={onMapClick} />
 
           <FeatureQuickJump count={feature.venues.length} />
 
@@ -814,7 +988,7 @@ function FeatureArticleExperience({
         </article>
       </div>
 
-      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onMapClick={onMapClick} onTop={onTop} />
     </main>
   );
 }
@@ -832,6 +1006,7 @@ function NewsArticleExperience({
   onSave,
   onShare,
   onTop,
+  onMapClick,
 }: {
   title: string;
   lead: string;
@@ -839,6 +1014,7 @@ function NewsArticleExperience({
   imageUrl?: string;
   imageAlt: string;
   mapUrl?: string;
+  onMapClick?: () => void;
   related: ArticleRelated[];
   news: NewsArticleData;
   saved: boolean;
@@ -850,7 +1026,7 @@ function NewsArticleExperience({
     <main className="article-page">
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
       <div className="article-shell">
-        <ArticleHeader mapUrl={mapUrl} />
+        <ArticleHeader mapUrl={mapUrl} onMapClick={onMapClick} />
         <article className="feature-article">
           <FeatureBreadcrumb items={news.breadcrumb} />
 
@@ -884,7 +1060,7 @@ function NewsArticleExperience({
             </div>
           </section>
 
-          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} />
+          <ActionButtons saved={saved} onSave={onSave} onShare={onShare} mapUrl={mapUrl} onMapClick={onMapClick} />
 
           <a
             href={mapUrl || '#news-map'}
@@ -1002,7 +1178,7 @@ function NewsArticleExperience({
         </article>
       </div>
 
-      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onTop={onTop} />
+      <BottomCTA saved={saved} onSave={onSave} mapUrl={mapUrl} onMapClick={onMapClick} onTop={onTop} />
     </main>
   );
 }
@@ -1077,9 +1253,8 @@ function NewsSpotCard({ spot, index }: { spot: NewsSpot; index: number }) {
               </a>
             )}
             {spot.mapUrl && (
-              <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>
-                Googleマップ
-                <MapPinIcon color="#fff" />
+              <a href={spot.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, ...googleMapButtonStyle }}>
+                <GoogleMapButtonContent compact />
               </a>
             )}
             {spot.articleUrl && (
@@ -1627,7 +1802,7 @@ function FeatureVenueCard({ venue }: { venue: FeatureVenue }) {
           <span style={{ ...featureLinkButtonStyle, borderColor: '#E6ECF5', color: '#667085', background: '#F8FAFC' }}>公式サイト情報なし</span>
         )}
         {venue.mapUrl && (
-          <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, background: '#071A4D', borderColor: '#071A4D', color: '#fff' }}>Googleマップ<MapPinIcon color="#fff" /></a>
+          <a href={venue.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...featureLinkButtonStyle, ...googleMapButtonStyle }}><GoogleMapButtonContent compact /></a>
         )}
       </div>
       <p style={{ margin: '12px 0 0', color: '#667085', fontSize: 11, lineHeight: 1.7, fontWeight: 750 }}>出典: {venue.source}</p>
@@ -1770,7 +1945,7 @@ function mergeShopInfo(
   return base;
 }
 
-function ArticleHeader({ mapUrl }: { mapUrl?: string }) {
+function ArticleHeader({ mapUrl, onMapClick }: { mapUrl?: string; onMapClick?: () => void }) {
   return (
     <header style={{ background: '#fff', borderBottom: '1px solid #EEF1F5' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '8px 12px' }}>
@@ -1784,7 +1959,7 @@ function ArticleHeader({ mapUrl }: { mapUrl?: string }) {
         </Link>
         <nav aria-label="記事ページメニュー" style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
           <HeaderAction href="/new" label="検索"><SearchIcon /></HeaderAction>
-          {mapUrl && <HeaderAction href={mapUrl} label="地図" external><MapPinIcon /></HeaderAction>}
+          {mapUrl && <HeaderAction href={mapUrl} label="地図" external onClick={onMapClick}><MapPinIcon /></HeaderAction>}
           <HeaderAction href="/" label="メニュー"><MenuIcon /></HeaderAction>
         </nav>
       </div>
@@ -1792,7 +1967,7 @@ function ArticleHeader({ mapUrl }: { mapUrl?: string }) {
   );
 }
 
-function HeaderAction({ href, label, external, children }: { href: string; label: string; external?: boolean; children: React.ReactNode }) {
+function HeaderAction({ href, label, external, onClick, children }: { href: string; label: string; external?: boolean; onClick?: () => void; children: React.ReactNode }) {
   const style: React.CSSProperties = {
     width: 45,
     height: 44,
@@ -1809,7 +1984,7 @@ function HeaderAction({ href, label, external, children }: { href: string; label
   };
 
   if (external) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} style={style}>{children}<span>{label}</span></a>;
+    return <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} onClick={onClick} style={style}>{children}<span>{label}</span></a>;
   }
 
   return <Link href={href} aria-label={label} style={style}>{children}<span>{label}</span></Link>;
@@ -1919,7 +2094,7 @@ function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate 
   );
 }
 
-function ActionButtons({ saved, onSave, onShare, mapUrl }: { saved: boolean; onSave: () => void; onShare: () => void; mapUrl?: string }) {
+function ActionButtons({ saved, onSave, onShare, mapUrl, onMapClick }: { saved: boolean; onSave: () => void; onShare: () => void; mapUrl?: string; onMapClick?: () => void }) {
   return (
     <section style={{ display: 'grid', gridTemplateColumns: mapUrl ? '1fr 1fr 1fr' : '1fr 1fr', gap: 8, padding: '12px 14px 0' }}>
       <button type="button" onClick={onSave} aria-pressed={saved} style={{ ...actionButtonStyle, background: '#E8483F', color: '#fff', borderColor: '#E8483F' }}>
@@ -1927,9 +2102,8 @@ function ActionButtons({ saved, onSave, onShare, mapUrl }: { saved: boolean; onS
         保存
       </button>
       {mapUrl && (
-        <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...actionButtonStyle, textDecoration: 'none' }}>
-          <MapPinIcon />
-          地図を見る
+        <a href={mapUrl} target="_blank" rel="noopener noreferrer" onClick={onMapClick} style={{ ...actionButtonStyle, ...googleMapButtonStyle }}>
+          <GoogleMapButtonContent compact />
         </a>
       )}
       <button type="button" onClick={onShare} style={actionButtonStyle}>
@@ -1937,6 +2111,23 @@ function ActionButtons({ saved, onSave, onShare, mapUrl }: { saved: boolean; onS
         シェア
       </button>
     </section>
+  );
+}
+
+function GoogleMapButtonContent({ compact = false }: { compact?: boolean }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: compact ? 5 : 8, minWidth: 0 }}>
+      <MapPinIcon color="#E8483F" />
+      <span style={{
+        minWidth: 0,
+        overflowWrap: 'anywhere',
+        fontSize: compact ? 11 : 14,
+        lineHeight: 1.35,
+        fontWeight: 900,
+      }}>
+        Googleマップで見る
+      </span>
+    </span>
   );
 }
 
@@ -1955,6 +2146,15 @@ const actionButtonStyle: React.CSSProperties = {
   fontWeight: 900,
   boxShadow: '0 4px 14px rgba(7,26,77,0.06)',
   cursor: 'pointer',
+};
+
+const googleMapButtonStyle: React.CSSProperties = {
+  minHeight: 44,
+  border: '1px solid #FFD6D2',
+  background: '#fff',
+  color: '#C6252D',
+  textDecoration: 'none',
+  boxShadow: '0 4px 14px rgba(198,37,45,0.08)',
 };
 
 function SectionCard({ title, children, icon, accent, actionHref, actionLabel }: { title: string; children: React.ReactNode; icon?: React.ReactNode; accent?: 'yellow'; actionHref?: string; actionLabel?: string }) {
@@ -2162,7 +2362,7 @@ function RelatedCard({ item }: { item: ArticleRelated }) {
   );
 }
 
-function BottomCTA({ saved, onSave, mapUrl, onTop }: { saved: boolean; onSave: () => void; mapUrl?: string; onTop: () => void }) {
+function BottomCTA({ saved, onSave, mapUrl, onMapClick, onTop }: { saved: boolean; onSave: () => void; mapUrl?: string; onMapClick?: () => void; onTop: () => void }) {
   return (
     <div style={{
       position: 'fixed',
@@ -2194,12 +2394,13 @@ function BottomCTA({ saved, onSave, mapUrl, onTop }: { saved: boolean; onSave: (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12 }}><BookmarkIcon filled={saved} />{saved ? '保存済み' : '保存する'}</span>
         </button>
         {mapUrl && (
-          <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{
+          <a href={mapUrl} target="_blank" rel="noopener noreferrer" onClick={onMapClick} style={{
             minWidth: 0,
             height: 56,
             borderRadius: 17,
-            background: '#071A4D',
-            color: '#fff',
+            border: '1px solid #FFD6D2',
+            background: '#fff',
+            color: '#C6252D',
             textDecoration: 'none',
             display: 'flex',
             flexDirection: 'column',
@@ -2208,8 +2409,7 @@ function BottomCTA({ saved, onSave, mapUrl, onTop }: { saved: boolean; onSave: (
             gap: 2,
             fontWeight: 900,
           }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12 }}><MapPinIcon color="#fff" />地図を開く</span>
-            <span style={{ fontSize: 10, opacity: 0.74 }}>ルート検索</span>
+            <GoogleMapButtonContent compact />
           </a>
         )}
         <button type="button" onClick={onTop} aria-label="上へ戻る" style={{ width: 54, height: 56, borderRadius: 17, border: '1px solid #E6ECF5', background: '#fff', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
