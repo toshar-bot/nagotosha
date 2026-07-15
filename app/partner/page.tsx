@@ -32,7 +32,7 @@ Instagram / 公式URL:
 写真提供の有無:
 `)}`;
 
-const HERO_BADGES = ['初回掲載無料', 'Instagram DM相談OK', 'Googleマップ導線つき'];
+const HERO_BADGES = ['初回掲載無料（2026年9月30日まで）', 'Instagram DM相談OK', 'Googleマップ導線つき'];
 
 const SUPPORT_ITEMS = [
   {
@@ -104,8 +104,8 @@ const PREP_ITEMS = [
 
 const FLOW_ITEMS = [
   {
-    title: 'Instagram DMまたはメールで相談',
-    text: '掲載したい内容が固まっていなくても大丈夫です。まずはお店の情報を送ってください。',
+    title: '専用フォームで相談',
+    text: '掲載したい内容が固まっていなくても大丈夫です。まずはフォームから分かる範囲のお店の情報を送ってください。',
   },
   {
     title: '店舗情報・写真を共有',
@@ -146,7 +146,7 @@ const PAID_MENU = [
 const FAQ_ITEMS = [
   {
     question: '無料掲載は本当に無料ですか？',
-    answer: '初回掲載は無料相談から受け付けます。内容や時期により掲載可否は編集部で確認します。',
+    answer: '初回掲載は2026年9月30日まで無料相談から受け付けます。内容や時期により掲載可否は編集部で確認します。',
   },
   {
     question: '写真が少なくても相談できますか？',
@@ -189,7 +189,7 @@ export default function PartnerPage() {
             なごとしゃで無料掲載しませんか？
           </h1>
           <p className="mt-4 text-[14px] font-medium leading-7" style={{ color: '#667085' }}>
-            新店・季節メニュー・手土産・イベント情報などを、名古屋の読者に届く形で紹介します。まずは初回無料掲載から相談できます。
+            新店・季節メニュー・手土産・イベント情報などを、名古屋の読者に届く形で紹介します。まずは2026年9月30日までの初回無料掲載から相談できます。
           </p>
         </div>
 
@@ -206,12 +206,27 @@ export default function PartnerPage() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
+          <p className="text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+            新店・リニューアル・新商品・イベント情報を受け付けています。
+            <br />
+            必要事項をご入力いただいた後、1〜3営業日以内を目安にご連絡します。
+          </p>
+          <a
+            href="https://forms.gle/cG5TnpdgJn4vh4uw7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full min-w-0 items-center justify-center gap-2 rounded-full px-4 py-4 text-center text-[14px] font-black leading-snug text-white active:scale-[0.98] transition-transform"
+            style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
+          >
+            <span className="min-w-0">掲載相談・情報提供フォームへ</span>
+            <ArrowRightIcon />
+          </a>
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center gap-2 rounded-full px-5 py-4 text-[14px] font-black text-white active:scale-[0.98] transition-transform"
-            style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
+            className="flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
+            style={{ color: '#071A4D', background: '#ffffff', border: '1.5px solid #E6ECF5' }}
           >
             Instagram DMで相談する
             <ArrowRightIcon />
@@ -372,18 +387,33 @@ export default function PartnerPage() {
             FREE CONSULTATION
           </p>
           <h2 className="mt-2 text-[21px] font-black leading-snug" style={{ color: '#071A4D' }}>
-            まずは初回無料で掲載相談できます
+            まずは初回無料で掲載相談できます（2026年9月30日まで）
           </h2>
           <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
             新店オープン、季節メニュー、イベント告知、手土産情報など、掲載できるか迷う内容も気軽にご相談ください。
           </p>
           <div className="mt-5 flex flex-col gap-3">
+            <p className="text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+              新店・リニューアル・新商品・イベント情報を受け付けています。
+              <br />
+              必要事項をご入力いただいた後、1〜3営業日以内を目安にご連絡します。
+            </p>
+            <a
+              href="https://forms.gle/cG5TnpdgJn4vh4uw7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full px-4 py-4 text-center text-[14px] font-black leading-snug text-white active:scale-[0.98] transition-transform"
+              style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
+            >
+              <span className="min-w-0">掲載相談・情報提供フォームへ</span>
+              <ArrowRightIcon />
+            </a>
             <a
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-4 text-[14px] font-black text-white active:scale-[0.98] transition-transform"
-              style={{ background: '#E8483F', boxShadow: '0 12px 24px rgba(232,72,63,0.30)' }}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3.5 text-[13px] font-black active:scale-[0.98] transition-transform"
+              style={{ color: '#071A4D', border: '1.5px solid rgba(7,26,77,0.12)' }}
             >
               Instagram DMで相談する
               <ArrowRightIcon />
@@ -402,7 +432,7 @@ export default function PartnerPage() {
       <section className="px-4 pt-8">
         <SectionTitle eyebrow="PAID MENU">今後の有料メニュー例</SectionTitle>
         <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
-          今は初回無料掲載を主役にしています。継続露出や本格PRが必要な場合だけ、相談内容に合わせて提案します。
+          今は2026年9月30日までの初回無料掲載を主役にしています。継続露出や本格PRが必要な場合だけ、相談内容に合わせて提案します。
         </p>
         <div className="mt-4 flex flex-col gap-3">
           {PAID_MENU.map(menu => (
