@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { GachaExperience } from '@/components/GachaExperience';
 import { MoodPicksSection } from '@/components/MoodPicksSection';
 import { buildGachaPool } from '@/lib/gacha-pool';
+import { OFFICIAL_INSTAGRAM_URL } from '@/lib/site';
 import type { FeaturedArticle } from '@/types/portal';
 
 const THEME = {
@@ -858,6 +859,8 @@ function HomeFooterCta() {
             <p style={{ margin: 0, color: '#F8C861', fontSize: 12, fontWeight: 950 }}>お役立ち情報</p>
             <FooterLink href="/saved" label="保存した記事" />
             <FooterLink href="/partner" label="掲載相談" />
+            <FooterLink href="/privacy" label="プライバシーポリシー" />
+            <FooterLink href="/terms" label="利用規約" />
           </div>
         </div>
         <p style={{ margin: '18px 0 0', color: 'rgba(255,255,255,.52)', fontSize: 10, fontWeight: 700 }}>© 2026 nagotosha. All Rights Reserved.</p>
@@ -904,8 +907,7 @@ function FollowSection() {
           <span style={{ position: 'absolute', left: '50%', bottom: -7, width: 14, height: 14, transform: 'translateX(-50%) rotate(45deg)', background: '#fff' }} aria-hidden="true" />
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 28, marginTop: 22 }}>
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><InstagramLogo /></a>
-          <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><XLogo /></a>
+          <a href={OFFICIAL_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><InstagramLogo /></a>
         </div>
       </div>
     </section>
@@ -962,7 +964,6 @@ function SectionTitleIcon({ kind }: { kind: string }) {
 }
 
 function InstagramLogo() { return <svg width="54" height="54" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.4" y="3.4" width="17.2" height="17.2" rx="5.2" stroke="currentColor" strokeWidth="1.9"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" strokeWidth="1.9"/><circle cx="17.1" cy="6.9" r="1.35" fill="currentColor"/></svg>; }
-function XLogo() { return <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.4 3.6h5.1l3.55 5.05 4.5-5.05h2.5l-5.8 6.56 6.25 10.24h-5.1l-4.02-5.78-5.13 5.78H3.75l6.46-7.27L4.4 3.6Zm3.02 2.05 9.06 12.64h1.03L8.46 5.65H7.42Z" fill="currentColor"/></svg>; }
 function SearchIcon() { return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><line x1="17" y1="17" x2="22" y2="22" /></svg>; }
 function MenuIcon() { return <svg width="25" height="19" viewBox="0 0 25 19" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="2" y1="2" x2="23" y2="2" /><line x1="2" y1="9.5" x2="23" y2="9.5" /><line x1="2" y1="17" x2="23" y2="17" /></svg>; }
 function CategoryIcon() { return <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/><rect x="13.4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="13.4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/></svg>; }

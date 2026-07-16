@@ -82,10 +82,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {
       title: `${title} | なごとしゃ`,
       description,
+      alternates: { canonical: `/article/${params.id}` },
       robots: { index: false, follow: false },
     };
   }
-  if (!post) return { title: '記事が見つかりません | なごとしゃ' };
+  if (!post) return { title: '記事が見つかりません | なごとしゃ', alternates: { canonical: `/article/${params.id}` } };
 
   const title = decodeHtmlEntities(stripHtml(post.title.rendered));
   const description = stripHtml(post.excerpt?.rendered ?? '').slice(0, 160);
@@ -94,6 +95,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: `${title} | なごとしゃ`,
     description: description || title,
+    alternates: { canonical: `/article/${post.id}` },
     openGraph: {
       title,
       description: description || title,

@@ -1,4 +1,27 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+const title = 'なごとしゃ掲載レポートサンプル｜なごとしゃ';
+const description =
+  '掲載後の閲覧数、保存数、Googleマップクリックなど、なごとしゃの掲載レポート例を紹介します。';
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: '/partner/report-sample' },
+  openGraph: {
+    title,
+    description,
+    type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/opengraph-image'],
+  },
+};
 
 const REPORT_INSIGHTS = [
   {

@@ -1,138 +1,131 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { NewArticleCardClient } from '@/components/NewArticleCardClient';
+import { FEATURED_ARTICLES } from '@/data/portal';
+import { getPortalArticlesWithFallback } from '@/lib/wordpress-fetch';
+import type { FeaturedArticle } from '@/types/portal';
 
-const description = '今日行けるイベントや週末のおでかけ情報など、名古屋の注目イベントを探せます。';
+const description = '名古屋のイベント、期間限定情報、季節の特集記事をまとめて探せます。';
 
 export const metadata: Metadata = {
-  title: '名古屋のイベント｜なごとしゃ',
+  title: '名古屋のイベント・季節情報｜なごとしゃ',
   description,
+  alternates: { canonical: '/event' },
   openGraph: {
-    title: '名古屋のイベント｜なごとしゃ',
+    title: '名古屋のイベント・季節情報｜なごとしゃ',
     description,
     type: 'website',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: '名古屋のイベント｜なごとしゃ',
+    title: '名古屋のイベント・季節情報｜なごとしゃ',
     description,
     images: ['/opengraph-image'],
   },
 };
 
-const EVENT_FILTERS = [
-  { label: '今日行ける',        text: '今から予定に入れやすいイベント',   icon: 'clock' },
-  { label: '今週末',            text: '週末のおでかけ候補をまとめて確認', icon: 'sun' },
-  { label: '雨の日でも楽しめる', text: '屋内や駅近で過ごしやすい催し',   icon: 'umbrella' },
-  { label: '家族で行きたい',    text: '親子で楽しみやすい名古屋イベント', icon: 'heart' },
-] as const;
+const EVENT_WORDS = ['イベント', '開催', 'フェア', '祭', '花火', 'ビアガーデン', '期間限定'];
+const SEASONAL_WORDS = ['夏', '雨の日', '屋内', 'ビアガーデン', '手土産', 'モーニング', 'おでかけ', '特集'];
+const ENDED_WORDS = ['終了', '閉店', 'クローズ'];
 
-const EVENT_NEXT_LINKS = [
-  {
-    title: '近くのエリアから探す',
-    text: '会場近くの寄り道を探す',
-    href: '/area',
-    icon: 'map',
-  },
-  {
-    title: '新着のおでかけ情報を見る',
-    text: '新店や話題のお店を確認',
-    href: '/new',
-    icon: 'sparkle',
-  },
-  {
-    title: '気になる情報を保存する',
-    text: 'あとから見返せるように保存',
-    href: '/saved',
-    icon: 'bookmark',
-  },
-];
+export default async function EventPage() {
+  const articles = await getPortalArticlesWithFallback(FEATURED_ARTICLES, { perPage: 40 });
+  const liveEvents = pickArticles(articles, EVENT_WORDS).slice(0, 6);
+  const liveEventIds = new Set(liveEvents.map((article) => article.id));
+  const seasonalFeatures = pickArticles(articles, SEASONAL_WORDS)
+    .filter((article) => !liveEventIds.has(article.id))
+    .slice(0, 6);
 
-export default function EventPage() {
   return (
     <main className="min-h-dvh pb-28" style={{ background: '#ffffff' }}>
-
-      {/* ── ページヘッダー ── */}
       <section className="px-4 pt-8 pb-5">
         <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
           EVENT
         </p>
         <h1 className="mt-1 text-[28px] font-black leading-tight tracking-tight" style={{ color: '#071A4D' }}>
-          名古屋のイベント
+          名古屋のイベント・季節情報
         </h1>
         <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
-          今日・今週末・季節のイベントをここに集約していきます。
+          期間限定のおでかけ、季節の特集、イベントとして読める公開記事をまとめて探せます。
         </p>
       </section>
 
-      {/* ── フィルターカード ── */}
       <section className="px-4 pt-2">
         <div className="grid grid-cols-2 gap-3">
-          {EVENT_FILTERS.map(filter => (
-            <FilterCard key={filter.label} label={filter.label} text={filter.text} icon={filter.icon} />
-          ))}
+          <FilterCard label="季節の特集" text="夏のおでかけや雨の日スポットを確認" icon="sun" />
+          <FilterCard label="期間限定" text="公開記事の中から期間限定情報を確認" icon="calendar" />
+          <FilterCard label="家族で行きたい" text="親子のおでかけ候補を記事から探す" icon="heart" />
+          <FilterCard label="近くで探す" text="気になるエリアとあわせて探せます" icon="map" />
         </div>
       </section>
 
-      {/* ── イベント一覧（公式確認済みのみ掲載。準備中） ── */}
-      <section className="px-4 pt-7">
-        <SectionTitle eyebrow="EVENT LIST">開催中・今週末のイベント</SectionTitle>
+      {liveEvents.length > 0 && (
+        <section className="px-4 pt-7">
+          <SectionTitle eyebrow="EVENT ARTICLES">開催中・近日開催</SectionTitle>
+          <div className="mt-4 flex flex-col gap-5">
+            {liveEvents.map((article, index) => (
+              <NewArticleCardClient
+                key={article.id}
+                article={article}
+                imageUrl={article.imageUrl}
+                hookLine={getArticleHookLine(article, index)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {seasonalFeatures.length > 0 && (
+        <section className="px-4 pt-8">
+          <SectionTitle eyebrow="SEASONAL GUIDE">季節の特集</SectionTitle>
+          <div className="mt-4 flex flex-col gap-5">
+            {seasonalFeatures.map((article, index) => (
+              <NewArticleCardClient
+                key={article.id}
+                article={article}
+                imageUrl={article.imageUrl}
+                hookLine={getArticleHookLine(article, index)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="px-4 pt-8">
         <div
-          className="mt-4 rounded-[18px] bg-white px-5 py-8 text-center"
+          className="rounded-[18px] bg-white p-5"
           style={{ border: '1px solid #E6ECF5', boxShadow: '0 8px 24px rgba(7,26,77,0.07)' }}
         >
-          <p className="text-[15px] font-black" style={{ color: '#071A4D' }}>
-            イベント情報は準備中です
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
+            NEXT UPDATE
           </p>
-          <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
-            公式に確認できたイベントだけを掲載します。近日公開予定です。
+          <h2 className="mt-2 text-[18px] font-black leading-snug" style={{ color: '#071A4D' }}>
+            花火大会や夏休みイベントも順次更新します
+          </h2>
+          <p className="mt-3 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
+            なごとしゃでは、公式情報を確認できたイベントや季節のおでかけ情報から順に掲載します。新着記事やエリアページとあわせてチェックしてください。
           </p>
-          <Link
-            href="/new"
-            className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-3 text-[13px] font-black text-white no-underline active:scale-[0.98] transition-transform"
-            style={{ background: '#E8483F', boxShadow: '0 10px 20px rgba(232,72,63,0.24)' }}
-          >
-            新着記事を見る
-            <ArrowRightIcon />
-          </Link>
-        </div>
-      </section>
-
-      {/* ── 回遊導線 ── */}
-      <section className="px-4 pt-8">
-        <SectionTitle eyebrow="NEXT TRIP">イベントのあとに探す</SectionTitle>
-        <div className="mt-4 flex flex-col gap-3">
-          {EVENT_NEXT_LINKS.map(item => (
+          <div className="mt-4 flex flex-col gap-2">
             <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3.5 rounded-[14px] bg-white px-4 py-3.5 active:scale-[0.98] transition-transform"
-              style={{
-                border: '1px solid #E6ECF5',
-                boxShadow: '0 4px 12px rgba(7,26,77,0.07)',
-              }}
+              href="/new?tag=%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-[13px] font-black text-white no-underline active:scale-[0.98] transition-transform"
+              style={{ background: '#E8483F', boxShadow: '0 10px 20px rgba(232,72,63,0.24)' }}
             >
-              <div
-                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px]"
-                style={{ background: 'rgba(232,72,63,0.09)', color: '#E8483F' }}
-              >
-                {item.icon === 'map' ? <MapPinLgIcon /> : item.icon === 'sparkle' ? <SparkleIcon /> : <BookmarkNavIcon />}
-              </div>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[14px] font-black leading-snug" style={{ color: '#071A4D' }}>
-                  {item.title}
-                </span>
-                <span className="mt-0.5 block text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
-                  {item.text}
-                </span>
-              </span>
-              <ChevronRightIcon />
+              イベント関連記事を見る
+              <ArrowRightIcon />
             </Link>
-          ))}
+            <Link
+              href="/area"
+              className="inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-[13px] font-black no-underline active:scale-[0.98] transition-transform"
+              style={{ color: '#071A4D', background: '#F8FAFC', border: '1px solid #E6ECF5' }}
+            >
+              エリアから探す
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ── PARTNER ── */}
       <section className="px-4 pt-8 pb-2">
         <div
           className="rounded-[18px] px-5 py-6"
@@ -150,37 +143,9 @@ export default function EventPage() {
           <p className="mt-2 text-[12px] font-medium leading-6" style={{ color: '#667085' }}>
             新店イベント、期間限定企画、週末集客など、名古屋のお店や主催者向けの掲載相談を受け付けています。
           </p>
-          <div
-            className="mt-4 rounded-[14px] px-4 py-4"
-            style={{
-              background: 'rgba(255,255,255,0.72)',
-              border: '1.5px solid rgba(232,72,63,0.20)',
-            }}
-          >
-            <p className="mb-1 text-[9px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
-              OPENING SERVICE
-            </p>
-            <p className="text-[15px] font-black leading-snug" style={{ color: '#071A4D' }}>
-              9月末まで初回掲載無料
-            </p>
-            <p className="mt-1.5 text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
-              Instagram DMから相談いただいた店舗さま限定。記事掲載・Googleマップ導線・SNS紹介までお試しできます。
-            </p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {['初回掲載無料', 'Googleマップ導線つき', 'SNS紹介つき'].map(chip => (
-                <span
-                  key={chip}
-                  className="rounded-full px-2.5 py-1 text-[10px] font-black"
-                  style={{ background: 'rgba(232,72,63,0.10)', color: '#E8483F' }}
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
-          </div>
           <Link
             href="/partner"
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white active:scale-[0.98] transition-transform"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[13px] font-black text-white no-underline active:scale-[0.98] transition-transform"
             style={{
               background: '#E8483F',
               boxShadow: '0 12px 24px rgba(232,72,63,0.30)',
@@ -189,14 +154,32 @@ export default function EventPage() {
             掲載について相談する
             <ArrowRightIcon />
           </Link>
-          <p className="mt-2.5 text-center text-[10px] font-medium" style={{ color: '#E8483F' }}>
-            Instagram DMから相談OK・9月末まで初回掲載無料
-          </p>
         </div>
       </section>
-
     </main>
   );
+}
+
+function pickArticles(articles: FeaturedArticle[], words: string[]): FeaturedArticle[] {
+  return articles
+    .filter((article) => {
+      const haystack = `${article.title} ${article.description ?? ''} ${article.tag ?? ''} ${article.category ?? ''}`;
+      if (ENDED_WORDS.some((word) => haystack.includes(word))) return false;
+      return words.some((word) => haystack.includes(word));
+    })
+    .sort((a, b) => toTime(b.publishedAt) - toTime(a.publishedAt));
+}
+
+function toTime(publishedAt?: string): number {
+  if (!publishedAt) return 0;
+  const t = new Date(publishedAt.replace(/\./g, '-')).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+function getArticleHookLine(article: FeaturedArticle, index: number): string {
+  if (article.description) return article.description;
+  if (article.area) return `${article.area}で読める季節のおでかけ情報`;
+  return index === 0 ? '名古屋で今チェックしたいおでかけ情報' : '公式情報をもとにした公開記事';
 }
 
 function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.ReactNode }) {
@@ -213,12 +196,10 @@ function SectionTitle({ eyebrow, children }: { eyebrow: string; children: React.
 }
 
 function FilterCard({ label, text, icon }: { label: string; text: string; icon: string }) {
-  const featured = label === '今日行ける' || label === '今週末';
   const iconEl = (() => {
-    if (icon === 'clock') return <ClockIcon />;
     if (icon === 'sun') return <SunIcon />;
-    if (icon === 'umbrella') return <UmbrellaIcon />;
     if (icon === 'heart') return <HeartIcon />;
+    if (icon === 'map') return <MapPinLgIcon />;
     return <CalendarIcon />;
   })();
 
@@ -227,10 +208,8 @@ function FilterCard({ label, text, icon }: { label: string; text: string; icon: 
       className="rounded-[14px] p-4"
       style={{
         background: '#ffffff',
-        border: featured ? '1.5px solid rgba(232,72,63,0.22)' : '1px solid #E6ECF5',
-        boxShadow: featured
-          ? '0 7px 20px rgba(232,72,63,0.10)'
-          : '0 4px 16px rgba(7,26,77,0.06)',
+        border: '1px solid #E6ECF5',
+        boxShadow: '0 4px 16px rgba(7,26,77,0.06)',
       }}
     >
       <div
@@ -249,31 +228,11 @@ function FilterCard({ label, text, icon }: { label: string; text: string; icon: 
   );
 }
 
-/* ── SVG Icons ── */
-
-function ClockIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3.5 3.5" />
-    </svg>
-  );
-}
-
 function SunIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="4" />
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-    </svg>
-  );
-}
-
-function UmbrellaIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M23 12a11.05 11.05 0 0 0-22 0z" />
-      <path d="M12 12v6a3 3 0 0 0 6 0" />
     </svg>
   );
 }
@@ -311,30 +270,6 @@ function MapPinLgIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
       <circle cx="12" cy="9" r="2.5" />
-    </svg>
-  );
-}
-
-function SparkleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  );
-}
-
-function BookmarkNavIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C4CEDD" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 18l6-6-6-6" />
     </svg>
   );
 }
