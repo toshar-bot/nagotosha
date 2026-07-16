@@ -23,6 +23,9 @@ export interface PortalCommercialFields {
   address?: string;
   isNew?: boolean;
   publishedAt?: string;
+  openDate?: string;
+  openStatus?: 'opened' | 'planned';
+  placeLabel?: string;
   area?: string;
   category?: PortalCategory;
   description?: string;
