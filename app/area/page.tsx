@@ -23,6 +23,15 @@ export const metadata: Metadata = {
 
 type AreaIconType = 'station' | 'walk' | 'pin';
 
+type AreaPhotoCredit = {
+  title: string;
+  author: string;
+  license: string;
+  sourcePageUrl: string;
+  licenseUrl: string;
+  processing: string;
+};
+
 const AREA_FILTERS = [
   { label: '今日近くで探す',    text: '今いる場所や帰り道から寄りやすい候補を探す', icon: 'clock' },
   { label: '週末のおでかけ',    text: 'ゆっくり歩けるエリアやイベントが多い場所から', icon: 'sun' },
@@ -34,7 +43,10 @@ const AREAS: {
   description: string;
   tags: string[];
   href: string;
-  imageUrl?: string;
+  imageUrl: string;
+  imageAlt: string;
+  objectPosition: string;
+  credit: AreaPhotoCredit;
   iconType: AreaIconType;
 }[] = [
   {
@@ -42,7 +54,17 @@ const AREAS: {
     description: '高層ビルとKITTEが集まる、名古屋の玄関口。',
     tags: ['駅近', '買い物', '夜ごはん'],
     href: '/new?area=%E5%90%8D%E9%A7%85',
-    imageUrl: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/meieki-landmark.webp',
+    imageAlt: '名駅のJRセントラルタワーズとJRゲートタワー',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Nagoya Station JR Central Towers and JR Gate Tower',
+      author: 'FZHS',
+      license: 'CC0 1.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Nagoya_Station_JR_Central_Towers_and_JR_Gate_Tower.jpg',
+      licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'station',
   },
   {
@@ -50,7 +72,17 @@ const AREAS: {
     description: 'オアシス21とテレビ塔が目印、カフェとイベントが集まる中心地。',
     tags: ['カフェ', '夜', 'イベント'],
     href: '/new?area=%E6%A0%84',
-    imageUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/sakae-landmark.webp',
+    imageAlt: '栄のオアシス21と中部電力MIRAI TOWER',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Oasis 21 and Nagoya TV Tower',
+      author: 'Alpsdake',
+      license: 'CC BY-SA 4.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Oasis_21_and_Nagoya_TV_Tower.JPG',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'pin',
   },
   {
@@ -58,7 +90,17 @@ const AREAS: {
     description: '食べ歩き、古着、個性派ショップが集まる歩いて楽しい商店街。',
     tags: ['食べ歩き', '古着', '新店'],
     href: '/new?area=%E5%A4%A7%E9%A0%88',
-    imageUrl: 'https://images.unsplash.com/photo-1513125370-3460ebe3401b?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/osu-landmark.webp',
+    imageAlt: '大須観音の本堂',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Osu Kannon main hall 2025-02 ac (1)',
+      author: 'Asturio Cantabrio',
+      license: 'CC BY-SA 4.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Osu_Kannon_main_hall_2025-02_ac_(1).jpg',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'walk',
   },
   {
@@ -66,7 +108,17 @@ const AREAS: {
     description: '飲み会やライブ帰りにも使いやすい、便利な乗換えエリア。',
     tags: ['飲み会', '駅近', '夜'],
     href: '/new?area=%E9%87%91%E5%B1%B1',
-    imageUrl: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/kanayama-landmark.webp',
+    imageAlt: '金山駅の改札口と駅名表示',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Nagoya Railroad - Kanayama Station - Ticket Gate - 01',
+      author: 'JKT-c',
+      license: 'CC BY 3.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Nagoya_Railroad_-_Kanayama_Station_-_Ticket_Gate_-_01.JPG',
+      licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'station',
   },
   {
@@ -74,7 +126,17 @@ const AREAS: {
     description: '落ち着いたカフェと日常使いのお店が並ぶ、東山線の終点エリア。',
     tags: ['カフェ', '日常', '東山線'],
     href: '/new?area=%E8%97%A4%E3%81%8C%E4%B8%98',
-    imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/fujigaoka-landmark.webp',
+    imageAlt: '藤が丘駅の駅舎入口',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Nagoya Fujigaoka Station',
+      author: 'Hustvedt',
+      license: 'CC BY-SA 3.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Nagoya_Fujigaoka_Station.jpg',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'station',
   },
   {
@@ -82,7 +144,17 @@ const AREAS: {
     description: '雑貨、焼き菓子、おしゃれなカフェが並ぶ散歩向きのエリア。',
     tags: ['散歩', '焼き菓子', '雑貨'],
     href: '/new?area=%E8%A6%9A%E7%8E%8B%E5%B1%B1',
-    imageUrl: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/kakuozan-landmark.webp',
+    imageAlt: '覚王山日泰寺の本堂',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Nittaiji',
+      author: 'Bariston',
+      license: 'CC BY-SA 4.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Nittaiji.jpg',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'walk',
   },
   {
@@ -90,7 +162,17 @@ const AREAS: {
     description: '海辺の散歩と水族館、家族で楽しめる週末スポット。',
     tags: ['家族', '海辺', '週末'],
     href: '/new?area=%E5%90%8D%E5%8F%A4%E5%B1%8B%E6%B8%AF',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=75',
+    imageUrl: '/areas/nagoya-port-landmark.webp',
+    imageAlt: '名古屋港水族館の外観',
+    objectPosition: 'center center',
+    credit: {
+      title: 'Port of Nagoya Public Aquarium Exterior (1), Minato-machi Minato Ward Nagoya 2022',
+      author: 'Tomio344456',
+      license: 'CC BY-SA 4.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:Port_of_Nagoya_Public_Aquarium_Exterior_(1),_Minato-machi_Minato_Ward_Nagoya_2022.jpg',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'pin',
   },
   {
@@ -98,7 +180,17 @@ const AREAS: {
     description: '音楽、居酒屋、個性ある夜の楽しみが見つかるエリア。',
     tags: ['音楽', '居酒屋', '夜'],
     href: '/new?area=%E4%BB%8A%E6%B1%A0',
-    imageUrl: '',
+    imageUrl: '/areas/imaike-landmark.webp',
+    imageAlt: '今池ガスビルの外観',
+    objectPosition: 'center center',
+    credit: {
+      title: 'View of Imaike Gas Building, Imaike Chikusa Ward Nagoya 2022',
+      author: 'Tomio344456',
+      license: 'CC BY-SA 4.0',
+      sourcePageUrl: 'https://commons.wikimedia.org/wiki/File:View_of_Imaike_Gas_Building,_Imaike_Chikusa_Ward_Nagoya_2022.jpg',
+      licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+      processing: 'トリミング・WebP変換',
+    },
     iconType: 'station',
   },
 ];
@@ -155,6 +247,11 @@ export default function AreaPage() {
             <AreaCard key={area.name} area={area} />
           ))}
         </div>
+        <div className="mt-3 text-right">
+          <a href="#photo-credits" className="text-[11px] font-bold no-underline" style={{ color: '#667085' }}>
+            写真出典
+          </a>
+        </div>
       </section>
 
       {/* ── 回遊導線 ── */}
@@ -179,6 +276,42 @@ export default function AreaPage() {
               <ChevronRightIcon />
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section id="photo-credits" className="px-4 pt-8">
+        <div
+          className="rounded-[14px] bg-white px-4 py-4"
+          style={{ border: '1px solid #E6ECF5', boxShadow: '0 4px 12px rgba(7,26,77,0.05)' }}
+        >
+          <p className="text-[10px] font-black tracking-[0.18em]" style={{ color: '#E8483F' }}>
+            PHOTO CREDITS
+          </p>
+          <h2 className="mt-1 text-[15px] font-black" style={{ color: '#071A4D' }}>
+            写真出典・ライセンス
+          </h2>
+          <p className="mt-2 text-[11px] font-medium leading-5" style={{ color: '#667085' }}>
+            エリアカードの写真はWikimedia Commons掲載素材を使用し、カード比率に合わせてトリミング・WebP変換しています。
+          </p>
+          <ul className="mt-3 space-y-2">
+            {AREAS.map(area => (
+              <li key={area.name} className="text-[10px] font-medium leading-5" style={{ color: '#667085' }}>
+                <span className="font-black" style={{ color: '#071A4D' }}>{area.name}</span>
+                {'：'}
+                <a href={area.credit.sourcePageUrl} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'inherit' }}>
+                  {area.credit.title}
+                </a>
+                {' / '}
+                {area.credit.author}
+                {' / '}
+                <a href={area.credit.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'inherit' }}>
+                  {area.credit.license}
+                </a>
+                {' / '}
+                {area.credit.processing}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -277,17 +410,21 @@ function AreaCard({ area }: { area: typeof AREAS[number] }) {
         className="relative h-[150px] overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)' }}
       >
-        {area.imageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={area.imageUrl}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            loading="lazy"
-          />
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={area.imageUrl}
+          alt={area.imageAlt}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: area.objectPosition,
+          }}
+          loading="lazy"
+        />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.28) 100%)' }}
