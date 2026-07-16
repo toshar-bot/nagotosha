@@ -182,6 +182,19 @@ function extractQuickPoints(html: string): string[] {
   return [];
 }
 
+function hasInlineQuickSummaryHeading(html: string): boolean {
+  const headingRe = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi;
+  let match = headingRe.exec(html);
+  while (match) {
+    const headingText = decodeHtmlEntities(stripHtml(match[1]))
+      .replace(/\s+/g, '')
+      .trim();
+    if (headingText === 'まず3行でわかる' || headingText === 'まず3行で分かる') return true;
+    match = headingRe.exec(html);
+  }
+  return false;
+}
+
 /* ── 関連記事の自動選定 ──
    同エリア > 同カテゴリ > 新しい順でスコアリングし3件返す。
    該当が少ない場合も新着順で自然に3件まで補完される */
@@ -305,7 +318,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
-  const quickPoints = extractQuickPoints(content);
+  const suppressQuickSummary = hasInlineQuickSummaryHeading(content);
+  const quickPoints = suppressQuickSummary ? [] : extractQuickPoints(content);
   const related = await buildRelatedArticles(post.id, area, tag);
 
   return (
@@ -324,6 +338,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       address={address}
       extraShopInfo={extraShopInfo.length > 0 ? extraShopInfo : undefined}
       quickPoints={quickPoints.length > 0 ? quickPoints : undefined}
+      suppressQuickSummary={suppressQuickSummary}
       related={related.length > 0 ? related : undefined}
       dateStr={dateStr}
       articleId={articleId}

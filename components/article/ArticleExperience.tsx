@@ -387,6 +387,7 @@ type Props = {
   postId: number;
   postLink: string;
   experience?: ArticleExperienceData;
+  suppressQuickSummary?: boolean;
 };
 
 export function ArticleExperience({
@@ -409,6 +410,7 @@ export function ArticleExperience({
   articleId,
   postId,
   experience,
+  suppressQuickSummary = false,
 }: Props) {
   const [saved, setSaved] = useState(false);
 
@@ -433,7 +435,7 @@ export function ArticleExperience({
   const effectiveMapUrl = propMapUrl ?? experience?.mapUrl ?? generatedMapUrl;
   const effectiveOfficialUrl = officialUrl ?? experience?.officialUrl;
   const badges = experience?.badges ?? [area, tag].filter(Boolean) as string[];
-  const quickPoints = experience?.quickPoints ?? autoQuickPoints ?? [];
+  const quickPoints = suppressQuickSummary ? [] : (experience?.quickPoints ?? autoQuickPoints ?? []);
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
@@ -672,7 +674,7 @@ export function ArticleExperience({
         ) : (
           <>
 
-        {shop?.quickCards && shop.quickCards.length > 0 ? (
+        {!suppressQuickSummary && shop?.quickCards && shop.quickCards.length > 0 ? (
           <SectionCard title="30秒でわかる要点" icon={<ClockIcon />}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {shop.quickCards.map((card) => (
