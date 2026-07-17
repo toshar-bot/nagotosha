@@ -494,16 +494,42 @@ function isStructuredStoreArticle(contentHtml: string, layout: ArticleExperience
   return hasContentHeading(contentHtml, '30秒でわかる') && hasContentHeading(contentHtml, '店舗情報');
 }
 
+function wrapImmediateHeadingList(html: string, headingText: string, className: string): string {
+  const h2Pattern = /<h2\b[^>]*>([\s\S]*?)<\/h2>/gi;
+  let match = h2Pattern.exec(html);
+
+  while (match) {
+    if (cleanArticleText(match[1]).trim().includes(headingText)) {
+      const afterHeadingIndex = match.index + match[0].length;
+      const afterHeading = html.slice(afterHeadingIndex);
+      const listMatch = afterHeading.match(/^(\s*)(<ul\b[^>]*>[\s\S]*?<\/ul>)/i);
+
+      if (!listMatch) return html;
+
+      const wrappedEndIndex = afterHeadingIndex + listMatch[0].length;
+      return [
+        html.slice(0, match.index),
+        `<section class="${className}">`,
+        match[0],
+        listMatch[1],
+        listMatch[2],
+        '</section>',
+        html.slice(wrappedEndIndex),
+      ].join('');
+    }
+
+    match = h2Pattern.exec(html);
+  }
+
+  return html;
+}
+
 function enhanceStructuredStoreContent(html: string): string {
-  return html
-    .replace(
-      /(<h2\b[^>]*>[\s\S]*?30秒でわかる[\s\S]*?<\/h2>)\s*(<ul\b[^>]*>[\s\S]*?<\/ul>)/i,
-      '<section class="structured-summary-card">$1$2</section>',
-    )
-    .replace(
-      /(<h2\b[^>]*>[\s\S]*?こんな人におすすめ[\s\S]*?<\/h2>)\s*(<ul\b[^>]*>[\s\S]*?<\/ul>)/i,
-      '<section class="structured-recommend-card">$1$2</section>',
-    );
+  return wrapImmediateHeadingList(
+    wrapImmediateHeadingList(html, '30秒でわかる', 'structured-summary-card'),
+    'こんな人におすすめ',
+    'structured-recommend-card',
+  );
 }
 
 type Props = {
