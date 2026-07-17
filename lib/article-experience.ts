@@ -145,6 +145,37 @@ export type NewsArticleData = {
   ctaLabel: string;
 };
 
+export type EventRoundupVisual = {
+  type: 'image' | 'generated';
+  imageUrl?: string;
+  imageAlt?: string;
+  creditText?: string;
+};
+
+export type EventRoundupItem = {
+  id: string;
+  dateLabel: string;
+  startDate: string;
+  endDate?: string;
+  name: string;
+  area: string;
+  venue: string;
+  station: string;
+  ticketStatus: string;
+  shortCopy: string;
+  anchorId: string;
+  mapQuery: string;
+  officialUrl: string;
+  visual: EventRoundupVisual;
+};
+
+export type EventRoundupData = {
+  title: string;
+  description: string;
+  swipeLabel: string;
+  items: EventRoundupItem[];
+};
+
 const ARTICLE_THUMBNAILS: Record<string, { imageUrl: string; imageAlt: string }> = {
   '/article/32': {
     imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/06/chipao-maratan016.jpg',
@@ -243,6 +274,7 @@ export type ArticleExperienceData = {
   mapUrl?: string;
   feature?: FeatureArticleData;
   news?: NewsArticleData;
+  eventRoundup?: EventRoundupData;
 
   // 外部ビジュアル管理（Instagram埋め込み・許可済み画像）
   externalVisuals?: ArticleExternalVisual[];
@@ -1100,6 +1132,167 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       ctaBody: '掲載内容の修正、写真のご提供、掲載のご希望がありましたら、お気軽にご連絡ください。掲載は無料です。',
       ctaHref: '/partner',
       ctaLabel: '掲載相談を見る',
+    },
+  },
+
+  214: {
+    badges: ['特集', '花火大会', 'おでかけ'],
+    heroTitle: '【2026】名古屋周辺の花火大会まとめ｜開催日・会場・有料席・アクセスを紹介',
+    lead: '名古屋周辺で行きたい花火大会を、開催日・エリア・アクセス・有料席の状況から選べる特集です。',
+    related: [],
+    eventRoundup: {
+      title: '開催日から選ぶ花火大会',
+      description: '横にスワイプして、日付・場所・アクセスをさっと比較できます。',
+      swipeLabel: '横にスワイプして選べます',
+      items: [
+        {
+          id: 'toyohashi-gion-2026',
+          dateLabel: '7/18(土)',
+          startDate: '2026-07-18',
+          name: '豊橋祇園祭 打上花火',
+          area: '豊橋市',
+          venue: '豊川河畔',
+          station: '札木駅、豊橋駅',
+          ticketStatus: '本年度分完売',
+          shortCopy: '約12,000発の大迫力',
+          anchorId: 'toyohashi-gion-2026',
+          mapQuery: '豊橋祇園祭 豊川河畔 豊橋市',
+          officialUrl: 'https://www.toyohashigion.org/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'nakamura-park-2026',
+          dateLabel: '7/24(金)',
+          startDate: '2026-07-24',
+          name: '中村公園夏まつり',
+          area: '名古屋市中村区',
+          venue: '中村公園 太閤池',
+          station: '中村公園駅',
+          ticketStatus: '案内なし',
+          shortCopy: '名古屋市内で楽しむ',
+          anchorId: 'nakamura-park-2026',
+          mapQuery: '中村公園 太閤池 名古屋市中村区',
+          officialUrl: 'https://aichinow.pref.aichi.jp/events/detail/1587/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'toyota-oiden-2026',
+          dateLabel: '7/26(日)',
+          startDate: '2026-07-26',
+          name: '豊田おいでんまつり 花火大会',
+          area: '豊田市',
+          venue: '矢作川河畔・白浜公園一帯',
+          station: '豊田市駅',
+          ticketStatus: '協賛席あり',
+          shortCopy: '多彩な演出を満喫',
+          anchorId: 'toyota-oiden-2026',
+          mapQuery: '豊田おいでんまつり 白浜公園 矢作川河畔',
+          officialUrl: 'https://www.oidenmaturi.com/hanabi/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'gamagori-2026',
+          dateLabel: '7/26(日)',
+          startDate: '2026-07-26',
+          name: '蒲郡まつり 納涼花火大会',
+          area: '蒲郡市',
+          venue: '蒲郡駅、竹島ふ頭周辺',
+          station: '蒲郡駅',
+          ticketStatus: '案内なし',
+          shortCopy: '三尺玉と海辺の夜',
+          anchorId: 'gamagori-2026',
+          mapQuery: '蒲郡まつり 納涼花火大会 竹島ふ頭 蒲郡駅',
+          officialUrl: 'https://aichinow.pref.aichi.jp/events/detail/1012/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'okazaki-2026',
+          dateLabel: '8/1(土)',
+          startDate: '2026-08-01',
+          name: '岡崎城下家康公夏まつり花火大会',
+          area: '岡崎市',
+          venue: '乙川・矢作川河畔',
+          station: '東岡崎駅、岡崎公園前駅',
+          ticketStatus: '有料観覧席あり',
+          shortCopy: '城下町を彩る名物花火',
+          anchorId: 'okazaki-2026',
+          mapQuery: '岡崎城下家康公夏まつり花火大会 乙川河畔',
+          officialUrl: 'https://www.okazaki-kanko.jp/feature/hanabitaikai/hanabitokusyu',
+          visual: {
+            type: 'image',
+            imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/Okazaki-Hanabitaikai-2015-3.jpg',
+            imageAlt: '岡崎の花火大会で夜空に広がる花火の過去写真',
+            creditText: 'Evelyn-rose / Wikimedia Commons（CC0）',
+          },
+        },
+        {
+          id: 'toyoake-2026',
+          dateLabel: '8/1(土)・2(日)',
+          startDate: '2026-08-01',
+          endDate: '2026-08-02',
+          name: '豊明夏まつり',
+          area: '豊明市',
+          venue: '豊明市文化会館周辺',
+          station: '前後駅から徒歩約30分',
+          ticketStatus: '案内なし',
+          shortCopy: '短時間で夏気分',
+          anchorId: 'toyoake-2026',
+          mapQuery: '豊明夏まつり 豊明市文化会館',
+          officialUrl: 'https://aichinow.pref.aichi.jp/events/detail/1497/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'japan-rhine-2026',
+          dateLabel: '8/1(土)〜10(月)',
+          startDate: '2026-08-01',
+          endDate: '2026-08-10',
+          name: '日本ライン夏まつりロングラン花火',
+          area: '犬山市',
+          venue: '木曽川河畔',
+          station: '犬山遊園駅、新鵜沼駅',
+          ticketStatus: '観客席なし',
+          shortCopy: '10日間の川辺花火',
+          anchorId: 'japan-rhine-2026',
+          mapQuery: '日本ライン夏まつりロングラン花火 木曽川河畔 犬山市',
+          officialUrl: 'https://aichinow.pref.aichi.jp/events/detail/1513/',
+          visual: {
+            type: 'image',
+            imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/Fireworks_of_Japan_Rhine_summer_festival_from_Daishoji_-_2.jpg',
+            imageAlt: '日本ライン夏まつりの木曽川沿いで打ち上がる花火の過去写真',
+            creditText: 'KKPCW / Wikimedia Commons（CC BY-SA 4.0）',
+          },
+        },
+        {
+          id: 'tokai-2026',
+          dateLabel: '8/8(土)',
+          startDate: '2026-08-08',
+          name: '東海まつり花火大会',
+          area: '東海市',
+          venue: '大池公園',
+          station: '太田川駅',
+          ticketStatus: '案内なし',
+          shortCopy: '約4,000発を公園で',
+          anchorId: 'tokai-2026',
+          mapQuery: '東海まつり花火大会 大池公園 東海市',
+          officialUrl: 'https://aichinow.pref.aichi.jp/events/detail/1511/',
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'kariya-2026',
+          dateLabel: '8/15(土)',
+          startDate: '2026-08-15',
+          name: '刈谷わんさか祭り 花火大会',
+          area: '刈谷市',
+          venue: '刈谷市総合運動公園',
+          station: '富士松駅、一ツ木駅',
+          ticketStatus: '案内なし',
+          shortCopy: 'シャトルバス予定',
+          anchorId: 'kariya-2026',
+          mapQuery: '刈谷市総合運動公園',
+          officialUrl: 'https://www.kariya-guide.com/festival/000030.html',
+          visual: { type: 'generated' },
+        },
+      ],
     },
   },
 
