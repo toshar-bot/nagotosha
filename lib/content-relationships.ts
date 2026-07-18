@@ -51,6 +51,18 @@ export const CONTENT_RELATIONSHIP_REGISTRY: Readonly<Record<number, ContentRelat
     postId: 178,
     relationship: 'editorial',
   },
+  173: {
+    postId: 173,
+    relationship: 'editorial',
+  },
+  159: {
+    postId: 159,
+    relationship: 'editorial',
+  },
+  137: {
+    postId: 137,
+    relationship: 'editorial',
+  },
 };
 
 const RELATIONSHIP_VALUES: ContentRelationship[] = ['editorial', 'pr', 'owned', 'unknown'];
@@ -266,6 +278,7 @@ function parsePostId(value: unknown): number | undefined {
 
   return undefined;
 }
+
 
 
 

@@ -40,7 +40,7 @@ function assertResolution(postId, expected) {
   return result;
 }
 
-for (const postId of [214, 182, 178]) {
+for (const postId of [214, 182, 178, 173, 159, 137]) {
   const editorial = assertResolution(postId, { relationship: 'editorial', displayable: true, displayLabel: undefined });
   assert(!editorial.commercialDisclosure, `Post ${postId} must not have inferred commercialDisclosure`);
 }
@@ -50,16 +50,21 @@ assert(owned.relationshipExplanation === 'なごとしゃ運営者と関係の�
 assert(!owned.commercialDisclosure, 'Post 205 must not have inferred commercialDisclosure');
 assert(owned.displayLabel !== 'PR・提供情報', 'Post 205 must not receive PR label');
 
-for (const postId of [173, 159, 137]) {
-  const unknown = assertResolution(postId, { relationship: 'unknown', displayable: false, displayLabel: undefined });
-  assert(unknown.validationErrors.length > 0, `Post ${postId} must explain why it is excluded`);
-}
-
 const records = mod.listContentRelationshipRegistryRecords();
 const editorialCount = records.filter((record) => record.relationship === 'editorial').length;
 const ownedCount = records.filter((record) => record.relationship === 'owned').length;
-assert(editorialCount === 3, 'Registry must contain three confirmed editorial records');
+const prCount = records.filter((record) => record.relationship === 'pr').length;
+const unknownCount = [214, 205, 182, 178, 173, 159, 137]
+  .map((postId) => mod.resolveContentRelationship(postId))
+  .filter((result) => result.relationship === 'unknown').length;
+const displayableCount = [214, 205, 182, 178, 173, 159, 137]
+  .map((postId) => mod.resolveContentRelationship(postId))
+  .filter((result) => result.displayableOnRedesignedSurfaces).length;
+assert(editorialCount === 6, 'Registry must contain six confirmed editorial records');
 assert(ownedCount === 1, 'Registry must contain one confirmed owned record');
+assert(prCount === 0, 'Registry must not contain inferred PR records');
+assert(unknownCount === 0, 'All seven target posts must be confirmed');
+assert(displayableCount === 7, 'All seven target posts must be displayable');
 
 const editorial = mod.validateContentRelationshipRecord({ postId: 1, relationship: 'editorial' });
 assert(editorial.length === 0, 'Editorial content without commercial disclosure must be valid');
@@ -118,3 +123,4 @@ assert(noFallback.displayableOnRedesignedSurfaces === false, 'Missing data must 
 
 fs.rmSync(tempDir, { recursive: true, force: true });
 console.log('content relationship checks passed');
+
