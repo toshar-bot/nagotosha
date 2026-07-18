@@ -130,6 +130,122 @@ const GLOBAL_CSS = `
   .article-body tr:last-child th {
     border-bottom: none;
   }
+  .structured-store-content {
+    padding: 0 14px 22px;
+    margin-top: 14px;
+  }
+  .structured-store-content .article-body {
+    background: #fff;
+    border: 1px solid #E6ECF5;
+    border-radius: 22px;
+    padding: 18px 16px;
+    box-shadow: 0 8px 22px rgba(7,26,77,0.06);
+  }
+  .structured-store-content .article-body h2:first-child {
+    margin-top: 0;
+  }
+  .structured-store-content .article-body figure {
+    margin: 1em 0 1.25em;
+  }
+  .structured-store-content .article-body figure img,
+  .structured-store-content .article-body img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    object-position: center;
+    background: #F8FAFC;
+  }
+  .structured-store-content .article-body figcaption {
+    margin-top: 7px;
+    color: #667085;
+    font-size: 11px;
+    line-height: 1.6;
+    font-weight: 750;
+  }
+  .structured-summary-card,
+  .structured-recommend-card {
+    margin: 1.25em 0;
+    border-radius: 20px;
+    padding: 16px 15px;
+    box-shadow: 0 8px 22px rgba(7,26,77,0.07);
+  }
+  .structured-summary-card {
+    border: 1px solid #F2D98C;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF7 52%, #FFF7D8 100%);
+  }
+  .structured-recommend-card {
+    border: 1px solid #E6ECF5;
+    background: #fff;
+  }
+  .structured-summary-card h2,
+  .structured-recommend-card h2 {
+    margin: 0 0 12px;
+    padding: 0;
+    border: none;
+    color: #071A4D;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .structured-summary-card ul,
+  .structured-recommend-card ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .structured-summary-card li,
+  .structured-recommend-card li {
+    position: relative;
+    margin: 0;
+    padding-left: 27px;
+    color: #0F172A;
+    font-size: 13px;
+    line-height: 1.7;
+    font-weight: 850;
+  }
+  .structured-summary-card li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    width: 19px;
+    height: 19px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: #E8483F;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .structured-recommend-card li::before {
+    content: "◎";
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    color: #E8483F;
+    font-size: 15px;
+    font-weight: 900;
+  }
+  @media (max-width: 430px) {
+    .structured-store-content {
+      padding-inline: 12px;
+    }
+    .structured-store-content .article-body {
+      padding: 16px 14px;
+    }
+    .structured-summary-card,
+    .structured-recommend-card {
+      padding: 14px 13px;
+    }
+    .structured-summary-card li,
+    .structured-recommend-card li {
+      font-size: 13px;
+      line-height: 1.65;
+    }
+  }
   .feature-article {
     padding: 0 14px 22px;
   }
@@ -363,6 +479,59 @@ function isNameOnlyGoogleMapsSearchUrl(mapUrl: string | undefined, names: Array<
   }
 }
 
+function hasContentHeading(html: string, headingText: string): boolean {
+  const h2Pattern = /<h2\b[^>]*>([\s\S]*?)<\/h2>/gi;
+  let match = h2Pattern.exec(html);
+  while (match) {
+    if (cleanArticleText(match[1]).trim().includes(headingText)) return true;
+    match = h2Pattern.exec(html);
+  }
+  return false;
+}
+
+function isStructuredStoreArticle(contentHtml: string, layout: ArticleExperienceData['layout'] | undefined): boolean {
+  if (layout !== 'store') return false;
+  return hasContentHeading(contentHtml, '30秒でわかる') && hasContentHeading(contentHtml, '店舗情報');
+}
+
+function wrapImmediateHeadingList(html: string, headingText: string, className: string): string {
+  const h2Pattern = /<h2\b[^>]*>([\s\S]*?)<\/h2>/gi;
+  let match = h2Pattern.exec(html);
+
+  while (match) {
+    if (cleanArticleText(match[1]).trim().includes(headingText)) {
+      const afterHeadingIndex = match.index + match[0].length;
+      const afterHeading = html.slice(afterHeadingIndex);
+      const listMatch = afterHeading.match(/^(\s*)(<ul\b[^>]*>[\s\S]*?<\/ul>)/i);
+
+      if (!listMatch) return html;
+
+      const wrappedEndIndex = afterHeadingIndex + listMatch[0].length;
+      return [
+        html.slice(0, match.index),
+        `<section class="${className}">`,
+        match[0],
+        listMatch[1],
+        listMatch[2],
+        '</section>',
+        html.slice(wrappedEndIndex),
+      ].join('');
+    }
+
+    match = h2Pattern.exec(html);
+  }
+
+  return html;
+}
+
+function enhanceStructuredStoreContent(html: string): string {
+  return wrapImmediateHeadingList(
+    wrapImmediateHeadingList(html, '30秒でわかる', 'structured-summary-card'),
+    'こんな人におすすめ',
+    'structured-recommend-card',
+  );
+}
+
 type Props = {
   title: string;
   excerpt: string;
@@ -441,6 +610,8 @@ export function ArticleExperience({
   const related = experience?.related ?? autoRelated ?? [];
   const layout = experience?.layout ?? 'store';
   const isGuideLayout = layout === 'guide';
+  const isStructuredStore = isStructuredStoreArticle(content, layout);
+  const structuredStoreContent = isStructuredStore ? enhanceStructuredStoreContent(content) : content;
   const shop = experience?.shop;
 
   const handleMapClick = useCallback(() => {
@@ -531,7 +702,7 @@ export function ArticleExperience({
       <div className="article-shell">
         <ArticleHeader mapUrl={effectiveMapUrl} onMapClick={handleMapClick} />
 
-        <section style={{ padding: '12px 14px 0' }}>
+        <section style={{ padding: isStructuredStore ? '12px 10px 0' : '12px 14px 0' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr',
@@ -547,8 +718,8 @@ export function ArticleExperience({
               <h1 style={{
                 margin: '14px 0 0',
                 color: '#071A4D',
-                fontSize: 'clamp(25px, 7.2vw, 42px)',
-                lineHeight: 1.25,
+                fontSize: isStructuredStore ? 'clamp(21px, 5.7vw, 40px)' : 'clamp(25px, 7.2vw, 42px)',
+                lineHeight: isStructuredStore ? 1.18 : 1.25,
                 fontWeight: 900,
                 letterSpacing: '0',
                 wordBreak: 'normal',
@@ -600,6 +771,7 @@ export function ArticleExperience({
               imageCredit={effectiveImageCredit}
               imageSourceUrl={effectiveImageSourceUrl}
               openDate={shop?.openDate}
+              fit={isStructuredStore ? 'contain' : 'cover'}
             />
           </div>
         </section>
@@ -661,6 +833,20 @@ export function ArticleExperience({
               <GuideBody>
                 <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
               </GuideBody>
+            )}
+
+            {related.length > 0 && (
+              <RelatedSection related={related} />
+            )}
+
+            <BackToArticlesLink />
+          </>
+        ) : isStructuredStore ? (
+          <>
+            {structuredStoreContent && (
+              <section className="structured-store-content">
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: structuredStoreContent }} />
+              </section>
             )}
 
             {related.length > 0 && (
@@ -2036,16 +2222,17 @@ function formatOpenBadge(openDate: string): { year: string; day: string } | null
   return { year: m[1], day: `${Number(m[2])}/${Number(m[3])}` };
 }
 
-function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate }: { imageUrl?: string; imageAlt: string; imageCredit?: string; imageSourceUrl?: string; openDate?: string }) {
+function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate, fit = 'cover' }: { imageUrl?: string; imageAlt: string; imageCredit?: string; imageSourceUrl?: string; openDate?: string; fit?: 'cover' | 'contain' }) {
   const openBadge = openDate ? formatOpenBadge(openDate) : null;
+  const isContain = fit === 'contain';
   return (
     <div style={{
       position: 'relative',
-      minHeight: 224,
+      minHeight: isContain ? 196 : 224,
       overflow: 'hidden',
       borderRadius: 22,
       border: '1px solid #E6ECF5',
-      background: '#FFF7D8',
+      background: isContain ? '#F8FAFC' : '#FFF7D8',
     }}>
       {openBadge && (
         <div aria-label={`${openBadge.year}年${openBadge.day}オープン`} style={{
@@ -2068,7 +2255,18 @@ function HeroVisual({ imageUrl, imageAlt, imageCredit, imageSourceUrl, openDate 
       {imageUrl ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imageUrl} alt={imageAlt} style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }} />
+          <img
+            src={imageUrl}
+            alt={imageAlt}
+            style={{
+              width: '100%',
+              height: isContain ? 236 : 260,
+              objectFit: fit,
+              objectPosition: 'center',
+              background: isContain ? '#F8FAFC' : undefined,
+              display: 'block',
+            }}
+          />
           {imageCredit && (
             <p style={{ margin: 0, padding: '8px 12px 10px', background: '#fff', color: '#667085', fontSize: 10, lineHeight: 1.5, fontWeight: 750 }}>
               {imageSourceUrl ? <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#667085', textDecoration: 'underline' }}>画像出典: {imageCredit}</a> : `画像出典: ${imageCredit}`}
