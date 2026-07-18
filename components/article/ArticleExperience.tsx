@@ -247,6 +247,24 @@ const GLOBAL_CSS = `
     background: linear-gradient(180deg, rgba(7,26,77,0.04) 0%, rgba(7,26,77,0.32) 100%);
     pointer-events: none;
   }
+  .event-photo-label {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    max-width: calc(100% - 20px);
+    border-radius: 7px;
+    background: rgba(7,26,77,0.78);
+    color: #fff;
+    padding: 4px 7px;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(7,26,77,0.18);
+  }
   .event-generated-visual {
     height: 100%;
     position: relative;
@@ -2558,6 +2576,9 @@ function EventCardRail({ data, articleId }: { data: EventRoundupData; articleId:
 function EventRoundupCard({ item, status, articleId }: { item: EventRoundupItem; status: EventStatus; articleId: number }) {
   const mapUrl = buildGoogleMapsSearchUrl(item.mapQuery);
   const ended = status === 'ended';
+  const historicalPhotoLabel = item.visual.type === 'image' && item.visual.imageAlt?.includes('過去写真')
+    ? '過去開催時の写真'
+    : undefined;
 
   const handleDetailClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -2581,8 +2602,11 @@ function EventRoundupCard({ item, status, articleId }: { item: EventRoundupItem;
     <article className={`event-roundup-card ${ended ? 'is-ended' : ''}`} aria-label={`${item.dateLabel} ${item.name}`}>
       <div className="event-visual">
         {item.visual.type === 'image' && item.visual.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.visual.imageUrl} alt={item.visual.imageAlt ?? item.name} loading="lazy" />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.visual.imageUrl} alt={item.visual.imageAlt ?? item.name} loading="lazy" />
+            {historicalPhotoLabel && <span className="event-photo-label">{historicalPhotoLabel}</span>}
+          </>
         ) : (
           <div className="event-generated-visual" aria-hidden="true">
             <span className="event-generated-area">{item.area}</span>
