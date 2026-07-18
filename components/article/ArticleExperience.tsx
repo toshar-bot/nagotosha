@@ -616,6 +616,20 @@ function normalizeMapQueryText(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
 }
 
+function removePost214InlineEventCardList(html: string): string {
+  const heading = '<h2>開催日順の花火大会カード</h2>';
+  const headingStart = html.indexOf(heading);
+  if (headingStart < 0) return html;
+
+  const listStart = html.indexOf('<ul class="fireworks-card-list"', headingStart + heading.length);
+  if (listStart < 0) return html;
+
+  const listEnd = html.indexOf('</ul>', listStart);
+  if (listEnd < 0) return html;
+
+  return `${html.slice(0, headingStart)}${html.slice(listEnd + '</ul>'.length)}`;
+}
+
 function isNameOnlyGoogleMapsSearchUrl(mapUrl: string | undefined, names: Array<string | undefined>): boolean {
   if (!mapUrl) return false;
   try {
@@ -711,6 +725,9 @@ export function ArticleExperience({
   const isGuideLayout = layout === 'guide';
   const shop = experience?.shop;
   const eventRoundup = experience?.eventRoundup;
+  const displayContent = postId === 214 && eventRoundup
+    ? removePost214InlineEventCardList(content)
+    : content;
 
   const handleMapClick = useCallback(() => {
     if (!effectiveMapUrl) return;
@@ -933,9 +950,9 @@ export function ArticleExperience({
               </SectionCard>
             )}
 
-            {content && (
+            {displayContent && (
               <GuideBody>
-                <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: displayContent }} />
               </GuideBody>
             )}
 
@@ -1090,9 +1107,9 @@ export function ArticleExperience({
           </section>
         )}
 
-        {content && (
+        {displayContent && (
           <SectionCard title="本文">
-            <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: displayContent }} />
           </SectionCard>
         )}
 
