@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { OFFICIAL_INSTAGRAM_URL } from '@/lib/site';
 
 const description =
   '名古屋のお店向けに、初回無料掲載、店舗紹介記事、Googleマップ導線、公式URL導線、掲載相談を受け付けています。';
@@ -7,6 +8,7 @@ const description =
 export const metadata: Metadata = {
   title: '店舗掲載・無料掲載相談｜なごとしゃ',
   description,
+  alternates: { canonical: '/partner' },
   openGraph: {
     title: '店舗掲載・無料掲載相談｜なごとしゃ',
     description,
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
   },
 };
 
-const INSTAGRAM_URL = 'https://www.instagram.com/nagotosha/';
+const INSTAGRAM_URL = OFFICIAL_INSTAGRAM_URL;
 const CONTACT_MAILTO = `mailto:hello@nagotosha.com?subject=${encodeURIComponent(
   'なごとしゃ掲載相談',
 )}&body=${encodeURIComponent(`店舗名:
@@ -505,6 +507,14 @@ export default function PartnerPage() {
           >
             PR表記・広告掲載方針を見る
           </Link>
+          <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[11px] font-bold" style={{ color: '#667085' }}>
+            <Link href="/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>
+              プライバシーポリシー
+            </Link>
+            <Link href="/terms" style={{ color: 'inherit', textDecoration: 'none' }}>
+              利用規約
+            </Link>
+          </div>
         </div>
       </section>
     </main>

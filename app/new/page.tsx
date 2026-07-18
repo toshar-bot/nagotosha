@@ -37,6 +37,7 @@ const JP = {
 export const metadata: Metadata = {
   title: JP.metaTitle,
   description: JP.description,
+  alternates: { canonical: '/new' },
   openGraph: {
     title: JP.metaTitle,
     description: JP.description,

@@ -8,8 +8,8 @@ const googleSiteVerification =
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://app.nagotosha.com'),
-  title: 'NAGOTOSHA - 名古屋メシ図鑑',
-  description: '名古屋メシをカードで集めるスマホWeb図鑑ゲーム。今日の1パックを開封しよう。',
+  title: 'なごとしゃ | 名古屋の新店・イベント・ごはんを探せるシティガイド',
+  description: '名古屋の新店・イベント・ごはんを写真でサクッと探せる、なごとしゃの地域情報ポータルです。',
   verification: {
     google: googleSiteVerification,
   },

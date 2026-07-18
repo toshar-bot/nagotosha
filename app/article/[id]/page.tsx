@@ -82,10 +82,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {
       title: `${title} | なごとしゃ`,
       description,
+      alternates: { canonical: `/article/${params.id}` },
       robots: { index: false, follow: false },
     };
   }
-  if (!post) return { title: '記事が見つかりません | なごとしゃ' };
+  if (!post) return { title: '記事が見つかりません | なごとしゃ', alternates: { canonical: `/article/${params.id}` } };
 
   const title = decodeHtmlEntities(stripHtml(post.title.rendered));
   const description = stripHtml(post.excerpt?.rendered ?? '').slice(0, 160);
@@ -94,6 +95,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: `${title} | なごとしゃ`,
     description: description || title,
+    alternates: { canonical: `/article/${post.id}` },
     openGraph: {
       title,
       description: description || title,
@@ -180,6 +182,19 @@ function extractQuickPoints(html: string): string[] {
     if (points.length >= 2) return points.slice(0, 4);
   }
   return [];
+}
+
+function hasInlineQuickSummaryHeading(html: string): boolean {
+  const headingRe = /<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi;
+  let match = headingRe.exec(html);
+  while (match) {
+    const headingText = decodeHtmlEntities(stripHtml(match[1]))
+      .replace(/\s+/g, '')
+      .trim();
+    if (headingText === 'まず3行でわかる' || headingText === 'まず3行で分かる') return true;
+    match = headingRe.exec(html);
+  }
+  return false;
 }
 
 /* ── 関連記事の自動選定 ──
@@ -305,7 +320,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
-  const quickPoints = extractQuickPoints(content);
+  const suppressQuickSummary = hasInlineQuickSummaryHeading(content);
+  const quickPoints = suppressQuickSummary ? [] : extractQuickPoints(content);
   const related = await buildRelatedArticles(post.id, area, tag);
 
   return (
@@ -324,6 +340,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       address={address}
       extraShopInfo={extraShopInfo.length > 0 ? extraShopInfo : undefined}
       quickPoints={quickPoints.length > 0 ? quickPoints : undefined}
+      suppressQuickSummary={suppressQuickSummary}
       related={related.length > 0 ? related : undefined}
       dateStr={dateStr}
       articleId={articleId}

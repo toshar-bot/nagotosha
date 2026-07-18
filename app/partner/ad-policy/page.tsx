@@ -1,4 +1,27 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+const title = 'なごとしゃの広告・掲載ポリシー｜なごとしゃ';
+const description =
+  'なごとしゃのPR表記、広告掲載、通常記事との違い、掲載できない内容についてまとめています。';
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: '/partner/ad-policy' },
+  openGraph: {
+    title,
+    description,
+    type: 'website',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'なごとしゃ' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/opengraph-image'],
+  },
+};
 
 const DISCLOSURE_POINTS = [
   'PR・広告表記を明確にします',

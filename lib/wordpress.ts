@@ -90,6 +90,75 @@ function formatDate(isoDate: string): string {
 }
 
 /* ── ビジュアルフォールバック ── */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractBodyField(html: string | undefined, labels: string[]): string | undefined {
+  if (!html) return undefined;
+  const plainText = decodeHtmlEntities(html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '\n'));
+
+  for (const label of labels) {
+    const escaped = escapeRegExp(label);
+    const cellRe = new RegExp(
+      `<(?:th|dt)[^>]*>\\s*${escaped}\\s*</(?:th|dt)>\\s*<(?:td|dd)[^>]*>([\\s\\S]*?)</(?:td|dd)>`,
+      'i',
+    );
+    const cellMatch = html.match(cellRe);
+    if (cellMatch) {
+      const value = cleanText(cellMatch[1]).replace(/\s+/g, ' ').trim();
+      if (value) return value;
+    }
+
+    const lineRe = new RegExp(`${escaped}\\s*[:：]\\s*([^\\n]+)`);
+    const lineMatch = plainText.match(lineRe);
+    if (lineMatch) {
+      const value = lineMatch[1].replace(/\s+/g, ' ').trim();
+      if (value) return value;
+    }
+  }
+
+  return undefined;
+}
+
+function normalizeOpenDate(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const match =
+    value.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/) ??
+    value.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (!match) return undefined;
+  const [, y, m, d] = match;
+  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+}
+
+function textFromHtml(html: string | undefined): string {
+  return decodeHtmlEntities(html?.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '\n') ?? '');
+}
+
+function getStoreName(title: string, bodyStoreName?: string, metaStoreName?: string): string {
+  if (metaStoreName) return metaStoreName;
+  if (bodyStoreName) return bodyStoreName;
+  const quoted = title.match(/「([^」]+)」/)?.[1];
+  if (quoted) return quoted.trim();
+  return title.replace(/^【[^】]+】/, '').split(/[。．.、]/)[0].trim();
+}
+
+function buildPlaceLabel(area: string, address: string | undefined, contentHtml: string | undefined, title: string): string | undefined {
+  const source = `${title}\n${address ?? ''}\n${textFromHtml(contentHtml)}`;
+  if (source.includes('HAERA')) {
+    if (/地下\s*1階|B1F?|地下1階/.test(source)) return '栄・HAERA地下1階';
+    if (/地下\s*2階|B2F?|地下2階/.test(source)) return '栄・HAERA地下2階';
+    return '栄・HAERA';
+  }
+  if (source.includes('ザ・ランドマーク名古屋栄')) return '栄・ザ・ランドマーク名古屋栄';
+  if (source.includes('たての街ビル')) return '錦3丁目・たての街ビル1階';
+  if (source.includes('第三堀内ビル')) return '名駅・第三堀内ビル地下1階';
+  if (source.includes('メイチカ')) return '名駅・メイチカ';
+  if (source.includes('松坂屋名古屋店')) return '栄・松坂屋名古屋店';
+  if (source.includes('ラシック') || source.includes('LACHIC')) return '栄・ラシック';
+  return area;
+}
+
 const DEFAULT_BG_FEATURED  = 'linear-gradient(145deg, #eef6ff 0%, #c8dff0 55%, #90b8d8 100%)';
 const DEFAULT_BG_RANKING   = 'linear-gradient(128deg, #eef6ff 0%, #b8d4f0 60%, #88a8d8 100%)';
 const DEFAULT_ACCENT_COLOR = '#1d5b73';
@@ -109,6 +178,18 @@ export function normalizeWordPressPostToFeaturedArticle(
   const area        = safeString(meta.area)     ?? options?.defaultArea     ?? '名古屋';
   const tag         = safeString(meta.category) ?? options?.defaultCategory ?? '新着';
   const isPr        = safeBoolean(meta.isPr);
+  const contentHtml = post.content?.rendered;
+  const bodyStoreName = extractBodyField(contentHtml, ['店名', '店舗名', 'ホテル名', '施設名']);
+  const bodyAddress = extractBodyField(contentHtml, ['住所', '所在地']);
+  const rawOpenDate = extractBodyField(contentHtml, ['オープン日', 'オープン予定日', 'オープン予定', '開店日', '開業日', '開業予定日', '開業予定']);
+  const contentText = textFromHtml(contentHtml);
+  const openDate = normalizeOpenDate(safeString(meta.openDate) ?? rawOpenDate)
+    ?? normalizeOpenDate(`${title} ${description}`)
+    ?? normalizeOpenDate(contentText);
+  const openStatus = `${title} ${description} ${rawOpenDate ?? ''}`.includes('予定') ? 'planned' : 'opened';
+  const storeName = getStoreName(title, bodyStoreName, safeString(meta.storeName));
+  const address = safeString(meta.address) ?? bodyAddress;
+  const placeLabel = buildPlaceLabel(area, address, contentHtml, title);
 
   return {
     id:          `wp-${post.id}`,
@@ -122,8 +203,11 @@ export function normalizeWordPressPostToFeaturedArticle(
     isNew:       options?.markAsNew === true,
     isPr:        isPr ? true : undefined,
     sponsorName: safeString(meta.sponsorName),
-    storeName:   safeString(meta.storeName),
-    address:     safeString(meta.address),
+    storeName,
+    address,
+    openDate,
+    openStatus,
+    placeLabel,
     mapUrl:      safeString(meta.mapUrl),
     trackingId:  safeString(meta.trackingId),
     saves:       safeNumber(meta.saves),

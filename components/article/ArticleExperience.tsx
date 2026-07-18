@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { trackGa4Event } from '@/lib/ga4';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
 import { buildGoogleMapsSearchUrl } from '@/lib/tracking';
-import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, EventRoundupData, EventRoundupItem, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -281,6 +281,272 @@ const GLOBAL_CSS = `
   .feature-horizontal::-webkit-scrollbar {
     display: none;
   }
+  .event-roundup {
+    padding: 0 0 2px;
+    margin-top: 14px;
+  }
+  .event-roundup-head {
+    padding: 0 16px 10px;
+  }
+  .event-roundup-title {
+    margin: 0;
+    color: #071A4D;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+  .event-roundup-copy {
+    margin: 6px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.65;
+    font-weight: 800;
+  }
+  .event-roundup-swipe {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 9px;
+    border-radius: 999px;
+    background: #FFF7D8;
+    color: #8A6400;
+    padding: 6px 10px;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 900;
+  }
+  .event-card-rail {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 1px 36px 12px 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .event-card-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .event-roundup-card {
+    width: min(382px, calc(100vw - 44px));
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid #E6ECF5;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(7, 26, 77, 0.08);
+    color: #0F172A;
+  }
+  .event-roundup-card.is-ended {
+    background: #F8FAFC;
+    opacity: 0.86;
+  }
+  .event-visual {
+    position: relative;
+    height: 126px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #071A4D 0%, #102B68 54%, #174487 100%);
+  }
+  .event-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .event-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(7,26,77,0.04) 0%, rgba(7,26,77,0.32) 100%);
+    pointer-events: none;
+  }
+  .event-photo-label {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    max-width: calc(100% - 20px);
+    border-radius: 7px;
+    background: rgba(7,26,77,0.78);
+    color: #fff;
+    padding: 4px 7px;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(7,26,77,0.18);
+  }
+  .event-generated-visual {
+    height: 100%;
+    position: relative;
+    display: grid;
+    align-content: end;
+    padding: 14px;
+    color: #fff;
+  }
+  .event-generated-visual::before,
+  .event-generated-visual::after {
+    content: '';
+    position: absolute;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    border: 1px dotted rgba(248,200,97,0.62);
+    pointer-events: none;
+  }
+  .event-generated-visual::before {
+    top: 14px;
+    right: 22px;
+  }
+  .event-generated-visual::after {
+    width: 46px;
+    height: 46px;
+    top: 34px;
+    left: 20px;
+    border-color: rgba(255,255,255,0.46);
+  }
+  .event-generated-area {
+    position: relative;
+    z-index: 1;
+    font-size: 11px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.82);
+  }
+  .event-generated-date {
+    position: relative;
+    z-index: 1;
+    margin-top: 2px;
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 900;
+    color: #F8C861;
+  }
+  .event-card-body {
+    padding: 13px 14px 14px;
+  }
+  .event-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .event-date-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    border-radius: 10px;
+    background: #F8C861;
+    color: #071A4D;
+    padding: 0 10px;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .event-status-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    border-radius: 999px;
+    padding: 0 9px;
+    background: rgba(7,26,77,0.07);
+    color: #071A4D;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .event-status-badge.is-today,
+  .event-status-badge.is-active {
+    background: #E8483F;
+    color: #fff;
+  }
+  .event-status-badge.is-ended {
+    background: #E4E7EC;
+    color: #667085;
+  }
+  .event-card-title {
+    margin: 10px 0 0;
+    min-height: 44px;
+    color: #071A4D;
+    font-size: 17px;
+    line-height: 1.32;
+    font-weight: 900;
+    letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .event-card-meta {
+    display: grid;
+    gap: 5px;
+    margin-top: 9px;
+  }
+  .event-card-meta p,
+  .event-card-copy {
+    margin: 0;
+    color: #475467;
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: 800;
+  }
+  .event-card-copy {
+    margin-top: 9px;
+    color: #0F172A;
+  }
+  .event-card-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 9px;
+    margin-top: 12px;
+  }
+  .event-card-action {
+    min-height: 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    text-decoration: none !important;
+    font-size: 12.5px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  .event-card-action:active {
+    transform: translateY(1px) scale(0.99);
+  }
+  .event-card-action:focus-visible {
+    outline: 3px solid rgba(248,200,97,0.86);
+    outline-offset: 2px;
+  }
+  .event-card-action.primary {
+    background: #071A4D;
+    color: #fff !important;
+    border: 1px solid #071A4D;
+    box-shadow: 0 7px 16px rgba(7,26,77,0.22);
+  }
+  .event-card-action.secondary {
+    background: #fff;
+    color: #071A4D !important;
+    border: 1px solid rgba(7,26,77,0.24);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .event-card-action {
+      transition: none;
+    }
+    .event-card-action:active {
+      transform: none;
+    }
+  }
   .feature-pick-grid,
   .feature-tip-grid {
     display: grid;
@@ -466,6 +732,20 @@ function normalizeMapQueryText(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
 }
 
+function removePost214InlineEventCardList(html: string): string {
+  const heading = '<h2>開催日順の花火大会カード</h2>';
+  const headingStart = html.indexOf(heading);
+  if (headingStart < 0) return html;
+
+  const listStart = html.indexOf('<ul class="fireworks-card-list"', headingStart + heading.length);
+  if (listStart < 0) return html;
+
+  const listEnd = html.indexOf('</ul>', listStart);
+  if (listEnd < 0) return html;
+
+  return `${html.slice(0, headingStart)}${html.slice(listEnd + '</ul>'.length)}`;
+}
+
 function isNameOnlyGoogleMapsSearchUrl(mapUrl: string | undefined, names: Array<string | undefined>): boolean {
   if (!mapUrl) return false;
   try {
@@ -556,6 +836,7 @@ type Props = {
   postId: number;
   postLink: string;
   experience?: ArticleExperienceData;
+  suppressQuickSummary?: boolean;
 };
 
 export function ArticleExperience({
@@ -578,6 +859,7 @@ export function ArticleExperience({
   articleId,
   postId,
   experience,
+  suppressQuickSummary = false,
 }: Props) {
   const [saved, setSaved] = useState(false);
 
@@ -602,7 +884,7 @@ export function ArticleExperience({
   const effectiveMapUrl = propMapUrl ?? experience?.mapUrl ?? generatedMapUrl;
   const effectiveOfficialUrl = officialUrl ?? experience?.officialUrl;
   const badges = experience?.badges ?? [area, tag].filter(Boolean) as string[];
-  const quickPoints = experience?.quickPoints ?? autoQuickPoints ?? [];
+  const quickPoints = suppressQuickSummary ? [] : (experience?.quickPoints ?? autoQuickPoints ?? []);
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
@@ -613,6 +895,10 @@ export function ArticleExperience({
   const isStructuredStore = isStructuredStoreArticle(content, layout);
   const structuredStoreContent = isStructuredStore ? enhanceStructuredStoreContent(content) : content;
   const shop = experience?.shop;
+  const eventRoundup = experience?.eventRoundup;
+  const displayContent = postId === 214 && eventRoundup
+    ? removePost214InlineEventCardList(content)
+    : content;
 
   const handleMapClick = useCallback(() => {
     if (!effectiveMapUrl) return;
@@ -784,6 +1070,13 @@ export function ArticleExperience({
           onMapClick={handleMapClick}
         />
 
+        {eventRoundup && (
+          <EventCardRail
+            data={eventRoundup}
+            articleId={postId}
+          />
+        )}
+
         {isGuideLayout ? (
           <>
             {quickPoints.length > 0 && (
@@ -829,9 +1122,9 @@ export function ArticleExperience({
               </SectionCard>
             )}
 
-            {content && (
+            {displayContent && (
               <GuideBody>
-                <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: displayContent }} />
               </GuideBody>
             )}
 
@@ -858,7 +1151,7 @@ export function ArticleExperience({
         ) : (
           <>
 
-        {shop?.quickCards && shop.quickCards.length > 0 ? (
+        {!suppressQuickSummary && shop?.quickCards && shop.quickCards.length > 0 ? (
           <SectionCard title="30秒でわかる要点" icon={<ClockIcon />}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {shop.quickCards.map((card) => (
@@ -1000,9 +1293,9 @@ export function ArticleExperience({
           </section>
         )}
 
-        {content && (
+        {displayContent && (
           <SectionCard title="本文">
-            <div className="article-body" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: displayContent }} />
           </SectionCard>
         )}
 
@@ -2462,6 +2755,135 @@ function ExternalVisualSection({ visuals }: { visuals?: ArticleExternalVisual[] 
       </div>
     </section>
   );
+}
+
+type EventStatus = 'upcoming' | 'today' | 'active' | 'ended';
+
+function EventCardRail({ data, articleId }: { data: EventRoundupData; articleId: number }) {
+  const [statuses, setStatuses] = useState<Record<string, EventStatus>>({});
+
+  useEffect(() => {
+    const todayKey = toDateKey(new Date());
+    setStatuses(Object.fromEntries(data.items.map((item) => [item.id, getEventStatus(item, todayKey)])));
+  }, [data.items]);
+
+  return (
+    <section className="event-roundup" aria-labelledby="event-roundup-title">
+      <div className="event-roundup-head">
+        <h2 id="event-roundup-title" className="event-roundup-title">{data.title}</h2>
+        <p className="event-roundup-copy">{data.description}</p>
+        <span className="event-roundup-swipe" aria-hidden="true">{data.swipeLabel}</span>
+      </div>
+      <div className="event-card-rail" aria-label={data.swipeLabel}>
+        {data.items.map((item) => (
+          <EventRoundupCard
+            key={item.id}
+            item={item}
+            status={statuses[item.id] ?? 'upcoming'}
+            articleId={articleId}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EventRoundupCard({ item, status, articleId }: { item: EventRoundupItem; status: EventStatus; articleId: number }) {
+  const mapUrl = buildGoogleMapsSearchUrl(item.mapQuery);
+  const ended = status === 'ended';
+  const historicalPhotoLabel = item.visual.type === 'image' && item.visual.imageAlt?.includes('過去写真')
+    ? '過去開催時の写真'
+    : undefined;
+
+  const handleDetailClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const target = document.getElementById(item.anchorId);
+    if (!target) return;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    history.replaceState(null, '', `#${item.anchorId}`);
+  }, [item.anchorId]);
+
+  const handleMapClick = useCallback(() => {
+    trackGa4Event('map_click', {
+      article_id: articleId,
+      event_id: item.id,
+      event_name: item.name,
+      placement: 'event_card',
+    });
+  }, [articleId, item.id, item.name]);
+
+  return (
+    <article className={`event-roundup-card ${ended ? 'is-ended' : ''}`} aria-label={`${item.dateLabel} ${item.name}`}>
+      <div className="event-visual">
+        {item.visual.type === 'image' && item.visual.imageUrl ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.visual.imageUrl} alt={item.visual.imageAlt ?? item.name} loading="lazy" />
+            {historicalPhotoLabel && <span className="event-photo-label">{historicalPhotoLabel}</span>}
+          </>
+        ) : (
+          <div className="event-generated-visual" aria-hidden="true">
+            <span className="event-generated-area">{item.area}</span>
+            <span className="event-generated-date">{item.dateLabel.replace(/\(.+?\)/, '')}</span>
+          </div>
+        )}
+      </div>
+      <div className="event-card-body">
+        <div className="event-card-top">
+          <time className="event-date-badge" dateTime={item.startDate}>{item.dateLabel}</time>
+          <span className={`event-status-badge is-${status}`}>{eventStatusLabel(status)}</span>
+        </div>
+        <h3 className="event-card-title">{item.name}</h3>
+        <div className="event-card-meta">
+          <p>エリア: {item.area}</p>
+          <p>最寄り駅: {item.station}</p>
+          <p>有料席: {item.ticketStatus}</p>
+        </div>
+        <p className="event-card-copy">{item.shortCopy}</p>
+        <div className="event-card-actions">
+          <a className="event-card-action secondary" href={`#${item.anchorId}`} onClick={handleDetailClick}>
+            詳しく見る
+            <ChevronRightIcon color="#071A4D" />
+          </a>
+          <a
+            className="event-card-action primary"
+            href={mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleMapClick}
+            aria-label={`${item.name}の会場をGoogleマップで開く（外部リンク）`}
+          >
+            <MapPinIcon color="#fff" />
+            Googleマップ
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function getEventStatus(item: EventRoundupItem, todayKey: string): EventStatus {
+  const start = item.startDate;
+  const end = item.endDate ?? item.startDate;
+  if (todayKey < start) return 'upcoming';
+  if (todayKey > end) return 'ended';
+  if (todayKey === start) return item.endDate && item.endDate !== item.startDate ? 'active' : 'today';
+  return 'active';
+}
+
+function eventStatusLabel(status: EventStatus): string {
+  if (status === 'today') return '今日開催';
+  if (status === 'active') return '開催中';
+  if (status === 'ended') return '開催終了';
+  return '開催予定';
+}
+
+function toDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function ApprovedVisualCard({ item }: { item: ArticleExternalVisual }) {

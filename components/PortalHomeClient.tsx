@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { GachaExperience } from '@/components/GachaExperience';
 import { MoodPicksSection } from '@/components/MoodPicksSection';
 import { buildGachaPool } from '@/lib/gacha-pool';
+import { OFFICIAL_INSTAGRAM_URL } from '@/lib/site';
 import type { FeaturedArticle } from '@/types/portal';
 
 const THEME = {
@@ -714,43 +715,50 @@ type HomeNewsCard = {
   imageUrl: string;
   background: string;
   openLabel: string;
-  areaTag: string;
+  placeLabel: string;
 };
 
 const NEW_OPEN_PATTERN = /新店|オープン|NEW\s*OPEN|open/i;
 const CLOSED_PATTERN = /閉店|終了|クローズ/;
 
 function isNewOpenArticle(article: ArticleLike): boolean {
+  if (!article.openDate) return false;
   const haystack = `${article.tag ?? ''} ${article.title}`;
   if (CLOSED_PATTERN.test(haystack)) return false;
   return NEW_OPEN_PATTERN.test(haystack) || article.isNew === true;
 }
 
-function toArticleTime(publishedAt?: string): number {
-  if (!publishedAt) return 0;
-  const t = new Date(publishedAt.replace(/\./g, '-')).getTime();
+function toOpenTime(openDate?: string): number {
+  if (!openDate) return 0;
+  const t = new Date(openDate.replace(/\./g, '-')).getTime();
   return Number.isNaN(t) ? 0 : t;
+}
+
+function formatOpenLabel(openDate: string, status?: ArticleLike['openStatus']): string {
+  const suffix = status === 'planned' ? 'OPEN予定' : 'OPEN';
+  return `${formatDate(openDate)} ${suffix}`;
 }
 
 function NewsSection({ articles }: { articles: ArticleLike[] }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const resumeTimerRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
-  // 固定カードを廃止し、取得済み記事から新店系を公開日降順で自動抽出する。
-  // 新しい新店記事が公開されれば、このスライダーに自動で並ぶ。
+  // 取得済み記事の本文から抽出した実際の開店日があるものだけを並べる。
+  // 記事公開日を開店日として代用しない。
   const cards: HomeNewsCard[] = useMemo(() => {
     return articles
       .filter(isNewOpenArticle)
       .filter((article) => !isArchiveArticle(article))
-      .sort((a, b) => toArticleTime(b.publishedAt) - toArticleTime(a.publishedAt))
+      .filter((article) => Boolean(article.imageUrl))
+      .sort((a, b) => toOpenTime(b.openDate) - toOpenTime(a.openDate))
       .slice(0, 8)
       .map((article) => ({
-        title: article.title,
+        title: article.storeName || article.title,
         href: resolveArticleHref(article),
         imageUrl: article.imageUrl || '',
         background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
-        openLabel: `${formatDate(article.publishedAt)} 掲載`,
-        areaTag: normalizeAreaTag(article.area),
+        openLabel: formatOpenLabel(article.openDate!, article.openStatus),
+        placeLabel: article.placeLabel || normalizeAreaTag(article.area),
       }));
   }, [articles]);
   // 無限ループ演出用の複製。元データが実記事であることが前提。
@@ -773,7 +781,10 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
   };
 
   useEffect(() => {
-    const speed = 1.2;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return undefined;
+
+    const speed = 1.4;
     const interval = window.setInterval(() => {
       const el = scrollerRef.current;
       if (el && !pausedRef.current && el.scrollWidth > el.clientWidth) {
@@ -808,6 +819,8 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
         onTouchEnd={resumeLater}
         onPointerDown={pause}
         onPointerUp={resumeLater}
+        onMouseEnter={pause}
+        onMouseLeave={resumeLater}
       >
         {loopCards.map((card, index) => (
           <Link
@@ -816,8 +829,8 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
             style={{ flexShrink: 0, width: 154, color: 'inherit', textDecoration: 'none' }}
             aria-label={card.title}
           >
-            <article style={{ overflow: 'hidden', borderRadius: 16, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 7px 18px rgba(7,26,77,.08)' }}>
-              <div style={{ height: 88, position: 'relative', background: card.imageUrl ? `url(${card.imageUrl})` : card.background, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
+            <article style={{ display: 'flex', minHeight: 202, overflow: 'hidden', borderRadius: 16, border: '1px solid ' + THEME.border, background: '#fff', boxShadow: '0 7px 18px rgba(7,26,77,.08)', flexDirection: 'column' }}>
+              <div style={{ height: 104, position: 'relative', background: card.imageUrl ? `url(${card.imageUrl})` : card.background, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
                 {!card.imageUrl && (
                   <>
                     <span aria-hidden style={{ position: 'absolute', right: -22, bottom: -22, width: 96, height: 96, borderRadius: '50%', border: '1px solid rgba(7,26,77,.16)' }} />
@@ -826,10 +839,13 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
                   </>
                 )}
               </div>
-              <div style={{ padding: '9px 10px 10px' }}>
-                <p style={{ margin: 0, color: THEME.red, fontSize: 10, lineHeight: 1.1, fontWeight: 950, letterSpacing: '0.02em' }}>{card.openLabel}</p>
-                <h3 style={{ margin: '5px 0 0', color: THEME.navy, fontSize: 13, lineHeight: 1.28, fontWeight: 950, minHeight: 34 }}>{card.title}</h3>
-                <p style={{ display: 'inline-flex', margin: '7px 0 0', borderRadius: 999, background: '#F4F7FB', color: THEME.gray, padding: '3px 7px', fontSize: 10, lineHeight: 1, fontWeight: 900 }}>{card.areaTag}</p>
+              <div style={{ display: 'flex', flex: 1, flexDirection: 'column', padding: '10px 10px 11px' }}>
+                <p style={{ margin: 0, color: THEME.red, fontSize: 10, lineHeight: 1.1, fontWeight: 950, letterSpacing: '0.04em' }}>{card.openLabel}</p>
+                <h3 style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden', margin: '6px 0 0', color: THEME.navy, fontSize: 13, lineHeight: 1.3, fontWeight: 950, minHeight: 34 }}>{card.title}</h3>
+                <p style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, overflow: 'hidden', margin: 'auto 0 0', color: THEME.gray, fontSize: 10.5, lineHeight: 1.35, fontWeight: 850 }}>
+                  <span aria-hidden="true" style={{ color: THEME.red, marginRight: 3 }}>●</span>
+                  {card.placeLabel}
+                </p>
               </div>
             </article>
           </Link>
@@ -858,6 +874,8 @@ function HomeFooterCta() {
             <p style={{ margin: 0, color: '#F8C861', fontSize: 12, fontWeight: 950 }}>お役立ち情報</p>
             <FooterLink href="/saved" label="保存した記事" />
             <FooterLink href="/partner" label="掲載相談" />
+            <FooterLink href="/privacy" label="プライバシーポリシー" />
+            <FooterLink href="/terms" label="利用規約" />
           </div>
         </div>
         <p style={{ margin: '18px 0 0', color: 'rgba(255,255,255,.52)', fontSize: 10, fontWeight: 700 }}>© 2026 nagotosha. All Rights Reserved.</p>
@@ -904,8 +922,7 @@ function FollowSection() {
           <span style={{ position: 'absolute', left: '50%', bottom: -7, width: 14, height: 14, transform: 'translateX(-50%) rotate(45deg)', background: '#fff' }} aria-hidden="true" />
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 28, marginTop: 22 }}>
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><InstagramLogo /></a>
-          <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><XLogo /></a>
+          <a href={OFFICIAL_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ minWidth: 68, minHeight: 68, color: '#18181B', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><InstagramLogo /></a>
         </div>
       </div>
     </section>
@@ -962,7 +979,6 @@ function SectionTitleIcon({ kind }: { kind: string }) {
 }
 
 function InstagramLogo() { return <svg width="54" height="54" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.4" y="3.4" width="17.2" height="17.2" rx="5.2" stroke="currentColor" strokeWidth="1.9"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" strokeWidth="1.9"/><circle cx="17.1" cy="6.9" r="1.35" fill="currentColor"/></svg>; }
-function XLogo() { return <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.4 3.6h5.1l3.55 5.05 4.5-5.05h2.5l-5.8 6.56 6.25 10.24h-5.1l-4.02-5.78-5.13 5.78H3.75l6.46-7.27L4.4 3.6Zm3.02 2.05 9.06 12.64h1.03L8.46 5.65H7.42Z" fill="currentColor"/></svg>; }
 function SearchIcon() { return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><line x1="17" y1="17" x2="22" y2="22" /></svg>; }
 function MenuIcon() { return <svg width="25" height="19" viewBox="0 0 25 19" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="2" y1="2" x2="23" y2="2" /><line x1="2" y1="9.5" x2="23" y2="9.5" /><line x1="2" y1="17" x2="23" y2="17" /></svg>; }
 function CategoryIcon() { return <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/><rect x="13.4" y="4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".72"/><rect x="13.4" y="13.4" width="6.6" height="6.6" rx="1.4" fill="currentColor" opacity=".92"/></svg>; }
