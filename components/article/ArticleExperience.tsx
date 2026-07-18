@@ -26,6 +26,10 @@ const GLOBAL_CSS = `
     word-break: normal;
     overflow-wrap: anywhere;
   }
+  .article-body .nagotosha-app-cta,
+  .article-body .nagotosha-wp-only {
+    display: none !important;
+  }
   .article-body p { margin: 0 0 1.15em; }
   .article-body h2 {
     color: #071A4D;
