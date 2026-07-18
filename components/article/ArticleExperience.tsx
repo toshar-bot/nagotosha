@@ -2301,7 +2301,7 @@ function ActionButtons({ saved, onSave, onShare, mapUrl, onMapClick }: { saved: 
       </button>
       {mapUrl && (
         <a href={mapUrl} target="_blank" rel="noopener noreferrer" onClick={onMapClick} style={{ ...actionButtonStyle, ...googleMapButtonStyle }}>
-          <GoogleMapButtonContent compact />
+          <GoogleMapButtonContent compact splitLabel />
         </a>
       )}
       <button type="button" onClick={onShare} style={actionButtonStyle}>
@@ -2312,7 +2312,7 @@ function ActionButtons({ saved, onSave, onShare, mapUrl, onMapClick }: { saved: 
   );
 }
 
-function GoogleMapButtonContent({ compact = false }: { compact?: boolean }) {
+function GoogleMapButtonContent({ compact = false, splitLabel = false }: { compact?: boolean; splitLabel?: boolean }) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: compact ? 5 : 8, minWidth: 0 }}>
       <MapPinIcon color="#E8483F" />
@@ -2323,7 +2323,7 @@ function GoogleMapButtonContent({ compact = false }: { compact?: boolean }) {
         lineHeight: 1.35,
         fontWeight: 900,
       }}>
-        Googleマップで見る
+        {splitLabel ? <>Googleマップ<br />で見る</> : 'Googleマップで見る'}
       </span>
     </span>
   );
