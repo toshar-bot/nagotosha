@@ -7,7 +7,25 @@
   | 'game'
   | string;
 
-export interface PortalCommercialFields {
+export type ContentRelationship = 'editorial' | 'pr' | 'owned' | 'unknown';
+
+export interface CommercialDisclosure {
+  sponsorName?: string;
+  paid: boolean;
+  productProvided: boolean;
+  invited: boolean;
+  productionRequested: boolean;
+  advertiserReviewedBeforePublication?: boolean;
+  verifiedAt: string;
+}
+
+export interface ContentRelationshipFields {
+  relationship?: ContentRelationship;
+  relationshipExplanation?: string;
+  commercialDisclosure?: CommercialDisclosure;
+}
+
+export interface PortalCommercialFields extends ContentRelationshipFields {
   isPr?: boolean;
   sponsorName?: string;
   mapUrl?: string;
@@ -112,6 +130,9 @@ export interface WordPressPostMeta {
   mapUrl?: unknown;
   isPr?: unknown;
   sponsorName?: unknown;
+  relationship?: unknown;
+  relationshipExplanation?: unknown;
+  commercialDisclosure?: unknown;
   trackingId?: unknown;
   saves?: unknown;
   mapClicks?: unknown;
@@ -144,3 +165,4 @@ export interface WordPressNormalizeOptions {
   defaultAccentColor?: string;
   defaultRankColor?: string;
 }
+
