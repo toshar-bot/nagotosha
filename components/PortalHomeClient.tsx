@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { GachaExperience } from '@/components/GachaExperience';
 import { MoodPicksSection } from '@/components/MoodPicksSection';
 import { buildGachaPool } from '@/lib/gacha-pool';
+import type { HomeNewOpenStore } from '@/lib/home-new-open';
 import { OFFICIAL_INSTAGRAM_URL } from '@/lib/site';
 import type { FeaturedArticle } from '@/types/portal';
 
@@ -194,6 +195,11 @@ type ArticleLike = Pick<FeaturedArticle, 'id' | 'title'> & Partial<FeaturedArtic
 
 const ARCHIVE_ARTICLE_URLS = new Set(['/article/8']);
 const ARCHIVE_ARTICLE_IDS = new Set(['8', 'wp-8']);
+// Human-confirmed relationship label for the current production home only.
+// This label is presentation-only and is never used by NEW OPEN selection.
+const CURRENT_HOME_RELATIONSHIP_LABELS: Readonly<Record<string, string>> = {
+  'wp-205': '運営関係',
+};
 
 function resolveArticleHref(article: ArticleLike) {
   return article.id.startsWith('wp-') ? `/article/${article.id.slice(3)}` : article.articleUrl || '/new';
@@ -207,9 +213,11 @@ function isArchiveArticle(article: ArticleLike) {
 export default function PortalHomeClient({
   featuredArticles,
   gachaSourceArticles,
+  newOpenStores,
 }: {
   featuredArticles: FeaturedArticle[];
   gachaSourceArticles: FeaturedArticle[];
+  newOpenStores: HomeNewOpenStore[];
 }) {
   const gachaArticles = useMemo(() => buildGachaPool(gachaSourceArticles), [gachaSourceArticles]);
   const articles = useMemo<ArticleLike[]>(() => {
@@ -243,7 +251,7 @@ export default function PortalHomeClient({
       <main className="overflow-hidden pb-28">
         <HeroSection />
         <FreshArticlesSection articles={articles} />
-        <NewsSection articles={featuredArticles} />
+        <NewsSection stores={newOpenStores} />
         <EditorChoiceSection />
         <FeaturesSection />
         <AreaCtaSection />
@@ -659,7 +667,7 @@ function FreshArticlesSection({ articles }: { articles: ArticleLike[] }) {
             </div>
             <div style={{ padding: '12px 12px 13px' }}>
               <p style={{ margin: 0, minHeight: 40, color: THEME.text, fontSize: 13.5, fontWeight: 950, lineHeight: 1.42 }}>{article.title}</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 800 }}><span>{article.tag || JP.focus}</span><span>{formatDate(article.publishedAt)}</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 10, color: THEME.gray, fontSize: 10, fontWeight: 800 }}><span>{CURRENT_HOME_RELATIONSHIP_LABELS[article.id] || article.tag || JP.focus}</span><span>{formatDate(article.publishedAt)}</span></div>
             </div>
           </Link>
         ))}
@@ -718,51 +726,20 @@ type HomeNewsCard = {
   placeLabel: string;
 };
 
-const NEW_OPEN_PATTERN = /新店|オープン|NEW\s*OPEN|open/i;
-const CLOSED_PATTERN = /閉店|終了|クローズ/;
-
-function isNewOpenArticle(article: ArticleLike): boolean {
-  if (!article.openDate) return false;
-  const haystack = `${article.tag ?? ''} ${article.title}`;
-  if (CLOSED_PATTERN.test(haystack)) return false;
-  return NEW_OPEN_PATTERN.test(haystack) || article.isNew === true;
-}
-
-function toOpenTime(openDate?: string): number {
-  if (!openDate) return 0;
-  const t = new Date(openDate.replace(/\./g, '-')).getTime();
-  return Number.isNaN(t) ? 0 : t;
-}
-
-function formatOpenLabel(openDate: string, status?: ArticleLike['openStatus']): string {
-  const suffix = status === 'planned' ? 'OPEN予定' : 'OPEN';
-  return `${formatDate(openDate)} ${suffix}`;
-}
-
-function NewsSection({ articles }: { articles: ArticleLike[] }) {
+function NewsSection({ stores }: { stores: HomeNewOpenStore[] }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const resumeTimerRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
-  // 取得済み記事の本文から抽出した実際の開店日があるものだけを並べる。
-  // 記事公開日を開店日として代用しない。
   const cards: HomeNewsCard[] = useMemo(() => {
-    return articles
-      .filter(isNewOpenArticle)
-      .filter((article) => !isArchiveArticle(article))
-      .filter((article) => Boolean(article.imageUrl))
-      .sort((a, b) => toOpenTime(b.openDate) - toOpenTime(a.openDate))
-      .slice(0, 8)
-      .map((article) => ({
-        title: article.storeName || article.title,
-        href: resolveArticleHref(article),
-        imageUrl: article.imageUrl || '',
-        background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
-        openLabel: formatOpenLabel(article.openDate!, article.openStatus),
-        placeLabel: article.placeLabel || normalizeAreaTag(article.area),
-      }));
-  }, [articles]);
-  // 無限ループ演出用の複製。元データが実記事であることが前提。
-  const loopCards = cards.length > 0 ? [...cards, ...cards] : [];
+    return stores.map((store) => ({
+      title: store.name,
+      href: store.articleUrl,
+      imageUrl: store.imageUrl,
+      background: 'radial-gradient(circle at 72% 20%, rgba(255,255,255,.45), transparent 28%), linear-gradient(135deg, #071A4D 0%, #E8483F 58%, #F8C861 100%)',
+      openLabel: `${formatDate(store.openingDate)} OPEN`,
+      placeLabel: store.placeLabel,
+    }));
+  }, [stores]);
 
   const pause = () => {
     pausedRef.current = true;
@@ -789,9 +766,9 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
       const el = scrollerRef.current;
       if (el && !pausedRef.current && el.scrollWidth > el.clientWidth) {
         el.scrollLeft += speed;
-        const half = el.scrollWidth / 2;
-        if (half > 0 && el.scrollLeft >= half) {
-          el.scrollLeft -= half;
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll > 0 && el.scrollLeft >= maxScroll) {
+          el.scrollLeft = 0;
         }
       }
     }, 50);
@@ -822,9 +799,9 @@ function NewsSection({ articles }: { articles: ArticleLike[] }) {
         onMouseEnter={pause}
         onMouseLeave={resumeLater}
       >
-        {loopCards.map((card, index) => (
+        {cards.map((card) => (
           <Link
-            key={`${card.href}-${index}`}
+            key={card.href}
             href={card.href}
             style={{ flexShrink: 0, width: 154, color: 'inherit', textDecoration: 'none' }}
             aria-label={card.title}
