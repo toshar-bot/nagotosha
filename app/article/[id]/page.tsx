@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getWordPressPostById, getWordPressPosts } from '@/lib/wordpress-fetch';
 import { stripHtml, decodeHtmlEntities, getFeaturedMediaUrl } from '@/lib/wordpress';
 import { getArticleExperience, type ArticleRelated } from '@/lib/article-experience';
+import { isAppIndexableArticleId } from '@/lib/app-indexable-articles';
 import { ArticleExperience } from '@/components/article/ArticleExperience';
 
 type Params = { id: string };
@@ -100,7 +101,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: `${title} | なごとしゃ`,
     description: description || title,
     alternates: { canonical: `/article/${post.id}` },
-    robots: { index: false, follow: true },
+    robots: { index: isAppIndexableArticleId(post.id), follow: true },
     openGraph: {
       title,
       description: description || title,

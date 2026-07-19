@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getAppIndexableArticleIds } from '@/lib/app-indexable-articles';
 import { siteUrl } from '@/lib/site';
 
 const staticEntries = [
@@ -14,9 +15,14 @@ const staticEntries = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
+  const articleEntries = getAppIndexableArticleIds().map((id) => ({
+    path: `/article/${id}`,
+    priority: 0.85,
+  }));
   const entries = [
     { path: '/', priority: 1 },
     ...staticEntries,
+    ...articleEntries,
   ];
 
   return entries.map(({ path, priority }) => ({
