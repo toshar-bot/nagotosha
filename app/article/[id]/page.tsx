@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getWordPressPostById, getWordPressPosts } from '@/lib/wordpress-fetch';
 import { stripHtml, decodeHtmlEntities, getFeaturedMediaUrl } from '@/lib/wordpress';
 import { getArticleExperience, type ArticleRelated } from '@/lib/article-experience';
+import { resolveContentRelationship } from '@/lib/content-relationships';
 import { ArticleExperience } from '@/components/article/ArticleExperience';
 
 type Params = { id: string };
@@ -214,24 +215,27 @@ async function buildRelatedArticles(
   const posts = await getWordPressPosts({ perPage: 20 });
   const scored = posts
     .filter((p) => p.id !== currentPostId && !stripHtml(p.title.rendered).includes('【TEST】'))
-    .map((p) => {
-      const title = decodeHtmlEntities(stripHtml(p.title.rendered));
+    .map((p) => ({ post: p, relationship: resolveContentRelationship(p) }))
+    .filter(({ relationship }) => relationship.displayableOnRedesignedSurfaces)
+    .map(({ post, relationship }) => {
+      const title = decodeHtmlEntities(stripHtml(post.title.rendered));
       const area = deriveArea(undefined, title);
-      const tag = deriveCategory(p, undefined);
+      const tag = deriveCategory(post, undefined);
       let score = 0;
       if (currentArea && area === currentArea) score += 2;
       if (tag === currentTag) score += 1;
-      return { post: p, title, area, tag, score };
+      return { post, relationship, title, area, tag, score };
     });
 
   scored.sort(
     (a, b) => b.score - a.score || Date.parse(b.post.date) - Date.parse(a.post.date),
   );
 
-  return scored.slice(0, 3).map(({ post: p, title, area, tag }) => ({
+  return scored.slice(0, 3).map(({ post: p, relationship, title, area, tag }) => ({
     title,
     href: `/article/${p.id}`,
     label: area ?? tag,
+    relationshipLabel: relationship.displayLabel,
     imageUrl: getFeaturedMediaUrl(p) ?? undefined,
   }));
 }
@@ -325,8 +329,9 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   const articleId = `wp-${post.id}`;
   const experience = getArticleExperience(post.id);
+  const relationship = resolveContentRelationship(post);
   const suppressQuickSummary = hasInlineQuickSummaryHeading(content);
-  const quickPoints = suppressQuickSummary ? [] : extractQuickPoints(content);
+  const quickPoints = extractQuickPoints(content);
   const related = await buildRelatedArticles(post.id, area, tag);
 
   return (
@@ -340,7 +345,9 @@ export default async function ArticlePage({ params }: { params: Params }) {
       area={area}
       tag={tag}
       mapUrl={mapUrl}
+      mapUrlIsVerified={Boolean(metaMapUrl || experience?.mapUrl)}
       officialUrl={experience?.officialUrl}
+      officialUrlIsVerified={Boolean(experience?.officialUrl)}
       storeName={storeName}
       address={address}
       extraShopInfo={extraShopInfo.length > 0 ? extraShopInfo : undefined}
@@ -352,6 +359,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       postId={post.id}
       postLink={post.link}
       experience={experience}
+      relationship={relationship}
     />
   );
 }

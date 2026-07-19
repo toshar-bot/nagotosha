@@ -38,6 +38,7 @@ export type ArticleRelated = {
   title: string;
   href: string;
   label?: string;
+  relationshipLabel?: 'PR・提供情報' | '運営関係';
   imageUrl?: string;
   imageAlt?: string;
 };
