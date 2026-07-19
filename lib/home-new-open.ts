@@ -1,13 +1,6 @@
 import { getFeaturedNewOpenSpots, type ShopSpot } from '@/lib/article-experience';
-import type { CommercialDisclosure, ContentRelationship } from '@/types/portal';
 
-type VerifiedHomeNewOpenRelationship = {
-  relationship: Exclude<ContentRelationship, 'unknown'>;
-  relationshipExplanation?: string;
-  commercialDisclosure?: CommercialDisclosure;
-};
-
-export type HomeNewOpenStore = VerifiedHomeNewOpenRelationship & {
+export type HomeNewOpenStore = {
   articleId: number;
   registryId: string;
   name: string;
@@ -17,13 +10,6 @@ export type HomeNewOpenStore = VerifiedHomeNewOpenRelationship & {
   placeLabel: string;
   officialUrl: string;
   source: string;
-};
-
-const VERIFIED_HOME_NEW_OPEN_RELATIONSHIPS: Readonly<
-  Record<number, VerifiedHomeNewOpenRelationship>
-> = {
-  92: { relationship: 'editorial' },
-  32: { relationship: 'editorial' },
 };
 
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -71,8 +57,6 @@ export function selectVerifiedHomeNewOpenStores(
       if (!articleMatch || !spot.name.trim() || !isHttpUrl(spot.officialUrl)) return [];
 
       const articleId = Number(articleMatch[1]);
-      const relationship = VERIFIED_HOME_NEW_OPEN_RELATIONSHIPS[articleId];
-      if (!relationship) return [];
 
       return [{
         articleId,
@@ -84,7 +68,6 @@ export function selectVerifiedHomeNewOpenStores(
         placeLabel: spot.areaLabel.trim(),
         officialUrl: spot.officialUrl.trim(),
         source: spot.source.trim(),
-        ...relationship,
       }];
     })
     .sort((a, b) => b.openingDate.localeCompare(a.openingDate))

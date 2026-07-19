@@ -43,6 +43,14 @@ export const CONTENT_RELATIONSHIP_REGISTRY: Readonly<Record<number, ContentRelat
     relationship: 'owned',
     relationshipExplanation: 'なごとしゃ運営者と関係のある店舗を紹介する記事です。',
   },
+  92: {
+    postId: 92,
+    relationship: 'editorial',
+  },
+  32: {
+    postId: 32,
+    relationship: 'editorial',
+  },
   182: {
     postId: 182,
     relationship: 'editorial',

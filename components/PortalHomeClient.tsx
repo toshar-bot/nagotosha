@@ -115,9 +115,6 @@ function toVerifiedNewOpenArticle(store: HomeNewOpenStore): ArticleLike {
     openDate: store.openingDate,
     placeLabel: store.placeLabel,
     tag: '新店',
-    relationship: store.relationship,
-    relationshipExplanation: store.relationshipExplanation,
-    commercialDisclosure: store.commercialDisclosure,
     bg: THEME.surface,
     accentColor: THEME.red,
   };
