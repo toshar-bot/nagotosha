@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import Link from 'next/link';
 
 import { resolveContentRelationship, type ContentRelationshipResolution } from '@/lib/content-relationships';
+import type { HomeNewOpenStore } from '@/lib/home-new-open';
 import type { FeaturedArticle } from '@/types/portal';
 
 const THEME = {
@@ -38,11 +39,16 @@ type HomeModel = {
 
 export default function PortalHomeClient({
   featuredArticles,
+  newOpenStores,
 }: {
   featuredArticles: FeaturedArticle[];
   gachaSourceArticles: FeaturedArticle[];
+  newOpenStores: HomeNewOpenStore[];
 }) {
-  const model = useMemo(() => buildHomeModel(featuredArticles), [featuredArticles]);
+  const model = useMemo(
+    () => buildHomeModel(featuredArticles, newOpenStores),
+    [featuredArticles, newOpenStores],
+  );
 
   return (
     <div style={pageStyle}>
@@ -61,7 +67,10 @@ export default function PortalHomeClient({
   );
 }
 
-function buildHomeModel(sourceArticles: FeaturedArticle[]): HomeModel {
+function buildHomeModel(
+  sourceArticles: FeaturedArticle[],
+  newOpenStores: HomeNewOpenStore[],
+): HomeModel {
   const all = dedupeArticles(sourceArticles)
     .filter((article) => !isArchiveArticle(article))
     .map((article) => ({ ...article, articleUrl: resolveArticleHref(article) }))
@@ -71,21 +80,20 @@ function buildHomeModel(sourceArticles: FeaturedArticle[]): HomeModel {
   const lead = selectLeadRecommendation(all);
   markUsed(lead, used);
 
+  const newOpen = newOpenStores
+    .map(toVerifiedNewOpenArticle)
+    .filter(isRelationshipDisplayable)
+    .filter((article) => !isUsed(article, used))
+    .filter(hasUsableImage)
+    .slice(0, 3);
+  newOpen.forEach((article) => markUsed(article, used));
+
   const newArticles = all
     .filter((article) => !isUsed(article, used))
     .filter(hasUsableImage)
     .sort((a, b) => toTime(b.publishedAt) - toTime(a.publishedAt))
     .slice(0, 4);
   newArticles.forEach((article) => markUsed(article, used));
-
-  const newOpen = all
-    .filter((article) => !isUsed(article, used))
-    .filter(isNewOpenArticle)
-    .filter((article) => isInCurrentMonth(article.openDate))
-    .filter(hasUsableImage)
-    .sort((a, b) => toTime(b.openDate) - toTime(a.openDate))
-    .slice(0, 3);
-  newOpen.forEach((article) => markUsed(article, used));
 
   const features = all
     .filter((article) => !isUsed(article, used))
@@ -95,6 +103,21 @@ function buildHomeModel(sourceArticles: FeaturedArticle[]): HomeModel {
     .slice(0, 3);
 
   return { lead, newArticles, newOpen, features };
+}
+
+function toVerifiedNewOpenArticle(store: HomeNewOpenStore): ArticleLike {
+  return {
+    id: `wp-${store.articleId}`,
+    title: store.name,
+    storeName: store.name,
+    articleUrl: store.articleUrl,
+    imageUrl: store.imageUrl,
+    openDate: store.openingDate,
+    placeLabel: store.placeLabel,
+    tag: '新店',
+    bg: THEME.surface,
+    accentColor: THEME.red,
+  };
 }
 
 function dedupeArticles(articles: FeaturedArticle[]): ArticleLike[] {
@@ -148,13 +171,6 @@ function isNewOpenArticle(article: ArticleLike): boolean {
   return NEW_OPEN_PATTERN.test(haystack) || article.isNew === true;
 }
 
-function isInCurrentMonth(date?: string): boolean {
-  if (!date) return false;
-  const target = new Date(date.replace(/\./g, '-'));
-  if (Number.isNaN(target.getTime())) return false;
-  const now = new Date();
-  return target.getFullYear() === now.getFullYear() && target.getMonth() === now.getMonth();
-}
 function isSeasonalFeatureCandidate(article: ArticleLike): boolean {
   const haystack = textPool(article);
   if (isNewOpenArticle(article)) return false;
@@ -357,7 +373,7 @@ function NewOpen({ articles }: { articles: ArticleLike[] }) {
   if (articles.length === 0) return null;
   return (
     <section style={sectionStyle}>
-      <SectionHeading title="今月オープンしたお店" sub="開店日と場所が確認でき、使用できる写真がある新店だけ。" />
+      <SectionHeading title="新しくオープンしたお店" sub="開店日を確認できた、名古屋の新店を紹介します。" />
       <div style={{ display: 'grid', gap: 12 }}>
         {articles.map((article) => (
           <NewOpenCard key={articleKey(article)} article={article} />
