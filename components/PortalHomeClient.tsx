@@ -373,7 +373,7 @@ function NewOpen({ articles }: { articles: ArticleLike[] }) {
   if (articles.length === 0) return null;
   return (
     <section style={sectionStyle}>
-      <SectionHeading title="今月オープンしたお店" sub="開店日と場所が確認でき、使用できる写真がある新店だけ。" />
+      <SectionHeading title="新しくオープンしたお店" sub="開店日を確認できた、名古屋の新店を紹介します。" />
       <div style={{ display: 'grid', gap: 12 }}>
         {articles.map((article) => (
           <NewOpenCard key={articleKey(article)} article={article} />
