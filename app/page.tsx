@@ -3,6 +3,7 @@ import type { FeaturedArticle } from '@/types/portal';
 import { FEATURED_ARTICLES } from '@/data/portal';
 import { getLatestPortalArticles } from '@/lib/wordpress-fetch';
 import { getArticleExperience } from '@/lib/article-experience';
+import { getVerifiedHomeNewOpenStores } from '@/lib/home-new-open';
 import { OFFICIAL_INSTAGRAM_URL, SITE_ALTERNATE_NAME, SITE_NAME, siteUrl } from '@/lib/site';
 import PortalHomeClient from '@/components/PortalHomeClient';
 
@@ -93,6 +94,7 @@ function toTime(publishedAt: string | undefined): number {
 export default async function PortalPage() {
   const wpArticles = await getLatestPortalArticles();
   const gachaSourceArticles = await getLatestPortalArticles({ perPage: 30 });
+  const newOpenStores = getVerifiedHomeNewOpenStores();
   const guaranteed = buildGuaranteedArticles();
   const wpIds = new Set(wpArticles.map((a) => a.id));
   // WP取得分を正とし、保証枠(79/83/92)はWP取得に含まれない場合のみ補完する。
@@ -112,7 +114,11 @@ export default async function PortalPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      <PortalHomeClient featuredArticles={featuredArticles} gachaSourceArticles={gachaSourceArticles} />
+      <PortalHomeClient
+        featuredArticles={featuredArticles}
+        gachaSourceArticles={gachaSourceArticles}
+        newOpenStores={newOpenStores}
+      />
     </>
   );
 }
