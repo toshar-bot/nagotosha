@@ -132,6 +132,7 @@
 
 .heroPhotoCaption {
   justify-content: flex-end;
+  padding-right: 108px;
   color: var(--nd-muted);
   text-align: right;
 }
@@ -142,6 +143,17 @@
   align-items: center;
   color: var(--nd-ink);
   text-decoration: none;
+}
+
+.heroMascot {
+  position: absolute;
+  z-index: 6;
+  top: calc(60vw - 36px);
+  right: 8px;
+  width: 100px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 .heroCoral {
@@ -250,6 +262,14 @@
     radial-gradient(circle at 92px 40px, var(--nd-yellow) 0 5px, #fff 6px 8px, transparent 9px),
     radial-gradient(circle at 158px 76px, var(--nd-coral) 0 5px, #fff 6px 8px, transparent 9px),
     linear-gradient(145deg, transparent 46%, var(--nd-coral) 47% 49%, transparent 50%);
+}
+
+.decisionMascot {
+  width: 76px;
+  height: auto;
+  justify-self: end;
+  pointer-events: none;
+  user-select: none;
 }
 
 .stageIntro {
@@ -433,6 +453,13 @@
   color: var(--nd-ink);
   font-size: 13px;
   font-weight: 900;
+}
+
+.selectionSummaryRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
 }
 
 .selectionSummary span {
@@ -812,6 +839,18 @@
     font-size: 27px;
   }
 
+  .heroPhotoCaption {
+    padding-right: 94px;
+  }
+
+  .heroMascot {
+    width: 86px;
+  }
+
+  .decisionMascot {
+    width: 68px;
+  }
+
   .choice,
   .choiceActive {
     font-size: 11px;
@@ -829,6 +868,19 @@
 
   .heroCoral {
     width: 84%;
+  }
+
+  .heroPhotoCaption {
+    padding-right: 116px;
+  }
+
+  .heroMascot {
+    top: calc(50vw - 12px);
+    width: 108px;
+  }
+
+  .decisionMascot {
+    width: 82px;
   }
 
   .eventImageWrap {

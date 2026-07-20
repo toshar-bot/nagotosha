@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import TosharMascot from '@/components/mascot/TosharMascot';
 import ConditionPanel from './ConditionPanel';
 import PreviewBottomNav from './PreviewBottomNav';
 import {
@@ -71,6 +72,12 @@ export default function DecisionHome() {
               </figcaption>
             )}
           </figure>
+          <TosharMascot
+            pose="welcome"
+            className={styles.heroMascot}
+            priority
+            sizes="(max-width: 340px) 86px, (min-width: 420px) 108px, 100px"
+          />
           <div className={styles.heroCoral}>
             <p className={styles.heroEyebrow}>NAGOYA DECISION CONCIERGE</p>
             <h1 id="hero-title">
