@@ -54,14 +54,32 @@ export default function DecisionHome() {
 
       <main>
         <section className={styles.heroStage} aria-labelledby="hero-title">
-          <div className={styles.festivalParticles} aria-hidden="true" />
           <figure className={styles.heroFigure}>
-            <div className={styles.heroPhoto}>
-              {heroImageDisplayable ? (
-                <Image src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} fill priority sizes="(max-width: 448px) 100vw, 448px" className={styles.coverImage} />
-              ) : (
-                <div className={styles.imageBlocked}>Hero画像を確認中</div>
-              )}
+            <div className={styles.heroCanvas}>
+              <div className={styles.heroPhoto}>
+                {heroImageDisplayable ? (
+                  <Image src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} fill priority sizes="(max-width: 448px) 100vw, 448px" className={styles.coverImage} />
+                ) : (
+                  <div className={styles.imageBlocked}>Hero画像を確認中</div>
+                )}
+              </div>
+              <div className={styles.heroPhotoWash} aria-hidden="true" />
+              <div className={styles.heroCopy}>
+                <p className={styles.heroEyebrow}>NAGOYA DECISION CONCIERGE</p>
+                <h1 id="hero-title">
+                  <span>今日は、</span>
+                  <span><strong>名古屋</strong>で</span>
+                  <span>どう過ごす？</span>
+                </h1>
+                <p>あなたの気分や条件に合う候補を、確認済み情報からご提案します。</p>
+                <a href="#decision" className={styles.heroCta}>条件を選んでみる</a>
+              </div>
+              <TosharMascot
+                pose="welcome"
+                className={styles.heroMascot}
+                priority
+                sizes="(max-width: 340px) 86px, (min-width: 420px) 108px, 100px"
+              />
             </div>
             {heroImageDisplayable && (
               <figcaption className={styles.heroPhotoCaption}>
@@ -72,21 +90,6 @@ export default function DecisionHome() {
               </figcaption>
             )}
           </figure>
-          <TosharMascot
-            pose="welcome"
-            className={styles.heroMascot}
-            priority
-            sizes="(max-width: 340px) 86px, (min-width: 420px) 108px, 100px"
-          />
-          <div className={styles.heroCoral}>
-            <p className={styles.heroEyebrow}>NAGOYA DECISION CONCIERGE</p>
-            <h1 id="hero-title">
-              <span>今日は、名古屋で</span>
-              <span>どう過ごす？</span>
-            </h1>
-            <p>あなたの気分や条件に合う候補を、確認済み情報からご提案します。</p>
-            <a href="#decision" className={styles.heroCta}>条件を選んでみる</a>
-          </div>
         </section>
 
         <ConditionPanel foodAvailability={foodAvailability} />

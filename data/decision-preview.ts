@@ -1,4 +1,5 @@
 import type { VerifiedImage } from '@/types/decision-candidate';
+import { getArticleExperience } from '@/lib/article-experience';
 
 export const HERO_IMAGE: VerifiedImage = {
   src: '/areas/meieki-landmark.webp',
@@ -19,10 +20,16 @@ export type PreviewSeasonalGuide = {
   description: string;
   image: VerifiedImage;
   articleUrl: string;
+  eventCount?: number;
 };
 
+const PREVIEW_SEASONAL_GUIDE_ARTICLE_ID = 214;
+const previewSeasonalGuideEventCount = getArticleExperience(
+  PREVIEW_SEASONAL_GUIDE_ARTICLE_ID,
+)?.eventRoundup?.items.length;
+
 export const PREVIEW_SEASONAL_GUIDE: PreviewSeasonalGuide = {
-  articleId: 214,
+  articleId: PREVIEW_SEASONAL_GUIDE_ARTICLE_ID,
   title: '名古屋周辺の花火大会まとめ 2026',
   description: '開催日・会場・有料席・アクセスをまとめて確認できます。',
   image: {
@@ -39,6 +46,7 @@ export const PREVIEW_SEASONAL_GUIDE: PreviewSeasonalGuide = {
     verifiedAt: '2026-07-19',
   },
   articleUrl: '/article/214',
+  eventCount: previewSeasonalGuideEventCount,
 };
 
 export type PreviewEditorialArticle = {
@@ -46,6 +54,8 @@ export type PreviewEditorialArticle = {
   title: string;
   href: string;
   category?: string;
+  publishedAt?: string;
+  ctaLabel: string;
 };
 
 // 2026-07-19に、公開中の公式WordPress REST APIでタイトル・URL・カテゴリを確認。
@@ -56,17 +66,20 @@ export const PREVIEW_EDITORIAL_ARTICLES: readonly PreviewEditorialArticle[] = [
     title: '【栄】名古屋初「サウィ食堂 名古屋栄店」がオープン。釜山発ナッコプセを錦3丁目で',
     href: '/article/182',
     category: 'グルメ',
+    ctaLabel: 'サウィ食堂の記事を見る',
   },
   {
     id: 178,
     title: '【栄】東海初「ポーたま 名古屋HAERA店」がHAERAにオープン。名古屋限定4メニューも',
     href: '/article/178',
     category: 'グルメ',
+    ctaLabel: 'ポーたまの記事を見る',
   },
   {
     id: 159,
     title: '【栄】カフェ・ラデュレ 名古屋ラシック店がオープン。マカロン発祥の老舗が手がける日本1号店カフェ',
     href: '/article/159',
     category: 'グルメ',
+    ctaLabel: 'ラデュレの記事を見る',
   },
 ];
