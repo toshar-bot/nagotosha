@@ -5,23 +5,27 @@ import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 
 const root = process.cwd();
-const sourcePath = path.join(root, 'lib', 'content-relationships.ts');
-const source = fs.readFileSync(sourcePath, 'utf8');
-const transpiled = ts.transpileModule(source, {
-  compilerOptions: {
-    module: ts.ModuleKind.ES2022,
-    target: ts.ScriptTarget.ES2022,
-    moduleResolution: ts.ModuleResolutionKind.Bundler,
-    importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
-  },
-  fileName: sourcePath,
-});
-
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nagotosha-relationship-check-'));
-const modulePath = path.join(tempDir, 'content-relationships.mjs');
-fs.writeFileSync(modulePath, transpiled.outputText, 'utf8');
 
-const mod = await import(pathToFileURL(modulePath).href);
+async function importTsModule(relativePath, outputName) {
+  const sourcePath = path.join(root, relativePath);
+  const source = fs.readFileSync(sourcePath, 'utf8');
+  const transpiled = ts.transpileModule(source, {
+    compilerOptions: {
+      module: ts.ModuleKind.ES2022,
+      target: ts.ScriptTarget.ES2022,
+      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
+    },
+    fileName: sourcePath,
+  });
+  const modulePath = path.join(tempDir, outputName);
+  fs.writeFileSync(modulePath, transpiled.outputText, 'utf8');
+  return import(pathToFileURL(modulePath).href);
+}
+
+const mod = await importTsModule(path.join('lib', 'content-relationships.ts'), 'content-relationships.mjs');
+const articleExperience = await importTsModule(path.join('lib', 'article-experience.ts'), 'article-experience.mjs');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -40,7 +44,7 @@ function assertResolution(postId, expected) {
   return result;
 }
 
-for (const postId of [214, 182, 178, 173, 159, 137]) {
+for (const postId of [214, 221, 182, 178, 173, 159, 137]) {
   const editorial = assertResolution(postId, { relationship: 'editorial', displayable: true, displayLabel: undefined });
   assert(!editorial.commercialDisclosure, `Post ${postId} must not have inferred commercialDisclosure`);
 }
@@ -54,17 +58,17 @@ const records = mod.listContentRelationshipRegistryRecords();
 const editorialCount = records.filter((record) => record.relationship === 'editorial').length;
 const ownedCount = records.filter((record) => record.relationship === 'owned').length;
 const prCount = records.filter((record) => record.relationship === 'pr').length;
-const unknownCount = [214, 205, 182, 178, 173, 159, 137]
+const unknownCount = [214, 221, 205, 182, 178, 173, 159, 137]
   .map((postId) => mod.resolveContentRelationship(postId))
   .filter((result) => result.relationship === 'unknown').length;
-const displayableCount = [214, 205, 182, 178, 173, 159, 137]
+const displayableCount = [214, 221, 205, 182, 178, 173, 159, 137]
   .map((postId) => mod.resolveContentRelationship(postId))
   .filter((result) => result.displayableOnRedesignedSurfaces).length;
-assert(editorialCount === 8, 'Registry must contain eight confirmed editorial records');
+assert(editorialCount === 9, 'Registry must contain nine confirmed editorial records');
 assert(ownedCount === 1, 'Registry must contain one confirmed owned record');
 assert(prCount === 0, 'Registry must not contain inferred PR records');
-assert(unknownCount === 0, 'All seven target posts must be confirmed');
-assert(displayableCount === 7, 'All seven target posts must be displayable');
+assert(unknownCount === 0, 'All eight target posts must be confirmed');
+assert(displayableCount === 8, 'All eight target posts must be displayable');
 
 const editorial = mod.validateContentRelationshipRecord({ postId: 1, relationship: 'editorial' });
 assert(editorial.length === 0, 'Editorial content without commercial disclosure must be valid');
@@ -120,6 +124,36 @@ assert(missingOwnedExplanation.some((error) => error.includes('relationshipExpla
 const noFallback = mod.resolveContentRelationship({ id: 'wp-999', title: '通常記事に見える記事' });
 assert(noFallback.relationship === 'unknown', 'Missing data must not fall back to editorial');
 assert(noFallback.displayableOnRedesignedSurfaces === false, 'Missing data must be excluded');
+
+const augustExperience = articleExperience.getArticleExperience(221);
+assert(augustExperience?.articleType === 'event_roundup', 'Post 221 must be an event_roundup article');
+assert(augustExperience.relationship === 'editorial', 'Post 221 event_roundup must be editorial');
+assert(augustExperience.eventRoundup?.variant === 'list', 'Post 221 must use list event_roundup variant');
+
+const augustRoundup = augustExperience.eventRoundup;
+assert(augustRoundup.items.length === 10, 'Post 221 must contain ten event cards');
+assert(
+  augustRoundup.items.every((item) => item.officialUrl && !item.mapQuery),
+  'Post 221 event cards must use official URLs only and no generated map queries',
+);
+
+const expectedFilterCounts = new Map([
+  ['august-early', 5],
+  ['obon', 5],
+  ['august-late', 4],
+  ['summer-festival', 4],
+  ['night-event', 4],
+  ['family', 5],
+  ['indoor', 4],
+  ['low-budget', 5],
+]);
+
+for (const filter of augustRoundup.filters ?? []) {
+  const matches = augustRoundup.items.filter((item) => item.filterTags?.includes(filter.id));
+  assert(matches.length >= 2, `Filter ${filter.id} must not be displayed with fewer than two results`);
+  assert(matches.length === expectedFilterCounts.get(filter.id), `Filter ${filter.id} count must remain ${expectedFilterCounts.get(filter.id)}`);
+}
+assert((augustRoundup.filters ?? []).length === expectedFilterCounts.size, 'Post 221 must expose only the approved filters');
 
 fs.rmSync(tempDir, { recursive: true, force: true });
 console.log('content relationship checks passed');

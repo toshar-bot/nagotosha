@@ -153,6 +153,11 @@ export type EventRoundupVisual = {
   creditText?: string;
 };
 
+export type EventRoundupFilter = {
+  id: string;
+  label: string;
+};
+
 export type EventRoundupItem = {
   id: string;
   dateLabel: string;
@@ -161,13 +166,20 @@ export type EventRoundupItem = {
   name: string;
   area: string;
   venue: string;
-  station: string;
-  ticketStatus: string;
+  station: string | null;
+  ticketStatus: string | null;
   shortCopy: string;
-  anchorId: string;
-  mapQuery: string;
+  shortDescription?: string | null;
+  anchorId?: string;
+  mapQuery?: string | null;
   officialUrl: string;
   visual: EventRoundupVisual;
+  priceSummary?: string | null;
+  indoorOutdoor?: string | null;
+  familySuitability?: string | null;
+  nearestStation?: string | null;
+  verifiedAt?: string | null;
+  filterTags?: string[];
 };
 
 export type EventRoundupData = {
@@ -175,6 +187,12 @@ export type EventRoundupData = {
   description: string;
   swipeLabel: string;
   items: EventRoundupItem[];
+  variant?: 'rail' | 'list';
+  articleType?: 'event_roundup';
+  relationship?: 'editorial' | 'pr' | 'owned' | 'unknown';
+  filters?: EventRoundupFilter[];
+  inlineListClassName?: string;
+  placement?: 'afterHero' | 'afterQuickPoints';
 };
 
 const ARTICLE_THUMBNAILS: Record<string, { imageUrl: string; imageAlt: string }> = {
@@ -255,6 +273,8 @@ export type ShopSpot = {
 
 export type ArticleExperienceData = {
   layout?: 'store' | 'guide' | 'feature' | 'news';
+  articleType?: 'event_roundup';
+  relationship?: 'editorial' | 'pr' | 'owned' | 'unknown';
   shop?: ShopSpot;
   badges: string[];
   heroTitle?: string;
@@ -1141,10 +1161,15 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
     heroTitle: '【2026】名古屋周辺の花火大会まとめ｜開催日・会場・有料席・アクセスを紹介',
     lead: '名古屋周辺で行きたい花火大会を、開催日・エリア・アクセス・有料席の状況から選べる特集です。',
     related: [],
+    articleType: 'event_roundup',
+    relationship: 'editorial',
     eventRoundup: {
       title: '開催日から選ぶ花火大会',
       description: '横にスワイプして、日付・場所・アクセスをさっと比較できます。',
       swipeLabel: '横にスワイプして選べます',
+      articleType: 'event_roundup',
+      relationship: 'editorial',
+      inlineListClassName: 'fireworks-card-list',
       items: [
         {
           id: 'toyohashi-gion-2026',
@@ -1291,6 +1316,280 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
           anchorId: 'kariya-2026',
           mapQuery: '刈谷市総合運動公園',
           officialUrl: 'https://www.kariya-guide.com/festival/000030.html',
+          visual: { type: 'generated' },
+        },
+      ],
+    },
+  },
+
+  221: {
+    layout: 'guide',
+    badges: ['編集部企画', 'イベントまとめ', '2026年8月'],
+    heroTitle: '【2026年8月】名古屋イベントカレンダー｜夏祭り・夜イベント・子ども向け10選',
+    lead: '2026年8月に名古屋で開催されるイベントを、日付・エリア・屋内外・料金の目安で見比べられるイベントまとめです。',
+    articleType: 'event_roundup',
+    relationship: 'editorial',
+    visual: {
+      imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/pop-is-you-sakae26-main.jpg',
+      imageAlt: 'POP IS YOU SAKAE26 メインビジュアル',
+      imageCredit: '画像提供：J.フロント リテイリング株式会社／PR TIMES',
+      imageSourceUrl: 'https://prtimes.jp/main/html/rd/p/000000044.000118148.html',
+    },
+    quickPoints: [
+      '8月前半は世界コスプレサミット、大須夏まつり、円頓寺七夕まつり、金山まつりが重なります。',
+      '夜のおでかけは東山動植物園ナイトZOO、名古屋港水族館、どまつりなどが候補です。',
+      '暑さや雨を避けたい日は、屋内施設の水族館・博物館・科学館イベントを確認しやすい構成です。',
+    ],
+    highlightTitle: '目的別に選ぶ',
+    highlightPoints: [
+      { title: '夏祭りで選ぶ', description: '商店街や街なかの祭りを中心に、無料・低予算の候補を見比べられます。' },
+      { title: '夜イベントで選ぶ', description: '夕方以降に楽しみやすい動物園、水族館、踊りイベントをまとめています。' },
+      { title: '屋内で選ぶ', description: '水族館、資料館、科学館など、暑さや雨の日にも検討しやすい候補があります。' },
+    ],
+    recommendedForTitle: '出かける前の注意',
+    recommendedFor: [
+      '開催時間、料金、休館日、交通規制は変更される場合があります。',
+      '参加前に各イベントの公式情報を確認してください。',
+      '屋外イベントでは暑さ対策、雨具、飲み物、歩きやすい靴を用意しておくと安心です。',
+    ],
+    related: [],
+    eventRoundup: {
+      title: '日付順イベントカード',
+      description: '日付・エリア・料金・屋内外を縦に見比べて、行きたい候補を選べます。',
+      swipeLabel: 'フィルターで候補を絞り込めます',
+      variant: 'list',
+      articleType: 'event_roundup',
+      relationship: 'editorial',
+      placement: 'afterQuickPoints',
+      filters: [
+        { id: 'august-early', label: '8月前半' },
+        { id: 'obon', label: 'お盆前後' },
+        { id: 'august-late', label: '8月後半' },
+        { id: 'summer-festival', label: '夏祭り' },
+        { id: 'night-event', label: '夜イベント' },
+        { id: 'family', label: '子ども・家族' },
+        { id: 'indoor', label: '屋内' },
+        { id: 'low-budget', label: '無料・低予算' },
+      ],
+      items: [
+        {
+          id: 'endoji-tanabata-2026',
+          dateLabel: '7/29(水)〜8/2(日)',
+          startDate: '2026-07-29',
+          endDate: '2026-08-02',
+          name: '円頓寺七夕まつり',
+          area: '円頓寺',
+          venue: '円頓寺商店街・円頓寺本町商店街',
+          station: '国際センター駅、丸の内駅',
+          nearestStation: '国際センター駅、丸の内駅',
+          ticketStatus: '無料',
+          priceSummary: '無料',
+          indoorOutdoor: 'アーケード中心',
+          familySuitability: '家族での夏祭り',
+          shortCopy: 'レトロな商店街の七夕飾り',
+          shortDescription: 'アーケードに大きなはりぼて飾りが並ぶ、レトロな商店街の夏祭り。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/119/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-early', 'summer-festival', 'family', 'low-budget'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'world-cosplay-summit-2026',
+          dateLabel: '7/31(金)〜8/2(日)',
+          startDate: '2026-07-31',
+          endDate: '2026-08-02',
+          name: '世界コスプレサミット',
+          area: '栄・大須',
+          venue: 'オアシス21ほか',
+          station: null,
+          nearestStation: null,
+          ticketStatus: '有料・日指定',
+          priceSummary: '有料・日指定',
+          indoorOutdoor: '会場による',
+          familySuitability: null,
+          shortCopy: '世界から集まる大型コスプレイベント',
+          shortDescription: '世界各国・地域のコスプレイヤーが名古屋に集まる大型イベント。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/168/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-early'],
+          visual: {
+            type: 'image',
+            imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/world-cosplay-summit-2026.png',
+            imageAlt: '世界コスプレサミット2026 告知ビジュアル',
+            creditText: '画像提供：世界コスプレサミット実行委員会／PR TIMES',
+          },
+        },
+        {
+          id: 'osu-summer-festival-2026',
+          dateLabel: '8/1(土)〜8/2(日)',
+          startDate: '2026-08-01',
+          endDate: '2026-08-02',
+          name: '大須夏まつり',
+          area: '大須',
+          venue: '大須商店街全域',
+          station: '上前津駅、大須観音駅',
+          nearestStation: '上前津駅、大須観音駅',
+          ticketStatus: '無料',
+          priceSummary: '無料',
+          indoorOutdoor: '屋外中心',
+          familySuitability: '夏祭り・食べ歩き',
+          shortCopy: '商店街で楽しむ名古屋の夏祭り',
+          shortDescription: '大須商店街全域で、盆踊りやパレードなどを楽しめる地域イベント。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/116/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-early', 'summer-festival', 'night-event', 'low-budget'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'kanayama-festival-2026',
+          dateLabel: '8/1(土)〜8/2(日)',
+          startDate: '2026-08-01',
+          endDate: '2026-08-02',
+          name: '金山まつり',
+          area: '金山',
+          venue: '金山駅周辺',
+          station: '金山駅',
+          nearestStation: '金山駅',
+          ticketStatus: '無料・一部有料',
+          priceSummary: '無料・一部有料',
+          indoorOutdoor: '複数会場',
+          familySuitability: null,
+          shortCopy: '駅周辺で回りやすい地域イベント',
+          shortDescription: '金山駅周辺の複数施設を会場に、歴史・音楽・グルメなどを楽しめるイベント。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/118/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-early', 'summer-festival', 'low-budget'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'pop-is-you-sakae26',
+          dateLabel: '7/22(水)〜8/16(日)',
+          startDate: '2026-07-22',
+          endDate: '2026-08-16',
+          name: 'POP IS YOU SAKAE26',
+          area: '栄・伏見',
+          venue: '松坂屋名古屋店、名古屋PARCOほか',
+          station: null,
+          nearestStation: null,
+          ticketStatus: '会場による',
+          priceSummary: '会場による',
+          indoorOutdoor: '会場による',
+          familySuitability: null,
+          shortCopy: '栄・伏見を回遊するアート企画',
+          shortDescription: '栄・伏見の複数施設が参加する、買い物や美術館めぐりと組み合わせやすい回遊企画。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/1223/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-early', 'obon', 'indoor'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'higashiyama-night-zoo-2026',
+          dateLabel: '8/8(土)・9(日)・11(火祝)・12(水)・14(金)〜16(日)',
+          startDate: '2026-08-08',
+          endDate: '2026-08-16',
+          name: '東山動植物園 ナイトZOO',
+          area: '東山',
+          venue: '東山動植物園',
+          station: '東山公園駅',
+          nearestStation: '東山公園駅',
+          ticketStatus: '高校生以上500円、中学生以下無料',
+          priceSummary: '高校生以上500円、中学生以下無料',
+          indoorOutdoor: '夜・屋外',
+          familySuitability: '家族向け',
+          shortCopy: '夜の動物園を楽しむ',
+          shortDescription: '夜の動物やライトアップされた園内を楽しめる、夏休み向けの夜イベント。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/112/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['obon', 'night-event', 'family'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'summer-night-aquarium-2026',
+          dateLabel: '7/18(土)〜8/31(月)',
+          startDate: '2026-07-18',
+          endDate: '2026-08-31',
+          name: 'サマーナイトアクアリウム',
+          area: '名古屋港',
+          venue: '名古屋港水族館',
+          station: '名古屋港駅',
+          nearestStation: '名古屋港駅',
+          ticketStatus: '夜間 大人1,620円、小中学生800円、幼児400円',
+          priceSummary: '夜間 大人1,620円、小中学生800円、幼児400円',
+          indoorOutdoor: '屋内',
+          familySuitability: '暑さを避けたい家族',
+          shortCopy: '夜の水族館で涼しく過ごす',
+          shortDescription: '名古屋港水族館の夜間営業。暑さや天候を避けたい日にも検討しやすい候補です。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/146/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['obon', 'august-late', 'night-event', 'family', 'indoor'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'nagoya-utsurikawari-2026',
+          dateLabel: '7/18(土)〜8/30(日)',
+          startDate: '2026-07-18',
+          endDate: '2026-08-30',
+          name: '名古屋市のうつりかわり',
+          area: '東区',
+          venue: '名古屋市市政資料館 第2・3・4一般展示室',
+          station: null,
+          nearestStation: null,
+          ticketStatus: '無料',
+          priceSummary: '無料',
+          indoorOutdoor: '屋内',
+          familySuitability: '小学生・自由研究',
+          shortCopy: '自由研究にも使いやすい無料展示',
+          shortDescription: '名古屋市の街並みや暮らしの変化を、地図や写真で学べる無料展示。',
+          officialUrl: 'https://www.city.nagoya.jp/kankou/rekishi/1004614/1004615/1048866.html',
+          verifiedAt: '2026-07-20',
+          filterTags: ['obon', 'august-late', 'family', 'indoor', 'low-budget'],
+          visual: { type: 'generated' },
+        },
+        {
+          id: 'sukesuke-ten-2-2026',
+          dateLabel: '7/18(土)〜9/23(水祝)',
+          startDate: '2026-07-18',
+          endDate: '2026-09-23',
+          name: 'スケスケ展2',
+          area: '伏見',
+          venue: 'FUJIなごや科学館 理工館地下2階 FUJIイベントホール',
+          station: null,
+          nearestStation: null,
+          ticketStatus: '一般1,800円、大学生1,000円、小中高生500円、未就学児無料',
+          priceSummary: '一般1,800円、大学生1,000円、小中高生500円、未就学児無料',
+          indoorOutdoor: '屋内',
+          familySuitability: '子ども・科学好き',
+          shortCopy: '親子で見たい科学館の特別展',
+          shortDescription: '透けて見える仕組みを体験できる、子どもや科学好きに向いた特別展。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/1350/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['obon', 'august-late', 'family', 'indoor'],
+          visual: {
+            type: 'image',
+            imageUrl: 'https://nagotosha.com/wp-content/uploads/2026/07/sukesuke-ten-2-scaled.jpg',
+            imageAlt: '特別展 スケスケ展2 紹介ビジュアル',
+            creditText: '画像提供：J.フロント リテイリング株式会社／PR TIMES',
+          },
+        },
+        {
+          id: 'domatsuri-2026',
+          dateLabel: '8/28(金)〜8/30(日)',
+          startDate: '2026-08-28',
+          endDate: '2026-08-30',
+          name: 'にっぽんど真ん中祭り',
+          area: '栄ほか',
+          venue: '久屋大通公園ほか名古屋市内各所',
+          station: null,
+          nearestStation: null,
+          ticketStatus: '無料',
+          priceSummary: '無料',
+          indoorOutdoor: '屋外中心',
+          familySuitability: null,
+          shortCopy: '名古屋の夏を締める踊りイベント',
+          shortDescription: '国内外からチームが集まる、名古屋の大型踊りイベント。',
+          officialUrl: 'https://www.nagoya-info.jp/event/detail/103/',
+          verifiedAt: '2026-07-20',
+          filterTags: ['august-late', 'summer-festival', 'night-event', 'low-budget'],
           visual: { type: 'generated' },
         },
       ],
