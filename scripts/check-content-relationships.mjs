@@ -60,7 +60,7 @@ const unknownCount = [214, 205, 182, 178, 173, 159, 137]
 const displayableCount = [214, 205, 182, 178, 173, 159, 137]
   .map((postId) => mod.resolveContentRelationship(postId))
   .filter((result) => result.displayableOnRedesignedSurfaces).length;
-assert(editorialCount === 6, 'Registry must contain six confirmed editorial records');
+assert(editorialCount === 8, 'Registry must contain eight confirmed editorial records');
 assert(ownedCount === 1, 'Registry must contain one confirmed owned record');
 assert(prCount === 0, 'Registry must not contain inferred PR records');
 assert(unknownCount === 0, 'All seven target posts must be confirmed');

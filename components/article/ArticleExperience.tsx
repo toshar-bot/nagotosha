@@ -6,6 +6,7 @@ import { trackGa4Event } from '@/lib/ga4';
 import { isSaved, toggleSavedItem } from '@/lib/saved';
 import { buildGoogleMapsSearchUrl } from '@/lib/tracking';
 import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, EventRoundupData, EventRoundupItem, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
+import type { ContentRelationshipResolution } from '@/lib/content-relationships';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -14,6 +15,11 @@ const GLOBAL_CSS = `
     min-height: 100dvh;
     padding-bottom: 112px;
     overflow-x: hidden;
+  }
+  .article-page.standard-editorial {
+    color: #1B2437;
+    background: #F7F1E7;
+    padding-bottom: 40px;
   }
   .article-shell {
     width: min(100%, 760px);
@@ -133,6 +139,62 @@ const GLOBAL_CSS = `
   .article-body tr:last-child td,
   .article-body tr:last-child th {
     border-bottom: none;
+  }
+  .standard-editorial .article-body {
+    color: #1B2437;
+    font-size: 15.5px;
+    line-height: 1.88;
+    overflow-wrap: anywhere;
+  }
+  .standard-editorial .article-body h2 {
+    margin: 2em 0 0.75em;
+    padding: 0;
+    border-left: none;
+    color: #071A4D;
+    font-size: 20px;
+    line-height: 1.45;
+    font-weight: 900;
+  }
+  .standard-editorial .article-body h3 {
+    margin: 1.6em 0 0.65em;
+    padding: 0;
+    border-left: none;
+    border-radius: 0;
+    background: transparent;
+    color: #071A4D;
+    font-size: 16px;
+  }
+  .standard-editorial .article-body figure {
+    margin: 1.5em 0;
+  }
+  .standard-editorial .article-body figcaption {
+    margin-top: 7px;
+    color: #5B6577;
+    font-size: 11px;
+    line-height: 1.6;
+    font-weight: 750;
+  }
+  .standard-editorial .article-body.standard-source-body a[href^="https://"]:not([href*="google.com/maps"]):not([href*="maps.google.com"]):not([href*="nagotosha.com"]):not([href*="nagotosha.vercel.app"]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 14px;
+    border: 1px solid rgba(7,26,77,0.2);
+    background: #fff;
+    color: #071A4D !important;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-decoration: none !important;
+    box-shadow: none;
+  }
+  .standard-editorial .article-body.standard-source-body a[href^="https://"]:not([href*="google.com/maps"]):not([href*="maps.google.com"]):not([href*="nagotosha.com"]):not([href*="nagotosha.vercel.app"])::after {
+    content: "↗";
+    margin-left: 6px;
+    font-size: 11px;
+    line-height: 1;
   }
   .structured-store-content {
     padding: 0 14px 22px;
@@ -826,7 +888,9 @@ type Props = {
   area?: string;
   tag: string;
   mapUrl?: string;
+  mapUrlIsVerified?: boolean;
   officialUrl?: string;
+  officialUrlIsVerified?: boolean;
   storeName?: string;
   address?: string;
   /** 本文から抽出した店舗情報(営業時間・定休日・価格帯など)。experience未定義のWP記事用 */
@@ -840,6 +904,7 @@ type Props = {
   postId: number;
   postLink: string;
   experience?: ArticleExperienceData;
+  relationship?: ContentRelationshipResolution;
   suppressQuickSummary?: boolean;
 };
 
@@ -853,7 +918,9 @@ export function ArticleExperience({
   area,
   tag,
   mapUrl,
+  mapUrlIsVerified = false,
   officialUrl,
+  officialUrlIsVerified = false,
   storeName,
   address,
   extraShopInfo,
@@ -863,6 +930,7 @@ export function ArticleExperience({
   articleId,
   postId,
   experience,
+  relationship,
   suppressQuickSummary = false,
 }: Props) {
   const [saved, setSaved] = useState(false);
@@ -887,8 +955,11 @@ export function ArticleExperience({
     : undefined;
   const effectiveMapUrl = propMapUrl ?? experience?.mapUrl ?? generatedMapUrl;
   const effectiveOfficialUrl = officialUrl ?? experience?.officialUrl;
+  const verifiedStandardMapUrl = mapUrlIsVerified || Boolean(experience?.mapUrl) ? effectiveMapUrl : undefined;
+  const verifiedStandardOfficialUrl = officialUrlIsVerified || Boolean(experience?.officialUrl) ? effectiveOfficialUrl : undefined;
   const badges = experience?.badges ?? [area, tag].filter(Boolean) as string[];
-  const quickPoints = suppressQuickSummary ? [] : (experience?.quickPoints ?? autoQuickPoints ?? []);
+  const resolvedQuickPoints = experience?.quickPoints ?? autoQuickPoints ?? [];
+  const quickPoints = suppressQuickSummary ? [] : resolvedQuickPoints;
   const highlightPoints = experience?.highlightPoints ?? [];
   const recommendedPoints = experience?.recommendedPoints ?? [];
   const recommendedFor = experience?.recommendedFor ?? [];
@@ -903,6 +974,19 @@ export function ArticleExperience({
   const displayContent = postId === 214 && eventRoundup
     ? removePost214InlineEventCardList(content)
     : content;
+  const isStandardEditorial =
+    relationship?.relationship === 'editorial' &&
+    relationship.displayableOnRedesignedSurfaces &&
+    layout === 'store' &&
+    !eventRoundup &&
+    !isStructuredStore;
+  const standardDecisionItems = buildStandardEditorialDecisionItems({
+    storeName: contentStoreName,
+    area,
+    tag,
+    address: contentAddress,
+    mapUrl: effectiveMapUrl,
+  });
 
   const handleMapClick = useCallback(() => {
     if (!effectiveMapUrl) return;
@@ -945,6 +1029,31 @@ export function ArticleExperience({
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  if (isStandardEditorial) {
+    return (
+      <StandardEditorialArticleExperience
+        title={displayTitle}
+        lead={displayLead}
+        content={displayContent}
+        imageUrl={effectiveImageUrl}
+        imageAlt={effectiveImageAlt}
+        imageCredit={effectiveImageCredit}
+        imageSourceUrl={effectiveImageSourceUrl}
+        badges={badges}
+        quickPoints={resolvedQuickPoints.slice(0, 3)}
+        decisionItems={standardDecisionItems}
+        dateStr={dateStr}
+        mapUrl={verifiedStandardMapUrl}
+        officialUrl={verifiedStandardOfficialUrl}
+        related={related}
+        saved={saved}
+        onSave={handleSave}
+        onShare={handleShare}
+        onMapClick={handleMapClick}
+      />
+    );
+  }
 
   if (layout === 'feature' && experience?.feature) {
     return (
@@ -1318,6 +1427,375 @@ export function ArticleExperience({
     </main>
   );
 }
+
+function buildStandardEditorialDecisionItems({
+  storeName,
+  area,
+  tag,
+  address,
+  mapUrl,
+}: {
+  storeName?: string;
+  area?: string;
+  tag?: string;
+  address?: string;
+  mapUrl?: string;
+}): ShopInfoItem[] {
+  return [
+    storeName ? { label: '名前', value: storeName } : undefined,
+    area ? { label: 'エリア', value: area } : undefined,
+    tag ? { label: 'ジャンル', value: tag } : undefined,
+    address ? { label: '場所', value: address } : undefined,
+    !address && mapUrl ? { label: '地図', value: 'Googleマップで確認できます' } : undefined,
+  ].filter(Boolean).slice(0, 4) as ShopInfoItem[];
+}
+
+function removeInlineQuickSummarySection(html: string): string {
+  return html.replace(
+    /<h[23][^>]*>\s*まず3行でわかる\s*<\/h[23]>\s*(?:<ul[^>]*>[\s\S]*?<\/ul>|<p[^>]*>[\s\S]*?<\/p>)/,
+    '',
+  );
+}
+
+function removeUnverifiedArticleImages(html: string): string {
+  return html
+    .replace(/<figure\b[^>]*>[\s\S]*?<img\b[\s\S]*?<\/figure>/gi, '')
+    .replace(/<p\b[^>]*>\s*<img\b[\s\S]*?<\/p>/gi, '')
+    .replace(/<img\b[^>]*>/gi, '')
+    .replace(/<figure\b[^>]*>\s*(?:<figcaption\b[^>]*>\s*<\/figcaption>\s*)?<\/figure>/gi, '');
+}
+
+function splitStandardEditorialSources(html: string): { bodyContent: string; sourceContent?: string } {
+  const sourceHeadingRe = /<h[23][^>]*>\s*(?:画像・情報出典|情報出典|出典)\s*<\/h[23]>/;
+  const match = sourceHeadingRe.exec(html);
+  if (!match || match.index < 0) return { bodyContent: html };
+
+  return {
+    bodyContent: html.slice(0, match.index).trim(),
+    sourceContent: html
+      .slice(match.index + match[0].length)
+      .replace(/<p\b[^>]*>\s*公開日：[^<]*<\/p>/g, '')
+      .trim(),
+  };
+}
+
+function formatStandardSourceLinks(html: string): string {
+  return html.replace(/<a\b([^>]*\bhref=(["'])(.*?)\2[^>]*)>[\s\S]*?<\/a>/gi, (anchor, attrs, _quote, href) => {
+    let label: string | undefined;
+    if (href.includes('hilton.com/ja/hotels/ngocici-conrad-nagoya')) {
+      label = '公式ページを開く';
+    } else if (href.includes('prtimes.jp/main/html/rd/p/000000005.000179859.html')) {
+      label = 'PR TIMESを開く';
+    }
+    return label ? `<a${attrs}>${label}</a>` : anchor;
+  });
+}
+
+function getPlainTextLength(html: string): number {
+  return cleanArticleText(html).replace(/\s+/g, '').length;
+}
+
+function StandardEditorialArticleExperience({
+  title,
+  lead,
+  content,
+  imageUrl,
+  imageAlt,
+  imageCredit,
+  imageSourceUrl,
+  badges,
+  quickPoints,
+  decisionItems,
+  dateStr,
+  mapUrl,
+  officialUrl,
+  related,
+  saved,
+  onSave,
+  onShare,
+  onMapClick,
+}: {
+  title: string;
+  lead: string;
+  content: string;
+  imageUrl?: string;
+  imageAlt: string;
+  imageCredit?: string;
+  imageSourceUrl?: string;
+  badges: string[];
+  quickPoints: string[];
+  decisionItems: ShopInfoItem[];
+  dateStr: string;
+  mapUrl?: string;
+  officialUrl?: string;
+  related: ArticleRelated[];
+  saved: boolean;
+  onSave: () => void;
+  onShare: () => void;
+  onMapClick?: () => void;
+}) {
+  const summaryPoints = quickPoints.filter((point) => point.trim().length > 0).slice(0, 3);
+  const cleanedContent = removeUnverifiedArticleImages(removeInlineQuickSummarySection(content));
+  const { bodyContent, sourceContent } = splitStandardEditorialSources(cleanedContent);
+  const displaySourceContent = sourceContent ? formatStandardSourceLinks(sourceContent) : undefined;
+  const bodyTextLength = getPlainTextLength(bodyContent);
+  const showSummary = summaryPoints.length >= 2 && (decisionItems.length >= 3 || bodyTextLength >= 1200);
+  const hasSources = Boolean(displaySourceContent || imageCredit);
+  const canShowHeroImage = Boolean(imageUrl && imageAlt && imageCredit && imageSourceUrl);
+
+  return (
+    <main className="article-page standard-editorial">
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <div className="article-shell">
+        <ArticleHeader />
+
+        <article style={{ padding: '16px 20px 0' }}>
+          <section style={{ display: 'grid', gap: 14 }}>
+            <nav aria-label="パンくず" style={{ color: '#5B6577', fontSize: 12, lineHeight: 1.4, fontWeight: 850 }}>
+              <Link href="/" style={{ color: '#5B6577', textDecoration: 'none' }}>ホーム</Link>
+              <span aria-hidden="true"> / </span>
+              <Link href="/new" style={{ color: '#5B6577', textDecoration: 'none' }}>新着記事</Link>
+            </nav>
+            <div style={{ display: 'grid', gap: 10 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                <span style={standardIdentityBadgeStyle}>編集部企画</span>
+                {badges.slice(0, 2).map((badge) => (
+                  <span key={badge} style={standardMetaBadgeStyle}>{badge}</span>
+                ))}
+              </div>
+              <p style={{ margin: 0, color: '#5B6577', fontSize: 12, lineHeight: 1.65, fontWeight: 750 }}>
+                なごとしゃ編集部が企画・編集した記事です。PR・運営関係の記事ではありません。
+              </p>
+              {dateStr && (
+                <p style={{ margin: 0, color: '#5B6577', fontSize: 12, lineHeight: 1.4, fontWeight: 800 }}>
+                  公開日：{dateStr}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <h1 style={{
+                margin: 0,
+                color: '#071A4D',
+                fontSize: 'clamp(26px, 7vw, 40px)',
+                lineHeight: 1.22,
+                fontWeight: 950,
+                letterSpacing: 0,
+                wordBreak: 'normal',
+                overflowWrap: 'anywhere',
+                textWrap: 'pretty',
+              }}>
+                <PhraseTitle title={title} />
+              </h1>
+              {lead && (
+                <p style={{
+                  margin: '12px 0 0',
+                  color: '#334155',
+                  fontSize: 15,
+                  lineHeight: 1.8,
+                  fontWeight: 700,
+                  textWrap: 'pretty',
+                }}>
+                  {lead}
+                </p>
+              )}
+            </div>
+          </section>
+        </article>
+
+        <StandardSaveShareActions saved={saved} onSave={onSave} onShare={onShare} />
+
+        {canShowHeroImage && (
+          <section style={{ padding: '14px 20px 0' }}>
+            <figure style={{ margin: 0, overflow: 'hidden', borderRadius: 16, background: '#fff', border: '1px solid #E6ECF5', boxShadow: '0 10px 24px rgba(7,26,77,0.07)' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imageUrl} alt={imageAlt} style={{ width: '100%', aspectRatio: '3 / 2', objectFit: 'cover', display: 'block' }} />
+              <figcaption style={{ padding: '8px 12px 10px', color: '#5B6577', fontSize: 11, lineHeight: 1.55, fontWeight: 750 }}>
+                <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#5B6577', textDecoration: 'underline' }}>画像出典：{imageCredit}</a>
+              </figcaption>
+            </figure>
+          </section>
+        )}
+
+        {showSummary && (
+          <section style={{ padding: '0 20px', marginTop: 28 }}>
+            <div style={standardCardStyle}>
+              <h2 style={standardSectionTitleStyle}>30秒でわかる</h2>
+              <div style={{ display: 'grid', gap: 10 }}>
+                {summaryPoints.map((point) => (
+                  <SimplePoint key={point}>{point}</SimplePoint>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {decisionItems.length > 0 && (
+          <section style={{ padding: '0 20px', marginTop: 28 }}>
+            <div style={standardCardStyle}>
+              <h2 style={standardSectionTitleStyle}>行く前の判断情報</h2>
+              <InfoGrid items={decisionItems} />
+            </div>
+          </section>
+        )}
+
+        {mapUrl && (
+          <section style={{ padding: '0 20px', marginTop: 18 }}>
+            <a href={mapUrl} target="_blank" rel="noopener noreferrer" onClick={onMapClick} style={standardPrimaryActionStyle}>
+              <MapPinIcon color="#fff" />
+              Googleマップで場所を見る
+            </a>
+          </section>
+        )}
+
+        {officialUrl && (
+          <section style={{ padding: '0 20px', marginTop: 10 }}>
+            <a href={officialUrl} target="_blank" rel="noopener noreferrer" style={standardSecondaryActionStyle}>
+              公式情報を見る
+              <ExternalIcon />
+            </a>
+          </section>
+        )}
+
+        {bodyContent && (
+          <section style={{ padding: '0 20px', marginTop: 28 }}>
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: bodyContent }} />
+          </section>
+        )}
+
+        {hasSources && (
+          <section style={{ padding: '0 20px', marginTop: 28 }}>
+            <div style={{ ...standardCardStyle, boxShadow: 'none' }}>
+              <h2 style={standardSectionTitleStyle}>出典</h2>
+              {displaySourceContent && (
+                <div className="article-body standard-source-body" style={{ fontSize: 13, lineHeight: 1.75 }} dangerouslySetInnerHTML={{ __html: displaySourceContent }} />
+              )}
+              <div style={{ display: 'grid', gap: 6, color: '#5B6577', fontSize: 12, lineHeight: 1.7, fontWeight: 750 }}>
+                {imageCredit && <p style={{ margin: 0 }}>画像出典：{imageCredit}</p>}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {related.length > 0 && (
+          <RelatedSection related={related.slice(0, 3)} />
+        )}
+
+        <BackToArticlesLink />
+      </div>
+
+    </main>
+  );
+}
+
+function StandardSaveShareActions({ saved, onSave, onShare }: { saved: boolean; onSave: () => void; onShare: () => void }) {
+  return (
+    <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '14px 20px 0' }}>
+      <button type="button" onClick={onSave} aria-pressed={saved} style={standardSecondaryButtonStyle}>
+        <BookmarkIcon filled={saved} />
+        {saved ? '保存済み' : '保存する'}
+      </button>
+      <button type="button" onClick={onShare} style={standardSecondaryButtonStyle}>
+        <ShareIcon />
+        シェア
+      </button>
+    </section>
+  );
+}
+
+const standardCardStyle: React.CSSProperties = {
+  borderRadius: 16,
+  border: '1px solid #E6ECF5',
+  background: '#fff',
+  padding: 16,
+  boxShadow: '0 8px 22px rgba(7,26,77,0.06)',
+};
+
+const standardSectionTitleStyle: React.CSSProperties = {
+  margin: '0 0 12px',
+  color: '#071A4D',
+  fontSize: 18,
+  lineHeight: 1.4,
+  fontWeight: 950,
+  letterSpacing: 0,
+};
+
+const standardIdentityBadgeStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  minHeight: 28,
+  borderRadius: 999,
+  padding: '0 12px',
+  background: '#071A4D',
+  color: '#fff',
+  fontSize: 11,
+  lineHeight: 1,
+  fontWeight: 900,
+};
+
+const standardMetaBadgeStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  minHeight: 28,
+  borderRadius: 999,
+  padding: '0 11px',
+  border: '1px solid #E6ECF5',
+  background: '#fff',
+  color: '#5B6577',
+  fontSize: 11,
+  lineHeight: 1,
+  fontWeight: 850,
+};
+
+const standardSecondaryButtonStyle: React.CSSProperties = {
+  minWidth: 0,
+  height: 48,
+  borderRadius: 14,
+  border: '1px solid #D8E0EC',
+  background: '#fff',
+  color: '#071A4D',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 7,
+  fontSize: 13,
+  fontWeight: 900,
+  boxShadow: '0 5px 14px rgba(7,26,77,0.05)',
+  cursor: 'pointer',
+};
+
+const standardPrimaryActionStyle: React.CSSProperties = {
+  minHeight: 52,
+  borderRadius: 14,
+  background: '#071A4D',
+  color: '#fff',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  padding: '0 16px',
+  fontSize: 14,
+  lineHeight: 1,
+  fontWeight: 950,
+  textDecoration: 'none',
+  boxShadow: '0 10px 24px rgba(7,26,77,0.18)',
+};
+
+const standardSecondaryActionStyle: React.CSSProperties = {
+  minHeight: 44,
+  borderRadius: 14,
+  border: '1px solid #D8E0EC',
+  background: '#fff',
+  color: '#071A4D',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  padding: '0 14px',
+  fontSize: 13,
+  fontWeight: 900,
+  textDecoration: 'none',
+};
 
 function FeatureArticleExperience({
   title,
@@ -2978,6 +3456,7 @@ function RelatedCard({ item }: { item: ArticleRelated }) {
         </div>
       )}
       <div style={{ minWidth: 0 }}>
+        {item.relationshipLabel && <span style={{ display: 'inline-flex', borderRadius: 999, background: '#071A4D', color: '#fff', padding: '3px 8px', fontSize: 10, fontWeight: 900, marginRight: 5 }}>{item.relationshipLabel}</span>}
         {item.label && <span style={{ display: 'inline-flex', borderRadius: 999, background: '#FFF0EF', color: '#E8483F', padding: '3px 8px', fontSize: 10, fontWeight: 900 }}>{item.label}</span>}
         <p style={{ margin: '6px 0 0', color: '#071A4D', fontSize: 13, lineHeight: 1.45, fontWeight: 900, wordBreak: 'normal', overflowWrap: 'normal', textWrap: 'pretty' }}>{item.title}</p>
       </div>
