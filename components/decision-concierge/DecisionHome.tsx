@@ -13,7 +13,7 @@ import { DECISION_CANDIDATES, DECISION_MODES, PREVIEW_ASSET_AVAILABILITY } from 
 import { HERO_IMAGE, PREVIEW_EDITORIAL_ARTICLES, PREVIEW_SEASONAL_GUIDE } from '@/data/decision-preview';
 import { resolveContentRelationship } from '@/lib/content-relationships';
 import { getVerifiedHomeNewOpenStores } from '@/lib/home-new-open';
-import { getDecisionModeAvailability, isSafeInternalUrl, isVerifiedImageDisplayable } from '@/lib/decision-safety';
+import { getDecisionModeAvailability, isSafeInternalUrl } from '@/lib/decision-safety';
 import styles from './decision-concierge.module.css';
 
 export default function DecisionHome() {
@@ -41,7 +41,13 @@ export default function DecisionHome() {
       && isSafeInternalUrl(store.articleUrl)
     );
   });
-  const heroImageDisplayable = isVerifiedImageDisplayable(HERO_IMAGE);
+  const heroImageDisplayable = HERO_IMAGE.kind === 'photo'
+    && HERO_IMAGE.usage === 'decorative'
+    && HERO_IMAGE.currentStateEvidence === false
+    && HERO_IMAGE.rightsVerified === true
+    && HERO_IMAGE.previewUseApproved === true
+    && HERO_IMAGE.productionUseApproved === true
+    && isSafeInternalUrl(HERO_IMAGE.src);
 
   return (
     <div id="top" className={styles.page}>
@@ -54,39 +60,40 @@ export default function DecisionHome() {
 
       <main>
         <section className={styles.heroStage} aria-labelledby="hero-title">
-          <div className={styles.festivalParticles} aria-hidden="true" />
           <figure className={styles.heroFigure}>
-            <div className={styles.heroPhoto}>
-              {heroImageDisplayable ? (
-                <Image src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} fill priority sizes="(max-width: 448px) 100vw, 448px" className={styles.coverImage} />
-              ) : (
-                <div className={styles.imageBlocked}>Hero画像を確認中</div>
-              )}
+            <div className={styles.heroCanvas}>
+              <div className={styles.heroPhoto}>
+                {heroImageDisplayable ? (
+                  <Image src={HERO_IMAGE.src} alt={HERO_IMAGE.alt} fill priority sizes="(max-width: 448px) 100vw, 448px" className={styles.coverImage} />
+                ) : (
+                  <div className={styles.imageBlocked}>Hero画像を確認中</div>
+                )}
+              </div>
+              <div className={styles.heroPhotoWash} aria-hidden="true" />
+              <div className={styles.heroCopy}>
+                <p className={styles.heroEyebrow}>NAGOYA DECISION CONCIERGE</p>
+                <h1 id="hero-title">
+                  <span>今日は、</span>
+                  <span><strong>名古屋</strong>で</span>
+                  <span>どう過ごす？</span>
+                </h1>
+                <p>あなたの気分や条件に合う候補を、確認済み情報からご提案します。</p>
+                <a href="#decision" className={styles.heroCta}>条件を選んでみる</a>
+              </div>
+              <TosharMascot
+                pose="welcome"
+                className={styles.heroMascot}
+                priority
+                sizes="(max-width: 340px) 86px, (min-width: 420px) 108px, 100px"
+              />
             </div>
             {heroImageDisplayable && (
               <figcaption className={styles.heroPhotoCaption}>
-                <span>{HERO_IMAGE.caption}</span>
-                <a href={HERO_IMAGE.sourceUrl} target="_blank" rel="noreferrer">
-                  {HERO_IMAGE.credit} / {HERO_IMAGE.license}
-                </a>
+                <span className={styles.heroAssetStatus}>CANVA DESIGN EXPORT</span>
+                <span className={styles.heroCredit}>{HERO_IMAGE.caption} / {HERO_IMAGE.credit} / {HERO_IMAGE.license}</span>
               </figcaption>
             )}
           </figure>
-          <TosharMascot
-            pose="welcome"
-            className={styles.heroMascot}
-            priority
-            sizes="(max-width: 340px) 86px, (min-width: 420px) 108px, 100px"
-          />
-          <div className={styles.heroCoral}>
-            <p className={styles.heroEyebrow}>NAGOYA DECISION CONCIERGE</p>
-            <h1 id="hero-title">
-              <span>今日は、名古屋で</span>
-              <span>どう過ごす？</span>
-            </h1>
-            <p>あなたの気分や条件に合う候補を、確認済み情報からご提案します。</p>
-            <a href="#decision" className={styles.heroCta}>条件を選んでみる</a>
-          </div>
         </section>
 
         <ConditionPanel foodAvailability={foodAvailability} />

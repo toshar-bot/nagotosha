@@ -44,6 +44,9 @@ export function SeasonalGuideStage({ guide }: { guide: PreviewSeasonalGuide }) {
       </figure>
       <div className={styles.eventCopy}>
         <p className={styles.eventEyebrow}>SEASONAL GUIDE</p>
+        {typeof guide.eventCount === 'number' && guide.eventCount > 0 && (
+          <p className={styles.eventMeta}>{guide.eventCount}大会を比較</p>
+        )}
         <h2 id="event-title">{guide.title}</h2>
         <p className={styles.eventDescription}>{guide.description}</p>
         <Link href={guide.articleUrl} className={styles.lightCta}>花火大会まとめを見る</Link>
@@ -69,7 +72,12 @@ export function EditorialStage({ articles }: { articles: PreviewEditorialArticle
             <div>
               {article.category && <p className={styles.categoryLabel}>{article.category}</p>}
               <h3>{article.title}</h3>
-              <Link href={article.href}>記事を読む</Link>
+              {article.publishedAt && (
+                <time className={styles.articlePublishDate} dateTime={article.publishedAt}>
+                  公開 {formatPublishedDate(article.publishedAt)}
+                </time>
+              )}
+              <Link href={article.href}>{article.ctaLabel}</Link>
             </div>
           </li>
         ))}
@@ -92,7 +100,10 @@ export function NewStoreStage({ stores }: { stores: HomeNewOpenStore[] }) {
       <div className={styles.storeList}>
         {stores.map((store) => (
           <Link key={store.articleId} href={store.articleUrl} className={styles.storeRow}>
-            <span className={styles.openDate}>{formatOpeningDate(store.openingDate)} OPEN</span>
+            <span className={styles.openBadge}>NEW OPEN</span>
+            <time className={styles.openDate} dateTime={store.openingDate}>
+              {formatOpeningDate(store.openingDate)} OPEN
+            </time>
             <span className={styles.storeName}>{store.name}</span>
             <span className={styles.storePlace}>{store.placeLabel}</span>
             <span className={styles.rowArrow} aria-hidden="true">→</span>
@@ -105,5 +116,10 @@ export function NewStoreStage({ stores }: { stores: HomeNewOpenStore[] }) {
 
 function formatOpeningDate(date: string): string {
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  return match ? `${match[1]}.${match[2]}.${match[3]}` : date;
+  return match ? `${Number(match[2])}/${Number(match[3])}` : date;
+}
+
+function formatPublishedDate(date: string): string {
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return match ? `${Number(match[2])}/${Number(match[3])}` : date;
 }
