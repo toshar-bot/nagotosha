@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import TosharMascot from '@/components/mascot/TosharMascot';
 import type { DecisionModeAvailability } from '@/types/decision-candidate';
 import styles from './decision-concierge.module.css';
 
@@ -95,10 +96,17 @@ export default function ConditionPanel({
           </div>
         </details>
 
-        <p className={styles.selectionSummary} role="status" aria-live="polite">
-          <span>選択中</span>
-          {selectedConditions.length > 0 ? selectedConditions.join('・') : '条件を選んでください'}
-        </p>
+        <div className={styles.selectionSummaryRow}>
+          <p className={styles.selectionSummary} role="status" aria-live="polite">
+            <span>選択中</span>
+            {selectedConditions.length > 0 ? selectedConditions.join('・') : '条件を選んでください'}
+          </p>
+          <TosharMascot
+            pose="listen"
+            className={styles.decisionMascot}
+            sizes="(max-width: 340px) 68px, (min-width: 420px) 82px, 76px"
+          />
+        </div>
 
         <button type="submit" className={styles.disabledCta} disabled>
           候補データを準備中です

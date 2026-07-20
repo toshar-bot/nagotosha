@@ -11,7 +11,7 @@ export const MINIMUM_CANDIDATES_PER_MODE = 3;
 export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [];
 
 export const PREVIEW_ASSET_AVAILABILITY: PreviewAssetAvailability = {
-  mascotAssetAvailable: false,
+  mascotAssetAvailable: true,
 };
 
 export const DECISION_MODES: readonly DecisionMode[] = ['food', 'event', 'outing'];
