@@ -1,17 +1,64 @@
 import type { VerifiedImage } from '@/types/decision-candidate';
 import { getArticleExperience } from '@/lib/article-experience';
 
-export const HERO_IMAGE: VerifiedImage = {
-  src: '/areas/meieki-landmark.webp',
-  alt: '名駅のJRセントラルタワーズとJRゲートタワー',
+export type PreviewHeroPhoto = {
+  kind: 'photo';
+  usage: 'decorative';
+  src: string;
+  alt: '';
+  caption: string;
+  isHistorical: 'unknown';
+  currentStateEvidence: false;
+  photographedAt: 'unknown';
+  credit: string;
+  license: string;
+  rightsVerified: true;
+  previewUseApproved: true;
+  productionUseApproved: true;
+  verifiedAt: string;
+  colorProfile: 'sRGB';
+  sourceType: 'Canva design export';
+  designName: string;
+  sourceAssetName: string;
+  creator: string;
+  brand: string;
+  contentTier: 'Canva Pro';
+  obtainedAt: string;
+  transformations: readonly string[];
+  sourceSha256: string;
+  outputSha256: string;
+};
+
+export const HERO_IMAGE: PreviewHeroPhoto = {
+  kind: 'photo',
+  src: '/decision/nagotosha-hero-background-v1.webp',
+  alt: '',
   usage: 'decorative',
-  caption: '名駅の街並み',
+  caption: 'MIRAI TOWERと久屋大通公園',
   isHistorical: 'unknown',
-  credit: 'FZHS',
-  sourceUrl: 'https://commons.wikimedia.org/wiki/File:Nagoya_Station_JR_Central_Towers_and_JR_Gate_Tower.jpg',
-  license: 'CC0 1.0',
+  currentStateEvidence: false,
+  photographedAt: 'unknown',
+  credit: 'Aflo Images / アフロ',
+  license: 'Canva Pro Content',
   rightsVerified: true,
-  verifiedAt: '2026-07-19',
+  previewUseApproved: true,
+  productionUseApproved: true,
+  verifiedAt: '2026-07-20',
+  colorProfile: 'sRGB',
+  sourceType: 'Canva design export',
+  designName: 'Nagotosha Hero Background v1',
+  sourceAssetName: 'Nagoya - Commercial Facility on the 100-Meter Road (Hisaya-odori Park / RAYARD Hisaya-odori Park)',
+  creator: 'Aflo Images',
+  brand: 'アフロ',
+  contentTier: 'Canva Pro',
+  obtainedAt: '2026-07-20',
+  transformations: [
+    'Embedded an sRGB ICC profile',
+    'Resized the completed Canva design export to 600 × 750 pixels',
+    'Encoded as WebP at quality 89 without sharpening or color correction',
+  ],
+  sourceSha256: '88a42701cf93b7cf8293f78c8c18a838f0bdb7f3ebc4f0c5dd90032b488a6a94',
+  outputSha256: 'cac5ce3b5733c26ae0f3311a6f6459b61dc735159fb750f4918793b28d8fab5a',
 };
 
 export type PreviewSeasonalGuide = {
