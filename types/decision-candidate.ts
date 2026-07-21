@@ -1,7 +1,7 @@
 export type DecisionMode = 'food' | 'event' | 'outing';
 
 export type DecisionPartyType = 'solo' | 'couple' | 'family' | 'group';
-export type DecisionBudgetBand = 'under1000' | 'under2000' | 'under4000' | 'open' | 'any';
+export type CandidateBudgetBand = 'under1000' | 'under2000' | 'under4000' | 'open';
 export type DecisionMoodTag =
   | 'hearty'
   | 'light'
@@ -164,7 +164,7 @@ export type DecisionCandidate = {
   displayName: string;
   visual: DecisionCandidateVisual;
   partyTypes: DecisionPartyType[];
-  budgetBand: DecisionBudgetBand;
+  budgetBand: CandidateBudgetBand;
   moodTags: DecisionMoodTag[];
   reservationNeed: DecisionReservationNeed;
   reservationAvailability: DecisionReservationAvailability;
