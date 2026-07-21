@@ -32,7 +32,7 @@ export const VERIFIED_DECISION_CANDIDATE_REGISTRY: readonly DecisionCandidate[] 
       {
         type: 'article',
         label: '記事を見る',
-        url: 'https://nagotosha.com/2026/07/16/potama-nagoya-haera-open/',
+        url: '/article/178',
         verifiedAt: VERIFIED_AT,
       },
       {
@@ -90,7 +90,7 @@ export const VERIFIED_DECISION_CANDIDATE_REGISTRY: readonly DecisionCandidate[] 
       {
         type: 'article',
         label: '記事を見る',
-        url: 'https://nagotosha.com/2026/07/16/sawi-shokudo-nagoya-sakae-open/',
+        url: '/article/182',
         verifiedAt: VERIFIED_AT,
       },
       {
@@ -153,7 +153,7 @@ export const VERIFIED_DECISION_CANDIDATE_REGISTRY: readonly DecisionCandidate[] 
       {
         type: 'article',
         label: '記事を見る',
-        url: 'https://nagotosha.com/2026/07/15/cafe-laduree-nagoya-lachic-open/',
+        url: '/article/159',
         verifiedAt: VERIFIED_AT,
       },
       {

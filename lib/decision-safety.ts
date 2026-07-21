@@ -299,20 +299,37 @@ export function validateDecisionCandidateRegistry(
     const officialActions = candidate.actions.filter((action) => action.type === 'official');
     const reservationActions = candidate.actions.filter((action) => action.type === 'reservation');
     if (articleActions.length !== 1) errors.push(`${prefix}: exactly one article action is required`);
+    if (candidate.relationshipTarget.kind === 'article' && articleActions.length === 1) {
+      const expectedArticleUrl = `/article/${candidate.relationshipTarget.articleId}`;
+      if (!isSafeInternalUrl(articleActions[0].url) || articleActions[0].url !== expectedArticleUrl) {
+        errors.push(`${prefix}: article action must use ${expectedArticleUrl}`);
+      }
+    }
     if (officialActions.length !== 1) errors.push(`${prefix}: exactly one official action is required`);
     if (!candidate.actions.every(isDecisionActionDisplayable)) {
       errors.push(`${prefix}: every action must have a safe URL and verified date`);
     }
-    if (candidate.id === 'food-182-sawi-sakae') {
-      if (reservationActions.length !== 1) errors.push(`${prefix}: reservation action is required`);
-    } else if (reservationActions.length > 0) {
-      errors.push(`${prefix}: reservation action is allowed only for food-182-sawi-sakae`);
+    if (candidate.reservationAvailability === 'channel-available') {
+      if (reservationActions.length !== 1) {
+        errors.push(`${prefix}: channel-available requires exactly one reservation action`);
+      } else if (!isDecisionActionDisplayable(reservationActions[0])) {
+        errors.push(`${prefix}: reservation action must confirm only the booking channel`);
+      }
+    } else if (
+      candidate.reservationAvailability === 'unavailable'
+      || candidate.reservationAvailability === 'not-confirmed'
+    ) {
+      if (reservationActions.length !== 0) {
+        errors.push(`${prefix}: ${candidate.reservationAvailability} must not expose a reservation action`);
+      }
+    } else {
+      errors.push(`${prefix}: reservationAvailability is unsupported`);
     }
-    if (reservationActions.length > 0 && candidate.reservationAvailability !== 'channel-available') {
-      errors.push(`${prefix}: reservation action requires channel-available status`);
-    }
-    if (candidate.reservationAvailability === 'channel-available' && reservationActions.length !== 1) {
-      errors.push(`${prefix}: channel-available status requires one reservation action`);
+    if (
+      candidate.reservationNeed === 'unavailable'
+      && candidate.reservationAvailability !== 'unavailable'
+    ) {
+      errors.push(`${prefix}: unavailable reservationNeed requires unavailable reservationAvailability`);
     }
 
     const candidateEvidence = candidate.evidenceIds.map((id) => evidenceById.get(id));
