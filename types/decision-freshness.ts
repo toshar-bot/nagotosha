@@ -23,12 +23,29 @@ export type DecisionEvidenceConflict = {
   resolvedAt?: ISODate;
 };
 
+export type DecisionCandidateRelationshipReview =
+  | {
+      reviewStatus: 'verified';
+      confirmedBy: 'user';
+      /** Human confirmation completion time. Date-only evidence cannot populate this field. */
+      confirmedAt: string;
+      note: string;
+    }
+  | {
+      reviewStatus: 'provisional' | 'conflicting' | 'failed';
+      note: string;
+      confirmedBy?: never;
+      confirmedAt?: never;
+    };
+
 export type DecisionEvidenceFreshnessRecord = {
   evidenceId: string;
   reviewStatus: DecisionFreshnessReviewStatus;
   refreshAfterDaysOverride?: number;
   lastFailureReason?: string;
   conflicts?: readonly DecisionEvidenceConflict[];
+  /** Candidate-level internal relationship audit attached to one authoritative evidence record. */
+  relationshipReview?: DecisionCandidateRelationshipReview;
 };
 
 export type DecisionFreshnessPolicyKey =
@@ -59,6 +76,9 @@ export type DecisionEligibilityExclusion = {
   code:
     | 'invalid-as-of'
     | 'relationship-not-displayable'
+    | 'relationship-review-missing'
+    | 'relationship-review-not-confirmed'
+    | 'relationship-review-invalid'
     | 'status-not-available'
     | 'missing-evidence'
     | 'duplicate-evidence'
@@ -77,7 +97,8 @@ export type DecisionEligibilityExclusion = {
     | 'invalid-conflict-metadata'
     | 'invalid-action'
     | 'action-evidence-mismatch'
-    | 'map-action-stale';
+    | 'map-action-stale'
+    | 'visual-not-displayable';
   evidenceId?: string;
   field?: string;
   staleOn?: ISODate;

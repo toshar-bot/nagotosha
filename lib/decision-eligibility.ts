@@ -32,6 +32,7 @@ import {
   isSafeExternalUrl,
   isSafeInternalUrl,
   resolveDecisionCandidateRelationship,
+  resolveDecisionCandidateVisual,
 } from './decision-safety';
 
 const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -189,6 +190,18 @@ export function getCandidateEligibility(
     exclusions.push({
       class: 'relationship-blocked',
       code: 'relationship-not-displayable',
+    });
+  }
+  exclusions.push(...evaluateRelationshipReview(candidate, freshnessRecords));
+
+  if (
+    candidate.visual.kind !== 'none'
+    && resolveDecisionCandidateVisual(candidate.visual).kind === 'none'
+  ) {
+    exclusions.push({
+      class: 'failed-verification',
+      code: 'visual-not-displayable',
+      field: 'visual',
     });
   }
 
@@ -502,7 +515,71 @@ function evaluateFreshnessRecord(
     }
   }
 
+  const relationshipReview = record.relationshipReview;
+  if (relationshipReview) {
+    if (!relationshipReview.note.trim()) {
+      exclusions.push({
+        class: 'relationship-blocked',
+        code: 'relationship-review-invalid',
+        evidenceId: record.evidenceId,
+      });
+    }
+    if (relationshipReview.reviewStatus === 'verified' && (
+      relationshipReview.confirmedBy !== 'user'
+      || !isValidDecisionVerificationInstant(relationshipReview.confirmedAt)
+    )) {
+      exclusions.push({
+        class: 'relationship-blocked',
+        code: 'relationship-review-invalid',
+        evidenceId: record.evidenceId,
+      });
+    }
+  }
+
   return exclusions;
+}
+
+function evaluateRelationshipReview(
+  candidate: DecisionCandidate,
+  freshnessRecords: readonly DecisionEvidenceFreshnessRecord[],
+): DecisionEligibilityExclusion[] {
+  const reviews = freshnessRecords.filter((record) => (
+    candidate.evidenceIds.includes(record.evidenceId)
+    && record.relationshipReview !== undefined
+  ));
+  if (reviews.length === 0) {
+    return [{
+      class: 'relationship-blocked',
+      code: 'relationship-review-missing',
+    }];
+  }
+  if (reviews.length !== 1) {
+    return [{
+      class: 'relationship-blocked',
+      code: 'relationship-review-invalid',
+    }];
+  }
+
+  const review = reviews[0].relationshipReview;
+  if (!review || review.reviewStatus !== 'verified') {
+    return [{
+      class: 'relationship-blocked',
+      code: 'relationship-review-not-confirmed',
+      evidenceId: reviews[0].evidenceId,
+    }];
+  }
+  if (
+    review.confirmedBy !== 'user'
+    || !review.note.trim()
+    || !isValidDecisionVerificationInstant(review.confirmedAt)
+  ) {
+    return [{
+      class: 'relationship-blocked',
+      code: 'relationship-review-invalid',
+      evidenceId: reviews[0].evidenceId,
+    }];
+  }
+  return [];
 }
 
 function evaluateActionEligibility(
@@ -680,6 +757,18 @@ function validateFreshnessRecord(record: DecisionEvidenceFreshnessRecord): strin
       errors.push(`${record.evidenceId}: resolved conflict requires resolutionReason`);
     }
   }
+  const relationshipReview = record.relationshipReview;
+  if (relationshipReview) {
+    if (!relationshipReview.note.trim()) {
+      errors.push(`${record.evidenceId}: relationship review note is required`);
+    }
+    if (relationshipReview.reviewStatus === 'verified' && (
+      relationshipReview.confirmedBy !== 'user'
+      || !isValidDecisionVerificationInstant(relationshipReview.confirmedAt)
+    )) {
+      errors.push(`${record.evidenceId}: verified relationship review requires a human-confirmed ISO instant`);
+    }
+  }
   return errors;
 }
 
@@ -727,4 +816,10 @@ function getDaysInMonth(year: number, month: number): number {
 
 function isLeapYear(year: number): boolean {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+
+function isValidDecisionVerificationInstant(value: string | undefined): value is string {
+  if (!value) return false;
+  const match = /^(\d{4}-\d{2}-\d{2})T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)Z$/.exec(value);
+  return Boolean(match && isValidDecisionISODate(match[1]));
 }
