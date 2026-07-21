@@ -38,6 +38,10 @@ export const CONTENT_RELATIONSHIP_REGISTRY: Readonly<Record<number, ContentRelat
     postId: 214,
     relationship: 'editorial',
   },
+  221: {
+    postId: 221,
+    relationship: 'editorial',
+  },
   205: {
     postId: 205,
     relationship: 'owned',

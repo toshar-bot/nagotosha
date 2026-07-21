@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getWordPressPostById, getWordPressPosts } from '@/lib/wordpress-fetch';
 import { stripHtml, decodeHtmlEntities, getFeaturedMediaUrl } from '@/lib/wordpress';
-import { getArticleExperience, type ArticleRelated } from '@/lib/article-experience';
+import { getArticleExperience, type ArticleExperienceData, type ArticleRelated } from '@/lib/article-experience';
 import { resolveContentRelationship } from '@/lib/content-relationships';
 import { isAppIndexableArticleId } from '@/lib/app-indexable-articles';
 import { ArticleExperience } from '@/components/article/ArticleExperience';
@@ -74,6 +74,62 @@ function getLocalPreviewData(id: string) {
   };
 }
 
+type DraftFixturePreview = {
+  postId: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  tag: string;
+  dateStr: string;
+  postLink: string;
+};
+
+function canUseDraftFixturePreview() {
+  return process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview';
+}
+
+function formatDraftFixtureDate(value: string | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function canPreviewRegisteredEventRoundup(experience: ArticleExperienceData): boolean {
+  const roundup = experience.eventRoundup;
+  return (
+    experience.articleType === 'event_roundup' &&
+    experience.relationship === 'editorial' &&
+    roundup?.articleType === 'event_roundup' &&
+    roundup.relationship === 'editorial' &&
+    roundup.variant === 'list' &&
+    roundup.items.length >= 2
+  );
+}
+
+function getRegisteredEventRoundupPreviewData(id: string): DraftFixturePreview | undefined {
+  const postId = Number(id);
+  if (!Number.isInteger(postId)) return undefined;
+  const experience = getArticleExperience(postId);
+  if (!experience || !canPreviewRegisteredEventRoundup(experience)) return undefined;
+  const verifiedAt = experience.eventRoundup?.items.find((item) => item.verifiedAt)?.verifiedAt;
+
+  return {
+    postId,
+    title: experience.heroTitle ?? `Draft ${postId}`,
+    excerpt: experience.lead,
+    content: '',
+    tag: experience.badges[0] ?? '記事',
+    dateStr: formatDraftFixtureDate(verifiedAt ?? undefined),
+    postLink: `/article/${postId}`,
+  };
+}
+
+function getDraftFixturePreviewData(id: string): DraftFixturePreview | undefined {
+  if (!canUseDraftFixturePreview()) return undefined;
+  return getRegisteredEventRoundupPreviewData(id);
+}
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getWordPressPostById(params.id);
   if (!post && canUseLocalPreview(params.id)) {
@@ -87,6 +143,20 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       alternates: { canonical: `/article/${params.id}` },
       robots: { index: false, follow: true },
     };
+  }
+  if (!post) {
+    const draftPreview = getDraftFixturePreviewData(params.id);
+    if (draftPreview) {
+      const experience = getArticleExperience(draftPreview.postId);
+      const title = experience?.heroTitle ?? draftPreview.title;
+      const description = experience?.lead ?? draftPreview.excerpt;
+      return {
+        title: `${title} | なごとしゃ`,
+        description,
+        alternates: { canonical: `/article/${params.id}` },
+        robots: { index: false, follow: true },
+      };
+    }
   }
   if (!post) return {
     title: '記事が見つかりません | なごとしゃ',
@@ -284,6 +354,30 @@ export default async function ArticlePage({ params }: { params: Params }) {
         experience={experience}
       />
     );
+  }
+
+  if (!post) {
+    const draftPreview = getDraftFixturePreviewData(params.id);
+    if (draftPreview) {
+      const experience = getArticleExperience(draftPreview.postId);
+
+      return (
+        <ArticleExperience
+          title={experience?.heroTitle ?? draftPreview.title}
+          excerpt={experience?.lead ?? draftPreview.excerpt}
+          content={draftPreview.content}
+          imageUrl={undefined}
+          tag={draftPreview.tag}
+          mapUrl={undefined}
+          officialUrl={experience?.officialUrl}
+          dateStr={draftPreview.dateStr}
+          articleId={`draft-fixture-${draftPreview.postId}`}
+          postId={draftPreview.postId}
+          postLink={draftPreview.postLink}
+          experience={experience}
+        />
+      );
+    }
   }
 
   if (!post) notFound();
