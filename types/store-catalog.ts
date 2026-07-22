@@ -138,6 +138,7 @@ export type StoreCatalogListingBlocker =
   | 'entity-suspended'
   | 'entity-retired'
   | 'active-merge-hold'
+  | 'area-fact-conflict'
   | 'canonical-name-missing'
   | 'canonical-name-invalid'
   | 'canonical-name-source-ineligible'

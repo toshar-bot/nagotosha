@@ -94,6 +94,7 @@ const SOURCE_REFERENCE_ALLOWED_FIELDS = new Set([
   'sourceIdentity',
 ]);
 const NON_CURRENT_IDENTITY_STATUSES = new Set(['conflicting', 'stale', 'needs-review']);
+const NON_CURRENT_AREA_STATUSES = new Set(['stale']);
 
 export function validateStoreCatalogRecords(
   records: StoreCatalogRecords,
@@ -158,6 +159,9 @@ export function getStoreCatalogListingReadiness(
     if (entity.status === 'suspended') blockers.push('entity-suspended');
     if (entity.status === 'retired') blockers.push('entity-retired');
     if (hasActiveMergeHold(entity)) blockers.push('active-merge-hold');
+    if (!hasConsistentCurrentAreaFacts(records, entity)) {
+      blockers.push('area-fact-conflict');
+    }
 
     blockers.push(...evaluateCanonicalIdentity(
       records,
@@ -542,6 +546,17 @@ function validateSourceReference(
   if (source.sourceIdentity !== undefined && !source.sourceIdentity.trim()) {
     addIssue(issues, 'invalid-source-identity', 'source', source.sourceRefId, 'sourceIdentity must not be blank');
   }
+  if (source.kind === 'merchant-response') {
+    if (!source.sourceIdentity?.trim()) {
+      addIssue(issues, 'canonical-source-identity-missing', 'source', source.sourceRefId, 'merchant response requires a non-empty source identity');
+    }
+    if (!hasStoredSourceAnchor(source)) {
+      addIssue(issues, 'canonical-source-anchor-missing', 'source', source.sourceRefId, 'merchant response requires an artifact or source URL');
+    }
+  }
+  if (source.kind === 'editorial-note' && !hasEditorialSourceAnchor(source)) {
+    addIssue(issues, 'canonical-source-anchor-missing', 'source', source.sourceRefId, 'editorial note requires an artifact, source URL, or source identity');
+  }
   for (const field of Object.keys(source)) {
     if (!SOURCE_REFERENCE_ALLOWED_FIELDS.has(field)) {
       addIssue(issues, 'source-field-not-allowed', 'source', source.sourceRefId, `source field is not allowed: ${field}`);
@@ -705,6 +720,7 @@ function hasCanonicalSource(
       source
       && capturedAt !== undefined
       && capturedAt <= asOf
+      && hasCanonicalSourceAnchor(source)
       && isStoreSourceCanonicalEligible(fact.key, source.kind),
     );
   });
@@ -728,7 +744,9 @@ function validateCorrectionForStaging(
     blockers.push('correction-invalid');
   }
   const source = records.sourceReferences.find((entry) => entry.sourceRefId === correction.sourceRefId);
-  if (source?.kind !== 'merchant-response') blockers.push('merchant-source-invalid');
+  if (source?.kind !== 'merchant-response' || !hasCanonicalSourceAnchor(source)) {
+    blockers.push('merchant-source-invalid');
+  }
   if (!records.facts.some((fact) => (
     fact.storeId === correction.storeId
     && fact.key === correction.targetFactKey
@@ -744,6 +762,42 @@ function hasActiveMergeHold(entity: StoreEntity): boolean {
   return entity.mergeGuard.unresolvedCandidateStoreIds.some((candidateId) => (
     !entity.mergeGuard.confirmedDistinctStoreIds.includes(candidateId)
   ));
+}
+
+function hasConsistentCurrentAreaFacts(
+  records: StoreCatalogRecords,
+  entity: StoreEntity,
+): boolean {
+  const currentAreaFacts = records.facts.filter((fact) => (
+    fact.storeId === entity.storeId
+    && fact.key === 'area'
+    && fact.supersededByFactId === undefined
+    && !NON_CURRENT_AREA_STATUSES.has(fact.reviewStatus)
+  ));
+  return currentAreaFacts.every((fact) => (
+    fact.reviewStatus !== 'conflicting'
+    && isCatalogArea(fact.value)
+    && fact.value === entity.area
+  ));
+}
+
+function hasStoredSourceAnchor(source: StoreSourceReference): boolean {
+  return Boolean(
+    source.artifactId?.trim()
+    || (source.sourceUrl?.trim() && isSafeExternalUrl(source.sourceUrl)),
+  );
+}
+
+function hasEditorialSourceAnchor(source: StoreSourceReference): boolean {
+  return hasStoredSourceAnchor(source) || Boolean(source.sourceIdentity?.trim());
+}
+
+function hasCanonicalSourceAnchor(source: StoreSourceReference): boolean {
+  if (source.kind === 'merchant-response') {
+    return Boolean(source.sourceIdentity?.trim()) && hasStoredSourceAnchor(source);
+  }
+  if (source.kind === 'editorial-note') return hasEditorialSourceAnchor(source);
+  return true;
 }
 
 function getPlaceIdCandidates(records: StoreCatalogRecords, entity: StoreEntity): string[] {
