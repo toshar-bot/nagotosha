@@ -30,7 +30,7 @@ export type CandidatePresentationModel = {
   candidateId: string;
   articleId: number;
   displayName: string;
-  /** Zero-based index from the original rankedCandidates input. */
+  /** 最終的に表示可能な候補配列内の0始まり連続index。 */
   order: number;
   role: CandidatePresentationRole;
   visualTreatment: {

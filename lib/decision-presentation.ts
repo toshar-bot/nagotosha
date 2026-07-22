@@ -119,7 +119,8 @@ export function buildDecisionPresentation(input: PresentationInput): DecisionPre
   trustedRankedCandidates.forEach(({ candidate, matchReasons, candidateOrder }) => {
     const converted = convertCandidate({
       candidate,
-      order: candidateOrder,
+      candidateOrder,
+      presentationOrder: models.length,
       matchReasons,
       relationshipResults: input.relationshipResults,
       approvedDisclosures: input.approvedDisclosures,
@@ -139,39 +140,45 @@ export function buildDecisionPresentation(input: PresentationInput): DecisionPre
 
 function convertCandidate(input: {
   candidate: DecisionCandidate;
-  order: number;
+  candidateOrder: number;
+  presentationOrder: number;
   matchReasons: readonly string[];
   relationshipResults: readonly CandidateRelationshipPresentationInput[];
   approvedDisclosures: readonly ApprovedRelationshipDisclosure[];
   policy: DecisionPresentationPolicy;
 }): CandidateConversionResult {
-  const { candidate, order, policy } = input;
+  const {
+    candidate,
+    candidateOrder,
+    presentationOrder,
+    policy,
+  } = input;
   const violations: PresentationContractViolation[] = [];
 
   if (candidate.relationshipTarget.kind !== 'article') {
-    return candidateFailure('article-target-required', order);
+    return candidateFailure('article-target-required', candidateOrder);
   }
   const articleId = candidate.relationshipTarget.articleId;
 
   const role = resolveRole(candidate, policy);
-  if (!role) violations.push({ code: 'role-not-unique', candidateOrder: order });
+  if (!role) violations.push({ code: 'role-not-unique', candidateOrder });
 
   if (
     input.matchReasons.length > policy.maximumMatchReasons
     || input.matchReasons.some((reason) => !reason.trim())
   ) {
-    violations.push({ code: 'match-reasons-invalid', candidateOrder: order });
+    violations.push({ code: 'match-reasons-invalid', candidateOrder });
   }
 
   const areaLabel = readAreaLabel(candidate.area, policy);
-  if (!areaLabel) violations.push({ code: 'unapproved-area', candidateOrder: order });
+  if (!areaLabel) violations.push({ code: 'unapproved-area', candidateOrder });
 
   if (
     !isValidVerificationDate(candidate.statusVerifiedAt)
     || !isValidVerificationDate(candidate.openingHoursVerifiedAt)
     || !isValidVerificationDate(candidate.priceVerifiedAt)
   ) {
-    violations.push({ code: 'verified-date-invalid', candidateOrder: order });
+    violations.push({ code: 'verified-date-invalid', candidateOrder });
   }
 
   const relationshipMatches = input.relationshipResults.filter(
@@ -181,15 +188,15 @@ function convertCandidate(input: {
     ? relationshipMatches[0].resolution
     : undefined;
   if (!relationship) {
-    violations.push({ code: 'relationship-result-missing', candidateOrder: order });
+    violations.push({ code: 'relationship-result-missing', candidateOrder });
   } else if (
     relationship.postId !== articleId
     || relationship.target.kind !== 'article'
     || relationship.target.articleId !== articleId
   ) {
-    violations.push({ code: 'relationship-target-mismatch', candidateOrder: order });
+    violations.push({ code: 'relationship-target-mismatch', candidateOrder });
   } else if (!isResolvedRelationshipDisplayable(relationship)) {
-    violations.push({ code: 'relationship-not-displayable', candidateOrder: order });
+    violations.push({ code: 'relationship-not-displayable', candidateOrder });
   }
 
   const disclosure = relationship && isResolvedRelationshipDisplayable(relationship)
@@ -200,11 +207,11 @@ function convertCandidate(input: {
     && (relationship.relationship === 'pr' || relationship.relationship === 'owned')
     && disclosure === undefined
   ) {
-    violations.push({ code: 'disclosure-required', candidateOrder: order });
+    violations.push({ code: 'disclosure-required', candidateOrder });
   }
 
   const actions = convertActions(candidate.actions, policy);
-  if (!actions.ok) violations.push({ code: actions.code, candidateOrder: order });
+  if (!actions.ok) violations.push({ code: actions.code, candidateOrder });
 
   if (violations.length > 0 || !role || !areaLabel || !actions.ok || disclosure === undefined) {
     return { ok: false, violations };
@@ -216,7 +223,7 @@ function convertCandidate(input: {
       candidateId: candidate.id,
       articleId,
       displayName: candidate.displayName,
-      order,
+      order: presentationOrder,
       role,
       visualTreatment: { kind: 'category-panel' },
       matchReasons: [...input.matchReasons],
@@ -324,7 +331,10 @@ function formatVerifiedDates(
   const openingHours = formatMonthDay(candidate.openingHoursVerifiedAt);
   const price = formatMonthDay(candidate.priceVerifiedAt);
 
-  if (status === openingHours && openingHours === price) {
+  if (
+    candidate.statusVerifiedAt === candidate.openingHoursVerifiedAt
+    && candidate.openingHoursVerifiedAt === candidate.priceVerifiedAt
+  ) {
     return { mode: 'merged', label: `表示情報確認 ${status}` };
   }
 
