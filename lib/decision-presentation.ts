@@ -33,6 +33,10 @@ type CandidateConversionResult =
   | { ok: true; candidate: CandidatePresentationModel }
   | { ok: false; violations: readonly PresentationContractViolation[] };
 
+type ActionConversionResult =
+  | { ok: true; actions: readonly PresentationAction[] }
+  | { ok: false; code: 'action-invalid' | 'action-duplicate' };
+
 export function buildDecisionPresentation(input: PresentationInput): DecisionPresentationBuildResult {
   if (
     input.availability.evaluatedAsOf !== input.eligibleSet.evaluatedAsOf
@@ -79,27 +83,44 @@ export function buildDecisionPresentation(input: PresentationInput): DecisionPre
       .map((result) => result.candidateId),
   );
   const seenCandidateIds = new Set<string>();
-  const models: CandidatePresentationModel[] = [];
-  const violations: PresentationContractViolation[] = [];
+  const trustedRankedCandidates: Array<{
+    candidate: DecisionCandidate;
+    matchReasons: readonly string[];
+    candidateOrder: number;
+  }> = [];
+  const inputViolations: PresentationContractViolation[] = [];
 
   rankedCandidates.forEach((ranked, index) => {
-    const candidateOrder = index + 1;
+    const candidateOrder = index;
     if (seenCandidateIds.has(ranked.candidate.id)) {
-      violations.push({ code: 'duplicate-candidate', candidateOrder });
+      inputViolations.push({ code: 'duplicate-candidate', candidateOrder });
       return;
     }
     seenCandidateIds.add(ranked.candidate.id);
 
     const eligibleCandidate = eligibleCandidates.get(ranked.candidate.id);
     if (!eligibleCandidate || !eligibleIds.has(ranked.candidate.id)) {
-      violations.push({ code: 'candidate-not-eligible', candidateOrder });
+      inputViolations.push({ code: 'candidate-not-eligible', candidateOrder });
       return;
     }
 
-    const converted = convertCandidate({
+    trustedRankedCandidates.push({
       candidate: eligibleCandidate,
-      order: candidateOrder,
       matchReasons: ranked.matchReasons.map((reason) => reason.text),
+      candidateOrder,
+    });
+  });
+
+  if (inputViolations.length > 0) return failure(inputViolations);
+
+  const models: CandidatePresentationModel[] = [];
+  const candidateViolations: PresentationContractViolation[] = [];
+
+  trustedRankedCandidates.forEach(({ candidate, matchReasons, candidateOrder }) => {
+    const converted = convertCandidate({
+      candidate,
+      order: candidateOrder,
+      matchReasons,
       relationshipResults: input.relationshipResults,
       approvedDisclosures: input.approvedDisclosures,
       policy: input.policy,
@@ -107,13 +128,13 @@ export function buildDecisionPresentation(input: PresentationInput): DecisionPre
     if (converted.ok) {
       models.push(converted.candidate);
     } else {
-      violations.push(...converted.violations);
+      candidateViolations.push(...converted.violations);
     }
   });
 
-  return violations.length > 0
-    ? failure(violations)
-    : success({ status: 'matched', candidates: models });
+  return models.length > 0
+    ? success({ status: 'matched', candidates: models }, candidateViolations)
+    : success({ status: 'data-unavailable' }, candidateViolations);
 }
 
 function convertCandidate(input: {
@@ -183,9 +204,9 @@ function convertCandidate(input: {
   }
 
   const actions = convertActions(candidate.actions, policy);
-  if (!actions) violations.push({ code: 'action-invalid', candidateOrder: order });
+  if (!actions.ok) violations.push({ code: actions.code, candidateOrder: order });
 
-  if (violations.length > 0 || !role || !areaLabel || !actions || disclosure === undefined) {
+  if (violations.length > 0 || !role || !areaLabel || !actions.ok || disclosure === undefined) {
     return { ok: false, violations };
   }
 
@@ -209,7 +230,7 @@ function convertCandidate(input: {
       },
       verifiedDates: formatVerifiedDates(candidate),
       disclosure,
-      actions,
+      actions: actions.actions,
     },
   };
 }
@@ -264,25 +285,36 @@ function resolveDisclosure(
 function convertActions(
   actions: readonly DecisionAction[],
   policy: DecisionPresentationPolicy,
-): readonly PresentationAction[] | undefined {
-  if (actions.length === 0 || !actions.every(isDecisionActionDisplayable)) return undefined;
+): ActionConversionResult {
+  if (actions.length === 0 || !actions.every(isDecisionActionDisplayable)) {
+    return { ok: false, code: 'action-invalid' };
+  }
 
-  return actions.map((action): PresentationAction => {
-    if (action.type === 'reservation') {
+  const actionTypes = new Set<DecisionAction['type']>();
+  for (const action of actions) {
+    if (actionTypes.has(action.type)) return { ok: false, code: 'action-duplicate' };
+    actionTypes.add(action.type);
+  }
+
+  return {
+    ok: true,
+    actions: actions.map((action): PresentationAction => {
+      if (action.type === 'reservation') {
+        return {
+          type: 'reservation',
+          label: policy.actionLabels.reservation,
+          url: action.url,
+          isAvailabilityGuarantee: false,
+          note: DECISION_RESERVATION_NOTE,
+        };
+      }
       return {
-        type: 'reservation',
-        label: policy.actionLabels.reservation,
+        type: action.type,
+        label: policy.actionLabels[action.type],
         url: action.url,
-        isAvailabilityGuarantee: false,
-        note: DECISION_RESERVATION_NOTE,
       };
-    }
-    return {
-      type: action.type,
-      label: policy.actionLabels[action.type],
-      url: action.url,
-    };
-  });
+    }),
+  };
 }
 
 function formatVerifiedDates(
@@ -318,8 +350,13 @@ function candidateFailure(
 
 function success(
   presentation: DecisionPresentationResult,
+  candidateViolations: readonly PresentationContractViolation[] = [],
 ): DecisionPresentationBuildResult {
-  return { ok: true, presentation };
+  return {
+    ok: true,
+    presentation,
+    diagnostics: { candidateViolations },
+  };
 }
 
 function failure(

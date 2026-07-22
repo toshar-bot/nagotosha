@@ -30,6 +30,7 @@ export type CandidatePresentationModel = {
   candidateId: string;
   articleId: number;
   displayName: string;
+  /** Zero-based index from the original rankedCandidates input. */
   order: number;
   role: CandidatePresentationRole;
   visualTreatment: {
@@ -63,8 +64,10 @@ export type CandidatePresentationModel = {
   actions: readonly PresentationAction[];
 };
 
+export type RelaxationAxis = DecisionRelaxableDimension | 'party';
+
 export type PresentationRelaxHint = {
-  axis: DecisionRelaxableDimension;
+  axis: RelaxationAxis;
   label: string;
 };
 
@@ -131,24 +134,32 @@ export type PresentationContractViolationCode =
   | 'relationship-not-displayable'
   | 'relationship-target-mismatch'
   | 'disclosure-required'
-  | 'action-invalid';
+  | 'action-invalid'
+  | 'action-duplicate';
 
 export type PresentationContractViolation = {
   code: PresentationContractViolationCode;
+  /** Zero-based index from the original rankedCandidates input. */
   candidateOrder?: number;
+};
+
+export type DecisionPresentationDiagnostics = {
+  /** Candidate-local exclusions only. Never includes candidate identity or display facts. */
+  candidateViolations: readonly PresentationContractViolation[];
 };
 
 export type DecisionPresentationBuildResult =
   | {
       ok: true;
       presentation: DecisionPresentationResult;
+      diagnostics: DecisionPresentationDiagnostics;
     }
   | {
       ok: false;
+      /** Whole-input integrity failures only. */
       violations: readonly PresentationContractViolation[];
     };
 
-export type RelaxationAxis = DecisionRelaxableDimension | 'party';
 export type CandidateDecision = 'undecided' | 'interested' | 'rejected';
 
 export type PresentSession = {

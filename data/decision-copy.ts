@@ -41,8 +41,10 @@ export const DECISION_BUTTON_COPY = {
 export const DECISION_ARIA_COPY = {
   reject: 'この候補は今日は見送る',
   interested: 'この候補を気になるに残す',
+  interestedSelected: '気になるに追加済み。もう一度押すと外せます',
   removeInterested: '気になるから外す',
   back: '前の候補にもどる',
+  dataUnavailable: '表示できる候補情報を準備中です',
 } as const;
 
 export const DECISION_FEEDBACK_COPY = {
@@ -57,13 +59,16 @@ export const FORBIDDEN_DECISION_COPY = [
   '最適',
   '絶対',
   '今営業中',
+  '営業中です',
   '空席あり',
   '在庫あり',
   '予約できます',
   'すぐ行ける',
   '適合率',
+  'おすすめ度',
   'マッチ度',
   'パーセント',
+  '%',
   'AIが選びました',
   'おすすめ順',
   '自動的に変更しました',

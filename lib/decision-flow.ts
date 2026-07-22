@@ -16,20 +16,30 @@ export function reduceDecisionFlow(
     return accepted({ phase: 'incomplete' });
   }
 
+  if (state.phase === 'decided' || state.phase === 'no-remaining') {
+    return rejected(state, 'event-not-allowed');
+  }
+
   if (event.type === 'START_MATCHED') {
+    if (!canAcceptStart(state)) return rejected(state, 'event-not-allowed');
     return startMatched(state, event.candidateIds);
   }
 
   if (event.type === 'START_NO_MATCH') {
+    if (!canAcceptStart(state)) return rejected(state, 'event-not-allowed');
     return accepted({ phase: 'no-match', relaxHints: [...event.relaxHints] });
   }
 
   if (event.type === 'START_DATA_UNAVAILABLE') {
+    if (!canAcceptStart(state)) return rejected(state, 'event-not-allowed');
     return accepted({ phase: 'data-unavailable' });
   }
 
   if (event.type === 'REQUEST_RELAXATION') {
     if (state.phase !== 'no-match') return rejected(state, 'event-not-allowed');
+    if (!state.relaxHints.some((hint) => hint.axis === event.axis)) {
+      return rejected(state, 'relaxation-not-offered');
+    }
     return {
       state,
       accepted: true,
@@ -83,6 +93,12 @@ export function reduceDecisionFlow(
   }
 
   return rejected(state, 'event-not-allowed');
+}
+
+function canAcceptStart(state: DecisionFlowState): boolean {
+  return state.phase === 'incomplete'
+    || state.phase === 'no-match'
+    || state.phase === 'data-unavailable';
 }
 
 function startMatched(
