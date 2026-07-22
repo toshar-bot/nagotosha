@@ -7,10 +7,211 @@ import type {
   StoreSourceReference,
 } from '../types/store-catalog';
 
-export const STORE_DISCOVERY_RECORDS: readonly StoreDiscoveryRecord[] = [];
-export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [];
-export const STORE_FACTS: readonly StoreFact[] = [];
-export const STORE_ENTITIES: readonly StoreEntity[] = [];
+export const STORE_DISCOVERY_RECORDS: readonly StoreDiscoveryRecord[] = [
+  {
+    discoveryId: 'discovery-sakae-cafe-laduree-lachic',
+    source: 'official-brand',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceUrl: 'https://www.laduree.jp/view/page/shoplist',
+    nameHint: 'カフェ・ラデュレ 名古屋ラシック店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-meieki-frenchman-dainagoya',
+    source: 'official-brand',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceUrl: 'https://prtimes.jp/main/html/rd/p/000000004.000116722.html',
+    nameHint: '大衆酒場 フレンチマン 名古屋店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-osu-ramen-butayama',
+    source: 'official-store',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceUrl: 'https://shop.butayama.com/detail/112317/',
+    nameHint: 'ラーメン豚山 大須店',
+    status: 'promoted',
+  },
+];
+
+export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [
+  {
+    sourceRefId: 'source-sakae-laduree-shop-list',
+    kind: 'official-brand',
+    sourceUrl: 'https://www.laduree.jp/view/page/shoplist',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceIdentity: 'LADUREE JAPON',
+  },
+  {
+    sourceRefId: 'source-sakae-lachic-shop',
+    kind: 'official-facility',
+    sourceUrl: 'https://www.lachic.jp/nagoya/shops/floor_01/f1_07s.html',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceIdentity: 'ラシック',
+  },
+  {
+    sourceRefId: 'source-meieki-frenchman-release',
+    kind: 'official-brand',
+    sourceUrl: 'https://prtimes.jp/main/html/rd/p/000000004.000116722.html',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceIdentity: '有限会社らくちん',
+  },
+  {
+    sourceRefId: 'source-meieki-dainagoya-shop',
+    kind: 'official-facility',
+    sourceUrl: 'https://dainagoyabuilding.com/floor/restaurant/12286/',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceIdentity: '大名古屋ビルヂング',
+  },
+  {
+    sourceRefId: 'source-osu-butayama-shop',
+    kind: 'official-store',
+    sourceUrl: 'https://shop.butayama.com/detail/112317/',
+    capturedAt: '2026-07-22T07:47:31Z',
+    sourceIdentity: '株式会社ギフトホールディングス',
+  },
+];
+
+export const STORE_FACTS: readonly StoreFact[] = [
+  {
+    factId: 'fact-sakae-laduree-display-name',
+    storeId: 'sakae-cafe-laduree-lachic',
+    key: 'displayName',
+    value: 'カフェ・ラデュレ 名古屋ラシック店',
+    sourceRefIds: ['source-sakae-laduree-shop-list'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-sakae-laduree-address',
+    storeId: 'sakae-cafe-laduree-lachic',
+    key: 'address',
+    value: '〒460-0008\n愛知県名古屋市中区栄3-6-1 ラシック1F',
+    sourceRefIds: ['source-sakae-laduree-shop-list'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-sakae-laduree-area',
+    storeId: 'sakae-cafe-laduree-lachic',
+    key: 'area',
+    value: 'sakae',
+    sourceRefIds: ['source-sakae-laduree-shop-list', 'source-sakae-lachic-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-sakae-laduree-facility-name',
+    storeId: 'sakae-cafe-laduree-lachic',
+    key: 'facilityName',
+    value: 'ラシック',
+    sourceRefIds: ['source-sakae-lachic-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-sakae-laduree-floor',
+    storeId: 'sakae-cafe-laduree-lachic',
+    key: 'floor',
+    value: '1F',
+    sourceRefIds: ['source-sakae-lachic-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-meieki-frenchman-display-name',
+    storeId: 'meieki-frenchman-dainagoya',
+    key: 'displayName',
+    value: '大衆酒場 フレンチマン 名古屋店',
+    sourceRefIds: ['source-meieki-frenchman-release', 'source-meieki-dainagoya-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-meieki-frenchman-address',
+    storeId: 'meieki-frenchman-dainagoya',
+    key: 'address',
+    value: '愛知県名古屋市中村区名駅3丁目28番地12号\n大名古屋ビルヂング3階',
+    sourceRefIds: ['source-meieki-frenchman-release', 'source-meieki-dainagoya-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-meieki-frenchman-area',
+    storeId: 'meieki-frenchman-dainagoya',
+    key: 'area',
+    value: 'meieki',
+    sourceRefIds: ['source-meieki-frenchman-release', 'source-meieki-dainagoya-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-osu-butayama-display-name',
+    storeId: 'osu-ramen-butayama',
+    key: 'displayName',
+    value: 'ラーメン豚山 大須店',
+    sourceRefIds: ['source-osu-butayama-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-osu-butayama-address',
+    storeId: 'osu-ramen-butayama',
+    key: 'address',
+    value: '〒460-0011\n愛知県名古屋市中区大須3-30-60',
+    sourceRefIds: ['source-osu-butayama-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-osu-butayama-area',
+    storeId: 'osu-ramen-butayama',
+    key: 'area',
+    value: 'osu',
+    sourceRefIds: ['source-osu-butayama-shop'],
+    observedAt: '2026-07-22T07:47:31Z',
+    reviewStatus: 'verified',
+  },
+];
+
+export const STORE_ENTITIES: readonly StoreEntity[] = [
+  {
+    storeId: 'sakae-cafe-laduree-lachic',
+    area: 'sakae',
+    status: 'listed',
+    canonicalNameFactId: 'fact-sakae-laduree-display-name',
+    canonicalLocationFactId: 'fact-sakae-laduree-address',
+    discoveryRecordIds: ['discovery-sakae-cafe-laduree-lachic'],
+    mergeGuard: {
+      unresolvedCandidateStoreIds: [],
+      confirmedDistinctStoreIds: [],
+    },
+  },
+  {
+    storeId: 'meieki-frenchman-dainagoya',
+    area: 'meieki',
+    status: 'listed',
+    canonicalNameFactId: 'fact-meieki-frenchman-display-name',
+    canonicalLocationFactId: 'fact-meieki-frenchman-address',
+    discoveryRecordIds: ['discovery-meieki-frenchman-dainagoya'],
+    mergeGuard: {
+      unresolvedCandidateStoreIds: [],
+      confirmedDistinctStoreIds: [],
+    },
+  },
+  {
+    storeId: 'osu-ramen-butayama',
+    area: 'osu',
+    status: 'listed',
+    canonicalNameFactId: 'fact-osu-butayama-display-name',
+    canonicalLocationFactId: 'fact-osu-butayama-address',
+    discoveryRecordIds: ['discovery-osu-ramen-butayama'],
+    mergeGuard: {
+      unresolvedCandidateStoreIds: [],
+      confirmedDistinctStoreIds: [],
+    },
+  },
+];
 export const STORE_MERCHANT_CORRECTIONS: readonly MerchantCorrection[] = [];
 
 export const STORE_CATALOG: StoreCatalogRecords = {
