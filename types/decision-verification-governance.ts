@@ -22,21 +22,29 @@ export type DecisionVerificationFactKey =
   | 'disclosure'
   | 'visualRights';
 
+export type DecisionVerificationArtifactChannel =
+  | 'official-email'
+  | 'official-form'
+  | 'official-instagram'
+  | 'official-document'
+  /** Internal checks for commercial, ownership, partnership, or personal interests. */
+  | 'internal-ledger'
+  /** Human-approved editorial classification, rationale, or disclosure copy. */
+  | 'editorial-note';
+
 export type DecisionVerificationArtifact = {
   artifactId: string;
   candidateId: string;
   factKeys: readonly DecisionVerificationFactKey[];
-  channel:
-    | 'official-email'
-    | 'official-form'
-    | 'official-instagram'
-    | 'official-document';
+  channel: DecisionVerificationArtifactChannel;
   sourceIdentity: string;
   receivedAt: string;
   threadId?: string;
   sourceUrl?: string;
   sha256: string;
   originalStored: true;
+  /** Exact human-approved copy; required when this artifact verifies disclosure. */
+  approvedDisclosureText?: string;
 };
 
 export type DecisionOperatorReview = {
@@ -88,6 +96,9 @@ export type DecisionVerificationGovernancePolicy = {
   freshnessPolicyVersion: string;
   minimumCoolingOffHours: number;
   requiredBaseFactKeys: readonly DecisionVerificationFactKey[];
+  allowedArtifactChannelsByFact: Readonly<
+    Record<DecisionVerificationFactKey, readonly DecisionVerificationArtifactChannel[]>
+  >;
   prohibitedActorIds: readonly string[];
 };
 
@@ -100,6 +111,7 @@ export type DecisionReleaseBlockerCode =
   | 'artifact-missing'
   | 'artifact-invalid'
   | 'artifact-hash-invalid'
+  | 'artifact-source-not-approved'
   | 'artifact-fact-coverage-missing'
   | 'operator-review-missing'
   | 'operator-review-ambiguous'

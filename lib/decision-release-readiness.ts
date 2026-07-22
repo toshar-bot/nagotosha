@@ -12,6 +12,7 @@ import type {
   DecisionReleaseSurface,
   DecisionRelationshipReadinessInput,
   DecisionVerificationArtifact,
+  DecisionVerificationArtifactChannel,
   DecisionVerificationFactKey,
   DecisionVerificationGovernancePolicy,
   DecisionVerificationHold,
@@ -27,11 +28,13 @@ import { isValidDecisionISODate } from './decision-eligibility';
 const ISO_INSTANT_PATTERN = /^(\d{4}-\d{2}-\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{3})?Z$/;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/i;
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
-const ARTIFACT_CHANNELS = new Set([
+const ARTIFACT_CHANNELS = new Set<DecisionVerificationArtifactChannel>([
   'official-email',
   'official-form',
   'official-instagram',
   'official-document',
+  'internal-ledger',
+  'editorial-note',
 ]);
 const FACT_KEYS = new Set<DecisionVerificationFactKey>([
   'currentStatus',
@@ -168,6 +171,7 @@ function evaluatePreviewReadiness(
     input.artifacts,
     requiredFactKeys,
     asOfTimestamp,
+    policy,
   );
   blockers.push(...artifactEvaluation.blockers);
 
@@ -223,6 +227,7 @@ function evaluateArtifacts(
   artifacts: readonly DecisionVerificationArtifact[],
   requiredFactKeys: readonly DecisionVerificationFactKey[],
   asOfTimestamp: number | undefined,
+  policy: DecisionVerificationGovernancePolicy,
 ): { blockers: DecisionReleaseBlocker[]; validArtifacts: DecisionVerificationArtifact[] } {
   const blockers: DecisionReleaseBlocker[] = [];
   const candidateArtifacts = artifacts.filter((artifact) => artifact.candidateId === candidate.id);
@@ -258,6 +263,18 @@ function evaluateArtifacts(
       || (artifact.sourceUrl !== undefined && !isSafeExternalUrl(artifact.sourceUrl))
     ) {
       blockers.push({ code: 'artifact-invalid' });
+      valid = false;
+    }
+    for (const factKey of artifact.factKeys) {
+      if (FACT_KEYS.has(factKey)
+        && !isArtifactSourceApproved(factKey, artifact.channel, policy)) {
+        blockers.push({ code: 'artifact-source-not-approved', factKey });
+        valid = false;
+      }
+    }
+    if (artifact.factKeys.includes('disclosure')
+      && !artifact.approvedDisclosureText?.trim()) {
+      blockers.push({ code: 'artifact-invalid', factKey: 'disclosure' });
       valid = false;
     }
     if (valid) validArtifacts.push(artifact);
@@ -436,7 +453,10 @@ function evaluateIndependentReview(
     || review.sourceArtifactIds.length === 0
     || hasDuplicates(review.sourceArtifactIds)
     || referencedArtifacts.length !== review.sourceArtifactIds.length
-    || !referencedArtifacts.some((artifact) => artifact.factKeys.includes(expectedFactKey))
+    || !referencedArtifacts.some((artifact) => (
+      artifact.factKeys.includes(expectedFactKey)
+      && isArtifactSourceApproved(expectedFactKey, artifact.channel, policy)
+    ))
     || referencedArtifacts.some((artifact) => (
       (parseISOInstant(artifact.receivedAt) ?? Number.POSITIVE_INFINITY) > reviewedAt
     ))
@@ -552,6 +572,14 @@ function independentScopeFactKey(
 ): DecisionVerificationFactKey {
   if (scope === 'visual-rights') return 'visualRights';
   return scope;
+}
+
+function isArtifactSourceApproved(
+  factKey: DecisionVerificationFactKey,
+  channel: DecisionVerificationArtifactChannel,
+  policy: DecisionVerificationGovernancePolicy,
+): boolean {
+  return policy.allowedArtifactChannelsByFact[factKey].includes(channel);
 }
 
 function isHumanActor(
