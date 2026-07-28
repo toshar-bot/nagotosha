@@ -32,6 +32,7 @@ type MotionCategoryArcProps = {
   readonly focusedCategoryId: CategoryId;
   readonly selectedCategoryId?: CategoryId;
   readonly onFocusCategory: (categoryId: CategoryId, method: FocusMethod) => void;
+  readonly onFocusCategorySettled: (categoryId: CategoryId) => void;
   readonly onSelectCategory: (categoryId: CategoryId, method: 'card') => void;
   readonly onFirstMove: () => void;
 };
@@ -56,6 +57,7 @@ const MotionCategoryArc = forwardRef<MotionCategoryArcHandle, MotionCategoryArcP
       focusedCategoryId,
       selectedCategoryId,
       onFocusCategory,
+      onFocusCategorySettled,
       onSelectCategory,
       onFirstMove,
     },
@@ -78,13 +80,14 @@ const MotionCategoryArc = forwardRef<MotionCategoryArcHandle, MotionCategoryArcP
       setPhase(nextPhase);
     }, []);
 
-    const releaseSettleLock = useCallback(() => {
+    const releaseSettleLock = useCallback((categoryId: CategoryId) => {
       if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
       settleTimerRef.current = setTimeout(() => {
         settleTimerRef.current = null;
         updatePhase('idle');
+        onFocusCategorySettled(categoryId);
       }, reducedMotion ? 0 : SETTLE_LOCK_MS);
-    }, [reducedMotion, updatePhase]);
+    }, [onFocusCategorySettled, reducedMotion, updatePhase]);
 
     useEffect(
       () => () => {
@@ -137,9 +140,10 @@ const MotionCategoryArc = forwardRef<MotionCategoryArcHandle, MotionCategoryArcP
         dragX.stop();
         dragX.set(0);
         const nextIndex = wrapCategoryIndex(activeIndex + delta);
-        onFocusCategory(DECISION_HOME_CATEGORIES[nextIndex].id, method);
+        const nextCategoryId = DECISION_HOME_CATEGORIES[nextIndex].id;
+        onFocusCategory(nextCategoryId, method);
         onFirstMove();
-        releaseSettleLock();
+        releaseSettleLock(nextCategoryId);
         return true;
       },
       [activeIndex, dragX, onFirstMove, onFocusCategory, releaseSettleLock, updatePhase],

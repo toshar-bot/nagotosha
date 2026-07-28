@@ -7,7 +7,11 @@ import {
   getDecisionHomeCategory,
 } from '@/data/decision-home-categories';
 import { logDecisionHomeEvent } from '@/lib/decision-home-analytics';
-import { readDecisionHomeSession } from '@/lib/decision-home-session';
+import {
+  readDecisionHomeFocusSession,
+  readDecisionHomeSession,
+  writeDecisionHomeFocusSession,
+} from '@/lib/decision-home-session';
 import type { CategoryId, HomeState, TopicCard } from '@/types/decision-home';
 import CategoryPrimaryCta from './CategoryPrimaryCta';
 import ComingSoonSheet from './ComingSoonSheet';
@@ -39,6 +43,7 @@ export default function HomeFunctionalPreview() {
   const [stateReady, setStateReady] = useState(false);
   const [hasMovedCategory, setHasMovedCategory] = useState(false);
   const categoryArcRef = useRef<MotionCategoryArcHandle>(null);
+  const sessionStorageRef = useRef<Storage>();
 
   useLayoutEffect(() => {
     document.body.dataset.decisionHomeFunctional = 'true';
@@ -56,15 +61,22 @@ export default function HomeFunctionalPreview() {
         return undefined;
       }
     })();
+    sessionStorageRef.current = storage;
+    const restoredFocus = readDecisionHomeFocusSession(storage);
     const restored = readDecisionHomeSession(storage);
     if (restored) {
       setHomeState({
         kind: 'conditions-resumable',
-        focusedCategoryId: restored.selectedCategoryId,
+        focusedCategoryId: restoredFocus?.focusedCategoryId ?? restored.selectedCategoryId,
         selectedCategoryId: restored.selectedCategoryId,
         conditionSummary: restored.conditionSummary,
       });
       logDecisionHomeEvent({ name: 'condition_resume_view' });
+    } else if (restoredFocus) {
+      setHomeState({
+        kind: 'category-focused',
+        focusedCategoryId: restoredFocus.focusedCategoryId,
+      });
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -126,6 +138,10 @@ export default function HomeFunctionalPreview() {
     },
     [],
   );
+
+  const persistFocusedCategory = useCallback((categoryId: CategoryId) => {
+    writeDecisionHomeFocusSession(sessionStorageRef.current, categoryId);
+  }, []);
 
   const openDecisionConditions = useCallback(() => {
     window.location.assign('/home-decision-preview#decision');
@@ -203,6 +219,7 @@ export default function HomeFunctionalPreview() {
                     : undefined
                 }
                 onFocusCategory={focusCategory}
+                onFocusCategorySettled={persistFocusedCategory}
                 onSelectCategory={(categoryId) => selectCategory(categoryId, 'card')}
                 onFirstMove={() => setHasMovedCategory(true)}
               />
