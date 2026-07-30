@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useReducer, useRef, useState, type CSSProperties } from 'react';
+import { BrandHeader } from '@/components/common/BrandHeader';
 import {
   pushDecisionV3History,
   readDecisionV3HistoryState,
@@ -125,7 +126,6 @@ export default function DecisionV3App() {
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const candidatesReady = Boolean(state.selectionResult);
   const compareReady = state.compareIds.length > 0;
-  const decidedReady = Boolean(state.chosenId);
   const detailCandidateId =
     state.detailId
     ?? (state.selectionResult?.kind === 'matched' ? state.selectionResult.candidateIds[0] : null);
@@ -143,6 +143,8 @@ export default function DecisionV3App() {
           } as CSSProperties
         : undefined}
     >
+      <BrandHeader priority />
+
       {state.step === 'home' ? (
         <>
           <HeroV3 onStart={scrollToConditions} />
@@ -228,12 +230,10 @@ export default function DecisionV3App() {
         activeHomeSection={activeHomeSection}
         conditionsReady={conditionsReady && candidatesReady}
         compareReady={compareReady}
-        decidedReady={decidedReady}
         previewWidth={qaWidth}
         onNavigate={(step) => {
           if (step === 'candidates' && !conditionsReady) return;
           if (step === 'compare' && !compareReady) return;
-          if (step === 'decided' && !decidedReady) return;
           navigate(step);
         }}
         onNavigateHomeSection={navigateHomeSection}

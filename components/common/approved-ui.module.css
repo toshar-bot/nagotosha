@@ -1,0 +1,155 @@
+.brandHeader {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: max(6px, env(safe-area-inset-top, 0px)) 12px 6px;
+  border-bottom: 1px solid var(--nagotosha-grid-line, #efe7d6);
+  background: var(--nagotosha-card-bg, #fffdf8);
+}
+
+.brandLogo {
+  display: block;
+  width: clamp(174px, 58vw, 216px);
+  max-width: calc(100% - 56px);
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brandHeader[data-compact="true"] .brandLogo {
+  width: clamp(168px, 56vw, 204px);
+}
+
+.notificationButton {
+  display: grid;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #d9ccb9;
+  border-radius: 14px;
+  padding: 0;
+  background: #f5efe4;
+  color: #7c8392;
+  cursor: not-allowed;
+}
+
+.notificationButton:disabled {
+  opacity: 1;
+}
+
+.notificationIcon {
+  display: block;
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.bottomNav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: min(var(--nagotosha-bottom-nav-width, 448px), 100%);
+  min-height: calc(66px + env(safe-area-inset-bottom, 0px));
+  margin: 0 auto;
+  border-top: 1px solid #d9ccb9;
+  padding: 0 4px env(safe-area-inset-bottom, 0px);
+  background: rgba(255, 253, 248, 0.98);
+  box-shadow: 0 -4px 16px rgba(30, 42, 68, 0.1);
+}
+
+.navButton {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 66px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  border-top: 4px solid transparent;
+  padding: 5px 1px 4px;
+  background: transparent;
+  color: #59657a;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.navButton:disabled {
+  color: #9ca4b3;
+  cursor: not-allowed;
+}
+
+.navButton[data-active="true"] {
+  border-top-color: var(--nagotosha-accent-red, #d63a28);
+  background: #fdece8;
+  color: var(--nagotosha-accent-red, #d63a28);
+}
+
+.navButton:focus-visible {
+  outline: 3px solid #1e5bd6;
+  outline-offset: -4px;
+}
+
+.navIcon {
+  display: block;
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.1;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 359px) {
+  .brandHeader {
+    gap: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .brandLogo,
+  .brandHeader[data-compact="true"] .brandLogo {
+    width: min(174px, calc(100vw - 72px));
+  }
+
+  .navButton {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandHeader *,
+  .bottomNav * {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}

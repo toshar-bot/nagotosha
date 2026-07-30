@@ -1,14 +1,25 @@
 .page {
-  --navy: #071a4d;
-  --coral: #e8483f;
-  --ivory: #fffdf8;
-  --body: #1f2a44;
+  --navy: var(--nagotosha-text-primary, #1e2a44);
+  --coral: var(--nagotosha-accent-red, #d63a28);
+  --ivory: var(--nagotosha-card-bg, #fffdf8);
+  --body: var(--nagotosha-text-primary, #1e2a44);
   position: relative;
   min-height: 100dvh;
   overflow-x: clip;
   padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
   color: var(--navy);
-  background: #fff8ef;
+  background:
+    linear-gradient(
+      var(--nagotosha-grid-line, #efe7d6) var(--nagotosha-grid-line-width, 0.6px),
+      transparent var(--nagotosha-grid-line-width, 0.6px)
+    ),
+    linear-gradient(
+      90deg,
+      var(--nagotosha-grid-line, #efe7d6) var(--nagotosha-grid-line-width, 0.6px),
+      transparent var(--nagotosha-grid-line-width, 0.6px)
+    ),
+    var(--nagotosha-paper, #fbf6ec);
+  background-size: var(--nagotosha-grid-size, 24px) var(--nagotosha-grid-size, 24px);
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", sans-serif;
 }
 
@@ -22,38 +33,6 @@
 .categoryArc:focus-visible {
   outline: 3px solid #147bc1;
   outline-offset: 3px;
-}
-
-.header {
-  position: relative;
-  z-index: 20;
-  display: flex;
-  height: 56px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 14px 5px 12px;
-  border-bottom: 1px solid #e7ded0;
-  background: var(--ivory);
-}
-
-.headerLogo {
-  width: 184px;
-  height: auto;
-}
-
-.previewBadge {
-  display: inline-flex;
-  min-height: 36px;
-  align-items: center;
-  padding: 0 13px;
-  border: 1px solid #dbcfc1;
-  border-radius: 999px;
-  color: #b8322c;
-  background: #fff;
-  box-shadow: 0 3px 0 #eee3d7;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .08em;
 }
 
 .hero {
@@ -650,71 +629,6 @@
   font-weight: 700;
 }
 
-.bottomNav {
-  position: fixed;
-  z-index: 50;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: grid;
-  width: min(100%, 448px);
-  min-height: calc(66px + env(safe-area-inset-bottom, 0px));
-  margin: 0 auto;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 4px 6px env(safe-area-inset-bottom, 0px);
-  border-top: 1px solid #ded3c6;
-  background: #fffdf8;
-  box-shadow: 0 -5px 0 rgba(7, 26, 77, .08);
-}
-
-.navItem {
-  position: relative;
-  display: grid;
-  min-width: 0;
-  min-height: 58px;
-  place-content: center;
-  gap: 2px;
-  border: 0;
-  color: #59657a;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.navItem[data-active="true"] {
-  color: var(--coral);
-}
-
-.navItem[data-active="true"]::after {
-  content: "";
-  position: absolute;
-  right: 24%;
-  bottom: 4px;
-  left: 24%;
-  height: 3px;
-  border-radius: 99px;
-  background: var(--coral);
-}
-
-.navItem small {
-  position: absolute;
-  top: 2px;
-  right: 3px;
-  padding: 1px 3px;
-  border-radius: 4px;
-  color: #765c38;
-  background: #f4e8cf;
-  font-size: 7px;
-  line-height: 1.2;
-}
-
-.navMarker {
-  display: block;
-  min-height: 17px;
-  font-size: 15px;
-  line-height: 1;
-}
-
 .sheetBackdrop {
   position: fixed;
   z-index: 80;
@@ -780,21 +694,6 @@
 }
 
 @media (max-width: 374px) {
-  .header {
-    padding-right: 9px;
-    padding-left: 8px;
-  }
-
-  .headerLogo {
-    width: 166px;
-  }
-
-  .previewBadge {
-    min-height: 34px;
-    padding: 0 10px;
-    font-size: 10px;
-  }
-
   .categoryHeading {
     padding-right: 14px;
     padding-left: 14px;
