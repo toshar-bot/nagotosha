@@ -11,6 +11,11 @@ import {
   scrollDecisionV3ElementIntoView,
   scrollDecisionV3WindowTo,
 } from '@/lib/decision-v3-motion';
+import {
+  hasDecisionV3PartyHandoffParameters,
+  readDecisionV3PartyHandoff,
+  removeDecisionV3PartyHandoffParameters,
+} from '@/lib/decision-v3-party-handoff';
 import { decisionV3Reducer, hasAllRequiredConditions, createInitialDecisionV3State } from '@/lib/decision-v3-state';
 import { loadDecisionV3Session, saveDecisionV3Session } from '@/lib/decision-v3-session';
 import type { DecisionV3Conditions, DecisionV3Step, RefineChoice } from '@/types/decision-v3';
@@ -32,14 +37,40 @@ export default function DecisionV3App() {
   const conditionsRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const width = Number(new URLSearchParams(window.location.search).get('qaWidth'));
+    const initialSearch = window.location.search;
+    const width = Number(new URLSearchParams(initialSearch).get('qaWidth'));
     if ([320, 360, 375, 390, 430].includes(width)) setQaWidth(width);
-    const restored =
+    const restoredState =
       readDecisionV3HistoryState(window.history.state)
       ?? loadDecisionV3Session();
+    const partyHandoff = readDecisionV3PartyHandoff(initialSearch);
+    const restored = partyHandoff
+      ? decisionV3Reducer(restoredState, {
+          type: 'SET_CONDITION',
+          group: 'party',
+          value: partyHandoff,
+        })
+      : restoredState;
+
+    if (hasDecisionV3PartyHandoffParameters(initialSearch)) {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        removeDecisionV3PartyHandoffParameters(window.location.href),
+      );
+    }
+
     dispatch({ type: 'RESTORE', state: restored });
     replaceDecisionV3History(restored);
     setHydrated(true);
+
+    if (partyHandoff) {
+      setActiveHomeSection('conditions');
+      window.requestAnimationFrame(() => {
+        conditionsRef.current = document.getElementById('decision-v3-conditions');
+        scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
+      });
+    }
   }, []);
 
   useEffect(() => {

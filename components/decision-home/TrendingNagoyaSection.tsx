@@ -11,10 +11,10 @@ type TrendingNagoyaSectionProps = {
 
 export default function TrendingNagoyaSection({ topics, onTopicClick }: TrendingNagoyaSectionProps) {
   return (
-    <section className={styles.trending} aria-labelledby="trending-nagoya-title">
+    <section className={styles.trending} aria-labelledby="home-pickup-title">
       <div className={styles.trendingHeading}>
         <span aria-hidden="true" className={styles.headingBar} />
-        <h2 id="trending-nagoya-title">いま話題の名古屋</h2>
+        <h2 id="home-pickup-title">ピックアップ</h2>
       </div>
       {topics.length === 0 ? (
         <div className={styles.topicEmpty}>

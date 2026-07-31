@@ -4,9 +4,15 @@
   --ivory: var(--nagotosha-card-bg, #fffdf8);
   --body: var(--nagotosha-text-primary, #1e2a44);
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 100dvh;
-  overflow-x: clip;
-  padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  margin-inline: auto;
+  box-sizing: border-box;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   color: var(--navy);
   background:
     linear-gradient(
@@ -23,6 +29,13 @@
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", sans-serif;
 }
 
+.page > main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .page button,
 .page a {
   -webkit-tap-highlight-color: transparent;
@@ -37,8 +50,12 @@
 
 .hero {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   aspect-ratio: 3 / 2;
   height: auto;
+  box-sizing: border-box;
   overflow: hidden;
   isolation: isolate;
   background: #f8f1dc;
@@ -47,11 +64,16 @@
 .heroArtwork {
   position: absolute;
   inset: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .heroPhoto {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: auto;
   object-fit: contain;
   object-position: top center;
@@ -80,6 +102,287 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.partySection {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 14px 6px;
+  scroll-margin-top: 8px;
+  background: transparent;
+}
+
+.partyHeading,
+.keywordHeading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.partyHeading {
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 1px;
+}
+
+.partyHeading::before,
+.partyHeading::after {
+  content: "";
+  width: 32px;
+  height: 26px;
+  flex: 0 0 auto;
+  background:
+    linear-gradient(
+      68deg,
+      transparent 42%,
+      var(--coral) 43%,
+      var(--coral) 57%,
+      transparent 58%
+    ) 2px 2px / 12px 22px no-repeat,
+    linear-gradient(
+      68deg,
+      transparent 42%,
+      var(--nagotosha-accent-gold, #eab646) 43%,
+      var(--nagotosha-accent-gold, #eab646) 57%,
+      transparent 58%
+    ) 19px 6px / 10px 16px no-repeat;
+}
+
+.partyHeading::after {
+  transform: scaleX(-1);
+}
+
+.partyHeading h2,
+.keywordHeading h2 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1.2;
+}
+
+.partyHeading h2 {
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.partyIntro {
+  margin: 0 0 7px;
+  color: #4f586b;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.partyGrid {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.partyButton {
+  position: relative;
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 74px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border: 2px solid #d9cabb;
+  border-radius: 18px;
+  color: var(--navy);
+  background: var(--ivory);
+  box-shadow: 0 3px 0 #eadcca;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.partyButton[data-selected="true"] {
+  border-color: var(--coral);
+  background: #fff4e6;
+  box-shadow: 0 3px 0 #c92e28;
+}
+
+.partyButton:active {
+  translate: 0 2px;
+  box-shadow: 0 2px 0 #eadcca;
+}
+
+.partyButton[data-selected="true"]:active {
+  box-shadow: 0 2px 0 #c92e28;
+}
+
+.partyIcon {
+  display: block;
+  width: 56px;
+  height: 56px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.partyLabel {
+  display: grid;
+  min-width: 0;
+  gap: 0;
+  justify-items: start;
+  white-space: nowrap;
+}
+
+.partyLabel > span {
+  display: block;
+}
+
+.partyCheck {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 2px solid #c9bba9;
+  border-radius: 999px;
+  color: transparent;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.partyButton[data-selected="true"] .partyCheck {
+  border-color: var(--coral);
+  color: #fff;
+  background: var(--coral);
+}
+
+.quickDecisionCta {
+  display: flex;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 17px;
+  color: #fff;
+  background: #d63a28;
+  background-image: none;
+  box-shadow: 0 2px 0 #a6291d;
+  opacity: 1;
+  filter: none;
+  -webkit-text-fill-color: #fff;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.quickDecisionCta:disabled {
+  color: #fff;
+  background: #d63a28;
+  background-image: none;
+  box-shadow: none;
+  opacity: 1;
+  filter: none;
+  -webkit-text-fill-color: #fff;
+  cursor: not-allowed;
+}
+
+.keywordSection {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 4px 14px 18px;
+}
+
+.keywordHeading {
+  margin-bottom: 10px;
+}
+
+.keywordHeading h2 {
+  flex: 1;
+}
+
+.preparingBadge {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid #aa9c8a;
+  border-radius: 999px;
+  color: #5e584f;
+  background: #f2ece2;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.keywordPreview {
+  display: grid;
+  min-height: 52px;
+  grid-template-columns: 25px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 2px solid #d9cabb;
+  border-radius: 15px;
+  color: #6d675f;
+  background: #f4ede3;
+}
+
+.keywordPreview input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #6d675f;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.keywordPreview input::placeholder {
+  color: #756f67;
+  opacity: 1;
+}
+
+.keywordSearchIcon {
+  position: relative;
+  display: block;
+  width: 17px;
+  height: 17px;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+
+.keywordSearchIcon::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  bottom: -4px;
+  width: 8px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.keywordSection > p {
+  margin: 7px 2px 0;
+  color: #625c53;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .categorySection {
@@ -693,7 +996,62 @@
   background: #fff;
 }
 
+@media (max-width: 399px) {
+  .partyButton {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 16px;
+  }
+
+  .partyIcon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .partyCheck {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 @media (max-width: 374px) {
+  .partySection,
+  .keywordSection {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .partyGrid {
+    gap: 8px;
+  }
+
+  .partyButton {
+    min-height: 68px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .partyIcon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .partyCheck {
+    width: 20px;
+    height: 20px;
+  }
+
+  .quickDecisionCta {
+    min-height: 56px;
+    margin-top: 10px;
+    font-size: 19px;
+  }
+
   .categoryHeading {
     padding-right: 14px;
     padding-left: 14px;
@@ -740,7 +1098,73 @@
   }
 }
 
+@media (max-width: 330px) {
+  .partyButton {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding-right: 4px;
+    padding-left: 4px;
+    font-size: 15px;
+  }
+
+  .partyIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .partyCheck {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 374px) and (max-height: 600px) {
+  .partySection {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .partyHeading {
+    gap: 6px;
+  }
+
+  .partyHeading::before,
+  .partyHeading::after {
+    width: 24px;
+    height: 22px;
+  }
+
+  .partyHeading h2 {
+    font-size: 20px;
+  }
+
+  .partyIntro {
+    margin-bottom: 5px;
+    font-size: 13px;
+    letter-spacing: -.03em;
+    text-align: center;
+  }
+
+  .partyGrid {
+    row-gap: 2px;
+    column-gap: 8px;
+  }
+
+  .partyButton {
+    min-height: 66px;
+  }
+
+  .quickDecisionCta {
+    margin-top: 8px;
+  }
+}
+
 @media (min-width: 375px) and (max-width: 382px) {
+  .partyIcon {
+    width: 48px;
+    height: 48px;
+  }
+
   .categoryArc {
     --coverflow-step: 88px;
   }

@@ -1,49 +1,63 @@
 'use client';
 
 import { LazyMotion, MotionConfig } from 'motion/react';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-  DECISION_HOME_CATEGORIES,
-  getDecisionHomeCategory,
-} from '@/data/decision-home-categories';
+import Image from 'next/image';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { logDecisionHomeEvent } from '@/lib/decision-home-analytics';
 import {
   readDecisionHomeFocusSession,
   readDecisionHomeSession,
-  writeDecisionHomeFocusSession,
 } from '@/lib/decision-home-session';
-import type { CategoryId, HomeState, TopicCard } from '@/types/decision-home';
-import CategoryPrimaryCta from './CategoryPrimaryCta';
-import ComingSoonSheet from './ComingSoonSheet';
-import ConditionResumePanel from './ConditionResumePanel';
-import HomeBottomNav from './HomeBottomNav';
+import type { HomeState, TopicCard } from '@/types/decision-home';
+import type { PartyChoice } from '@/types/decision-v3';
 import HomeHeader from './HomeHeader';
 import HomeHero from './HomeHero';
-import MotionCategoryArc, { type MotionCategoryArcHandle } from './MotionCategoryArc';
 import TrendingNagoyaSection from './TrendingNagoyaSection';
 import styles from './home-functional.module.css';
 
 const loadFeatures = () => import('./motion-features').then((module) => module.default);
 
-type SheetState = {
-  readonly title: string;
-  readonly description: string;
-  readonly actionLabel?: string;
-  readonly onAction?: () => void;
-};
+const PARTY_OPTIONS: ReadonlyArray<{
+  readonly id: PartyChoice;
+  readonly label: string;
+  readonly visualLines: readonly string[];
+  readonly iconSrc: string;
+}> = [
+  {
+    id: 'solo',
+    label: '一人でも',
+    visualLines: ['一人でも'],
+    iconSrc: '/decision/home-functional/party-display/party-solo-display.png',
+  },
+  {
+    id: 'pair',
+    label: '2人',
+    visualLines: ['2人'],
+    iconSrc: '/decision/home-functional/party-display/party-pair-display.png',
+  },
+  {
+    id: 'family',
+    label: '家族・子供',
+    visualLines: ['家族', '子供'],
+    iconSrc: '/decision/home-functional/party-display/party-family-display.png',
+  },
+  {
+    id: 'group',
+    label: '友人・グループ',
+    visualLines: ['友人', 'グループ'],
+    iconSrc: '/decision/home-functional/party-display/party-group-display.png',
+  },
+];
 
 export default function HomeFunctionalPreview() {
   const [homeState, setHomeState] = useState<HomeState>({
     kind: 'first-visit',
     focusedCategoryId: 'food',
   });
+  const [selectedParty, setSelectedParty] = useState<PartyChoice | null>(null);
   const [topics, setTopics] = useState<readonly TopicCard[]>([]);
-  const [sheet, setSheet] = useState<SheetState | null>(null);
-  const [demoConditions, setDemoConditions] = useState(false);
   const [stateReady, setStateReady] = useState(false);
-  const [hasMovedCategory, setHasMovedCategory] = useState(false);
-  const categoryArcRef = useRef<MotionCategoryArcHandle>(null);
-  const sessionStorageRef = useRef<Storage>();
+  const partySectionRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     document.body.dataset.decisionHomeFunctional = 'true';
@@ -61,7 +75,6 @@ export default function HomeFunctionalPreview() {
         return undefined;
       }
     })();
-    sessionStorageRef.current = storage;
     const restoredFocus = readDecisionHomeFocusSession(storage);
     const restored = readDecisionHomeSession(storage);
     if (restored) {
@@ -86,7 +99,6 @@ export default function HomeFunctionalPreview() {
         void import('@/data/decision-home-topics.development').then((module) => {
           if (cancelled) return;
           if (demo === 'conditions-resumable') {
-            setDemoConditions(true);
             setHomeState({
               kind: 'conditions-resumable',
               focusedCategoryId: 'food',
@@ -117,77 +129,9 @@ export default function HomeFunctionalPreview() {
     }
   }, [topics]);
 
-  const focusedCategory = useMemo(
-    () => getDecisionHomeCategory(homeState.focusedCategoryId),
-    [homeState.focusedCategoryId],
-  );
-
-  const focusCategory = useCallback(
-    (categoryId: CategoryId, method: 'tap' | 'swipe' | 'keyboard') => {
-      setHomeState((current) => {
-        if (current.kind === 'conditions-resumable') {
-          return { ...current, focusedCategoryId: categoryId };
-        }
-        return {
-          kind: 'category-focused',
-          focusedCategoryId: categoryId,
-          selectedCategoryId: current.kind === 'category-focused' ? current.selectedCategoryId : undefined,
-        };
-      });
-      logDecisionHomeEvent({ name: 'category_focus', categoryId, method });
-    },
-    [],
-  );
-
-  const persistFocusedCategory = useCallback((categoryId: CategoryId) => {
-    writeDecisionHomeFocusSession(sessionStorageRef.current, categoryId);
-  }, []);
-
-  const openDecisionConditions = useCallback(() => {
-    window.location.assign('/home-decision-preview#decision');
-  }, []);
-
-  const returnToFood = useCallback(() => {
-    categoryArcRef.current?.requestCategory('food', 'tap');
-  }, []);
-
-  const selectCategory = useCallback(
-    (categoryId: CategoryId, method: 'card' | 'cta') => {
-      const category = getDecisionHomeCategory(categoryId);
-      if (category.availability === 'coming-soon') {
-        logDecisionHomeEvent({ name: 'category_coming_soon', categoryId });
-        setSheet({
-          title: `${category.label}は準備中です`,
-          description: '確認できた候補がそろうまで、食事の条件入力をお試しいただけます。',
-          actionLabel: '食事へ戻す',
-          onAction: () => {
-            setSheet(null);
-            returnToFood();
-          },
-        });
-        return;
-      }
-
-      setHomeState({
-        kind: 'category-focused',
-        focusedCategoryId: categoryId,
-        selectedCategoryId: categoryId,
-      });
-      logDecisionHomeEvent({ name: 'category_select', categoryId, method });
-      openDecisionConditions();
-    },
-    [openDecisionConditions, returnToFood],
-  );
-
-  const openConditions = useCallback(() => {
-    openDecisionConditions();
-  }, [openDecisionConditions]);
-
-  const openComingSoonFeature = useCallback((feature: string) => {
-    setSheet({
-      title: `${feature}は準備中です`,
-      description: '実データと安全確認がそろってから公開します。',
-    });
+  const openDecisionConditions = useCallback((party: PartyChoice) => {
+    const params = new URLSearchParams({ party, from: 'home' });
+    window.location.assign(`/decision-functional-preview-v3?${params.toString()}`);
   }, []);
 
   return (
@@ -202,53 +146,77 @@ export default function HomeFunctionalPreview() {
           <HomeHeader />
           <main>
             <HomeHero />
-            <section className={styles.categorySection} aria-labelledby="home-category-title">
-              <div className={styles.categoryHeading}>
-                <p className={styles.categoryKicker}>まずは</p>
-                <h2 id="home-category-title">楽しみ方を選ぶ</h2>
+            <section
+              ref={partySectionRef}
+              className={styles.partySection}
+              aria-labelledby="home-party-title"
+            >
+              <div className={styles.partyHeading}>
+                <h2 id="home-party-title">誰と行く？</h2>
               </div>
-              <p className={styles.categoryInstruction} aria-live="polite">
-                {hasMovedCategory ? '中央をもう一度タップで決定' : '気になるものを真ん中へ'}
-              </p>
-              <MotionCategoryArc
-                ref={categoryArcRef}
-                focusedCategoryId={homeState.focusedCategoryId}
-                selectedCategoryId={
-                  homeState.kind === 'category-focused' || homeState.kind === 'conditions-resumable'
-                    ? homeState.selectedCategoryId
-                    : undefined
-                }
-                onFocusCategory={focusCategory}
-                onFocusCategorySettled={persistFocusedCategory}
-                onSelectCategory={(categoryId) => selectCategory(categoryId, 'card')}
-                onFirstMove={() => setHasMovedCategory(true)}
-              />
-              <div className={styles.categoryDots} aria-hidden="true">
-                {DECISION_HOME_CATEGORIES.map((category) => (
-                  <span key={category.id} data-active={category.id === homeState.focusedCategoryId ? 'true' : 'false'} />
+              <p className={styles.partyIntro}>最初に近い条件を選びましょう</p>
+              <div className={styles.partyGrid} role="group" aria-label="一緒に行く人">
+                {PARTY_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={styles.partyButton}
+                    data-selected={selectedParty === option.id ? 'true' : 'false'}
+                    aria-label={option.label}
+                    aria-pressed={selectedParty === option.id}
+                    onClick={() => setSelectedParty(option.id)}
+                  >
+                    <Image
+                      className={styles.partyIcon}
+                      src={option.iconSrc}
+                      alt=""
+                      aria-hidden="true"
+                      width={512}
+                      height={512}
+                      sizes="72px"
+                    />
+                    <span className={styles.partyLabel} aria-hidden="true">
+                      {option.visualLines.map((line) => (
+                        <span key={line}>{line}</span>
+                      ))}
+                    </span>
+                    <span className={styles.partyCheck} aria-hidden="true">✓</span>
+                  </button>
                 ))}
               </div>
-              <CategoryPrimaryCta
-                category={focusedCategory}
-                onSelect={() => selectCategory(focusedCategory.id, 'cta')}
-                onReturnToFood={returnToFood}
-              />
+              <button
+                type="button"
+                className={styles.quickDecisionCta}
+                disabled={!selectedParty}
+                aria-disabled={!selectedParty}
+                onClick={() => {
+                  if (selectedParty) openDecisionConditions(selectedParty);
+                }}
+              >
+                条件からすぐ決める
+              </button>
             </section>
 
-            {homeState.kind === 'conditions-resumable' ? (
-              <ConditionResumePanel
-                conditionSummary={homeState.conditionSummary}
-                demo={demoConditions}
-                onEdit={() => {
-                  logDecisionHomeEvent({ name: 'condition_resume_edit' });
-                  openDecisionConditions();
-                }}
-                onContinue={() => {
-                  logDecisionHomeEvent({ name: 'condition_resume_continue' });
-                  openDecisionConditions();
-                }}
-              />
-            ) : null}
+            <section className={styles.keywordSection} aria-labelledby="home-keyword-title">
+              <div className={styles.keywordHeading}>
+                <span aria-hidden="true" className={styles.headingBar} />
+                <h2 id="home-keyword-title">キーワードから探す</h2>
+                <span className={styles.preparingBadge}>準備中</span>
+              </div>
+              <label className={styles.visuallyHidden} htmlFor="home-keyword-preview">
+                キーワード検索
+              </label>
+              <div className={styles.keywordPreview}>
+                <span className={styles.keywordSearchIcon} aria-hidden="true" />
+                <input
+                  id="home-keyword-preview"
+                  type="text"
+                  placeholder="焼き鳥・食べ放題・個室など"
+                  disabled
+                />
+              </div>
+              <p>キーワード検索は準備中です</p>
+            </section>
 
             <TrendingNagoyaSection
               topics={topics}
@@ -257,20 +225,6 @@ export default function HomeFunctionalPreview() {
               }}
             />
           </main>
-          <HomeBottomNav
-            onConditions={openConditions}
-            onDiscover={() => openComingSoonFeature('発見')}
-            onSaved={() => openComingSoonFeature('保存')}
-          />
-          {sheet ? (
-            <ComingSoonSheet
-              title={sheet.title}
-              description={sheet.description}
-              actionLabel={sheet.actionLabel}
-              onAction={sheet.onAction}
-              onClose={() => setSheet(null)}
-            />
-          ) : null}
         </div>
       </LazyMotion>
     </MotionConfig>
