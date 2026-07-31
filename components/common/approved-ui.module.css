@@ -113,7 +113,7 @@
   box-shadow: 0 -4px 16px rgba(30, 42, 68, 0.1);
 }
 
-.navButton {
+.bottomNav .navButton {
   position: relative;
   display: flex;
   min-width: 0;
@@ -128,7 +128,7 @@
   background: transparent;
   color: #59657a;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
 }
 
