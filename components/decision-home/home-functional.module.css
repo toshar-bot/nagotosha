@@ -3,6 +3,16 @@
   --coral: var(--nagotosha-accent-red, #d63a28);
   --ivory: var(--nagotosha-card-bg, #fffdf8);
   --body: var(--nagotosha-text-primary, #1e2a44);
+  --motion-instant: 0ms;
+  --motion-press: 80ms;
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --motion-celebrate: 1500ms;
+  --ease-press: ease;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   width: 100%;
   max-width: 100%;
@@ -208,6 +218,11 @@
   font-weight: 700;
   line-height: 1.25;
   text-align: left;
+  transition:
+    transform var(--motion-fast) var(--ease-press),
+    border-color var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .partyButton[data-selected="true"] {
@@ -216,13 +231,14 @@
   box-shadow: 0 3px 0 #c92e28;
 }
 
-.partyButton:active {
-  translate: 0 2px;
-  box-shadow: 0 2px 0 #eadcca;
+.partyButton:not(:disabled):active:not(:focus-visible) {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 1px 0 #eadcca;
+  transition-duration: var(--motion-press);
 }
 
-.partyButton[data-selected="true"]:active {
-  box-shadow: 0 2px 0 #c92e28;
+.partyButton[data-selected="true"]:not(:disabled):active:not(:focus-visible) {
+  box-shadow: 0 1px 0 #c92e28;
 }
 
 .partyIcon {
@@ -257,14 +273,24 @@
   border-radius: 999px;
   color: transparent;
   background: #fff;
+  opacity: 0;
+  transform: scale(0.88);
   font-size: 13px;
   line-height: 1;
+  transition:
+    opacity var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-pop),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard);
 }
 
 .partyButton[data-selected="true"] .partyCheck {
   border-color: var(--coral);
   color: #fff;
   background: var(--coral);
+  opacity: 1;
+  transform: scale(1);
 }
 
 .quickDecisionCta {
@@ -286,6 +312,15 @@
   -webkit-text-fill-color: #fff;
   font-size: 19px;
   font-weight: 700;
+  transition:
+    transform var(--motion-fast) var(--ease-press),
+    box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.quickDecisionCta:not(:disabled):active:not(:focus-visible) {
+  transform: translateY(2px) scale(0.985);
+  box-shadow: 0 0 0 #a6291d;
+  transition-duration: var(--motion-press);
 }
 
 .quickDecisionCta:disabled {
@@ -973,11 +1008,26 @@
   line-height: 1.65;
 }
 
+.sheet button,
+.resumeActions button,
+.returnFoodButton,
+.comingSoonMain {
+  transition: transform var(--motion-fast) var(--ease-press);
+}
+
 .sheet button {
   min-height: 46px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
+}
+
+.sheet button:not(:disabled):active:not(:focus-visible),
+.resumeActions button:not(:disabled):active:not(:focus-visible),
+.returnFoodButton:not(:disabled):active:not(:focus-visible),
+.comingSoonMain:not(:disabled):active:not(:focus-visible) {
+  transform: scale(0.97);
+  transition-duration: var(--motion-press);
 }
 
 .sheetPrimary {
@@ -1207,5 +1257,17 @@
   .page *::before,
   .page *::after {
     scroll-behavior: auto !important;
+  }
+
+  .partyButton,
+  .partyCheck,
+  .quickDecisionCta,
+  .sheet button,
+  .resumeActions button,
+  .returnFoodButton,
+  .comingSoonMain {
+    animation-duration: var(--motion-instant) !important;
+    transition-duration: var(--motion-instant) !important;
+    transform: none !important;
   }
 }
