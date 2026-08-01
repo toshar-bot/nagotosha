@@ -9,7 +9,6 @@ import {
 } from '@/lib/decision-v3-history';
 import {
   scrollDecisionV3ElementIntoView,
-  scrollDecisionV3WindowTo,
 } from '@/lib/decision-v3-motion';
 import {
   hasDecisionV3PartyHandoffParameters,
@@ -25,7 +24,6 @@ import { CompareV3 } from './CompareV3';
 import { ConditionPanelV3 } from './ConditionPanelV3';
 import { DecidedV3 } from './DecidedV3';
 import { DetailV3 } from './DetailV3';
-import { HeroV3 } from './HeroV3';
 import styles from './decision-v3.module.css';
 
 export default function DecisionV3App() {
@@ -105,12 +103,6 @@ export default function DecisionV3App() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [state]);
 
-  const scrollToConditions = useCallback(() => {
-    conditionsRef.current = document.getElementById('decision-v3-conditions');
-    setActiveHomeSection('conditions');
-    scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
-  }, []);
-
   useEffect(() => {
     if (state.step !== 'home') return;
 
@@ -140,17 +132,18 @@ export default function DecisionV3App() {
   }, [state.step]);
 
   const navigateHomeSection = useCallback((section: 'home' | 'conditions') => {
+    if (section === 'home') {
+      window.location.assign('/home-decision-functional-preview');
+      return;
+    }
+
     setActiveHomeSection(section);
     if (state.step !== 'home') {
       navigate('home');
     }
     window.setTimeout(() => {
-      if (section === 'conditions') {
-        conditionsRef.current = document.getElementById('decision-v3-conditions');
-        scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
-      } else {
-        scrollDecisionV3WindowTo({ top: 0 });
-      }
+      conditionsRef.current = document.getElementById('decision-v3-conditions');
+      scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
     }, state.step === 'home' ? 0 : 40);
   }, [navigate, state.step]);
 
@@ -177,28 +170,25 @@ export default function DecisionV3App() {
       <BrandHeader priority />
 
       {state.step === 'home' ? (
-        <>
-          <HeroV3 onStart={scrollToConditions} />
-          <ConditionPanelV3
-            conditions={state.conditions}
-            refine={state.refine}
-            onCondition={(group: keyof DecisionV3Conditions, value: string) =>
-              dispatch({ type: 'SET_CONDITION', group, value })
-            }
-            onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
-            onSubmit={() => {
-              const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES' });
-              const candidateState = decisionV3Reducer(preparedState, {
-                type: 'GO',
-                step: 'candidates',
-              });
-              replaceDecisionV3History(state);
-              dispatch({ type: 'RESTORE', state: candidateState });
-              pushDecisionV3History(candidateState);
-              window.scrollTo({ top: 0, behavior: 'auto' });
-            }}
-          />
-        </>
+        <ConditionPanelV3
+          conditions={state.conditions}
+          refine={state.refine}
+          onCondition={(group: keyof DecisionV3Conditions, value: string) =>
+            dispatch({ type: 'SET_CONDITION', group, value })
+          }
+          onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
+          onSubmit={() => {
+            const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES' });
+            const candidateState = decisionV3Reducer(preparedState, {
+              type: 'GO',
+              step: 'candidates',
+            });
+            replaceDecisionV3History(state);
+            dispatch({ type: 'RESTORE', state: candidateState });
+            pushDecisionV3History(candidateState);
+            window.scrollTo({ top: 0, behavior: 'auto' });
+          }}
+        />
       ) : null}
 
       {state.step === 'candidates' && state.selectionResult ? (

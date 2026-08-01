@@ -225,140 +225,195 @@
 
 .conditionsStage {
   scroll-margin-top: 12px;
-  padding: 32px 16px 40px;
+  padding: 20px 16px 108px;
 }
 
 .sectionHeading {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 26px;
+  position: relative;
+  margin-bottom: 22px;
+  padding: 0 4px 0 18px;
 }
 
-.headingRule {
+.sectionHeading::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 3px;
+  left: 0;
   width: 6px;
-  height: 56px;
-  flex: 0 0 auto;
-  margin-top: 3px;
-  border-radius: 999px;
+  border-radius: 99px;
   background: var(--red);
 }
 
 .sectionHeading h2 {
   margin: 0;
-  color: var(--ink);
-  font-size: 25px;
-  font-weight: 700;
-  line-height: 1.3;
+  color: var(--red);
+  font-size: clamp(25px, 7vw, 29px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
 .sectionHeading p {
-  margin: 8px 0 0;
+  margin: 7px 0 0;
   color: var(--ink-600);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
+  line-height: 1.5;
 }
 
 .conditionGroups {
   display: grid;
-  gap: 28px;
+  gap: 16px;
 }
 
 .conditionGroup,
 .refineGroup {
   min-width: 0;
   margin: 0;
-  padding: 0;
-  border: 0;
+  border: 1px solid #ead9bc;
+  border-radius: 18px;
+  padding: 13px 12px 14px;
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: 0 3px 0 rgba(214, 190, 146, 0.28);
 }
 
-.conditionGroup legend,
-.refineGroup legend {
-  display: block;
-  width: 100%;
-  margin: 0 0 10px;
-  padding: 0 0 0 12px;
-  border-left: 5px solid var(--red);
+.conditionGroupHeading {
+  display: flex;
+  min-width: 0;
+  min-height: 36px;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
   color: var(--ink);
   font-size: 18px;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.25;
 }
 
-.conditionGroup legend small,
-.refineGroup legend small {
+.conditionHeadingIcon {
+  display: block;
+  width: 31px;
+  height: 31px;
+  flex: 0 0 31px;
+  color: var(--ink);
+  background-color: currentColor;
+  -webkit-mask: var(--condition-heading-icon) center / contain no-repeat;
+  mask: var(--condition-heading-icon) center / contain no-repeat;
+}
+
+.conditionGroupNumber {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.conditionGroupTitle {
+  min-width: 0;
+}
+
+.conditionGroupHeading small {
+  margin-left: auto;
   color: var(--ink-600);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .conditionGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .conditionOption {
   position: relative;
   display: flex;
   min-width: 0;
-  min-height: 106px;
+  min-height: 94px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  border: 2px solid #e2d6c2;
+  gap: 3px;
+  border: 1.5px solid #dfd0b9;
   border-radius: 14px;
-  padding: 7px 4px 8px;
-  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 2px 7px;
+  background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 3px 0 rgba(205, 189, 163, 0.7);
+  box-shadow: 0 2px 0 rgba(205, 189, 163, 0.62);
   cursor: pointer;
+  transition:
+    transform var(--motion-fast) var(--ease-press),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .conditionOption img {
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
 }
 
-.conditionOption span {
+.conditionOptionContent {
+  --condition-icon-size: 44px;
+
+  display: grid;
+  grid-template-rows: var(--condition-icon-size) minmax(2.36em, auto);
+  align-content: center;
+  justify-items: center;
+  row-gap: 3px;
+  font-size: 13px;
+}
+
+.conditionOptionLabel {
+  display: flex;
+  min-block-size: 2.36em;
   min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.18;
+  text-align: center;
   overflow-wrap: normal;
 }
 
-.conditionOptionSelected {
-  border-color: var(--red-press);
-  background: var(--red);
-  color: #fff;
-  box-shadow: 0 4px 0 var(--red-press);
+.conditionOptionLabel > span {
+  display: block;
+  white-space: nowrap;
 }
 
-.conditionOptionSelected::after {
-  content: "✓";
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  display: grid;
-  width: 20px;
-  height: 20px;
-  place-items: center;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: var(--red-press);
-  color: #fff;
-  font-size: 12px;
+.conditionOption:not(:disabled):active:not(:focus-visible) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 1px 0 rgba(205, 189, 163, 0.62);
+  transition-duration: var(--motion-press);
+}
+
+.decisionV3Root .conditionOptionSelected {
+  border: 2px solid #d63a28;
+  background: #fff1ee;
+  color: #d63a28;
   font-weight: 700;
-  line-height: 1;
+  box-shadow: 0 2px 0 rgba(214, 58, 40, 0.24);
 }
 
-.conditionOptionSelected img {
-  border-radius: 10px;
-  background: #fff;
+.decisionV3Root .conditionOptionSelected img {
+  filter: brightness(0) saturate(100%) invert(28%) sepia(67%) saturate(2227%) hue-rotate(344deg) brightness(88%) contrast(88%);
+}
+
+.decisionV3Root .conditionOptionSelected .conditionOptionLabel {
+  color: #d63a28;
 }
 
 .mapFallbackArtwork {
@@ -381,13 +436,22 @@
 }
 
 .refineGroup {
-  margin-top: 34px;
+  margin-top: 16px;
 }
 
 .refineGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 7px;
+}
+
+.refineInitialGrid,
+.refineWideGrid {
+  margin-top: 7px;
+}
+
+.refineWideGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .refineChip {
@@ -397,24 +461,78 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border: 1.5px solid #d9ccb8;
+  border: 1.5px solid #dccdb6;
   border-radius: 12px;
   padding: 8px 6px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast) var(--ease-press),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard);
 }
 
-.refineChip svg {
+.refineMaterialIcon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
   flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-image: var(--refine-icon);
+  mask-image: var(--refine-icon);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.refineLabel {
+  min-width: 0;
+  text-align: center;
+}
+
+.refineLabel > span {
+  display: block;
+  white-space: nowrap;
+}
+
+.refineInitialGrid .refineChip,
+.refineWideGrid .refineChip {
+  min-height: 62px;
+}
+
+.decisionV3Root .refineInitialGrid .refineChip,
+.decisionV3Root .refineWideGrid .refineChip {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.refineInitialGrid .refineChip {
+  flex-direction: column;
+  gap: 2px;
+  padding-inline: 4px;
 }
 
 .refineChipSelected {
   border: 2px solid var(--red);
   background: var(--red-50);
   color: var(--red-press);
+}
+
+.refineChipSelected .refineMaterialIcon {
+  color: var(--red);
+}
+
+.refineChip:not(:disabled):active:not(:focus-visible) {
+  transform: scale(0.97);
+  transition-duration: var(--motion-press);
 }
 
 .refineDetails {
@@ -456,8 +574,8 @@
 
 .conditionSubmit {
   display: grid;
-  gap: 12px;
-  margin-top: 30px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .conditionSummary {
@@ -1405,24 +1523,47 @@
     padding-left: 12px;
   }
 
+  .sectionHeading {
+    padding-left: 16px;
+  }
+
+  .sectionHeading h2 {
+    font-size: 25px;
+  }
+
+  .conditionGroup,
+  .refineGroup {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .conditionGroupHeading {
+    gap: 5px;
+  }
+
   .conditionGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
   }
 
   .conditionOption {
-    min-height: 102px;
+    min-height: 86px;
   }
 
   .conditionOption img {
-    width: 50px;
-    height: 50px;
+    width: 36px;
+    height: 36px;
   }
 
-  .conditionOption span {
+  .conditionOptionContent {
+    --condition-icon-size: 36px;
+  }
+
+  .conditionOptionLabel {
     font-size: 13px;
   }
 
-  .refineGrid {
+  .refineGrid:not(.refineInitialGrid):not(.refineWideGrid) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1478,15 +1619,19 @@
   }
 
   .conditionOption {
-    min-height: 112px;
+    min-height: 98px;
   }
 
   .conditionOption img {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
   }
 
-  .conditionOption span {
+  .conditionOptionContent {
+    --condition-icon-size: 48px;
+  }
+
+  .conditionOptionLabel {
     font-size: 13px;
   }
 }
