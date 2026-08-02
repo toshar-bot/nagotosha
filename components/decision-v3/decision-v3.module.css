@@ -934,6 +934,300 @@
   background: linear-gradient(transparent, var(--paper) 24%);
 }
 
+.candidateStage {
+  padding-top: 14px;
+}
+
+.candidateScreenHeader {
+  margin-bottom: 12px;
+}
+
+.candidateScreenHeader h1 {
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.candidateScreenHeader h1 > span {
+  margin-left: 2px;
+  color: var(--red);
+}
+
+.candidateConditions {
+  margin-bottom: 14px;
+  border: 1px solid #e4dac9;
+  border-radius: 16px;
+  padding: 13px 14px 12px;
+  background: var(--surface);
+  box-shadow: 0 3px 10px rgba(30, 42, 68, 0.07);
+}
+
+.candidateConditionsHeading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.candidateConditionsHeading h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.orderNote {
+  display: inline-flex;
+  min-height: 32px;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid #efd7a8;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #fffaf0;
+  color: #6e6251;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.selectedConditionChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.selectedConditionChips > span {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  border: 1px solid #d9dfe8;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.candidateDataNotice {
+  margin: 10px 0 0;
+  border-top: 1px solid #eee5d7;
+  padding-top: 8px;
+  color: var(--ink-600);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.candidateHorizontalCard {
+  min-width: 0;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(30, 42, 68, 0.09);
+}
+
+.candidateCardMain {
+  display: grid;
+  grid-template-columns: minmax(0, clamp(96px, 30cqi, 124px)) minmax(0, 1fr);
+  min-width: 0;
+  align-items: start;
+  gap: 12px;
+}
+
+.candidatePhotoButton {
+  min-width: 0;
+  align-self: start;
+  border-radius: 12px;
+}
+
+.candidatePhotoButton .candidatePhotoThumb {
+  border-radius: 12px;
+}
+
+.candidatePhotoButton > .candidateLabel {
+  top: 6px;
+  left: 6px;
+  min-height: 26px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.candidateCardBody {
+  min-width: 0;
+  padding: 0;
+}
+
+.candidateCardBody h2 {
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.candidateMetadata {
+  display: grid;
+  gap: 1px;
+  margin: 6px 0 0;
+}
+
+.candidateMetadata > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.candidateMetadata dt,
+.candidateMetadata dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.candidateMetadata dt {
+  color: var(--ink-600);
+  font-weight: 700;
+}
+
+.candidateMetadata dd {
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.candidateReasonBox {
+  margin-top: 6px;
+  border: 1px solid #ecd5a4;
+  border-radius: 12px;
+  padding: 6px;
+  background: #fff8e8;
+}
+
+.candidateReasonBox h3 {
+  margin: 0 0 4px;
+  color: #8d5d08;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.candidateReasonBox ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.candidateReasonBox li {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #e3d7c3;
+  border-radius: 999px;
+  padding: 2px 6px;
+  background: #fffdf8;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.candidateCardActions {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  margin-top: 10px;
+}
+
+.candidateCardActions .primaryButton,
+.candidateCardActions .secondaryButton {
+  min-width: 0;
+  min-height: 46px;
+  padding: 8px 6px;
+  font-size: 14px;
+}
+
+.candidateStateCard {
+  border: 1px solid #e0d3bc;
+  border-radius: 16px;
+  padding: 18px;
+  background: var(--surface);
+  box-shadow: 0 4px 12px rgba(30, 42, 68, 0.08);
+}
+
+.candidateStateCard h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.candidateStateCard p,
+.candidateStateCard ul {
+  margin: 10px 0 0;
+  color: var(--ink-600);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.candidateStateCard ul {
+  padding-left: 1.3em;
+}
+
+.samePriorityNote {
+  margin-top: 14px;
+  border: 1px solid #ecd5a4;
+  border-radius: 16px;
+  padding: 13px 14px;
+  background: #fffaf0;
+}
+
+.samePriorityNote strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.samePriorityNote p {
+  margin: 5px 0 0;
+  color: var(--ink-600);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.candidateCompareAction {
+  margin-top: 12px;
+}
+
+.candidateCompareAction .primaryButton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 58px;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 17px;
+}
+
+.comparisonCount {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #fff;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .detailHeader {
   display: flex;
   align-items: center;
@@ -1570,6 +1864,62 @@
   .screenHeader h1,
   .compareHeader h1 {
     font-size: 22px;
+  }
+
+  .candidateConditions {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .candidateConditionsHeading {
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .candidateConditionsHeading h2 {
+    font-size: 16px;
+  }
+
+  .orderNote {
+    min-height: 30px;
+    padding-inline: 8px;
+  }
+
+  .candidateCardMain {
+    gap: 8px;
+  }
+
+  .candidateHorizontalCard {
+    padding: 8px;
+  }
+
+  .candidateCardBody h2 {
+    font-size: 17px;
+  }
+
+  .candidateReasonBox {
+    padding: 7px;
+  }
+
+  .candidateCardActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .candidateCardActions .primaryButton,
+  .candidateCardActions .secondaryButton {
+    font-size: 13px;
+  }
+
+  .candidateCompareAction .primaryButton {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+    font-size: 16px;
+  }
+
+  .comparisonCount {
+    justify-self: center;
+    min-height: 26px;
   }
 
   .compareHeader {

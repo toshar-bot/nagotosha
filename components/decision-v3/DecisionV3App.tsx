@@ -148,7 +148,6 @@ export default function DecisionV3App() {
   }, [navigate, state.step]);
 
   const conditionsReady = hasAllRequiredConditions(state.conditions);
-  const candidatesReady = Boolean(state.selectionResult);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId =
     state.detailId
@@ -194,6 +193,8 @@ export default function DecisionV3App() {
       {state.step === 'candidates' && state.selectionResult ? (
         <CandidateListV3
           selectionResult={state.selectionResult}
+          conditions={state.conditions}
+          refine={state.refine}
           compareIds={state.compareIds}
           onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
           onDetail={(candidateId) => navigate('detail', candidateId)}
@@ -249,7 +250,6 @@ export default function DecisionV3App() {
       <BottomNavV3
         step={state.step}
         activeHomeSection={activeHomeSection}
-        conditionsReady={conditionsReady && candidatesReady}
         compareReady={compareReady}
         previewWidth={qaWidth}
         onNavigate={(step) => {

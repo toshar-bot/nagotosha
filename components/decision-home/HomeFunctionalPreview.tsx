@@ -8,6 +8,7 @@ import {
   readDecisionHomeFocusSession,
   readDecisionHomeSession,
 } from '@/lib/decision-home-session';
+import { DECISION_V3_PARTY_LABELS } from '@/lib/decision-v3-party-handoff';
 import type { HomeState, TopicCard } from '@/types/decision-home';
 import type { PartyChoice } from '@/types/decision-v3';
 import HomeHeader from './HomeHeader';
@@ -25,26 +26,26 @@ const PARTY_OPTIONS: ReadonlyArray<{
 }> = [
   {
     id: 'solo',
-    label: '一人でも',
-    visualLines: ['一人でも'],
+    label: DECISION_V3_PARTY_LABELS.solo,
+    visualLines: [DECISION_V3_PARTY_LABELS.solo],
     iconSrc: '/decision/home-functional/party-display/party-solo-display.png',
   },
   {
     id: 'pair',
-    label: '2人',
-    visualLines: ['2人'],
+    label: DECISION_V3_PARTY_LABELS.pair,
+    visualLines: [DECISION_V3_PARTY_LABELS.pair],
     iconSrc: '/decision/home-functional/party-display/party-pair-display.png',
   },
   {
     id: 'family',
-    label: '家族・子供',
-    visualLines: ['家族', '子供'],
+    label: DECISION_V3_PARTY_LABELS.family,
+    visualLines: [DECISION_V3_PARTY_LABELS.family],
     iconSrc: '/decision/home-functional/party-display/party-family-display.png',
   },
   {
     id: 'group',
-    label: '友人・グループ',
-    visualLines: ['友人', 'グループ'],
+    label: DECISION_V3_PARTY_LABELS.group,
+    visualLines: ['友人・', 'グループ'],
     iconSrc: '/decision/home-functional/party-display/party-group-display.png',
   },
 ];

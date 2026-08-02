@@ -6,11 +6,13 @@ import {
   getDecisionV3PointerIntent,
   reorderDecisionV3Ids,
 } from '@/lib/decision-v3-pointer-reorder';
+import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import type { CompareAxis } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
 import styles from './decision-v3.module.css';
 
 const compareLabel = (index: number) => `候補${String.fromCharCode(65 + index)}`;
+const axisLabel = (axis: CompareAxis) => formatDecisionV3PartyDisplayText(COMPARE_AXIS_LABELS[axis]);
 const DIALOG_FOCUSABLE_SELECTOR = [
   'button:not([disabled])',
   '[href]',
@@ -67,7 +69,7 @@ function axisValue(candidateId: string, axis: CompareAxis) {
     'late-night': 'DEMOでは未確認',
     quiet: candidate.facts.atmosphere,
   };
-  return values[axis];
+  return formatDecisionV3PartyDisplayText(values[axis]);
 }
 
 export function CompareV3({
@@ -234,7 +236,7 @@ export function CompareV3({
             className={activeAxis === axis ? styles.axisActive : ''}
             onClick={() => setActiveAxis(axis)}
           >
-            {COMPARE_AXIS_LABELS[axis]}
+            {axisLabel(axis)}
           </button>
         ))}
       </div>
@@ -371,7 +373,7 @@ export function CompareV3({
       </div>
 
       <section className={styles.compareFocus} aria-live="polite">
-        <h2>いま比較中：{COMPARE_AXIS_LABELS[activeAxis]}</h2>
+        <h2>いま比較中：{axisLabel(activeAxis)}</h2>
         <div>
           {candidates.map((candidate, index) => (
             <article key={candidate.id}>
@@ -477,7 +479,7 @@ export function CompareV3({
                         }
                       }}
                     >
-                      {selected ? '✓ ' : ''}{COMPARE_AXIS_LABELS[axis]}
+                      {selected ? '✓ ' : ''}{axisLabel(axis)}
                     </button>
                     {selected ? (
                       <span>
@@ -485,7 +487,7 @@ export function CompareV3({
                           type="button"
                           onClick={() => onReorderAxis(axis, -1)}
                           disabled={axes.indexOf(axis) === 0}
-                          aria-label={`${COMPARE_AXIS_LABELS[axis]}を前へ`}
+                          aria-label={`${axisLabel(axis)}を前へ`}
                         >
                           ←
                         </button>
@@ -493,7 +495,7 @@ export function CompareV3({
                           type="button"
                           onClick={() => onReorderAxis(axis, 1)}
                           disabled={axes.indexOf(axis) === axes.length - 1}
-                          aria-label={`${COMPARE_AXIS_LABELS[axis]}を後ろへ`}
+                          aria-label={`${axisLabel(axis)}を後ろへ`}
                         >
                           →
                         </button>

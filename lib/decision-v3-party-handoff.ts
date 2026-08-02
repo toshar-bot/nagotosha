@@ -2,6 +2,26 @@ import type { PartyChoice } from '@/types/decision-v3';
 
 const PARTY_CHOICES: readonly PartyChoice[] = ['solo', 'pair', 'family', 'group'];
 
+export const DECISION_V3_PARTY_LABELS = {
+  solo: '1人でも',
+  pair: '2人',
+  family: '家族・子供',
+  group: '友人・グループ',
+} satisfies Record<PartyChoice, string>;
+
+const LEGACY_PARTY_COPY_REPLACEMENTS = [
+  ['一人でも', '1人でも'],
+  ['デート・ふたり', '2人'],
+  ['家族・子どもと', '家族・子供'],
+] as const;
+
+export function formatDecisionV3PartyDisplayText(text: string) {
+  return LEGACY_PARTY_COPY_REPLACEMENTS.reduce(
+    (formatted, [legacy, approved]) => formatted.split(legacy).join(approved),
+    text,
+  );
+}
+
 export function readDecisionV3PartyHandoff(search: string): PartyChoice | null {
   const params = new URLSearchParams(search);
   const partyValues = params.getAll('party');

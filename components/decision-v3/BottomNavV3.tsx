@@ -4,7 +4,6 @@ import type { DecisionV3Step } from '@/types/decision-v3';
 type Props = {
   step: DecisionV3Step;
   activeHomeSection: 'home' | 'conditions';
-  conditionsReady: boolean;
   compareReady: boolean;
   previewWidth?: number | null;
   onNavigate: (step: DecisionV3Step) => void;
@@ -14,7 +13,6 @@ type Props = {
 export function BottomNavV3({
   step,
   activeHomeSection,
-  conditionsReady,
   compareReady,
   previewWidth,
   onNavigate,
@@ -24,7 +22,7 @@ export function BottomNavV3({
     step === 'compare' || step === 'decided'
       ? 'compare'
       : step === 'candidates' || step === 'detail'
-        ? 'interested'
+        ? 'search'
         : activeHomeSection === 'conditions'
           ? 'search'
           : 'home';
@@ -51,7 +49,7 @@ export function BottomNavV3({
     <AppBottomNav
       activeItem={activeItem}
       disabledItems={[
-        ...(!conditionsReady ? ['interested' as const] : []),
+        'interested',
         ...(!compareReady ? ['compare' as const] : []),
         'history',
       ]}

@@ -6,9 +6,11 @@ import styles from './decision-v3.module.css';
 
 export function CandidatePhotoV3({
   candidate,
+  fallbackMessage: fallbackMessageOverride,
   ratio = 'wide',
 }: {
   candidate: DecisionV3Candidate;
+  fallbackMessage?: string;
   ratio?: 'wide' | 'detail' | 'thumb';
 }) {
   const source = ratio === 'detail' && candidate.photo.detailSrc
@@ -19,9 +21,9 @@ export function CandidatePhotoV3({
   const sourceRegistered = candidate.photo.availability === 'available' && Boolean(source);
   const sourceFailed = sourceRegistered && failedPhotoKey === photoKey;
   const intrinsicHeight = ratio === 'detail' && candidate.photo.detailSrc ? 675 : 750;
-  const fallbackMessage = sourceRegistered
+  const fallbackMessage = fallbackMessageOverride ?? (sourceRegistered
     ? '写真を表示できませんでした'
-    : '写真はまだ登録されていません';
+    : '写真はまだ登録されていません');
   const photoClassName = `${styles.candidatePhoto} ${
     ratio === 'detail' ? styles.candidatePhotoDetail : ratio === 'thumb' ? styles.candidatePhotoThumb : ''
   }`;

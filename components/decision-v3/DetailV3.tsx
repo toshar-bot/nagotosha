@@ -1,4 +1,5 @@
 import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
+import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
 import { MapFallbackV3 } from './MapFallbackV3';
 import styles from './decision-v3.module.css';
@@ -28,7 +29,9 @@ export function DetailV3({ candidateId, inCompare, onBack, onToggleCompare, onSh
         <h1 id="detail-title">{candidate.name}</h1>
         <p className={styles.detailMeta}>{candidate.area} ｜ {candidate.genre}　予算：{candidate.budget}</p>
         <div className={styles.tagRow}>
-          {candidate.tags.map((tag) => <span key={tag}>{tag}</span>)}
+          {candidate.tags.map((tag) => (
+            <span key={tag}>{formatDecisionV3PartyDisplayText(tag)}</span>
+          ))}
         </div>
         <section className={styles.recommendBox}>
           <h2>おすすめポイント</h2>
@@ -72,7 +75,7 @@ export function DetailV3({ candidateId, inCompare, onBack, onToggleCompare, onSh
         </button>
         <section className={styles.deepFacts}>
           <h2>選ぶ前に確認したいこと</h2>
-          <p>向いている人：{candidate.facts.solo}。{candidate.facts.longStay}。</p>
+          <p>向いている人：{formatDecisionV3PartyDisplayText(candidate.facts.solo)}。{candidate.facts.longStay}。</p>
           <p>未確認項目はDEMO上でも断定せず、確認状態をそのまま表示しています。</p>
         </section>
       </div>

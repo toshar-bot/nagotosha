@@ -4,10 +4,12 @@ import {
   CONDITION_GROUPS,
   REFINE_CHOICES,
 } from '@/data/decision-v3-demo';
+import { DECISION_V3_PARTY_LABELS } from '@/lib/decision-v3-party-handoff';
 import { hasAllRequiredConditions } from '@/lib/decision-v3-state';
 import type {
   DecisionV3ConditionDraft,
   DecisionV3Conditions,
+  PartyChoice,
   RefineChoice,
 } from '@/types/decision-v3';
 import styles from './decision-v3.module.css';
@@ -29,10 +31,14 @@ const CONDITION_GROUP_META: Record<
   mood: { number: '4', title: '今の気分は？', icon: '/decision/v3/icons/material-symbols-rounded/sentiment-satisfied.svg' },
 };
 
+const PARTY_OPTION_LABEL_LINES = {
+  solo: [DECISION_V3_PARTY_LABELS.solo],
+  pair: [DECISION_V3_PARTY_LABELS.pair],
+  family: [DECISION_V3_PARTY_LABELS.family],
+  group: ['友人・', 'グループ'],
+} satisfies Record<PartyChoice, ReadonlyArray<string>>;
+
 const OPTION_LABEL_LINES: Partial<Record<string, ReadonlyArray<string>>> = {
-  'party:pair': ['2人'],
-  'party:family': ['家族・子供'],
-  'party:group': ['友人・', 'グループ'],
   'area:meieki': ['名駅・', '駅周辺'],
   'area:osu': ['大須・', '上前津'],
   'area:any': ['こだわら', 'ない'],
@@ -123,12 +129,17 @@ export function ConditionPanelV3({ conditions, refine, onCondition, onRefine, on
             <div className={styles.conditionGrid}>
               {group.options.map((option) => {
                 const selected = conditions[group.key] === option.value;
-                const labelLines = OPTION_LABEL_LINES[`${group.key}:${option.value}`]
-                  ?? [option.label];
+                const partyLabel = group.key === 'party'
+                  ? DECISION_V3_PARTY_LABELS[option.value as PartyChoice]
+                  : undefined;
+                const labelLines = group.key === 'party'
+                  ? PARTY_OPTION_LABEL_LINES[option.value as PartyChoice]
+                  : OPTION_LABEL_LINES[`${group.key}:${option.value}`] ?? [option.label];
                 return (
                   <button
                     key={option.value}
                     type="button"
+                    aria-label={partyLabel}
                     aria-pressed={selected}
                     className={`${styles.conditionOption} ${selected ? styles.conditionOptionSelected : ''}`}
                     onClick={() => onCondition(group.key, option.value)}

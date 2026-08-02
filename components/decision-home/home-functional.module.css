@@ -253,15 +253,23 @@
 }
 
 .partyLabel {
-  display: grid;
+  display: flex;
+  width: 100%;
   min-width: 0;
+  align-items: center;
+  justify-content: center;
+  justify-self: stretch;
+  flex-direction: column;
   gap: 0;
-  justify-items: start;
+  padding-inline: 4px;
+  text-align: center;
   white-space: nowrap;
 }
 
 .partyLabel > span {
   display: block;
+  width: auto;
+  text-align: center;
 }
 
 .partyCheck {
@@ -1051,6 +1059,10 @@
     font-size: 16px;
   }
 
+  .partyLabel > span {
+    letter-spacing: -0.025em;
+  }
+
   .partyIcon {
     width: 52px;
     height: 52px;
@@ -1151,6 +1163,10 @@
     padding-right: 4px;
     padding-left: 4px;
     font-size: 15px;
+  }
+
+  .partyLabel > span {
+    letter-spacing: -0.04em;
   }
 
   .partyIcon {

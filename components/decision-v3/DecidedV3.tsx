@@ -1,6 +1,7 @@
 'use client';
 
 import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
+import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
 import styles from './decision-v3.module.css';
 
@@ -34,7 +35,9 @@ export function DecidedV3({ candidateId, onCandidates }: Props) {
         <p className={styles.detailMeta}>{candidate.area} ｜ {candidate.genre}　予算：{candidate.budget}</p>
         <CandidatePhotoV3 candidate={candidate} />
         <div className={styles.tagRow}>
-          {candidate.tags.map((tag) => <span key={tag}>{tag}</span>)}
+          {candidate.tags.map((tag) => (
+            <span key={tag}>{formatDecisionV3PartyDisplayText(tag)}</span>
+          ))}
         </div>
         <section className={styles.recommendBox}>
           <h3>おすすめポイント</h3>
