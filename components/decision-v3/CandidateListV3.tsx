@@ -1,8 +1,6 @@
+import type { CSSProperties } from 'react';
 import { DEMO_CANDIDATES, REFINE_CHOICES } from '@/data/decision-v3-demo';
-import {
-  DECISION_V3_PARTY_LABELS,
-  formatDecisionV3PartyDisplayText,
-} from '@/lib/decision-v3-party-handoff';
+import { DECISION_V3_PARTY_LABELS } from '@/lib/decision-v3-party-handoff';
 import type {
   CandidateSelectionResult,
   DecisionV3ConditionDraft,
@@ -49,23 +47,58 @@ const CONDITION_CHIP_LABELS = {
   [Group in keyof DecisionV3Conditions]: Record<DecisionV3Conditions[Group], string>;
 };
 
-function getSelectedConditionLabels(
+const CANDIDATE_ICON_PATHS = {
+  party: '/decision/v3/icons/material-symbols-rounded/group.svg',
+  budget: '/decision/v3/icons/material-symbols-rounded/payments.svg',
+  area: '/decision/v3/icons/material-symbols-rounded/location-on.svg',
+  mood: '/decision/v3/icons/material-symbols-rounded/sentiment-satisfied.svg',
+  refine: '/decision/v3/icons/material-symbols-rounded/tune.svg',
+  genre: '/decision/v3/icons/material-symbols-rounded/restaurant.svg',
+} as const;
+
+type SelectedConditionChip = {
+  key: string;
+  label: string;
+  iconPath: string;
+};
+
+function CandidateUiIcon({ iconPath, className = '' }: { iconPath: string; className?: string }) {
+  return (
+    <span
+      className={`${styles.candidateUiIcon} ${className}`}
+      style={{ '--candidate-ui-icon': `url("${iconPath}")` } as CSSProperties}
+      aria-hidden="true"
+    />
+  );
+}
+
+function getSelectedConditionChips(
   conditions: DecisionV3ConditionDraft,
   refine: RefineChoice[],
 ) {
-  const labels: string[] = [];
+  const chips: SelectedConditionChip[] = [];
 
-  if (conditions.party) labels.push(CONDITION_CHIP_LABELS.party[conditions.party]);
-  if (conditions.budget) labels.push(CONDITION_CHIP_LABELS.budget[conditions.budget]);
-  if (conditions.area) labels.push(CONDITION_CHIP_LABELS.area[conditions.area]);
-  if (conditions.mood) labels.push(CONDITION_CHIP_LABELS.mood[conditions.mood]);
+  if (conditions.party) {
+    chips.push({ key: 'party', label: CONDITION_CHIP_LABELS.party[conditions.party], iconPath: CANDIDATE_ICON_PATHS.party });
+  }
+  if (conditions.budget) {
+    chips.push({ key: 'budget', label: CONDITION_CHIP_LABELS.budget[conditions.budget], iconPath: CANDIDATE_ICON_PATHS.budget });
+  }
+  if (conditions.area) {
+    chips.push({ key: 'area', label: CONDITION_CHIP_LABELS.area[conditions.area], iconPath: CANDIDATE_ICON_PATHS.area });
+  }
+  if (conditions.mood) {
+    chips.push({ key: 'mood', label: CONDITION_CHIP_LABELS.mood[conditions.mood], iconPath: CANDIDATE_ICON_PATHS.mood });
+  }
 
   for (const refineValue of refine) {
     const option = REFINE_CHOICES.find((choice) => choice.value === refineValue);
-    if (option) labels.push(option.label);
+    if (option) {
+      chips.push({ key: `refine:${refineValue}`, label: option.label, iconPath: CANDIDATE_ICON_PATHS.refine });
+    }
   }
 
-  return labels;
+  return chips;
 }
 
 export function CandidateListV3({
@@ -83,7 +116,7 @@ export function CandidateListV3({
         .map((candidateId) => DEMO_CANDIDATES.find((candidate) => candidate.id === candidateId))
         .filter((candidate): candidate is (typeof DEMO_CANDIDATES)[number] => Boolean(candidate))
     : [];
-  const selectedConditionLabels = getSelectedConditionLabels(conditions, refine);
+  const selectedConditionChips = getSelectedConditionChips(conditions, refine);
   const title =
     selectionResult.kind === 'matched'
       ? null
@@ -120,16 +153,15 @@ export function CandidateListV3({
       <section className={styles.candidateConditions} aria-labelledby="selected-conditions-title">
         <div className={styles.candidateConditionsHeading}>
           <h2 id="selected-conditions-title">選択中の条件</h2>
-          {selectionResult.kind === 'matched' ? (
-            <span className={styles.orderNote}>順位ではありません</span>
-          ) : null}
         </div>
         <div className={styles.selectedConditionChips} aria-label="選択した条件">
-          {selectedConditionLabels.map((label) => <span key={label}>{label}</span>)}
+          {selectedConditionChips.map((chip) => (
+            <span key={chip.key}>
+              <CandidateUiIcon iconPath={chip.iconPath} />
+              <span>{chip.label}</span>
+            </span>
+          ))}
         </div>
-        <p className={styles.candidateDataNotice}>
-          候補内容と写真は操作確認用のDEMOです。営業・空席などのリアルタイム情報ではありません。
-        </p>
       </section>
 
       {selectionResult.kind === 'no-match' ? (
@@ -158,48 +190,50 @@ export function CandidateListV3({
             {candidates.map((candidate) => {
               const selected = compareIds.includes(candidate.id);
               const atLimit = compareIds.length >= 3 && !selected;
-              const reasons = (selectionResult.reasonsByCandidateId[candidate.id] ?? []).slice(0, 3);
 
               return (
                 <article key={candidate.id} className={`${styles.candidateCard} ${styles.candidateHorizontalCard}`}>
                   <div className={styles.candidateCardMain}>
-                    <button
-                      type="button"
-                      className={`${styles.photoButton} ${styles.candidatePhotoButton}`}
-                      onClick={() => onDetail(candidate.id)}
-                      aria-label={`${candidate.name}の詳細を見る`}
-                    >
-                      <CandidatePhotoV3
-                        candidate={candidate}
-                        ratio="thumb"
-                        fallbackMessage="写真はまだ登録されていません"
-                      />
+                    <div className={styles.candidateMedia}>
                       <span className={styles.candidateLabel}>{candidate.neutralLabel}</span>
-                    </button>
+                      <button
+                        type="button"
+                        className={`${styles.photoButton} ${styles.candidatePhotoButton}`}
+                        onClick={() => onDetail(candidate.id)}
+                        aria-label={`${candidate.name}の詳細を見る`}
+                      >
+                        <CandidatePhotoV3
+                          candidate={candidate}
+                          ratio="thumb"
+                          fallbackMessage="写真はまだ登録されていません"
+                        />
+                      </button>
+                    </div>
                     <div className={`${styles.candidateBody} ${styles.candidateCardBody}`}>
                       <h2>{candidate.name}</h2>
                       <dl className={styles.candidateMetadata}>
                         <div>
-                          <dt>エリア</dt>
+                          <dt>
+                            <CandidateUiIcon iconPath={CANDIDATE_ICON_PATHS.area} className={styles.candidateMetaIcon} />
+                            <span className={styles.srOnly}>エリア</span>
+                          </dt>
                           <dd>{candidate.area}</dd>
                         </div>
                         <div>
-                          <dt>価格帯</dt>
+                          <dt>
+                            <CandidateUiIcon iconPath={CANDIDATE_ICON_PATHS.budget} className={styles.candidateMetaIcon} />
+                            <span className={styles.srOnly}>価格帯</span>
+                          </dt>
                           <dd>{candidate.budget}</dd>
                         </div>
                         <div>
-                          <dt>ジャンル</dt>
+                          <dt>
+                            <CandidateUiIcon iconPath={CANDIDATE_ICON_PATHS.genre} className={styles.candidateMetaIcon} />
+                            <span className={styles.srOnly}>ジャンル</span>
+                          </dt>
                           <dd>{candidate.genre}</dd>
                         </div>
                       </dl>
-                      <section className={styles.candidateReasonBox} aria-label="条件に合う理由">
-                        <h3>条件に合う理由</h3>
-                        <ul>
-                          {reasons.map((reason) => (
-                            <li key={reason}>{formatDecisionV3PartyDisplayText(reason)}</li>
-                          ))}
-                        </ul>
-                      </section>
                     </div>
                   </div>
                   <div className={`${styles.cardActions} ${styles.candidateCardActions}`}>
@@ -208,7 +242,7 @@ export function CandidateListV3({
                       className={styles.secondaryButton}
                       onClick={() => onDetail(candidate.id)}
                     >
-                      詳細を見る
+                      お店の詳細
                     </button>
                     <button
                       type="button"
@@ -230,7 +264,7 @@ export function CandidateListV3({
             <strong>{candidates.length}件は同じ優先度です</strong>
             <p>
               {candidates.map((candidate) => candidate.neutralLabel).join('／')}
-              は識別用です。条件に合う理由と違いを見比べて選べます。
+              は識別用です。店舗ごとの特徴と違いを見比べて選べます。
             </p>
           </aside>
 

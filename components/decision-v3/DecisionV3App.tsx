@@ -166,7 +166,7 @@ export default function DecisionV3App() {
           } as CSSProperties
         : undefined}
     >
-      <BrandHeader priority />
+      <BrandHeader actions="none" priority />
 
       {state.step === 'home' ? (
         <ConditionPanelV3

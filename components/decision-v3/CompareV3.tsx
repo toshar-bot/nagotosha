@@ -222,8 +222,10 @@ export function CompareV3({
           type="button"
           className={styles.textButton}
           onClick={openEditor}
+          aria-label="比較項目を編集"
         >
-          項目編集
+          <span>項目</span>
+          <span>編集</span>
         </button>
       </header>
 
