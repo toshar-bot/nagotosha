@@ -8,6 +8,17 @@ import type {
   PartyChoice,
   RefineChoice,
 } from '@/types/decision-v3';
+import { buildGoogleMapsDirectionsUrl } from '@/lib/decision-v3-detail-actions';
+
+// --- demo-b「矢場とん 名古屋駅エスカ店」verified store facts (2026-08-03) ---
+const YABATON_ESCA_ADDRESS = '愛知県名古屋市中村区椿町6-9 エスカ地下街';
+const YABATON_ESCA_PHONE_HREF = 'tel:0524526500';
+const YABATON_ESCA_OFFICIAL_URL =
+  'https://www.yabaton.com/modules/shop/index.php?content_id=5';
+const YABATON_ESCA_PRIMARY_SOURCE =
+  'https://www.yabaton.com/modules/shop/index.php?content_id=5';
+const YABATON_ESCA_SUPPORT_SOURCE = 'https://www.esca-sc.com/shop_guide/126/';
+const YABATON_ESCA_VERIFIED_AT = '2026-08-03';
 
 export const CONDITION_GROUPS = [
   {
@@ -222,14 +233,87 @@ export const DEMO_CANDIDATES: DecisionV3Candidate[] = [
       longStay: '食事中心',
     },
     actions: [
-      { type: 'official', label: '公式を見る', availability: 'unknown' },
-      { type: 'access', label: 'アクセス（地図）', availability: 'unknown' },
+      {
+        type: 'access',
+        label: 'Googleマップで行く',
+        href: buildGoogleMapsDirectionsUrl(YABATON_ESCA_ADDRESS),
+        availability: 'verified',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_SUPPORT_SOURCE,
+      },
+      {
+        type: 'reservation',
+        label: '電話で予約',
+        href: YABATON_ESCA_PHONE_HREF,
+        availability: 'verified',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
+      {
+        type: 'official',
+        label: '公式サイト',
+        href: YABATON_ESCA_OFFICIAL_URL,
+        availability: 'verified',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
     ],
     photo: {
       src: '/decision/v3/demo-photos/candidate-b.webp',
       alt: 'みそかつ料理（操作確認用のDEMO画像）',
       availability: 'available',
       rightsStatus: 'unverified',
+    },
+    detailInfo: {
+      address: {
+        value: YABATON_ESCA_ADDRESS,
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_SUPPORT_SOURCE,
+      },
+      hours: {
+        value: '11:00〜22:00（L.O. 21:30）',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
+      phone: {
+        value: '052-452-6500',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
+      seats: {
+        value: '49席',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
+      reservation: {
+        value: '予約可',
+        verifiedAt: YABATON_ESCA_VERIFIED_AT,
+        source: YABATON_ESCA_PRIMARY_SOURCE,
+      },
+      confirmedChips: ['予約可', '49席', 'エスカ地下街'],
+      highlights: [
+        {
+          title: '味噌かつ専門店',
+          body: '昭和22年創業の矢場とんが運営する店舗です。',
+          icon: 'restaurant.svg',
+          verifiedAt: YABATON_ESCA_VERIFIED_AT,
+          source: YABATON_ESCA_PRIMARY_SOURCE,
+        },
+        {
+          title: '素材へのこだわり',
+          body: '南九州産の豚肉を使用し、パン粉と揚げ油にも独自の工夫があります。',
+          icon: 'tune.svg',
+          verifiedAt: YABATON_ESCA_VERIFIED_AT,
+          source: YABATON_ESCA_PRIMARY_SOURCE,
+        },
+        {
+          title: '49席・予約可',
+          body: '店内は49席あり、公式情報で予約可と確認できます。',
+          icon: 'group.svg',
+          verifiedAt: YABATON_ESCA_VERIFIED_AT,
+          source: YABATON_ESCA_SUPPORT_SOURCE,
+        },
+      ],
     },
     demoSelection: {
       supportedPartyTypes: ['solo', 'pair', 'family', 'group'],

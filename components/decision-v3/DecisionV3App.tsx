@@ -29,7 +29,6 @@ import styles from './decision-v3.module.css';
 export default function DecisionV3App() {
   const [state, dispatch] = useReducer(decisionV3Reducer, undefined, createInitialDecisionV3State);
   const [hydrated, setHydrated] = useState(false);
-  const [shareNotice, setShareNotice] = useState('');
   const [qaWidth, setQaWidth] = useState<number | null>(null);
   const [activeHomeSection, setActiveHomeSection] = useState<'home' | 'conditions'>('home');
   const conditionsRef = useRef<HTMLElement | null>(null);
@@ -149,9 +148,7 @@ export default function DecisionV3App() {
 
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
-  const detailCandidateId =
-    state.detailId
-    ?? (state.selectionResult?.kind === 'matched' ? state.selectionResult.candidateIds[0] : null);
+  const detailCandidateId = state.detailId;
 
   return (
     <main
@@ -203,20 +200,18 @@ export default function DecisionV3App() {
         />
       ) : null}
 
-      {state.step === 'detail' && detailCandidateId ? (
-        <>
-          <DetailV3
-            candidateId={detailCandidateId}
-            inCompare={state.compareIds.includes(detailCandidateId)}
-            onBack={() => navigate('candidates')}
-            onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
-            onShare={() => {
-              setShareNotice('共有機能はDEMOでは端末外へ送信しません。');
-              window.setTimeout(() => setShareNotice(''), 2800);
-            }}
-          />
-          {shareNotice ? <p className={styles.toast} role="status">{shareNotice}</p> : null}
-        </>
+      {state.step === 'detail' ? (
+        <DetailV3
+          candidateId={detailCandidateId}
+          inCompare={Boolean(detailCandidateId && state.compareIds.includes(detailCandidateId))}
+          compareLimitReached={Boolean(
+            detailCandidateId
+            && !state.compareIds.includes(detailCandidateId)
+            && state.compareIds.length >= 3
+          )}
+          onBack={() => navigate('candidates')}
+          onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
+        />
       ) : null}
 
       {state.step === 'compare' ? (

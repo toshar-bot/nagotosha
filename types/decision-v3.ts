@@ -107,6 +107,33 @@ export type DecisionV3DemoSelectionProfile = {
   longStay: DecisionV3KnownBoolean;
 };
 
+export type VerifiedDetailText = {
+  value: string;
+  verifiedAt: string;
+  source: string;
+};
+
+export type VerifiedDetailItem = {
+  title: string;
+  body: string;
+  icon?: string;
+  verifiedAt: string;
+  source: string;
+};
+
+// Optional, display-only verified detail data. Never used by the selector or
+// candidate-eligibility logic. Only present for candidates whose store facts
+// have been verified against a primary source.
+export type DecisionV3DetailInfo = {
+  address?: VerifiedDetailText;
+  hours?: VerifiedDetailText;
+  phone?: VerifiedDetailText;
+  seats?: VerifiedDetailText;
+  reservation?: VerifiedDetailText;
+  confirmedChips?: string[];
+  highlights?: VerifiedDetailItem[];
+};
+
 export type DecisionV3Candidate = {
   id: string;
   neutralLabel: '候補A' | '候補B' | '候補C';
@@ -130,6 +157,7 @@ export type DecisionV3Candidate = {
   };
   actions: CandidateAction[];
   photo: DecisionV3CandidatePhoto;
+  detailInfo?: DecisionV3DetailInfo;
   demoSelection: DecisionV3DemoSelectionProfile;
 };
 
