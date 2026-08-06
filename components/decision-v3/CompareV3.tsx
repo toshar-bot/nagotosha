@@ -1,11 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { ALL_COMPARE_AXES, COMPARE_AXIS_LABELS, DEMO_CANDIDATES } from '@/data/decision-v3-demo';
-import {
-  getDecisionV3PointerIntent,
-  reorderDecisionV3Ids,
-} from '@/lib/decision-v3-pointer-reorder';
+import { reorderDecisionV3Ids } from '@/lib/decision-v3-pointer-reorder';
 import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import type { CompareAxis } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
@@ -13,6 +10,28 @@ import styles from './decision-v3.module.css';
 
 const compareLabel = (index: number) => `候補${String.fromCharCode(65 + index)}`;
 const axisLabel = (axis: CompareAxis) => formatDecisionV3PartyDisplayText(COMPARE_AXIS_LABELS[axis]);
+const UNKNOWN_MARKERS = ['未確認', '確認中', '想定'];
+const COMPARE_AXIS_ICON_PATHS = {
+  budget: '/decision/v3/icons/material-symbols-rounded/payments.svg',
+  area: '/decision/v3/icons/material-symbols-rounded/location-on.svg',
+  access: '/decision/v3/icons/material-symbols-rounded/location-on.svg',
+  atmosphere: '/decision/v3/icons/material-symbols-rounded/sentiment-satisfied.svg',
+  smoking: '/decision/v3/icons/material-symbols-rounded/refine/smoke-free.svg',
+  seats: '/decision/v3/icons/material-symbols-rounded/refine/counter.svg',
+  'private-room': '/decision/v3/icons/material-symbols-rounded/refine/private-room.svg',
+  tatami: '/decision/v3/icons/material-symbols-rounded/refine/tatami.svg',
+  solo: '/decision/v3/icons/material-symbols-rounded/group.svg',
+  kids: '/decision/v3/icons/material-symbols-rounded/refine/kids-ok.svg',
+  reservation: '/decision/v3/icons/material-symbols-rounded/refine/reservable.svg',
+  'long-stay': '/decision/v3/icons/material-symbols-rounded/refine/long-stay.svg',
+  wifi: '/decision/v3/icons/material-symbols-rounded/refine/wifi.svg',
+  power: '/decision/v3/icons/material-symbols-rounded/refine/power.svg',
+  'rain-safe': '/decision/v3/icons/material-symbols-rounded/refine/rain-safe.svg',
+  parking: '/decision/v3/icons/material-symbols-rounded/refine/parking.svg',
+  terrace: '/decision/v3/icons/material-symbols-rounded/refine/terrace.svg',
+  'late-night': '/decision/v3/icons/material-symbols-rounded/refine/late-night.svg',
+  quiet: '/decision/v3/icons/material-symbols-rounded/refine/quiet.svg',
+} satisfies Record<CompareAxis, string>;
 const DIALOG_FOCUSABLE_SELECTOR = [
   'button:not([disabled])',
   '[href]',
@@ -21,7 +40,6 @@ const DIALOG_FOCUSABLE_SELECTOR = [
   'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
-const INTERACTIVE_POINTER_TARGET = 'button, a, input, select, textarea';
 
 type PointerReorderSession = {
   pointerId: number;
@@ -31,23 +49,23 @@ type PointerReorderSession = {
   engaged: boolean;
 };
 
+const POINTER_REORDER_THRESHOLD = 8;
+
 type Props = {
   compareOrder: string[];
   axes: CompareAxis[];
-  chosenId: string | null;
   onBack: () => void;
   onReorder: (candidateId: string, direction: -1 | 1) => void;
   onSetOrder: (ids: string[]) => void;
-  onChoose: (candidateId: string) => void;
   onToggleAxis: (axis: CompareAxis) => void;
   onReorderAxis: (axis: CompareAxis, direction: -1 | 1) => void;
-  onDecide: () => void;
-  onRestart: () => void;
+  onDecide: (candidateId: string) => void;
 };
 
 function axisValue(candidateId: string, axis: CompareAxis) {
   const candidate = DEMO_CANDIDATES.find((item) => item.id === candidateId);
-  if (!candidate) return '—';
+  if (!candidate) return '確認中';
+
   const values: Record<CompareAxis, string> = {
     budget: candidate.budget,
     area: candidate.area,
@@ -61,36 +79,36 @@ function axisValue(candidateId: string, axis: CompareAxis) {
     kids: candidate.facts.kids,
     reservation: candidate.facts.reservation,
     'long-stay': candidate.facts.longStay,
-    wifi: 'DEMOでは未確認',
-    power: 'DEMOでは未確認',
-    'rain-safe': candidate.tags.includes('雨でも安心') ? '雨でも安心' : 'DEMOでは未確認',
-    parking: 'DEMOでは未確認',
-    terrace: 'DEMOでは未確認',
-    'late-night': 'DEMOでは未確認',
+    wifi: '未確認',
+    power: '未確認',
+    'rain-safe': candidate.tags.includes('雨でも安心') ? '雨でも安心' : '未確認',
+    parking: '未確認',
+    terrace: '未確認',
+    'late-night': '未確認',
     quiet: candidate.facts.atmosphere,
   };
-  return formatDecisionV3PartyDisplayText(values[axis]);
+  const displayValue = formatDecisionV3PartyDisplayText(values[axis]).trim();
+  return displayValue && !UNKNOWN_MARKERS.some((marker) => displayValue.includes(marker))
+    ? displayValue
+    : '確認中';
 }
 
 export function CompareV3({
   compareOrder,
   axes,
-  chosenId,
   onBack,
   onReorder,
   onSetOrder,
-  onChoose,
   onToggleAxis,
   onReorderAxis,
   onDecide,
-  onRestart,
 }: Props) {
-  const [activeAxis, setActiveAxis] = useState<CompareAxis>(axes[0] ?? 'budget');
   const [editorOpen, setEditorOpen] = useState(false);
   const [axisLimit, setAxisLimit] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [pointerDraggedId, setPointerDraggedId] = useState<string | null>(null);
   const [grabbedId, setGrabbedId] = useState<string | null>(null);
+  const [activeAxisId, setActiveAxisId] = useState<CompareAxis>(() => axes[0] ?? 'budget');
   const pointerSessionRef = useRef<PointerReorderSession | null>(null);
   const compareContentRef = useRef<HTMLDivElement | null>(null);
   const editorDialogRef = useRef<HTMLElement | null>(null);
@@ -98,18 +116,26 @@ export function CompareV3({
   const editorCloseRef = useRef<HTMLButtonElement | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const candidates = useMemo(
-    () =>
-      compareOrder
-        .map((id) => DEMO_CANDIDATES.find((item) => item.id === id))
-        .filter((candidate): candidate is (typeof DEMO_CANDIDATES)[number] => Boolean(candidate)),
+    () => compareOrder
+      .map((id) => DEMO_CANDIDATES.find((item) => item.id === id))
+      .filter((candidate): candidate is (typeof DEMO_CANDIDATES)[number] => Boolean(candidate)),
     [compareOrder],
   );
+  const activeAxis = axes.includes(activeAxisId) ? activeAxisId : (axes[0] ?? 'budget');
+
+  useEffect(() => {
+    if (!axes.includes(activeAxisId) && axes[0]) {
+      setActiveAxisId(axes[0]);
+    }
+  }, [activeAxisId, axes]);
 
   useEffect(() => {
     if (!editorOpen) return;
 
     const background = compareContentRef.current;
-    const bottomNav = document.querySelector<HTMLElement>('nav[aria-label="意思決定フロー"]');
+    const bottomNav = document.querySelector<HTMLElement>(
+      'nav[aria-label="なごとしゃ共通ナビゲーション"], nav[aria-label="意思決定フロー"]',
+    );
     const previousBodyOverflow = document.body.style.overflow;
     const previousBackgroundAriaHidden = background?.getAttribute('aria-hidden');
     const previousNavAriaHidden = bottomNav?.getAttribute('aria-hidden');
@@ -147,7 +173,6 @@ export function CompareV3({
       : editorTriggerRef.current;
     setEditorOpen(true);
   };
-
   const closeEditor = () => setEditorOpen(false);
 
   const handleDialogKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -166,7 +191,6 @@ export function CompareV3({
       editorDialogRef.current?.focus();
       return;
     }
-
     const first = focusable.at(0);
     const last = focusable.at(-1);
     if (!first || !last) return;
@@ -180,263 +204,237 @@ export function CompareV3({
   };
 
   const clearPointerSession = (element?: HTMLElement, pointerId?: number) => {
-    if (
-      element
-      && pointerId !== undefined
-      && element.hasPointerCapture(pointerId)
-    ) {
+    if (element && pointerId !== undefined && element.hasPointerCapture(pointerId)) {
       element.releasePointerCapture(pointerId);
     }
     pointerSessionRef.current = null;
     setPointerDraggedId(null);
   };
 
-  const nearestPointerTargetId = (clientX: number) => {
-    const columns = Array.from(
+  const nearestPointerTargetId = (clientY: number) => {
+    const rows = Array.from(
       document.querySelectorAll<HTMLElement>('[data-compare-candidate-id]'),
     );
     let targetId: string | null = null;
     let nearestDistance = Number.POSITIVE_INFINITY;
-    for (const column of columns) {
-      const rect = column.getBoundingClientRect();
-      const distance = Math.abs(clientX - (rect.left + rect.width / 2));
+    for (const row of rows) {
+      const rect = row.getBoundingClientRect();
+      const distance = Math.abs(clientY - (rect.top + rect.height / 2));
       if (distance < nearestDistance) {
         nearestDistance = distance;
-        targetId = column.dataset.compareCandidateId ?? null;
+        targetId = row.dataset.compareCandidateId ?? null;
       }
     }
     return targetId;
   };
 
+  const handleAxisTabKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    axis: CompareAxis,
+  ) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setActiveAxisId(axis);
+      return;
+    }
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const tabs = Array.from(
+      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]') ?? [],
+    );
+    const currentIndex = tabs.indexOf(event.currentTarget);
+    if (currentIndex < 0 || tabs.length === 0) return;
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const nextTab = tabs[(currentIndex + direction + tabs.length) % tabs.length];
+    nextTab?.focus();
+    nextTab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  };
+
   return (
     <section className={`${styles.screenStage} ${styles.compareScreenStage}`} aria-labelledby="compare-title">
       <div ref={compareContentRef}>
-      <header className={styles.compareHeader}>
-        <button type="button" className={styles.iconButton} onClick={onBack} aria-label="候補へ戻る">←</button>
-        <div>
-          <h1 id="compare-title">比較して選ぶ</h1>
-          <p>矢印・ドラッグ・キーボードで並び替えできます</p>
-        </div>
-        <button
-          ref={editorTriggerRef}
-          type="button"
-          className={styles.textButton}
-          onClick={openEditor}
-          aria-label="比較項目を編集"
-        >
-          <span>項目</span>
-          <span>編集</span>
-        </button>
-      </header>
-
-      <div className={styles.axisTabs} aria-label="比較項目">
-        {axes.map((axis) => (
-          <button
-            key={axis}
-            type="button"
-            aria-pressed={activeAxis === axis}
-            className={activeAxis === axis ? styles.axisActive : ''}
-            onClick={() => setActiveAxis(axis)}
-          >
-            {axisLabel(axis)}
+        <header className={styles.comparePageHeader}>
+          <button type="button" className={styles.iconButton} onClick={onBack} aria-label="候補へ戻る">←</button>
+          <div className={styles.compareTitleBlock}>
+            <h1 id="compare-title">比較して決める</h1>
+            <p>
+              <span>気になる{candidates.length}件を見比べて、</span>
+              <span>今日の一軒を選びましょう</span>
+            </p>
+          </div>
+          <button type="button" className={styles.compareChangeButton} onClick={onBack}>
+            {candidates.length}件を変更
           </button>
-        ))}
-      </div>
+        </header>
 
-      <div className={styles.compareColumns}>
-        {candidates.map((candidate, index) => {
-          const displayLabel = compareLabel(index);
-          return (
-          <article
-            key={candidate.id}
-            className={`${styles.compareColumn} ${
-              chosenId === candidate.id ? styles.compareChosen : ''
-            } ${
-              pointerDraggedId === candidate.id ? styles.compareColumnPointerDragging : ''
-            }`}
-            data-compare-candidate-id={candidate.id}
-            data-pointer-reordering={pointerDraggedId === candidate.id ? 'true' : 'false'}
-            draggable
-            onDragStart={(event) => {
-              event.dataTransfer.effectAllowed = 'move';
-              event.dataTransfer.setData('text/plain', candidate.id);
-              setDraggedId(candidate.id);
-            }}
-            onDragEnd={() => setDraggedId(null)}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={() => {
-              if (!draggedId || draggedId === candidate.id) return;
-              onSetOrder(reorderDecisionV3Ids(compareOrder, draggedId, candidate.id));
-              setDraggedId(null);
-            }}
-            onPointerDown={(event) => {
-              if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-              if (
-                event.target instanceof Element
-                && event.target.closest(INTERACTIVE_POINTER_TARGET)
-              ) {
-                return;
-              }
-              pointerSessionRef.current = {
-                pointerId: event.pointerId,
-                candidateId: candidate.id,
-                startX: event.clientX,
-                startY: event.clientY,
-                engaged: false,
-              };
-              event.currentTarget.setPointerCapture(event.pointerId);
-            }}
-            onPointerMove={(event) => {
-              const session = pointerSessionRef.current;
-              if (!session || session.pointerId !== event.pointerId) return;
-              const intent = getDecisionV3PointerIntent(
-                event.clientX - session.startX,
-                event.clientY - session.startY,
-              );
-              if (intent === 'vertical' && !session.engaged) {
-                clearPointerSession(event.currentTarget, event.pointerId);
-                return;
-              }
-              if (intent === 'horizontal') {
-                session.engaged = true;
-                setPointerDraggedId(session.candidateId);
-                event.preventDefault();
-              }
-            }}
-            onPointerUp={(event) => {
-              const session = pointerSessionRef.current;
-              if (!session || session.pointerId !== event.pointerId) return;
-              const intent = getDecisionV3PointerIntent(
-                event.clientX - session.startX,
-                event.clientY - session.startY,
-              );
-              if (session.engaged || intent === 'horizontal') {
-                const targetId = nearestPointerTargetId(event.clientX);
-                if (targetId) {
-                  onSetOrder(
-                    reorderDecisionV3Ids(
-                      compareOrder,
-                      session.candidateId,
-                      targetId,
-                    ),
-                  );
-                }
-              }
-              clearPointerSession(event.currentTarget, event.pointerId);
-            }}
-            onPointerCancel={(event) => {
-              const session = pointerSessionRef.current;
-              if (session?.pointerId === event.pointerId) {
-                clearPointerSession(event.currentTarget, event.pointerId);
-              }
-            }}
-            tabIndex={0}
-            aria-grabbed={grabbedId === candidate.id}
-            onKeyDown={(event) => {
-              if (event.key === ' ') {
-                event.preventDefault();
-                setGrabbedId((current) => (current === candidate.id ? null : candidate.id));
-              }
-              if (grabbedId === candidate.id && event.key === 'ArrowLeft') {
-                event.preventDefault();
-                onReorder(candidate.id, -1);
-              }
-              if (grabbedId === candidate.id && event.key === 'ArrowRight') {
-                event.preventDefault();
-                onReorder(candidate.id, 1);
-              }
-            }}
+        <div className={styles.compareToolbar}>
+          <button
+            ref={editorTriggerRef}
+            type="button"
+            className={styles.compareEditButton}
+            onClick={openEditor}
+            aria-label="比較項目を編集"
           >
-            <span className={styles.candidateLabel}>{displayLabel}</span>
-            <CandidatePhotoV3 candidate={candidate} ratio="thumb" />
-            <h2>{candidate.name}</h2>
-            <div className={styles.reorderControls} aria-label={`${candidate.name}を並び替え`}>
-              <button
-                type="button"
-                disabled={index === 0}
-                onClick={() => onReorder(candidate.id, -1)}
-                aria-label="左へ移動"
-              >
-                ←
-              </button>
-              <span aria-hidden="true">⠿</span>
-              <button
-                type="button"
-                disabled={index === candidates.length - 1}
-                onClick={() => onReorder(candidate.id, 1)}
-                aria-label="右へ移動"
-              >
-                →
-              </button>
-            </div>
-          </article>
-          );
-        })}
-      </div>
-
-      <section className={styles.compareFocus} aria-live="polite">
-        <h2>いま比較中：{axisLabel(activeAxis)}</h2>
-        <div>
-          {candidates.map((candidate, index) => (
-            <article key={candidate.id}>
-              <span>{compareLabel(index)}</span>
-              <strong>{axisValue(candidate.id, activeAxis)}</strong>
-            </article>
-          ))}
+            <span>項目</span><span>編集</span>
+          </button>
         </div>
-      </section>
 
-      <section className={styles.chooseSection} aria-labelledby="choose-title">
-        <h2 id="choose-title">どのお店にしますか？</h2>
-        <div>
-          {candidates.map((candidate, index) => (
+        <div
+          className={styles.compareAxisTabs}
+          role="tablist"
+          aria-label="比較項目"
+        >
+          {axes.map((axis) => (
             <button
               type="button"
-              key={candidate.id}
-              aria-pressed={chosenId === candidate.id}
-              className={chosenId === candidate.id ? styles.chooseActive : ''}
-              onClick={() => onChoose(candidate.id)}
+              role="tab"
+              id={`compare-axis-tab-${axis}`}
+              key={axis}
+              aria-selected={activeAxis === axis}
+              aria-controls="compare-axis-panel"
+              tabIndex={activeAxis === axis ? 0 : -1}
+              onClick={() => setActiveAxisId(axis)}
+              onKeyDown={(event) => handleAxisTabKeyDown(event, axis)}
             >
-              <span>{compareLabel(index)}</span>
-              {candidate.name}
-              {chosenId === candidate.id ? <b aria-hidden="true">✓</b> : null}
+              {axisLabel(axis)}
             </button>
           ))}
         </div>
-      </section>
 
-      <div className={styles.compareFlowActions}>
-        <button type="button" className={styles.secondaryButton} onClick={onRestart}>
-          条件を変えて再検索
-        </button>
-      </div>
+        <section
+          id="compare-axis-panel"
+          className={styles.compareAxisPanel}
+          role="tabpanel"
+          aria-labelledby={`compare-axis-tab-${activeAxis}`}
+        >
+          <h2 className={styles.compareActiveAxisHeading}>
+            <span
+              className={styles.compareAxisIcon}
+              style={{ '--compare-icon': `url("${COMPARE_AXIS_ICON_PATHS[activeAxis]}")` } as CSSProperties}
+              aria-hidden="true"
+            />
+            <span>{axisLabel(activeAxis)}を比較</span>
+          </h2>
 
-      {!editorOpen ? (
-        <div className={styles.compareStickyAction}>
-          {!chosenId ? (
-            <p className={styles.compareCtaHelper}>候補を1つ選ぶと決定できます</p>
-          ) : null}
-          <button
-            type="button"
-            className={styles.primaryButton}
-            disabled={!chosenId}
-            aria-disabled={!chosenId}
-            onClick={onDecide}
-          >
-            選んだお店に決める
-          </button>
-        </div>
-      ) : null}
+          <div className={styles.compareVerticalList}>
+            {candidates.map((candidate, index) => {
+              const displayLabel = compareLabel(index);
+              return (
+                <article
+                  key={candidate.id}
+                  className={`${styles.compareVerticalCandidate} ${pointerDraggedId === candidate.id ? styles.compareVerticalCandidateDragging : ''}`}
+                  data-compare-candidate-id={candidate.id}
+                  data-pointer-reordering={pointerDraggedId === candidate.id ? 'true' : 'false'}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={() => {
+                    if (!draggedId || draggedId === candidate.id) return;
+                    onSetOrder(reorderDecisionV3Ids(compareOrder, draggedId, candidate.id));
+                    setDraggedId(null);
+                  }}
+                >
+                  <header className={styles.compareVerticalCandidateHeader}>
+                    <span className={styles.candidateLabel}>{displayLabel}</span>
+                    <h2>{candidate.name}</h2>
+                    <button
+                      type="button"
+                      className={styles.compareReorderHandle}
+                      data-compare-reorder-handle
+                      draggable
+                      aria-label={`${candidate.name}を並べ替え`}
+                      aria-grabbed={grabbedId === candidate.id}
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData('text/plain', candidate.id);
+                        setDraggedId(candidate.id);
+                      }}
+                      onDragEnd={() => setDraggedId(null)}
+                      onPointerDown={(event) => {
+                        if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+                        pointerSessionRef.current = {
+                          pointerId: event.pointerId,
+                          candidateId: candidate.id,
+                          startX: event.clientX,
+                          startY: event.clientY,
+                          engaged: false,
+                        };
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                      }}
+                      onPointerMove={(event) => {
+                        const session = pointerSessionRef.current;
+                        if (!session || session.pointerId !== event.pointerId) return;
+                        const deltaX = event.clientX - session.startX;
+                        const deltaY = event.clientY - session.startY;
+                        if (!session.engaged && Math.abs(deltaX) >= POINTER_REORDER_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+                          clearPointerSession(event.currentTarget, event.pointerId);
+                          return;
+                        }
+                        if (Math.abs(deltaY) >= POINTER_REORDER_THRESHOLD && Math.abs(deltaY) > Math.abs(deltaX)) {
+                          session.engaged = true;
+                          setPointerDraggedId(session.candidateId);
+                          event.preventDefault();
+                        }
+                      }}
+                      onPointerUp={(event) => {
+                        const session = pointerSessionRef.current;
+                        if (!session || session.pointerId !== event.pointerId) return;
+                        if (session.engaged) {
+                          const targetId = nearestPointerTargetId(event.clientY);
+                          if (targetId) onSetOrder(reorderDecisionV3Ids(compareOrder, session.candidateId, targetId));
+                        }
+                        clearPointerSession(event.currentTarget, event.pointerId);
+                      }}
+                      onPointerCancel={(event) => {
+                        const session = pointerSessionRef.current;
+                        if (session?.pointerId === event.pointerId) clearPointerSession(event.currentTarget, event.pointerId);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === ' ') {
+                          event.preventDefault();
+                          setGrabbedId((current) => (current === candidate.id ? null : candidate.id));
+                          return;
+                        }
+                        if (event.key === 'Escape' && grabbedId === candidate.id) {
+                          event.preventDefault();
+                          setGrabbedId(null);
+                          return;
+                        }
+                        if (grabbedId === candidate.id && (event.key === 'ArrowUp' || event.key === 'ArrowLeft')) {
+                          event.preventDefault();
+                          onReorder(candidate.id, -1);
+                        }
+                        if (grabbedId === candidate.id && (event.key === 'ArrowDown' || event.key === 'ArrowRight')) {
+                          event.preventDefault();
+                          onReorder(candidate.id, 1);
+                        }
+                      }}
+                    >
+                      <span aria-hidden="true">↕</span>
+                    </button>
+                  </header>
+
+                  <div className={styles.compareVerticalCandidateBody}>
+                    <CandidatePhotoV3 candidate={candidate} ratio="thumb" />
+                    <div className={styles.compareVerticalValueBlock}>
+                      <p className={styles.compareVerticalValue}>{axisValue(candidate.id, activeAxis)}</p>
+                      <button
+                        type="button"
+                        className={styles.compareDecisionButton}
+                        onClick={() => onDecide(candidate.id)}
+                        aria-label={`${candidate.name}に決める`}
+                      >
+                        ここに決める
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
       </div>
 
       {editorOpen ? (
-        <div
-          className={styles.sheetBackdrop}
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeEditor();
-          }}
-        >
+        <div className={styles.sheetBackdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeEditor(); }}>
           <section
             ref={editorDialogRef}
             className={styles.axisSheet}
@@ -450,15 +448,7 @@ export function CompareV3({
             <span className={styles.sheetHandle} aria-hidden="true" />
             <div className={styles.sheetHeader}>
               <h2 id="axis-editor-title">比較項目を編集</h2>
-              <button
-                ref={editorCloseRef}
-                type="button"
-                className={styles.sheetCloseButton}
-                onClick={closeEditor}
-                aria-label="比較項目編集を閉じる"
-              >
-                ×
-              </button>
+              <button ref={editorCloseRef} type="button" className={styles.sheetCloseButton} onClick={closeEditor} aria-label="比較項目編集を閉じる">×</button>
             </div>
             <p id="axis-editor-description">5件まで選べます。矢印で表示順も変えられます。</p>
             <div className={styles.axisEditorList}>
@@ -476,31 +466,14 @@ export function CompareV3({
                         }
                         setAxisLimit(false);
                         onToggleAxis(axis);
-                        if (activeAxis === axis && selected) {
-                          setActiveAxis(axes.find((item) => item !== axis) ?? 'budget');
-                        }
                       }}
                     >
                       {selected ? '✓ ' : ''}{axisLabel(axis)}
                     </button>
                     {selected ? (
                       <span>
-                        <button
-                          type="button"
-                          onClick={() => onReorderAxis(axis, -1)}
-                          disabled={axes.indexOf(axis) === 0}
-                          aria-label={`${axisLabel(axis)}を前へ`}
-                        >
-                          ←
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onReorderAxis(axis, 1)}
-                          disabled={axes.indexOf(axis) === axes.length - 1}
-                          aria-label={`${axisLabel(axis)}を後ろへ`}
-                        >
-                          →
-                        </button>
+                        <button type="button" onClick={() => onReorderAxis(axis, -1)} disabled={axes.indexOf(axis) === 0} aria-label={`${axisLabel(axis)}を前へ`}>←</button>
+                        <button type="button" onClick={() => onReorderAxis(axis, 1)} disabled={axes.indexOf(axis) === axes.length - 1} aria-label={`${axisLabel(axis)}を後ろへ`}>→</button>
                       </span>
                     ) : null}
                   </div>
@@ -508,9 +481,7 @@ export function CompareV3({
               })}
             </div>
             {axisLimit ? <p className={styles.limitMessage} role="alert">比較項目は5件までです</p> : null}
-            <button type="button" className={styles.primaryButton} onClick={closeEditor}>
-              決定
-            </button>
+            <button type="button" className={styles.primaryButton} onClick={closeEditor}>決定</button>
           </section>
         </div>
       ) : null}

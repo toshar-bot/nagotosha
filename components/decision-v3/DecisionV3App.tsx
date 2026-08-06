@@ -218,21 +218,20 @@ export default function DecisionV3App() {
         <CompareV3
           compareOrder={state.compareOrder.length ? state.compareOrder : state.compareIds}
           axes={state.axes}
-          chosenId={state.chosenId}
           onBack={() => navigate('candidates')}
           onReorder={(candidateId, direction) =>
             dispatch({ type: 'REORDER_COMPARE', candidateId, direction })
           }
           onSetOrder={(ids) => dispatch({ type: 'SET_COMPARE_ORDER', ids })}
-          onChoose={(candidateId) => dispatch({ type: 'CHOOSE', candidateId })}
           onToggleAxis={(axis) => dispatch({ type: 'TOGGLE_AXIS', axis })}
           onReorderAxis={(axis, direction) => dispatch({ type: 'REORDER_AXIS', axis, direction })}
-          onDecide={() => navigate('decided')}
-          onRestart={() => {
-            const resetState = decisionV3Reducer(state, { type: 'RESET_SEARCH' });
+          onDecide={(candidateId) => {
+            const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
+            if (chosenState.chosenId !== candidateId) return;
+            const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
             replaceDecisionV3History(state);
-            dispatch({ type: 'RESTORE', state: resetState });
-            pushDecisionV3History(resetState);
+            dispatch({ type: 'RESTORE', state: decidedState });
+            pushDecisionV3History(decidedState);
             window.scrollTo({ top: 0, behavior: 'auto' });
           }}
         />

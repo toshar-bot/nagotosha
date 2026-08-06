@@ -203,9 +203,7 @@
 .iconButton,
 .textButton,
 .sheetCloseButton,
-.axisTabs button,
 .reorderControls button,
-.chooseSection button,
 .axisEditorList > div > button,
 .axisEditorList span button {
   transition: transform var(--motion-fast) var(--ease-press);
@@ -214,9 +212,7 @@
 .iconButton:not(:disabled):active:not(:focus-visible),
 .textButton:not(:disabled):active:not(:focus-visible),
 .sheetCloseButton:not(:disabled):active:not(:focus-visible),
-.axisTabs button:not(:disabled):active:not(:focus-visible),
 .reorderControls button:not(:disabled):active:not(:focus-visible),
-.chooseSection button:not(:disabled):active:not(:focus-visible),
 .axisEditorList > div > button:not(:disabled):active:not(:focus-visible),
 .axisEditorList span button:not(:disabled):active:not(:focus-visible) {
   transform: scale(0.97);
@@ -627,8 +623,7 @@
   background-size: var(--nagotosha-grid-size, 24px) var(--nagotosha-grid-size, 24px);
 }
 
-.screenHeader,
-.compareHeader {
+.screenHeader {
   display: grid;
   grid-template-columns: 44px 1fr;
   align-items: start;
@@ -636,16 +631,14 @@
   margin-bottom: 16px;
 }
 
-.screenHeader h1,
-.compareHeader h1 {
+.screenHeader h1 {
   margin: 3px 0 0;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.35;
 }
 
-.screenHeader p,
-.compareHeader p {
+.screenHeader p {
   margin: 4px 0 0;
   color: var(--ink-600);
   font-size: 13px;
@@ -1724,232 +1717,6 @@
   text-align: center;
 }
 
-.compareHeader {
-  grid-template-columns: 44px 1fr 72px;
-}
-
-.compareHeader h1 {
-  color: var(--red);
-  font-weight: 700;
-  letter-spacing: 0;
-}
-
-.compareHeader .textButton {
-  display: inline-grid;
-  grid-template-rows: repeat(2, auto);
-  place-content: center;
-  line-height: 1.05;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.axisTabs {
-  display: flex;
-  gap: 7px;
-  margin: 8px -16px 16px;
-  overflow-x: auto;
-  padding: 2px 16px 6px;
-  scroll-padding-inline: 16px;
-}
-
-.axisTabs button {
-  min-height: 44px;
-  flex: 0 0 auto;
-  border: 1.5px solid #d9ccb9;
-  border-radius: 999px;
-  padding: 7px 13px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.axisTabs .axisActive {
-  border-color: var(--red);
-  background: var(--red);
-  color: #fff;
-  font-weight: 700;
-}
-
-.compareColumns {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-}
-
-.compareColumn {
-  position: relative;
-  min-width: 0;
-  border: 2px solid transparent;
-  border-radius: 13px;
-  padding: 7px;
-  background: #fff;
-  box-shadow: 0 3px 0 #d9ccb9;
-  touch-action: pan-y;
-  user-select: none;
-}
-
-.compareColumnPointerDragging {
-  border-color: var(--red);
-  box-shadow: 0 2px 0 #d9ccb9;
-  opacity: 0.9;
-}
-
-.compareColumn:focus-visible {
-  outline: 3px solid var(--focus);
-}
-
-.compareChosen {
-  border-color: var(--red);
-  background: var(--red-50);
-}
-
-.compareColumn > .candidateLabel {
-  min-height: 24px;
-  margin-bottom: 6px;
-  padding: 3px 7px;
-  font-size: 14px;
-}
-
-.compareColumn .candidatePhotoThumb {
-  aspect-ratio: 8 / 5;
-  border-radius: 8px;
-  background: #f7f1e6;
-}
-
-.compareColumn .candidatePhotoThumb .candidatePhotoImage {
-  object-fit: contain;
-  object-position: center;
-  transform: none;
-}
-
-.compareColumn h2 {
-  min-height: 58px;
-  margin: 7px 0 0;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-  text-wrap: pretty;
-}
-
-.reorderControls {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  gap: 2px;
-  margin-top: 6px;
-}
-
-.reorderControls button {
-  display: grid;
-  min-width: 44px;
-  min-height: 44px;
-  place-items: center;
-  border: 1px solid #d9ccb9;
-  border-radius: 9px;
-  background: #fff;
-  color: var(--ink);
-  font-weight: 700;
-}
-
-.reorderControls span {
-  color: var(--ink-600);
-  text-align: center;
-}
-
-.compareFocus {
-  margin-top: 20px;
-  border: 1px solid #dacbad;
-  border-radius: 15px;
-  padding: 14px;
-  background: #fffaf0;
-}
-
-.compareFocus h2 {
-  margin: 0 0 12px;
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.compareFocus > div {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.compareFocus article {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 5px;
-  border-left: 1px solid #e5d8c2;
-  padding-left: 8px;
-}
-
-.compareFocus article:first-child {
-  border-left: 0;
-  padding-left: 0;
-}
-
-.compareFocus article span {
-  color: var(--ink-600);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.compareFocus article strong {
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.chooseSection {
-  margin-top: 24px;
-}
-
-.chooseSection > div {
-  display: grid;
-  gap: 8px;
-}
-
-.chooseSection button {
-  position: relative;
-  display: grid;
-  min-height: 54px;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 9px;
-  border: 2px solid #d9ccb9;
-  border-radius: 12px;
-  padding: 8px 12px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-  text-align: left;
-}
-
-.chooseSection button > span {
-  color: var(--ink-600);
-  font-size: 13px;
-}
-
-.chooseSection .chooseActive {
-  border-color: var(--red);
-  background: var(--red-50);
-}
-
-.chooseSection button b {
-  display: grid;
-  width: 24px;
-  height: 24px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--red);
-  color: #fff;
-}
-
-.compareFlowActions,
 .decisionActions {
   display: grid;
   gap: 10px;
@@ -1957,33 +1724,463 @@
 }
 
 .compareScreenStage {
-  padding-bottom: calc(190px + env(safe-area-inset-bottom, 0px));
+  max-width: 100%;
+  overflow-x: visible;
+  padding-top: 10px;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
 }
 
-.compareStickyAction {
-  position: fixed;
-  right: 16px;
-  bottom: calc(65px + env(safe-area-inset-bottom, 0px) + 8px);
-  left: 16px;
-  z-index: 30;
+.comparePageHeader {
   display: grid;
-  width: min(calc(100% - 32px), 398px);
-  gap: 7px;
-  margin-inline: auto;
-  border: 1px solid #dfd2bd;
-  border-radius: 16px;
-  padding: 8px;
-  background: #fffaf0;
-  box-shadow: 0 5px 18px rgba(30, 42, 68, 0.16);
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 8px;
+  margin-bottom: 16px;
 }
 
-.compareCtaHelper {
-  margin: 0;
-  color: var(--ink-600);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
+.compareTitleBlock {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  min-width: 0;
   text-align: center;
+}
+
+.compareTitleBlock h1 {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  margin: 3px 0 0;
+  color: var(--ink);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.compareTitleBlock h1::before,
+.compareTitleBlock h1::after {
+  content: "";
+  width: 17px;
+  height: 23px;
+  flex: 0 0 auto;
+  background:
+    linear-gradient(63deg, transparent 43%, var(--red) 44%, var(--red) 56%, transparent 57%) 0 1px / 7px 21px no-repeat,
+    linear-gradient(63deg, transparent 43%, var(--red) 44%, var(--red) 56%, transparent 57%) 10px 6px / 6px 16px no-repeat;
+}
+
+.compareTitleBlock h1::after {
+  transform: scaleX(-1);
+}
+
+.compareTitleBlock > p {
+  margin: 5px 0 0;
+  color: #3f4c65;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.compareTitleBlock > p > span {
+  display: block;
+}
+
+.compareChangeButton {
+  grid-row: 1;
+  grid-column: 3;
+  min-width: 82px;
+  min-height: 44px;
+  flex: 0 0 auto;
+  border: 1.5px solid #d9ccb9;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #fffdf8;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  justify-self: end;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.compareEditButton {
+  display: grid;
+  width: 44px;
+  min-width: 44px;
+  min-height: 52px;
+  grid-template-rows: repeat(2, auto);
+  place-content: center;
+  border: 1.5px solid #d9ccb9;
+  border-radius: 10px;
+  background: #fffdf8;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.compareAxisIcon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  background-color: currentcolor;
+  -webkit-mask-image: var(--compare-icon);
+  mask-image: var(--compare-icon);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.compareToolbar {
+  display: flex;
+  min-width: 0;
+  justify-content: flex-end;
+  margin: -4px 0 6px;
+}
+
+.compareToolbar .compareEditButton {
+  display: flex;
+  width: auto;
+  min-width: 86px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  line-height: 1.25;
+}
+
+.compareAxisTabs {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 7px;
+  margin: 0 0 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 1px 6px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 1px;
+  scroll-snap-type: x proximity;
+  scrollbar-color: rgba(214, 58, 40, 0.42) transparent;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.decisionV3Root .compareAxisTabs > button {
+  min-height: 44px;
+  flex: 0 0 auto;
+  border: 1.5px solid #d9ccb9;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #fffdf8;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.25;
+  scroll-snap-align: start;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.decisionV3Root .compareAxisTabs > button[aria-selected="true"] {
+  border-color: var(--red);
+  background: var(--red);
+  color: #fff;
+}
+
+.compareAxisPanel {
+  min-width: 0;
+}
+
+.compareActiveAxisHeading {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.compareActiveAxisHeading .compareAxisIcon {
+  color: var(--red);
+}
+
+.compareVerticalList {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 8px;
+}
+
+.compareVerticalCandidate {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-rows: 44px 60px;
+  gap: 6px;
+  overflow: visible;
+  border: 1px solid #dfd2bd;
+  border-radius: 17px;
+  padding: 7px 10px;
+  background: #fffdf8;
+  color: var(--ink);
+  box-shadow: 0 2px 0 rgba(217, 204, 185, 0.52);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.compareVerticalCandidateDragging {
+  border-color: var(--red);
+  background: #fff7f3;
+  box-shadow: 0 2px 0 rgba(214, 58, 40, 0.24);
+}
+
+.compareVerticalCandidateHeader {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+}
+
+.compareVerticalCandidateHeader .candidateLabel {
+  min-height: 25px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.compareVerticalCandidateHeader h2 {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.compareReorderHandle {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #5b6679;
+  cursor: grab;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  touch-action: none;
+}
+
+.compareReorderHandle:active {
+  cursor: grabbing;
+}
+
+.compareReorderHandle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.compareVerticalCandidateBody {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.compareVerticalCandidate .candidatePhotoThumb {
+  width: 96px;
+  height: 60px;
+  max-width: 96px;
+  aspect-ratio: 8 / 5;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: #f7f1e6;
+}
+
+.compareVerticalCandidate .candidatePhotoThumb .candidatePhotoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+
+.compareVerticalValueBlock {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(112px, 128px);
+  align-items: center;
+  gap: 8px;
+}
+
+.compareVerticalValue {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  overflow-wrap: normal;
+  text-align: center;
+  word-break: normal;
+}
+
+.decisionV3Root .compareVerticalValueBlock .compareDecisionButton {
+  display: grid;
+  width: 100%;
+  min-width: 112px;
+  min-height: 44px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 2px 0 var(--red-press);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.compareDecisionButton:not(:disabled):active:not(:focus-visible) {
+  transform: translateY(2px) scale(0.985);
+  box-shadow: none;
+  transition-duration: var(--motion-press);
+}
+
+.axisEditorList > div > button[aria-pressed="true"] {
+  border-color: var(--red);
+  background: var(--red);
+  color: #fff;
+}
+
+@container (max-width: 375px) {
+  .compareTitleBlock h1 {
+    gap: 5px;
+    font-size: 22px;
+  }
+
+  .compareTitleBlock h1::before,
+  .compareTitleBlock h1::after {
+    width: 14px;
+    height: 19px;
+  }
+
+  .compareChangeButton {
+    grid-row: 1;
+    grid-column: 3;
+    min-width: 76px;
+    justify-self: end;
+    padding-inline: 8px;
+  }
+
+  .compareActiveAxisHeading {
+    min-height: 29px;
+    margin-bottom: 5px;
+    font-size: 20px;
+  }
+
+  .compareVerticalCandidate {
+    grid-template-rows: 44px 50px;
+    gap: 4px;
+    border-radius: 16px;
+    padding: 6px;
+  }
+
+  .compareVerticalCandidateHeader {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-rows: repeat(2, 22px);
+    column-gap: 6px;
+    row-gap: 0;
+  }
+
+  .compareVerticalCandidateHeader .candidateLabel {
+    grid-row: 1;
+    grid-column: 1;
+    min-height: 22px;
+    align-self: start;
+    justify-self: start;
+    padding: 2px 7px;
+  }
+
+  .compareVerticalCandidateHeader h2 {
+    grid-row: 2;
+    grid-column: 1;
+    font-size: 15px;
+  }
+
+  .compareVerticalCandidateHeader .compareReorderHandle {
+    grid-row: 1 / 3;
+    grid-column: 2;
+  }
+
+  .compareVerticalCandidateBody {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .compareVerticalCandidate .candidatePhotoThumb {
+    width: 80px;
+    height: 50px;
+    max-width: 80px;
+  }
+
+  .compareVerticalValueBlock {
+    grid-template-columns: minmax(0, 1fr) 112px;
+    gap: 6px;
+  }
+
+  .compareVerticalValue {
+    font-size: 17px;
+  }
+
+  .decisionV3Root .compareVerticalValueBlock .compareDecisionButton {
+    min-width: 112px;
+    min-height: 44px;
+    padding-inline: 7px;
+    font-size: 14px;
+  }
 }
 
 .sheetBackdrop {
@@ -2289,8 +2486,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .screenHeader h1,
-  .compareHeader h1 {
+  .screenHeader h1 {
     font-size: 22px;
   }
 
@@ -2349,29 +2545,9 @@
     min-height: 26px;
   }
 
-  .compareHeader {
-    grid-template-columns: 40px 1fr 62px;
-  }
-
-  .axisTabs {
-    margin-right: -12px;
-    margin-left: -12px;
-    padding-right: 12px;
-    padding-left: 12px;
-    scroll-padding-inline: 12px;
-  }
-
   .textButton {
     min-width: 62px;
     padding-inline: 5px;
-    font-size: 13px;
-  }
-
-  .compareColumn {
-    padding: 3px;
-  }
-
-  .compareColumn h2 {
     font-size: 13px;
   }
 
@@ -2442,9 +2618,7 @@
   .iconButton,
   .textButton,
   .sheetCloseButton,
-  .axisTabs button,
   .reorderControls button,
-  .chooseSection button,
   .axisEditorList > div > button,
   .axisEditorList span button {
     transform: none !important;
