@@ -42,11 +42,14 @@ export default function DecisionV3App() {
       ?? loadDecisionV3Session();
     const partyHandoff = readDecisionV3PartyHandoff(initialSearch);
     const restored = partyHandoff
-      ? decisionV3Reducer(restoredState, {
-          type: 'SET_CONDITION',
-          group: 'party',
-          value: partyHandoff,
-        })
+      ? decisionV3Reducer(
+          decisionV3Reducer(restoredState, {
+            type: 'SET_CONDITION',
+            group: 'party',
+            value: partyHandoff,
+          }),
+          { type: 'GO', step: 'home' },
+        )
       : restoredState;
 
     if (hasDecisionV3PartyHandoffParameters(initialSearch)) {
