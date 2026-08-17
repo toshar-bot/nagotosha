@@ -237,8 +237,12 @@ export default function DecisionV3App() {
         />
       ) : null}
 
-      {state.step === 'decided' && state.chosenId ? (
-        <DecidedV3 candidateId={state.chosenId} onCandidates={() => navigate('candidates')} />
+      {state.step === 'decided' ? (
+        <DecidedV3
+          candidateId={state.chosenId}
+          onCompare={() => navigate('compare')}
+          onDetail={(candidateId) => navigate('detail', candidateId)}
+        />
       ) : null}
 
       <BottomNavV3
