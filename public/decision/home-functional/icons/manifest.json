@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourcePack": "nagotosha-home-functional-implementation-pack-v1.zip",
+  "copyPolicy": "Exact byte copy. No crop, recompression, correction, or aspect-ratio change.",
+  "icons": [
+    {
+      "id": "01_cafe",
+      "file": "01_cafe.png",
+      "width": 2048,
+      "height": 2048,
+      "channels": 4,
+      "alpha": true,
+      "sha256": "af68238ad3f2aac80a4bb25d8b7ed4e29f1e3f55d2427c830882fef59c89ef29"
+    },
+    {
+      "id": "02_sweets",
+      "file": "02_sweets.png",
+      "width": 2048,
+      "height": 2048,
+      "channels": 4,
+      "alpha": true,
+      "sha256": "6e5ea87f52d5b00acc1e9b79805b4a969be9988fc8498d79ca4deb387b66e745"
+    },
+    {
+      "id": "03_meal",
+      "file": "03_meal.png",
+      "width": 2048,
+      "height": 2048,
+      "channels": 4,
+      "alpha": true,
+      "sha256": "4e17be26c5cb0b90ec60e3e99eb50b04e2c6c7a42c8abbee67dcd483ed1e572c"
+    },
+    {
+      "id": "04_outing",
+      "file": "04_outing.png",
+      "width": 2048,
+      "height": 2048,
+      "channels": 4,
+      "alpha": true,
+      "sha256": "9d4ac58ac4d0eefe010d6f5dfcdfc9331980bdb97a76dd57fe15301eb8714f36"
+    },
+    {
+      "id": "05_shopping",
+      "file": "05_shopping.png",
+      "width": 2048,
+      "height": 2048,
+      "channels": 4,
+      "alpha": true,
+      "sha256": "47c588281c443660f8bb10d291563233fa74e6e9c4c43d6cfef8a81b82c0313f"
+    }
+  ]
+}
