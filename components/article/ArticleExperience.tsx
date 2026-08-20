@@ -1311,9 +1311,16 @@ export function ArticleExperience({
     ? shopInfo
     : [];
 
+  // Feature / news articles keep their dedicated structured renderers (picks / venues /
+  // spots with verified official & Google Maps links). Only generic and event_roundup
+  // articles are unified into the A8 Editorial Shell.
+  const usesStructuredLegacyRenderer =
+    (layout === 'feature' && Boolean(experience?.feature)) ||
+    (layout === 'news' && Boolean(experience?.news));
+
   // A title is a required article contract; retaining the legacy renderer only
   // protects malformed records that would otherwise render an empty editorial page.
-  if (displayTitle.trim().length > 0) {
+  if (displayTitle.trim().length > 0 && !usesStructuredLegacyRenderer) {
     return (
       <EditorialArticleShell
         title={displayTitle}
