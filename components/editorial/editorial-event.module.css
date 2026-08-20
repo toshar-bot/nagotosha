@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
+
+.page {
+  --paper: #fbf6ec;
+  --grid: #ede3d0;
+  --surface: #fffdf8;
+  --navy: #071a4d;
+  --ink: #24314c;
+  --muted: #5c6678;
+  --red: #d63a28;
+  --gold: #dab559;
+  min-height: 100dvh;
+  overflow-x: clip;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.8;
+}
+
+.page *,
+.page *::before,
+.page *::after { box-sizing: border-box; }
+
+.header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  min-height: 68px;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(7, 26, 77, 0.12);
+  background: rgba(251, 246, 236, 0.9);
+}
+
+.backButton {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(7, 26, 77, 0.18);
+  border-radius: 999px;
+  appearance: none;
+  background: var(--surface);
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.logoLink {
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo { width: min(144px, 100%); max-height: 44px; height: auto; object-fit: contain; }
+.headerSpacer { width: 44px; height: 44px; justify-self: end; }
+.frame { width: min(100%, 780px); margin: 0 auto; padding: 0 14px 44px; }
+
+.titleBand { padding: 24px 2px 0; }
+.eyebrow, .sectionEyebrow { margin: 0; color: var(--red); font-size: 13px; font-weight: 700; letter-spacing: 0; line-height: 1.5; }
+.titleBand h1, .filterSection h2, .featuredSection h2, .eventSection h2, .officialNotice h2, .relatedSection h2, .finalCta h2, .featuredCard h3, .eventCard h3, .noMatch h2 { color: var(--navy); font-weight: 700; letter-spacing: 0; }
+.titleBand h1 { margin: 7px 0 0; font-size: clamp(28px, 7.8vw, 32px); line-height: 1.35; }
+.lead { margin: 14px 0 0; color: var(--ink); font-size: 16px; font-weight: 400; letter-spacing: 0; line-height: 1.85; }
+
+.filterSection { margin-top: 26px; padding: 18px 16px 20px; border: 1px solid rgba(218, 181, 89, 0.48); border-top: 3px solid var(--gold); border-radius: 16px; background: #fff8e8; box-shadow: 0 7px 18px rgba(87, 57, 13, 0.05); }
+.filterSection h2, .featuredSection h2, .eventSection h2, .officialNotice h2, .relatedSection h2 { margin: 0; font-size: 20px; line-height: 1.45; }
+.filterGroup { margin-top: 16px; }
+.filterGroup h3 { margin: 0 0 7px; color: var(--muted); font-size: 13px; font-weight: 500; letter-spacing: 0; line-height: 1.5; }
+.filterRail { display: flex; gap: 8px; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; padding: 10px 2px 2px; scrollbar-width: none; }
+.filterRail::-webkit-scrollbar { display: none; }
+.filterButton { min-height: 44px; flex: 0 0 auto; padding: 0 15px; border: 1px solid rgba(7, 26, 77, 0.17); border-radius: 999px; background: rgba(255, 253, 248, 0.95); color: var(--navy); cursor: pointer; font: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0; line-height: 1.3; white-space: nowrap; }
+.filterButton[aria-pressed='true'] { border-color: var(--red); background: var(--red); color: #fff; }
+
+.featuredSection, .eventSection, .officialNotice, .relatedSection { margin-top: 32px; }
+.featuredSection > h2 { margin-top: 2px; }
+.featuredCard { margin-top: 15px; overflow: hidden; border: 1px solid rgba(7, 26, 77, 0.14); border-radius: 18px; background: var(--surface); box-shadow: 0 10px 24px rgba(59, 40, 12, 0.08); }
+.featuredCard figure, .eventCard figure { margin: 0; background: #f5efe5; }
+.featuredCard img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.featuredCard figcaption, .eventCard figcaption { padding: 8px 12px; color: var(--muted); font-size: 13px; font-weight: 400; letter-spacing: 0; line-height: 1.6; }
+.featuredContent { padding: 18px 16px 19px; }
+.eventDate { margin: 0; color: var(--red); font-family: Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0; line-height: 1.55; }
+.featuredContent h3 { margin: 6px 0 0; font-size: 22px; line-height: 1.45; }
+.eventPlace, .eventDescription { margin: 8px 0 0; color: var(--ink); font-size: 15px; font-weight: 400; letter-spacing: 0; line-height: 1.8; }
+.eventDescription { color: var(--muted); }
+.featuredCard a, .eventCard a { min-height: 44px; display: inline-flex; align-items: center; margin-top: 11px; color: var(--navy); font-size: 15px; font-weight: 700; letter-spacing: 0; line-height: 1.3; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.eventLive { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 9px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0; line-height: 1.35; }
+.eventLive { margin-bottom: 8px; background: rgba(214, 58, 40, 0.1); color: var(--red); }
+
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.sectionHeading > p { margin: 0 0 3px; color: var(--muted); font-family: Roboto, "Noto Sans JP", sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0; line-height: 1.5; white-space: nowrap; }
+.eventList { display: grid; gap: 12px; margin: 16px 0 0; padding: 0; list-style: none; }
+.eventCard { padding: 17px 16px 18px; border: 1px solid rgba(7, 26, 77, 0.13); border-radius: 16px; background: rgba(255, 253, 248, 0.96); box-shadow: 0 6px 16px rgba(59, 40, 12, 0.04); }
+.eventDateRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.eventCard h3 { margin: 7px 0 0; font-size: 19px; line-height: 1.45; }
+.eventCard figure { overflow: hidden; margin-top: 13px; border: 1px solid rgba(7, 26, 77, 0.1); border-radius: 12px; }
+.eventCard figure img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.verifiedAt { margin: 9px 0 0; color: var(--muted); font-size: 13px; font-weight: 400; letter-spacing: 0; line-height: 1.55; }
+.verifiedAt time { font-family: Roboto, "Noto Sans JP", sans-serif; font-weight: 500; }
+
+.noMatch { margin-top: 16px; padding: 24px 18px; border: 1px dashed rgba(7, 26, 77, 0.26); border-radius: 16px; background: rgba(255, 253, 248, 0.82); text-align: center; }
+.noMatch h2 { margin: 0; color: var(--navy); font-size: 18px; font-weight: 700; letter-spacing: 0; line-height: 1.5; }
+.noMatch p { margin: 10px 0 0; color: var(--muted); font-size: 15px; font-weight: 400; letter-spacing: 0; line-height: 1.75; }
+.noMatch div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.noMatch button { min-height: 44px; padding: 8px; border: 1px solid var(--navy); border-radius: 11px; background: var(--surface); color: var(--navy); cursor: pointer; font: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0; line-height: 1.35; }
+
+.officialNotice { padding: 20px 16px; border: 1px solid rgba(7, 26, 77, 0.12); border-radius: 16px; background: rgba(255, 253, 248, 0.88); }
+.officialNotice h2 { margin-top: 2px; }
+.officialNotice > p:last-child { margin: 11px 0 0; color: var(--muted); font-size: 15px; font-weight: 400; letter-spacing: 0; line-height: 1.8; }
+
+.relatedSection { padding: 20px 16px; border: 1px solid rgba(7, 26, 77, 0.13); border-radius: 16px; background: rgba(255, 253, 248, 0.96); box-shadow: 0 7px 18px rgba(59, 40, 12, 0.05); }
+.relatedSection a { min-height: 64px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; margin-top: 12px; padding-top: 13px; border-top: 1px solid rgba(7, 26, 77, 0.12); color: inherit; text-decoration: none; }
+.relatedSection span { grid-column: 1; color: var(--red); font-size: 13px; font-weight: 700; letter-spacing: 0; line-height: 1.4; }
+.relatedSection strong { grid-column: 1; color: var(--navy); font-size: 15px; font-weight: 700; letter-spacing: 0; line-height: 1.55; }
+.relatedSection i { grid-column: 2; grid-row: 1 / span 2; color: var(--red); font-size: 18px; font-style: normal; font-weight: 700; line-height: 1; }
+
+.finalCta { margin-top: 32px; padding: 24px 18px 18px; border: 1px solid rgba(214, 58, 40, 0.64); border-radius: 18px; background: var(--red); color: #fff; box-shadow: 0 12px 24px rgba(214, 58, 40, 0.16); }
+.finalCta h2 { margin: 0; color: #fff; font-size: clamp(21px, 5.8vw, 24px); line-height: 1.4; }
+.finalCta p { margin: 11px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 15px; font-weight: 400; letter-spacing: 0; line-height: 1.8; }
+.finalCtaPrimary { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; cursor: pointer; font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0; line-height: 1.25; white-space: nowrap; }
+.finalCtaPrimary { margin-top: 18px; border: 1px solid #fff; background: #fff; color: var(--red); }
+
+.pageEndNav { width: min(100%, 780px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 auto; padding: 22px 14px calc(26px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(7, 26, 77, 0.14); background: rgba(251, 246, 236, 0.76); }
+.pageEndNav a { min-width: 0; min-height: 56px; display: grid; place-content: center; gap: 4px; border-radius: 10px; color: var(--muted); text-decoration: none; }
+.pageEndNav a[aria-current='page'] { color: var(--red); background: rgba(255, 253, 248, 0.62); }
+.pageEndNav svg { width: 20px; height: 20px; justify-self: center; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.pageEndNav span { font-size: 13px; font-weight: 700; letter-spacing: 0; line-height: 1.2; white-space: nowrap; }
+
+@media (max-width: 359px) {
+  .header { padding-right: 10px; padding-left: 10px; }
+  .frame { padding-right: 10px; padding-left: 10px; }
+  .filterSection, .featuredContent, .eventCard, .officialNotice, .relatedSection { padding-right: 14px; padding-left: 14px; }
+  .finalCta { padding-right: 14px; padding-left: 14px; }
+  .finalCtaPrimary { font-size: 15px; }
+}

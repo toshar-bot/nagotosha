@@ -7,6 +7,7 @@ import { isSaved, toggleSavedItem } from '@/lib/saved';
 import { buildGoogleMapsSearchUrl } from '@/lib/tracking';
 import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, EventRoundupData, EventRoundupItem, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 import type { ContentRelationshipResolution } from '@/lib/content-relationships';
+import { EditorialArticleShell } from '@/components/editorial/EditorialArticleShell';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -1300,6 +1301,43 @@ export function ArticleExperience({
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const editorialContent = removeUnverifiedArticleImages(displayContent);
+  const { bodyContent: editorialBodyContent, sourceContent: editorialSourceContent } = splitStandardEditorialSources(editorialContent);
+  const editorialQuickPoints = resolvedQuickPoints.length > 0
+    ? resolvedQuickPoints
+    : shop?.quickCards?.map((card) => `${card.title}：${card.body}`) ?? [];
+  const editorialShopInfo = shop || contentStoreName || contentAddress || (extraShopInfo?.length ?? 0) > 0
+    ? shopInfo
+    : [];
+
+  // A title is a required article contract; retaining the legacy renderer only
+  // protects malformed records that would otherwise render an empty editorial page.
+  if (displayTitle.trim().length > 0) {
+    return (
+      <EditorialArticleShell
+        title={displayTitle}
+        lead={displayLead}
+        category={badges.filter((badge) => badge.trim().length > 0).slice(0, 2).join(' / ') || tag}
+        dateStr={dateStr}
+        relationship={relationship}
+        imageUrl={effectiveImageUrl}
+        imageAlt={effectiveImageAlt}
+        imageCredit={effectiveImageCredit}
+        imageSourceUrl={effectiveImageSourceUrl}
+        quickPoints={editorialQuickPoints}
+        bodyContent={editorialBodyContent}
+        sourceContent={editorialSourceContent ? formatStandardSourceLinks(editorialSourceContent) : undefined}
+        shopInfo={editorialShopInfo}
+        shopSource={shop?.source}
+        related={related}
+        mapUrl={verifiedStandardMapUrl}
+        officialUrl={verifiedStandardOfficialUrl}
+        eventItems={eventRoundup?.items}
+        onMapClick={handleMapClick}
+      />
+    );
+  }
 
   if (isStandardEditorial) {
     return (
