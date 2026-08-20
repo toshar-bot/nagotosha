@@ -76,14 +76,6 @@ export function EditorialArticleShell({
         <button type="button" aria-label="前の画面へ戻る" className={styles.backButton} onClick={handleBack}>
           <span aria-hidden="true">←</span>
         </button>
-        <Link href="/" aria-label="なごとしゃ ホーム" className={styles.logoLink}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/subjects/nagotosha-header-complete-tight.png"
-              alt="なごとしゃ 名古屋情報局 トーシャー"
-              className={styles.logo}
-            />
-        </Link>
         <span className={styles.headerSpacer} aria-hidden="true" />
       </header>
 
@@ -121,7 +113,7 @@ export function EditorialArticleShell({
         <article className={styles.articleContent}>
           {usableQuickPoints.length > 0 && (
             <section className={styles.summary} aria-labelledby="article-summary-title">
-              <h2 id="article-summary-title">まず3行でわかる</h2>
+              <h2 id="article-summary-title">ここに注目</h2>
               <ol>
                 {usableQuickPoints.map((point) => <li key={point}>{point}</li>)}
               </ol>

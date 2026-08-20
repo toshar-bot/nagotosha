@@ -43,7 +43,6 @@
 }
 
 .backButton,
-.logoLink,
 .breadcrumb a,
 .hero a,
 .sources a,
@@ -80,26 +79,10 @@
   line-height: 1;
 }
 
-.logoLink {
-  justify-self: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  min-height: 44px;
-}
-
-.logo {
-  display: block;
-  width: min(144px, 100%);
-  height: auto;
-  max-height: 44px;
-  object-fit: contain;
-}
-
 .headerSpacer {
   width: 44px;
   height: 44px;
+  grid-column: 3;
   justify-self: end;
 }
 
@@ -259,7 +242,7 @@
 
 .summary ol {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   margin: 14px 0 0;
   padding: 0;
   list-style: none;
@@ -274,7 +257,7 @@
   font-size: 15px;
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.8;
+  line-height: 1.65;
 }
 
 .summary li::before {

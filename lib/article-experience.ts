@@ -1336,9 +1336,9 @@ const EXPERIENCES: Record<number, ArticleExperienceData> = {
       imageSourceUrl: 'https://prtimes.jp/main/html/rd/p/000000044.000118148.html',
     },
     quickPoints: [
-      '8月前半は世界コスプレサミット、大須夏まつり、円頓寺七夕まつり、金山まつりが重なります。',
-      '夜のおでかけは東山動植物園ナイトZOO、名古屋港水族館、どまつりなどが候補です。',
-      '暑さや雨を避けたい日は、屋内施設の水族館・博物館・科学館イベントを確認しやすい構成です。',
+      '8月前半：コスプレサミット・大須夏まつりほか。',
+      '夜：ナイトZOO・名古屋港水族館・どまつり。',
+      '暑さ・雨の日：屋内の水族館・博物館・科学館。',
     ],
     highlightTitle: '目的別に選ぶ',
     highlightPoints: [
