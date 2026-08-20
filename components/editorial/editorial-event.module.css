@@ -56,16 +56,7 @@
   line-height: 1;
 }
 
-.logoLink {
-  min-width: 0;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo { width: min(144px, 100%); max-height: 44px; height: auto; object-fit: contain; }
-.headerSpacer { width: 44px; height: 44px; justify-self: end; }
+.headerSpacer { width: 44px; height: 44px; grid-column: 3; justify-self: end; }
 .frame { width: min(100%, 780px); margin: 0 auto; padding: 0 14px 44px; }
 
 .titleBand { padding: 24px 2px 0; }
@@ -78,7 +69,7 @@
 .filterSection h2, .featuredSection h2, .eventSection h2, .officialNotice h2, .relatedSection h2 { margin: 0; font-size: 20px; line-height: 1.45; }
 .filterGroup { margin-top: 16px; }
 .filterGroup h3 { margin: 0 0 7px; color: var(--muted); font-size: 13px; font-weight: 500; letter-spacing: 0; line-height: 1.5; }
-.filterRail { display: flex; gap: 8px; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; padding: 10px 2px 2px; scrollbar-width: none; }
+.filterRail { display: flex; gap: 8px; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; scroll-padding-inline: 14px; padding: 10px 16px 2px 2px; scrollbar-width: none; }
 .filterRail::-webkit-scrollbar { display: none; }
 .filterButton { min-height: 44px; flex: 0 0 auto; padding: 0 15px; border: 1px solid rgba(7, 26, 77, 0.17); border-radius: 999px; background: rgba(255, 253, 248, 0.95); color: var(--navy); cursor: pointer; font: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0; line-height: 1.3; white-space: nowrap; }
 .filterButton[aria-pressed='true'] { border-color: var(--red); background: var(--red); color: #fff; }

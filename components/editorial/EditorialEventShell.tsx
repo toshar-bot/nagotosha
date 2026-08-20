@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type MouseEvent } from 'react';
 import Link from 'next/link';
 import type { EventRoundupFilter, EventRoundupItem } from '@/lib/article-experience';
 import styles from './editorial-event.module.css';
@@ -55,6 +55,18 @@ export function EditorialEventShell({ items, filters }: EditorialEventShellProps
     setTimingFilter('all');
   };
 
+  const selectArea = (area: string, event: MouseEvent<HTMLButtonElement>) => {
+    setAreaFilter(area);
+    const chip = event.currentTarget;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    requestAnimationFrame(() => chip.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    }));
+  };
+
   const resetAndShowList = () => {
     resetFilters();
     requestAnimationFrame(() => eventListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -83,14 +95,6 @@ export function EditorialEventShell({ items, filters }: EditorialEventShellProps
         <button type="button" aria-label="前の画面へ戻る" className={styles.backButton} onClick={handleBack}>
           <span aria-hidden="true">←</span>
         </button>
-        <Link href="/" aria-label="なごとしゃ ホーム" className={styles.logoLink}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/subjects/nagotosha-header-complete-tight.png"
-            alt="なごとしゃ 名古屋情報局 トーシャー"
-            className={styles.logo}
-          />
-        </Link>
         <span className={styles.headerSpacer} aria-hidden="true" />
       </header>
 
@@ -123,9 +127,9 @@ export function EditorialEventShell({ items, filters }: EditorialEventShellProps
             <div className={styles.filterGroup}>
               <h3>エリア</h3>
               <div className={styles.filterRail} role="group" aria-label="エリアで絞り込む">
-                <button type="button" className={styles.filterButton} aria-pressed={areaFilter === 'all'} onClick={() => setAreaFilter('all')}>すべて</button>
+                <button type="button" className={styles.filterButton} aria-pressed={areaFilter === 'all'} onClick={(event) => selectArea('all', event)}>すべて</button>
                 {areas.map((area) => (
-                  <button key={area} type="button" className={styles.filterButton} aria-pressed={areaFilter === area} onClick={() => setAreaFilter(area)}>{area}</button>
+                  <button key={area} type="button" className={styles.filterButton} aria-pressed={areaFilter === area} onClick={(event) => selectArea(area, event)}>{area}</button>
                 ))}
               </div>
             </div>
