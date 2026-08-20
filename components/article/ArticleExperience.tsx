@@ -1311,11 +1311,16 @@ export function ArticleExperience({
     ? shopInfo
     : [];
 
+  const isArticle79Feature =
+    postId === 79 &&
+    layout === 'feature' &&
+    Boolean(experience?.feature);
+
   // Feature / news articles keep their dedicated structured renderers (picks / venues /
-  // spots with verified official & Google Maps links). Only generic and event_roundup
-  // articles are unified into the A8 Editorial Shell.
+  // spots with verified official & Google Maps links). article 79 is the approved first
+  // structured migration; all other feature and news articles retain their renderer.
   const usesStructuredLegacyRenderer =
-    (layout === 'feature' && Boolean(experience?.feature)) ||
+    (layout === 'feature' && Boolean(experience?.feature) && !isArticle79Feature) ||
     (layout === 'news' && Boolean(experience?.news));
 
   // A title is a required article contract; retaining the legacy renderer only
@@ -1325,22 +1330,30 @@ export function ArticleExperience({
       <EditorialArticleShell
         title={displayTitle}
         lead={displayLead}
-        category={badges.filter((badge) => badge.trim().length > 0).slice(0, 2).join(' / ') || tag}
-        dateStr={dateStr}
+        category={isArticle79Feature ? experience?.feature?.eyebrow : badges.filter((badge) => badge.trim().length > 0).slice(0, 2).join(' / ') || tag}
+        dateStr={isArticle79Feature ? experience?.feature?.updatedLabel || dateStr : dateStr}
         relationship={relationship}
         imageUrl={effectiveImageUrl}
         imageAlt={effectiveImageAlt}
         imageCredit={effectiveImageCredit}
         imageSourceUrl={effectiveImageSourceUrl}
-        quickPoints={editorialQuickPoints}
-        bodyContent={editorialBodyContent}
-        sourceContent={editorialSourceContent ? formatStandardSourceLinks(editorialSourceContent) : undefined}
-        shopInfo={editorialShopInfo}
+        heroCaption={isArticle79Feature ? experience?.feature?.imageCaption : undefined}
+        quickPoints={isArticle79Feature ? experience?.feature?.points.slice(0, 3) ?? [] : editorialQuickPoints}
+        bodyContent={isArticle79Feature ? undefined : editorialBodyContent}
+        sourceContent={isArticle79Feature ? undefined : editorialSourceContent ? formatStandardSourceLinks(editorialSourceContent) : undefined}
+        shopInfo={isArticle79Feature ? [] : editorialShopInfo}
         shopSource={shop?.source}
         related={related}
         mapUrl={verifiedStandardMapUrl}
         officialUrl={verifiedStandardOfficialUrl}
         eventItems={eventRoundup?.items}
+        breadcrumbItems={isArticle79Feature ? experience?.feature?.breadcrumb : undefined}
+        byline={isArticle79Feature ? 'なごとしゃ編集部' : undefined}
+        featureContent={isArticle79Feature && experience?.feature ? {
+          picks: experience.feature.picks,
+          venues: experience.feature.venues,
+          sourceNotes: experience.feature.sourceNotes,
+        } : undefined}
         onMapClick={handleMapClick}
       />
     );

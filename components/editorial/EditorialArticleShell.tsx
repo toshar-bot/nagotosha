@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { ArticleRelated, EventRoundupItem, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleRelated, EventRoundupItem, FeaturePick, FeatureVenue, ShopInfoItem } from '@/lib/article-experience';
 import type { ContentRelationshipResolution } from '@/lib/content-relationships';
+import { FeaturePicksSection } from './FeaturePicksSection';
+import { VenueListSection } from './VenueListSection';
 import styles from './editorial-article.module.css';
 
 type EditorialArticleShellProps = {
@@ -16,6 +18,7 @@ type EditorialArticleShellProps = {
   imageAlt: string;
   imageCredit?: string;
   imageSourceUrl?: string;
+  heroCaption?: string;
   quickPoints: string[];
   bodyContent?: string;
   sourceContent?: string;
@@ -25,6 +28,13 @@ type EditorialArticleShellProps = {
   mapUrl?: string;
   officialUrl?: string;
   eventItems?: EventRoundupItem[];
+  breadcrumbItems?: string[];
+  byline?: string;
+  featureContent?: {
+    picks: FeaturePick[];
+    venues: FeatureVenue[];
+    sourceNotes: string[];
+  };
   onMapClick?: () => void;
 };
 
@@ -44,6 +54,7 @@ export function EditorialArticleShell({
   imageAlt,
   imageCredit,
   imageSourceUrl,
+  heroCaption,
   quickPoints,
   bodyContent,
   sourceContent,
@@ -53,13 +64,25 @@ export function EditorialArticleShell({
   mapUrl,
   officialUrl,
   eventItems = [],
+  breadcrumbItems,
+  byline,
+  featureContent,
   onMapClick,
 }: EditorialArticleShellProps) {
   const usableQuickPoints = quickPoints.filter((point) => point.trim().length > 0).slice(0, 3);
-  const hasSources = Boolean(sourceContent || (imageCredit && imageSourceUrl) || shopSource);
+  const hasSources = Boolean(sourceContent || (imageCredit && imageSourceUrl) || shopSource || featureContent?.sourceNotes.length);
+  const shouldRenderHero = Boolean(
+    imageUrl && (imageCredit || heroCaption) && (imageSourceUrl || featureContent),
+  );
   const attribution = relationship?.relationship === 'editorial'
     ? 'なごとしゃ編集部'
     : relationship?.displayLabel;
+  const displayByline = byline ?? attribution;
+  const breadcrumbs = breadcrumbItems?.filter((item) => item.trim().length > 0) ?? [
+    'ホーム',
+    '新着記事',
+    category,
+  ].filter((item): item is string => Boolean(item));
   const handleBack = () => {
     const isInternalReferrer = document.referrer.startsWith(window.location.origin);
     if (isInternalReferrer && window.history.length > 1) {
@@ -82,31 +105,34 @@ export function EditorialArticleShell({
       <div className={styles.frame}>
         <section className={styles.titleBand} aria-label="記事の概要">
           <nav aria-label="パンくず" className={styles.breadcrumb}>
-            <Link href="/">ホーム</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/new">新着記事</Link>
-            {category && <><span aria-hidden="true">/</span><span>{category}</span></>}
+            {breadcrumbs.map((item, index) => (
+              <span key={`${item}-${index}`} className={styles.breadcrumbItem}>
+                {index === 0 ? <Link href="/">{item}</Link> : <span>{item}</span>}
+                {index < breadcrumbs.length - 1 && <span aria-hidden="true">/</span>}
+              </span>
+            ))}
           </nav>
 
           <header className={styles.articleHeader}>
             {category && <p className={styles.eyebrow}>{category}</p>}
             <h1>{title}</h1>
             {lead && <p className={styles.lead}>{lead}</p>}
-            {(dateStr || attribution) && (
+            {(dateStr || displayByline) && (
               <div className={styles.meta}>
                 {dateStr && <time className={styles.numeric}>{dateStr} 更新</time>}
-                {attribution && <span>{attribution}</span>}
+                {displayByline && <span>{displayByline}</span>}
               </div>
             )}
           </header>
         </section>
 
-        {imageUrl && imageCredit && imageSourceUrl && (
+        {shouldRenderHero && imageUrl && (
           <EditorialHero
             imageUrl={imageUrl}
             imageAlt={imageAlt}
             imageCredit={imageCredit}
             imageSourceUrl={imageSourceUrl}
+            heroCaption={heroCaption}
           />
         )}
 
@@ -127,6 +153,13 @@ export function EditorialArticleShell({
             <section className={styles.bodySection} aria-label="記事本文">
               <div className={styles.body} dangerouslySetInnerHTML={{ __html: bodyContent }} />
             </section>
+          )}
+
+          {featureContent && (
+            <>
+              <FeaturePicksSection picks={featureContent.picks} />
+              <VenueListSection venues={featureContent.venues} onMapClick={onMapClick} />
+            </>
           )}
 
           {eventItems.length > 0 && (
@@ -171,7 +204,12 @@ export function EditorialArticleShell({
             <section className={styles.sources} aria-labelledby="article-sources-title">
               <h2 id="article-sources-title">出典</h2>
               {sourceContent && <div className={styles.sourceBody} dangerouslySetInnerHTML={{ __html: sourceContent }} />}
-              {imageCredit && imageSourceUrl && <p>画像出典: <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer">{imageCredit}</a></p>}
+              {featureContent?.sourceNotes.length ? (
+                <ul className={styles.sourceNotes}>
+                  {featureContent.sourceNotes.map((note) => <li key={note}>{note}</li>)}
+                </ul>
+              ) : null}
+              {imageCredit && (imageSourceUrl ? <p>画像出典: <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer">{imageCredit}</a></p> : <p>画像出典: {imageCredit}</p>)}
               {shopSource && <p>情報出典: {shopSource}</p>}
             </section>
           )}
@@ -193,7 +231,15 @@ export function EditorialArticleShell({
             </section>
           )}
 
-          {eventItems.length > 0 ? (
+          {featureContent ? (
+            <footer className={styles.articleFooter}>
+              <section className={styles.finalCta} aria-labelledby="feature-final-cta-title">
+                <h2 id="feature-final-cta-title">行きたい場所の公式情報を確認</h2>
+                <p>営業時間や開催内容は変更される場合があります。訪問前に各施設の公式情報をご確認ください。</p>
+                <a href="#feature-venues" className={styles.finalCtaPrimary}>会場一覧を見る <span aria-hidden="true">↓</span></a>
+              </section>
+            </footer>
+          ) : eventItems.length > 0 ? (
             <footer className={styles.articleFooter}>
               <section className={styles.finalCta} aria-labelledby="event-final-cta-title">
                 <h2 id="event-final-cta-title">次の一歩は、公式情報の確認</h2>
@@ -224,7 +270,13 @@ export function EditorialArticleShell({
   );
 }
 
-function EditorialHero({ imageUrl, imageAlt, imageCredit, imageSourceUrl }: Required<Pick<EditorialArticleShellProps, 'imageUrl' | 'imageAlt' | 'imageCredit' | 'imageSourceUrl'>>) {
+function EditorialHero({
+  imageUrl,
+  imageAlt,
+  imageCredit,
+  imageSourceUrl,
+  heroCaption,
+}: Required<Pick<EditorialArticleShellProps, 'imageUrl' | 'imageAlt'>> & Pick<EditorialArticleShellProps, 'imageCredit' | 'imageSourceUrl' | 'heroCaption'>) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
 
@@ -232,7 +284,14 @@ function EditorialHero({ imageUrl, imageAlt, imageCredit, imageSourceUrl }: Requ
     <figure className={styles.hero}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={imageUrl} alt={imageAlt} onError={() => setFailed(true)} />
-      <figcaption>画像出典: <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer">{imageCredit}</a></figcaption>
+      <figcaption>
+        {heroCaption ?? (
+          <>
+            画像出典:{' '}
+            {imageSourceUrl ? <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer">{imageCredit}</a> : imageCredit}
+          </>
+        )}
+      </figcaption>
     </figure>
   );
 }
