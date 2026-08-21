@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { ArticleRelated, EventRoundupItem, FeaturePick, FeatureVenue, ShopInfoItem } from '@/lib/article-experience';
+import type { ArticleRelated, EventRoundupItem, FeaturePick, FeatureVenue, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 import type { ContentRelationshipResolution } from '@/lib/content-relationships';
 import { FeaturePicksSection } from './FeaturePicksSection';
+import { NewsSpotsSection } from './NewsSpotsSection';
 import { VenueListSection } from './VenueListSection';
 import styles from './editorial-article.module.css';
 
@@ -33,6 +34,10 @@ type EditorialArticleShellProps = {
   featureContent?: {
     picks: FeaturePick[];
     venues: FeatureVenue[];
+    sourceNotes: string[];
+  };
+  newsContent?: {
+    spots: NewsSpot[];
     sourceNotes: string[];
   };
   onMapClick?: () => void;
@@ -67,12 +72,14 @@ export function EditorialArticleShell({
   breadcrumbItems,
   byline,
   featureContent,
+  newsContent,
   onMapClick,
 }: EditorialArticleShellProps) {
   const usableQuickPoints = quickPoints.filter((point) => point.trim().length > 0).slice(0, 3);
-  const hasSources = Boolean(sourceContent || (imageCredit && imageSourceUrl) || shopSource || featureContent?.sourceNotes.length);
+  const sourceNotes = featureContent?.sourceNotes ?? newsContent?.sourceNotes ?? [];
+  const hasSources = Boolean(sourceContent || (imageCredit && imageSourceUrl) || shopSource || sourceNotes.length);
   const shouldRenderHero = Boolean(
-    imageUrl && (imageCredit || heroCaption) && (imageSourceUrl || featureContent),
+    imageUrl && (imageCredit || heroCaption) && (imageSourceUrl || featureContent || newsContent),
   );
   const attribution = relationship?.relationship === 'editorial'
     ? 'なごとしゃ編集部'
@@ -162,6 +169,8 @@ export function EditorialArticleShell({
             </>
           )}
 
+          {newsContent && <NewsSpotsSection spots={newsContent.spots} onMapClick={onMapClick} />}
+
           {eventItems.length > 0 && (
             <section className={styles.eventList} aria-labelledby="event-list-title">
               <h2 id="event-list-title">掲載イベント</h2>
@@ -204,9 +213,9 @@ export function EditorialArticleShell({
             <section className={styles.sources} aria-labelledby="article-sources-title">
               <h2 id="article-sources-title">出典</h2>
               {sourceContent && <div className={styles.sourceBody} dangerouslySetInnerHTML={{ __html: sourceContent }} />}
-              {featureContent?.sourceNotes.length ? (
+              {sourceNotes.length ? (
                 <ul className={styles.sourceNotes}>
-                  {featureContent.sourceNotes.map((note) => <li key={note}>{note}</li>)}
+                  {sourceNotes.map((note) => <li key={note}>{note}</li>)}
                 </ul>
               ) : null}
               {imageCredit && (imageSourceUrl ? <p>画像出典: <a href={imageSourceUrl} target="_blank" rel="noopener noreferrer">{imageCredit}</a></p> : <p>画像出典: {imageCredit}</p>)}
@@ -237,6 +246,14 @@ export function EditorialArticleShell({
                 <h2 id="feature-final-cta-title">行きたい場所の公式情報を確認</h2>
                 <p>営業時間や開催内容は変更される場合があります。訪問前に各施設の公式情報をご確認ください。</p>
                 <a href="#feature-venues" className={styles.finalCtaPrimary}>会場一覧を見る <span aria-hidden="true">↓</span></a>
+              </section>
+            </footer>
+          ) : newsContent ? (
+            <footer className={styles.articleFooter}>
+              <section className={styles.finalCta} aria-labelledby="news-final-cta-title">
+                <h2 id="news-final-cta-title">掲載スポットの公式情報を確認</h2>
+                  <p>営業時間や提供内容は変更される場合があります。訪問前に各店舗・施設の公式情報をご確認ください。</p>
+                <a href="#news-spots" className={styles.finalCtaPrimary}>掲載スポットを見る <span aria-hidden="true">↓</span></a>
               </section>
             </footer>
           ) : eventItems.length > 0 ? (

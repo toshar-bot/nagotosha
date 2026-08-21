@@ -150,8 +150,10 @@
   margin: 0;
   font-size: clamp(28px, 7.8vw, 32px);
   line-height: 1.35;
-  overflow-wrap: break-word;
+  line-break: strict;
   word-break: normal;
+  overflow-wrap: normal;
+  text-wrap: pretty;
 }
 
 .lead {
@@ -617,7 +619,8 @@
 }
 
 .pickList,
-.venueList {
+.venueList,
+.newsSpotList {
   display: grid;
   gap: 10px;
   margin: 0;
@@ -738,6 +741,123 @@
   box-shadow: 0 6px 16px rgba(59, 40, 12, 0.04);
 }
 
+.newsSpotCard {
+  padding: 15px 16px 14px;
+  border-top: 1px solid rgba(7, 26, 77, 0.16);
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.newsSpotCardWithImage {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.newsSpotCard:first-child {
+  border-top: 0;
+}
+
+.newsSpotBody {
+  min-width: 0;
+}
+
+.newsSpotImage {
+  width: 76px;
+  height: 76px;
+  align-self: start;
+  border: 1px solid rgba(7, 26, 77, 0.1);
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.newsSpotTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.genreChip {
+  width: fit-content;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border: 1px solid rgba(7, 26, 77, 0.15);
+  border-radius: 999px;
+  color: var(--navy);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+.newsSpotTitleRow h3 {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: var(--navy);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.newsSpotBody > p {
+  margin: 7px 0 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.75;
+}
+
+.newsSpotActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.newsSpotActions a {
+  min-height: 44px;
+  flex: 1 1 142px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(7, 26, 77, 0.24);
+  border-radius: 11px;
+  color: var(--navy);
+  background: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.newsSpotActions a:last-child {
+  border-color: var(--red);
+  color: #fff;
+  background: var(--red);
+}
+
+.newsSpotBody > small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
 .venueTitleRow {
   display: flex;
   align-items: center;
@@ -784,6 +904,10 @@
 }
 
 #feature-venues {
+  scroll-margin-top: 16px;
+}
+
+#news-spots {
   scroll-margin-top: 16px;
 }
 
@@ -939,6 +1063,15 @@
   }
 
   .venueActions a {
+    flex-basis: 100%;
+  }
+
+  .newsSpotCard {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .newsSpotActions a {
     flex-basis: 100%;
   }
 }
