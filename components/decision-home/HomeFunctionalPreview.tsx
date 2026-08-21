@@ -9,7 +9,7 @@ import {
   readDecisionHomeSession,
 } from '@/lib/decision-home-session';
 import { DECISION_V3_PARTY_LABELS } from '@/lib/decision-v3-party-handoff';
-import type { HomeState, TopicCard } from '@/types/decision-home';
+import type { HomeState } from '@/types/decision-home';
 import type { PartyChoice } from '@/types/decision-v3';
 import HomeHeader from './HomeHeader';
 import HomeHero from './HomeHero';
@@ -56,7 +56,6 @@ export default function HomeFunctionalPreview() {
     focusedCategoryId: 'food',
   });
   const [selectedParty, setSelectedParty] = useState<PartyChoice | null>(null);
-  const [topics, setTopics] = useState<readonly TopicCard[]>([]);
   const [stateReady, setStateReady] = useState(false);
   const partySectionRef = useRef<HTMLElement | null>(null);
 
@@ -96,19 +95,15 @@ export default function HomeFunctionalPreview() {
     if (process.env.NODE_ENV === 'development') {
       const params = new URLSearchParams(window.location.search);
       const demo = params.get('demo');
-      if (demo === 'conditions-resumable' || demo === 'topics') {
+      if (demo === 'conditions-resumable') {
         void import('@/data/decision-home-topics.development').then((module) => {
           if (cancelled) return;
-          if (demo === 'conditions-resumable') {
-            setHomeState({
-              kind: 'conditions-resumable',
-              focusedCategoryId: 'food',
-              selectedCategoryId: 'food',
-              conditionSummary: module.DEVELOPMENT_CONDITION_SUMMARY,
-            });
-          } else {
-            setTopics(module.DEVELOPMENT_TOPIC_FIXTURES);
-          }
+          setHomeState({
+            kind: 'conditions-resumable',
+            focusedCategoryId: 'food',
+            selectedCategoryId: 'food',
+            conditionSummary: module.DEVELOPMENT_CONDITION_SUMMARY,
+          });
         });
       }
     }
@@ -123,12 +118,6 @@ export default function HomeFunctionalPreview() {
     if (!stateReady) return;
     logDecisionHomeEvent({ name: 'home_view', stateKind: homeState.kind });
   }, [homeState.kind, stateReady]);
-
-  useEffect(() => {
-    for (const topic of topics) {
-      logDecisionHomeEvent({ name: 'topic_impression', topicId: topic.id, kind: topic.kind });
-    }
-  }, [topics]);
 
   const openDecisionConditions = useCallback((party: PartyChoice) => {
     const params = new URLSearchParams({ party, from: 'home' });
@@ -219,12 +208,7 @@ export default function HomeFunctionalPreview() {
               <p>キーワード検索は準備中です</p>
             </section>
 
-            <TrendingNagoyaSection
-              topics={topics}
-              onTopicClick={(topic) => {
-                logDecisionHomeEvent({ name: 'topic_click', topicId: topic.id, kind: topic.kind });
-              }}
-            />
+            <TrendingNagoyaSection />
           </main>
         </div>
       </LazyMotion>

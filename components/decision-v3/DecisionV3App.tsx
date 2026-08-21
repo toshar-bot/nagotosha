@@ -135,7 +135,7 @@ export default function DecisionV3App() {
 
   const navigateHomeSection = useCallback((section: 'home' | 'conditions') => {
     if (section === 'home') {
-      window.location.assign('/home-decision-functional-preview');
+      window.location.assign('/');
       return;
     }
 
