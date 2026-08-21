@@ -7,7 +7,6 @@ import { isSaved, toggleSavedItem } from '@/lib/saved';
 import { buildGoogleMapsSearchUrl } from '@/lib/tracking';
 import type { ArticleExperienceData, ArticleExternalVisual, ArticlePoint, ArticleRelated, EventRoundupData, EventRoundupItem, FeatureArticleData, FeaturePick, FeatureTip, FeatureVenue, NewsArticleData, NewsSpot, ShopInfoItem } from '@/lib/article-experience';
 import type { ContentRelationshipResolution } from '@/lib/content-relationships';
-import { EditorialArticleShell } from '@/components/editorial/EditorialArticleShell';
 
 const GLOBAL_CSS = `
   .article-page {
@@ -1301,91 +1300,6 @@ export function ArticleExperience({
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
-
-  const editorialContent = removeUnverifiedArticleImages(displayContent);
-  const { bodyContent: editorialBodyContent, sourceContent: editorialSourceContent } = splitStandardEditorialSources(editorialContent);
-  const editorialQuickPoints = resolvedQuickPoints.length > 0
-    ? resolvedQuickPoints
-    : shop?.quickCards?.map((card) => `${card.title}：${card.body}`) ?? [];
-  const editorialShopInfo = shop || contentStoreName || contentAddress || (extraShopInfo?.length ?? 0) > 0
-    ? shopInfo
-    : [];
-
-  const isArticle79Feature =
-    postId === 79 &&
-    layout === 'feature' &&
-    Boolean(experience?.feature);
-
-  const isNewsEditorial =
-    (postId === 39 || postId === 83) &&
-    layout === 'news' &&
-    Boolean(experience?.news);
-
-  // Article 79 is the approved feature migration. Articles 39 and 83 use the news
-  // variant of the same shell; all other structured layouts retain their renderer.
-  const usesStructuredLegacyRenderer =
-    (layout === 'feature' && Boolean(experience?.feature) && !isArticle79Feature) ||
-    (layout === 'news' && Boolean(experience?.news) && !isNewsEditorial);
-
-  // A title is a required article contract; retaining the legacy renderer only
-  // protects malformed records that would otherwise render an empty editorial page.
-  if (displayTitle.trim().length > 0 && !usesStructuredLegacyRenderer) {
-    return (
-      <EditorialArticleShell
-        title={displayTitle}
-        lead={displayLead}
-        category={isArticle79Feature
-          ? experience?.feature?.eyebrow
-          : isNewsEditorial
-            ? experience?.news?.eyebrow
-            : badges.filter((badge) => badge.trim().length > 0).slice(0, 2).join(' / ') || tag}
-        dateStr={isArticle79Feature
-          ? experience?.feature?.updatedLabel || dateStr
-          : isNewsEditorial
-            ? experience?.news?.updatedLabel || dateStr
-            : dateStr}
-        relationship={relationship}
-        imageUrl={effectiveImageUrl}
-        imageAlt={effectiveImageAlt}
-        imageCredit={effectiveImageCredit}
-        imageSourceUrl={effectiveImageSourceUrl}
-        heroCaption={isArticle79Feature
-          ? experience?.feature?.imageCaption
-          : isNewsEditorial
-            ? experience?.news?.imageCaption
-            : undefined}
-        quickPoints={isArticle79Feature
-          ? experience?.feature?.points.slice(0, 3) ?? []
-          : isNewsEditorial
-            ? experience?.news?.points.slice(0, 3) ?? []
-            : editorialQuickPoints}
-        bodyContent={isArticle79Feature || isNewsEditorial ? undefined : editorialBodyContent}
-        sourceContent={isArticle79Feature || isNewsEditorial ? undefined : editorialSourceContent ? formatStandardSourceLinks(editorialSourceContent) : undefined}
-        shopInfo={isArticle79Feature || isNewsEditorial ? [] : editorialShopInfo}
-        shopSource={shop?.source}
-        related={related}
-        mapUrl={verifiedStandardMapUrl}
-        officialUrl={verifiedStandardOfficialUrl}
-        eventItems={eventRoundup?.items}
-        breadcrumbItems={isArticle79Feature
-          ? experience?.feature?.breadcrumb
-          : isNewsEditorial
-            ? experience?.news?.breadcrumb
-            : undefined}
-        byline={isArticle79Feature || isNewsEditorial ? 'なごとしゃ編集部' : undefined}
-        featureContent={isArticle79Feature && experience?.feature ? {
-          picks: experience.feature.picks,
-          venues: experience.feature.venues,
-          sourceNotes: experience.feature.sourceNotes,
-        } : undefined}
-        newsContent={isNewsEditorial && experience?.news ? {
-          spots: experience.news.spots,
-          sourceNotes: experience.news.sourceNotes,
-        } : undefined}
-        onMapClick={handleMapClick}
-      />
-    );
-  }
 
   if (isStandardEditorial) {
     return (

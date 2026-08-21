@@ -4,17 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --nagotosha-paper: #fbf6ec;
-  --nagotosha-grid-line: #efe7d6;
-  --nagotosha-grid-size: 24px;
-  --nagotosha-grid-line-width: 0.6px;
-  --nagotosha-text-primary: #1e2a44;
-  --nagotosha-accent-red: #d63a28;
-  --nagotosha-accent-gold: #eab646;
-  --nagotosha-card-bg: #fffdf8;
-}
-
 * {
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
