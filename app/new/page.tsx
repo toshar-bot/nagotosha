@@ -81,6 +81,19 @@ const NAV_LINKS = [
   },
 ] as const;
 
+const INFORMATION_PAGE_STYLE: React.CSSProperties = {
+  backgroundColor: 'var(--nagotosha-paper, #fbf6ec)',
+  backgroundImage:
+    'linear-gradient(var(--nagotosha-grid-line, #efe7d6) var(--nagotosha-grid-line-width, 0.6px), transparent var(--nagotosha-grid-line-width, 0.6px)), linear-gradient(90deg, var(--nagotosha-grid-line, #efe7d6) var(--nagotosha-grid-line-width, 0.6px), transparent var(--nagotosha-grid-line-width, 0.6px))',
+  backgroundSize: 'var(--nagotosha-grid-size, 24px) var(--nagotosha-grid-size, 24px)',
+  color: 'var(--nagotosha-text-primary, #1e2a44)',
+  fontFamily: '"Noto Sans JP", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif',
+  fontSize: 16,
+  fontWeight: 400,
+  letterSpacing: 0,
+  lineHeight: 1.8,
+};
+
 type NewSearchParams = {
   tag?: string | string[];
   area?: string | string[];
@@ -103,12 +116,12 @@ export default async function NewPage({
   const filteredArticles = filterArticles(articles, filters);
 
   return (
-    <main className="min-h-dvh pb-28" style={{ background: '#ffffff' }}>
+    <main className="min-h-dvh pb-28" style={INFORMATION_PAGE_STYLE}>
       <section className="px-4 pt-8 pb-5">
         <p className="text-[10px] font-black tracking-[0.22em]" style={{ color: '#E8483F' }}>
           NEW ARTICLES
         </p>
-        <h1 className="mt-1 text-[28px] font-black leading-tight tracking-tight" style={{ color: '#071A4D' }}>
+        <h1 className="mt-1 text-[28px] font-bold leading-tight tracking-normal" style={{ color: '#071A4D' }}>
           {JP.pageTitle}
         </h1>
         <p className="mt-3 text-[13px] font-medium leading-6" style={{ color: '#667085' }}>
