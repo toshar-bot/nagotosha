@@ -2,8 +2,6 @@
 'use client';
 
 import Script from 'next/script';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect } from 'react';
 
 declare global {
   interface Window {
@@ -12,24 +10,6 @@ declare global {
 }
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-
-function GoogleAnalyticsPageView() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (!GA_MEASUREMENT_ID || !window.gtag) return;
-
-    const queryString = searchParams.toString();
-    const pagePath = queryString ? `${pathname}?${queryString}` : pathname;
-
-    window.gtag('config', GA_MEASUREMENT_ID, {
-      page_path: pagePath,
-    });
-  }, [pathname, searchParams]);
-
-  return null;
-}
 
 export default function GoogleAnalytics() {
   if (!GA_MEASUREMENT_ID) return null;
@@ -51,9 +31,6 @@ export default function GoogleAnalytics() {
           });
         `}
       </Script>
-      <Suspense fallback={null}>
-        <GoogleAnalyticsPageView />
-      </Suspense>
     </>
   );
 }
