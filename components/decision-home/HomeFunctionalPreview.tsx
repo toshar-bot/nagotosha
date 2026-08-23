@@ -3,6 +3,7 @@
 import { LazyMotion, MotionConfig } from 'motion/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import { logDecisionHomeEvent } from '@/lib/decision-home-analytics';
 import {
   readDecisionHomeFocusSession,
@@ -58,6 +59,7 @@ export default function HomeFunctionalPreview() {
   const [selectedParty, setSelectedParty] = useState<PartyChoice | null>(null);
   const [stateReady, setStateReady] = useState(false);
   const partySectionRef = useRef<HTMLElement | null>(null);
+  const decisionStartPendingRef = useRef(false);
 
   useLayoutEffect(() => {
     document.body.dataset.decisionHomeFunctional = 'true';
@@ -120,7 +122,10 @@ export default function HomeFunctionalPreview() {
   }, [homeState.kind, stateReady]);
 
   const openDecisionConditions = useCallback((party: PartyChoice) => {
+    if (decisionStartPendingRef.current) return;
+    decisionStartPendingRef.current = true;
     const params = new URLSearchParams({ party, from: 'home' });
+    trackAnalyticsEvent('decision_start', { party, source: 'root_home' });
     window.location.assign(`/decision-functional-preview-v3?${params.toString()}`);
   }, []);
 

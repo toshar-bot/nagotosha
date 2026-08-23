@@ -1,7 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useReducer, useRef, useState, type CSSProperties } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
 import { BrandHeader } from '@/components/common/BrandHeader';
+import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import {
   pushDecisionV3History,
   readDecisionV3HistoryState,
@@ -32,6 +42,7 @@ export default function DecisionV3App() {
   const [qaWidth, setQaWidth] = useState<number | null>(null);
   const [activeHomeSection, setActiveHomeSection] = useState<'home' | 'conditions'>('home');
   const conditionsRef = useRef<HTMLElement | null>(null);
+  const transitionInFlightRef = useRef<DecisionV3Step | null>(null);
 
   useEffect(() => {
     const initialSearch = window.location.search;
@@ -80,6 +91,10 @@ export default function DecisionV3App() {
   }, [hydrated, state]);
 
   useEffect(() => {
+    transitionInFlightRef.current = null;
+  }, [state.step]);
+
+  useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
     const onPopState = (event: PopStateEvent) => {
@@ -97,13 +112,30 @@ export default function DecisionV3App() {
     };
   }, []);
 
+  const beginTransition = useCallback((step: DecisionV3Step) => {
+    if (transitionInFlightRef.current === step) return false;
+    transitionInFlightRef.current = step;
+    return true;
+  }, []);
+
   const navigate = useCallback((step: DecisionV3Step, detailId?: string | null) => {
+    if (
+      step === 'compare'
+      && (state.step === 'candidates' || state.step === 'detail' || state.step === 'decided')
+    ) {
+      if (!beginTransition('compare')) return;
+      trackAnalyticsEvent('compare_view', {
+        compare_count: state.compareIds.length,
+        source: state.step,
+      });
+    }
+
     const nextState = decisionV3Reducer(state, { type: 'GO', step, detailId });
     replaceDecisionV3History(state);
     dispatch({ type: 'RESTORE', state: nextState });
     pushDecisionV3History(nextState);
     window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [state]);
+  }, [beginTransition, state]);
 
   useEffect(() => {
     if (state.step !== 'home') return;
@@ -152,11 +184,42 @@ export default function DecisionV3App() {
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
+  const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const anchor = target.closest('a[href]');
+    if (!anchor) return;
+
+    const candidateId = state.step === 'detail'
+      ? state.detailId
+      : state.step === 'decided'
+        ? state.chosenId
+        : null;
+    const surface = state.step === 'detail' || state.step === 'decided' ? state.step : null;
+    if (!candidateId || !surface) return;
+
+    const candidate = DEMO_CANDIDATES.find((item) => item.id === candidateId);
+    const href = anchor.getAttribute('href');
+    const action = candidate?.actions.find(
+      (item) => isCandidateActionDisplayable(item) && item.href === href,
+    );
+    if (!action) return;
+
+    if (action.type === 'access') {
+      trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
+    } else if (action.type === 'official') {
+      trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+    } else if (action.type === 'reservation' && action.href?.startsWith('tel:')) {
+      trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+    }
+  }, [state.chosenId, state.detailId, state.step]);
 
   return (
     <main
       className={styles.decisionV3Root}
       data-hydrated={hydrated ? 'true' : 'false'}
+      onClickCapture={trackExternalAction}
       style={qaWidth
         ? {
             width: qaWidth,
@@ -177,11 +240,28 @@ export default function DecisionV3App() {
           }
           onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
           onSubmit={() => {
+            if (!beginTransition('candidates')) return;
             const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES' });
             const candidateState = decisionV3Reducer(preparedState, {
               type: 'GO',
               step: 'candidates',
             });
+            const selectionResult = candidateState.selectionResult;
+            if (hasAllRequiredConditions(candidateState.conditions) && selectionResult) {
+              trackAnalyticsEvent('conditions_complete', {
+                party: candidateState.conditions.party,
+                area: candidateState.conditions.area,
+                budget: candidateState.conditions.budget,
+                refine_count: candidateState.refine.length,
+              });
+              trackAnalyticsEvent('candidates_view', {
+                party: candidateState.conditions.party,
+                candidate_count: selectionResult.kind === 'matched'
+                  ? selectionResult.candidateIds.length
+                  : 0,
+                result_status: selectionResult.kind.replace('-', '_'),
+              });
+            }
             replaceDecisionV3History(state);
             dispatch({ type: 'RESTORE', state: candidateState });
             pushDecisionV3History(candidateState);
@@ -197,7 +277,14 @@ export default function DecisionV3App() {
           refine={state.refine}
           compareIds={state.compareIds}
           onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
-          onDetail={(candidateId) => navigate('detail', candidateId)}
+          onDetail={(candidateId) => {
+            if (!beginTransition('detail')) return;
+            trackAnalyticsEvent('candidate_detail_view', {
+              store_id: candidateId,
+              source: 'candidates',
+            });
+            navigate('detail', candidateId);
+          }}
           onCompare={() => navigate('compare')}
           onBack={() => navigate('home')}
         />
@@ -231,6 +318,12 @@ export default function DecisionV3App() {
           onDecide={(candidateId) => {
             const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
             if (chosenState.chosenId !== candidateId) return;
+            if (!beginTransition('decided')) return;
+            trackAnalyticsEvent('store_decided', {
+              store_id: candidateId,
+              compare_count: state.compareIds.length,
+              party: chosenState.conditions.party,
+            });
             const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
             replaceDecisionV3History(state);
             dispatch({ type: 'RESTORE', state: decidedState });
