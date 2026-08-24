@@ -53,6 +53,10 @@ try {
   const ids = DECISION_CANDIDATES.map((candidate) => candidate.id);
   assert(ids.length === 3, 'fixture must provide exactly three provisional candidates');
   assert(new Set(ids).size === 3, 'fixture candidate ids must be unique');
+  assert(
+    ids.join(',') === 'meieki-erick-south-kitte-nagoya,sakae-potama-nagoya-haera,osu-sugakiya-osu',
+    'fixture must use the S2.3 meieki, sakae, and osu initial-three records only',
+  );
 
   const eligibility = ids.map((candidateId) => ({
     candidateId,
@@ -90,7 +94,17 @@ try {
     assert(candidate.photo.rightsStatus === 'unverified', `${candidate.id}: fallback must not claim rights`);
     const actionTypes = candidate.actions.map((action) => action.type).sort().join(',');
     assert(actionTypes === 'access,official,phone', `${candidate.id}: verified map, official, phone actions required`);
+    assert(
+      candidate.selection.price.kind === 'range',
+      `${candidate.id}: price must retain an evidenced range rather than a fabricated fixed value`,
+    );
   }
+  assert(
+    adapted.find((candidate) => candidate.id === 'meieki-erick-south-kitte-nagoya')?.selection.price.maximum === 2350
+      && adapted.find((candidate) => candidate.id === 'sakae-potama-nagoya-haera')?.selection.price.minimum === 450
+      && adapted.find((candidate) => candidate.id === 'osu-sugakiya-osu')?.selection.price.minimum === 290,
+    'fixture price boundaries must preserve the three official price gates',
+  );
 
   const lightResult = selectDecisionV3Candidates({
     conditions: { party: 'solo', budget: 'any', mood: 'light', area: 'any' },
@@ -99,9 +113,9 @@ try {
   });
   assert(lightResult.kind === 'matched', 'formal fixture must enter Candidates for a matching condition');
   assert(
-    lightResult.candidateIds.includes('food-178-potama-haera')
-      && lightResult.candidateIds.includes('osu-konparu-honten'),
-    'light fixture must retain the verified sakae and osu proposals',
+    lightResult.candidateIds.includes('sakae-potama-nagoya-haera')
+      && lightResult.candidateIds.includes('osu-sugakiya-osu'),
+    'light fixture must retain the S2.3 sakae and osu proposals',
   );
 
   let state = createInitialDecisionV3State();
@@ -110,15 +124,15 @@ try {
   }
   state = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES', candidates: adapted });
   assert(state.selectionResult?.kind === 'matched', 'Conditions to Candidates fixture flow failed');
-  state = decisionV3Reducer(state, { type: 'GO', step: 'detail', detailId: 'food-178-potama-haera' });
-  assert(state.detailId === 'food-178-potama-haera', 'Detail fixture flow failed');
-  state = decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId: 'food-178-potama-haera' });
-  state = decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId: 'osu-konparu-honten' });
+  state = decisionV3Reducer(state, { type: 'GO', step: 'detail', detailId: 'sakae-potama-nagoya-haera' });
+  assert(state.detailId === 'sakae-potama-nagoya-haera', 'Detail fixture flow failed');
+  state = decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId: 'sakae-potama-nagoya-haera' });
+  state = decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId: 'osu-sugakiya-osu' });
   state = decisionV3Reducer(state, { type: 'GO', step: 'compare' });
   assert(state.compareIds.length === 2, 'Compare fixture flow failed');
-  state = decisionV3Reducer(state, { type: 'CHOOSE', candidateId: 'food-178-potama-haera' });
+  state = decisionV3Reducer(state, { type: 'CHOOSE', candidateId: 'sakae-potama-nagoya-haera' });
   state = decisionV3Reducer(state, { type: 'GO', step: 'decided' });
-  assert(state.chosenId === 'food-178-potama-haera' && state.step === 'decided', 'Decided fixture flow failed');
+  assert(state.chosenId === 'sakae-potama-nagoya-haera' && state.step === 'decided', 'Decided fixture flow failed');
 
   const normalized = normalizeDecisionV3RestoredState({
     ...state,
@@ -149,7 +163,7 @@ try {
     actions: [{
       type: 'official',
       label: '公式情報を見る',
-      url: 'https://www.yabaton.com/modules/shop/index.php?content_id=5',
+      url: 'https://info.erickcurry.jp/kitte/',
       verifiedAt: '',
     }],
   };
@@ -169,9 +183,23 @@ try {
   assert(activeProduction.length === 0, 'provisional registry must keep production candidates at zero');
 
   const decisionApp = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
+  for (const eventName of ['map_click', 'official_click', 'phone_click']) {
+    assert(
+      decisionApp.includes(`trackAnalyticsEvent('${eventName}', { store_id: candidateId, surface })`),
+      `${eventName} must preserve the selected formal store_id contract`,
+    );
+  }
   assert(
-    decisionApp.includes("trackAnalyticsEvent('map_click', { store_id: candidateId, surface })"),
-    'map_click must preserve the selected formal store_id contract',
+    decisionApp.includes("trackAnalyticsEvent('store_decided', {")
+      && decisionApp.includes('store_id: candidateId'),
+    'store_decided must preserve the selected formal store_id contract',
+  );
+
+  const previewPage = fs.readFileSync(path.join(root, 'app/decision-functional-preview-v3/page.tsx'), 'utf8');
+  assert(
+    previewPage.includes("const candidateSource = demoAllowed ? 'demo' : 'formal';")
+      && previewPage.includes('getDecisionV3CandidatesForSource(candidateSource)'),
+    'preview must continue to choose demo candidates only through its explicit source gate',
   );
 
   console.log('S2 formal-candidate fixture: PASS');

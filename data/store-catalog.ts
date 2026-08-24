@@ -80,6 +80,14 @@ export const STORE_DISCOVERY_RECORDS: readonly StoreDiscoveryRecord[] = [
     nameHint: 'いきなりステーキ 名古屋大須店',
     status: 'promoted',
   },
+  {
+    discoveryId: 'discovery-osu-sugakiya-osu',
+    source: 'official-store',
+    capturedAt: '2026-08-24T11:55:43Z',
+    sourceUrl: 'https://www.sugakico.co.jp/area/%E5%A4%A7%E9%A0%88%E5%BA%97/',
+    nameHint: 'スガキヤ 大須店',
+    status: 'promoted',
+  },
 ];
 
 export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [
@@ -180,6 +188,13 @@ export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [
     sourceUrl: 'https://ikinaristeak.com/shopinfo/nagoya-oosu/',
     capturedAt: '2026-07-22T09:12:45Z',
     sourceIdentity: 'いきなり！ステーキ',
+  },
+  {
+    sourceRefId: 'source-osu-sugakiya-osu',
+    kind: 'official-store',
+    sourceUrl: 'https://www.sugakico.co.jp/area/%E5%A4%A7%E9%A0%88%E5%BA%97/',
+    capturedAt: '2026-08-24T11:55:43Z',
+    sourceIdentity: 'スガキヤ',
   },
 ];
 
@@ -508,6 +523,33 @@ export const STORE_FACTS: readonly StoreFact[] = [
     observedAt: '2026-07-22T09:12:45Z',
     reviewStatus: 'verified',
   },
+  {
+    factId: 'fact-osu-sugakiya-display-name',
+    storeId: 'osu-sugakiya-osu',
+    key: 'displayName',
+    value: 'スガキヤ 大須店',
+    sourceRefIds: ['source-osu-sugakiya-osu'],
+    observedAt: '2026-08-24T11:55:43Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-osu-sugakiya-address',
+    storeId: 'osu-sugakiya-osu',
+    key: 'address',
+    value: '愛知県名古屋市中区大須3-45-2 よ志だやビル1F',
+    sourceRefIds: ['source-osu-sugakiya-osu'],
+    observedAt: '2026-08-24T11:55:43Z',
+    reviewStatus: 'verified',
+  },
+  {
+    factId: 'fact-osu-sugakiya-area',
+    storeId: 'osu-sugakiya-osu',
+    key: 'area',
+    value: 'osu',
+    sourceRefIds: ['source-osu-sugakiya-osu'],
+    observedAt: '2026-08-24T11:55:43Z',
+    reviewStatus: 'verified',
+  },
 ];
 
 export const STORE_ENTITIES: readonly StoreEntity[] = [
@@ -614,6 +656,18 @@ export const STORE_ENTITIES: readonly StoreEntity[] = [
     canonicalNameFactId: 'fact-osu-ikinaristeak-display-name',
     canonicalLocationFactId: 'fact-osu-ikinaristeak-address',
     discoveryRecordIds: ['discovery-osu-ikinaristeak-nagoya-osu'],
+    mergeGuard: {
+      unresolvedCandidateStoreIds: [],
+      confirmedDistinctStoreIds: [],
+    },
+  },
+  {
+    storeId: 'osu-sugakiya-osu',
+    area: 'osu',
+    status: 'listed',
+    canonicalNameFactId: 'fact-osu-sugakiya-display-name',
+    canonicalLocationFactId: 'fact-osu-sugakiya-address',
+    discoveryRecordIds: ['discovery-osu-sugakiya-osu'],
     mergeGuard: {
       unresolvedCandidateStoreIds: [],
       confirmedDistinctStoreIds: [],
