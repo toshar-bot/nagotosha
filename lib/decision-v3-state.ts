@@ -170,7 +170,7 @@ export function normalizeDecisionV3RestoredState(
   state: DecisionV3Session,
   candidateSource: DecisionV3CandidateSource,
 ): DecisionV3Session {
-  if (candidateSource === 'demo' || state.step === 'home') return state;
+  if (candidateSource === 'demo') return state;
 
   const base = {
     ...createInitialDecisionV3State(),
@@ -178,7 +178,7 @@ export function normalizeDecisionV3RestoredState(
     refine: state.refine,
   };
 
-  if (!hasAllRequiredConditions(base.conditions)) return base;
+  if (state.step === 'home' || !hasAllRequiredConditions(base.conditions)) return base;
 
   return {
     ...decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidateSource }),

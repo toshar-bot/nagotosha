@@ -46,7 +46,7 @@ type Props = {
   candidateSource?: DecisionV3CandidateSource;
 };
 
-export default function DecisionV3App({ candidateSource = 'demo' }: Props) {
+export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
   const [state, dispatch] = useReducer(decisionV3Reducer, undefined, createInitialDecisionV3State);
   const [hydrated, setHydrated] = useState(false);
   const [qaWidth, setQaWidth] = useState<number | null>(null);
