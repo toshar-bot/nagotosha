@@ -1,5 +1,6 @@
 import { DECISION_CANDIDATE_EVIDENCE } from '@/data/decision-candidate-evidence';
 import { DECISION_CANDIDATE_FRESHNESS } from '@/data/decision-candidate-freshness';
+import { INITIAL_FORMAL_DECISION_V3_DEFINITIONS } from '@/data/decision-candidate-proposals';
 import { DECISION_CANDIDATES } from '@/data/decision-candidates';
 import {
   DECISION_INDEPENDENT_REVIEWS,
@@ -70,10 +71,13 @@ export type FormalDecisionV3ActivationInput = {
 };
 
 /**
- * Formal V3 metadata is deliberately empty until B1 registers independently
- * reviewed candidates. This module is an adapter, not a candidate registry.
+ * Definitions may be prepared before review, but the adapter admits a
+ * candidate only after both eligibility and production-readiness gates pass.
+ * S2's three definitions therefore do not change the current zero-candidate
+ * production result.
  */
-export const FORMAL_DECISION_V3_DEFINITIONS: readonly FormalDecisionV3CandidateDefinition[] = [];
+export const FORMAL_DECISION_V3_DEFINITIONS: readonly FormalDecisionV3CandidateDefinition[] =
+  INITIAL_FORMAL_DECISION_V3_DEFINITIONS;
 
 const EMPTY_REFINEMENT_PROFILE: Pick<
   DecisionV3SelectionProfile,

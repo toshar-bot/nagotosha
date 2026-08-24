@@ -600,15 +600,16 @@ function evaluateActionEligibility(
   const phoneActions = candidate.actions.filter((action) => action.type === 'phone');
   const reservationActions = candidate.actions.filter((action) => action.type === 'reservation');
   const mapActions = candidate.actions.filter((action) => action.type === 'map');
-  const expectedArticleUrl = candidate.relationshipTarget.kind === 'article'
-    ? `/article/${candidate.relationshipTarget.articleId}`
-    : undefined;
-  if (
-    articleActions.length !== 1
-    || !expectedArticleUrl
-    || !isSafeInternalUrl(articleActions[0].url)
-    || articleActions[0].url !== expectedArticleUrl
-  ) {
+  if (candidate.relationshipTarget.kind === 'article') {
+    const expectedArticleUrl = `/article/${candidate.relationshipTarget.articleId}`;
+    if (
+      articleActions.length !== 1
+      || !isSafeInternalUrl(articleActions[0].url)
+      || articleActions[0].url !== expectedArticleUrl
+    ) {
+      exclusions.push({ class: 'failed-verification', code: 'invalid-action', field: 'article' });
+    }
+  } else if (articleActions.length !== 0) {
     exclusions.push({ class: 'failed-verification', code: 'invalid-action', field: 'article' });
   }
 

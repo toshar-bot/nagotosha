@@ -13,7 +13,11 @@ import type {
   DecisionRelationshipTarget,
   VerifiedImage,
 } from '../types/decision-candidate';
-import { resolveContentRelationship, type ContentRelationshipResolution } from './content-relationships';
+import {
+  resolveContentRelationship,
+  validateContentRelationshipRecord,
+  type ContentRelationshipResolution,
+} from './content-relationships';
 
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
@@ -33,7 +37,8 @@ const REQUIRED_EDITORIAL_FIELDS: readonly DecisionEditorialClassificationField[]
   'reservationNeed',
 ];
 
-export type DecisionRelationshipResolution = ContentRelationshipResolution & {
+export type DecisionRelationshipResolution = Omit<ContentRelationshipResolution, 'source'> & {
+  source: ContentRelationshipResolution['source'] | 'catalog';
   target: DecisionRelationshipTarget;
 };
 
@@ -43,6 +48,31 @@ export function resolveDecisionRelationshipTarget(
   if (target.kind === 'article') {
     return {
       ...resolveContentRelationship(target.articleId),
+      target,
+    };
+  }
+
+  if (target.kind === 'catalog') {
+    const validationErrors = validateContentRelationshipRecord({
+      // Validation is shared with article relationships. This internal
+      // placeholder is never rendered or exposed as an article reference.
+      postId: 1,
+      relationship: target.relationship,
+      relationshipExplanation: target.relationshipExplanation,
+      commercialDisclosure: target.commercialDisclosure,
+    });
+
+    return {
+      relationship: target.relationship,
+      relationshipExplanation: target.relationshipExplanation,
+      commercialDisclosure: target.commercialDisclosure,
+      source: 'catalog',
+      displayableOnRedesignedSurfaces: target.relationship !== 'unknown'
+        && validationErrors.length === 0
+        && target.storeId.trim().length > 0,
+      validationErrors: target.storeId.trim()
+        ? validationErrors
+        : [...validationErrors, 'catalog storeId is required'],
       target,
     };
   }
@@ -253,12 +283,15 @@ export function validateDecisionCandidateRegistry(
     if (candidateIds.has(candidate.id)) errors.push(`${prefix}: duplicate candidate id`);
     candidateIds.add(candidate.id);
 
-    if (candidate.relationshipTarget.kind !== 'article') {
-      errors.push(`${prefix}: initial candidate must target an article`);
-    } else {
+    if (candidate.relationshipTarget.kind === 'article') {
       const articleId = candidate.relationshipTarget.articleId;
       if (articleIds.has(articleId)) errors.push(`${prefix}: duplicate articleId ${articleId}`);
       articleIds.add(articleId);
+    } else if (
+      candidate.relationshipTarget.kind === 'catalog'
+      && !candidate.relationshipTarget.storeId.trim()
+    ) {
+      errors.push(`${prefix}: catalog relationship requires storeId`);
     }
 
     if (candidate.decisionMode !== 'food') errors.push(`${prefix}: decisionMode must be food`);
@@ -304,12 +337,16 @@ export function validateDecisionCandidateRegistry(
     const articleActions = candidate.actions.filter((action) => action.type === 'article');
     const officialActions = candidate.actions.filter((action) => action.type === 'official');
     const reservationActions = candidate.actions.filter((action) => action.type === 'reservation');
-    if (articleActions.length !== 1) errors.push(`${prefix}: exactly one article action is required`);
-    if (candidate.relationshipTarget.kind === 'article' && articleActions.length === 1) {
-      const expectedArticleUrl = `/article/${candidate.relationshipTarget.articleId}`;
-      if (!isSafeInternalUrl(articleActions[0].url) || articleActions[0].url !== expectedArticleUrl) {
-        errors.push(`${prefix}: article action must use ${expectedArticleUrl}`);
+    if (candidate.relationshipTarget.kind === 'article') {
+      if (articleActions.length !== 1) errors.push(`${prefix}: exactly one article action is required`);
+      if (articleActions.length === 1) {
+        const expectedArticleUrl = `/article/${candidate.relationshipTarget.articleId}`;
+        if (!isSafeInternalUrl(articleActions[0].url) || articleActions[0].url !== expectedArticleUrl) {
+          errors.push(`${prefix}: article action must use ${expectedArticleUrl}`);
+        }
       }
+    } else if (articleActions.length !== 0) {
+      errors.push(`${prefix}: catalog relationship must not expose an article action`);
     }
     if (officialActions.length !== 1) errors.push(`${prefix}: exactly one official action is required`);
     if (!candidate.actions.every(isDecisionActionDisplayable)) {

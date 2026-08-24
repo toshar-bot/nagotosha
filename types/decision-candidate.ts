@@ -11,7 +11,12 @@ export type DecisionMoodTag =
   | 'spicy'
   | 'cafe';
 export type DecisionCandidateStatus = 'available' | 'scheduled' | 'closed' | 'unknown';
-export type DecisionReservationNeed = 'not-needed' | 'optional' | 'unavailable';
+/**
+ * `not-confirmed` is intentionally distinct from both "not needed" and
+ * "unavailable". It keeps an unverified reservation policy fail-closed while
+ * a provisional catalog candidate is under human review.
+ */
+export type DecisionReservationNeed = 'not-needed' | 'optional' | 'unavailable' | 'not-confirmed';
 export type DecisionReservationAvailability = 'channel-available' | 'unavailable' | 'not-confirmed';
 export type DecisionTimeOfDay = 'morning' | 'lunch' | 'afternoon' | 'evening' | 'dinner';
 export type DecisionWeatherFit = 'indoor' | 'outdoor' | 'mixed';
@@ -44,6 +49,17 @@ export type DecisionRelationshipTarget =
       kind: 'roundup-item';
       articleId: number;
       itemId: string;
+    }
+  | {
+      /**
+       * System-only catalog identity for a Home candidate with no article
+       * target. It never creates an Article→Decision handoff.
+       */
+      kind: 'catalog';
+      storeId: string;
+      relationship: import('./portal').ContentRelationship;
+      relationshipExplanation?: string;
+      commercialDisclosure?: import('./portal').CommercialDisclosure;
     };
 
 export type DecisionCandidateVisual =

@@ -554,12 +554,21 @@ function relationshipMatchesCandidate(
 ): boolean {
   const target = candidate.relationshipTarget;
   if (relationship.target.kind !== target.kind) return false;
-  if (relationship.target.articleId !== target.articleId) return false;
+  if (target.kind === 'catalog') {
+    return relationship.target.kind === 'catalog'
+      && relationship.target.storeId === target.storeId;
+  }
+  if (target.kind === 'article') {
+    return relationship.target.kind === 'article'
+      && relationship.target.articleId === target.articleId
+      && relationship.postId === target.articleId;
+  }
   if (target.kind === 'roundup-item') {
     return relationship.target.kind === 'roundup-item'
+      && relationship.target.articleId === target.articleId
       && relationship.target.itemId === target.itemId;
   }
-  return relationship.postId === target.articleId;
+  return false;
 }
 
 function resolveReferencedArtifacts(

@@ -74,4 +74,111 @@ export const DECISION_CANDIDATE_FRESHNESS: readonly DecisionEvidenceFreshnessRec
   { evidenceId: 'laduree-budget', reviewStatus: 'verified' },
   { evidenceId: 'laduree-mood', reviewStatus: 'verified' },
   { evidenceId: 'laduree-reservation-need', reviewStatus: 'verified' },
+
+  // S2 candidates remain deliberately provisional until operator and
+  // independent reviews are recorded from the stored originals.
+  {
+    evidenceId: 's2-yabaton-status',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-yabaton-hours',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-yabaton-price',
+    reviewStatus: 'provisional',
+    lastFailureReason: '店内通常メニューと区別したテイクアウト価格の人間確認待ち。',
+  },
+  {
+    evidenceId: 's2-yabaton-location',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
+  {
+    evidenceId: 's2-yabaton-official-url',
+    reviewStatus: 'provisional',
+    lastFailureReason: '利益相反照合とrelationship確定待ち。',
+    relationshipReview: {
+      reviewStatus: 'provisional',
+      note: 'catalog targetのrelationshipはunknown。人間の内部照合が完了するまで表示不可。',
+    },
+  },
+  {
+    evidenceId: 's2-yabaton-phone',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
+
+  {
+    evidenceId: 's2-potama-status',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-potama-hours',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-potama-price',
+    reviewStatus: 'provisional',
+    lastFailureReason: '現行商品価格と配達価格の区別について人間確認待ち。',
+  },
+  {
+    evidenceId: 's2-potama-location',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
+  {
+    evidenceId: 's2-potama-official-url',
+    reviewStatus: 'provisional',
+    lastFailureReason: '利益相反照合と記事178とのrelationship確認待ち。',
+    relationshipReview: {
+      reviewStatus: 'provisional',
+      note: 'article 178のeditorial relationshipはregistry上にあるが、候補接続の人間確認は未完了。',
+    },
+  },
+  {
+    evidenceId: 's2-potama-phone',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
+
+  {
+    evidenceId: 's2-konparu-status',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-konparu-hours',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+  },
+  {
+    evidenceId: 's2-konparu-price',
+    reviewStatus: 'provisional',
+    lastFailureReason: '店舗別メニュー差異を含む価格表示の人間確認待ち。',
+  },
+  {
+    evidenceId: 's2-konparu-location',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
+  {
+    evidenceId: 's2-konparu-official-url',
+    reviewStatus: 'provisional',
+    lastFailureReason: '利益相反照合とrelationship確定待ち。',
+    relationshipReview: {
+      reviewStatus: 'provisional',
+      note: 'catalog targetのrelationshipはunknown。人間の内部照合が完了するまで表示不可。',
+    },
+  },
+  {
+    evidenceId: 's2-konparu-phone',
+    reviewStatus: 'provisional',
+    lastFailureReason: '人間による原本確認待ち。',
+  },
 ];
