@@ -5,10 +5,11 @@ import type {
   DecisionV3Candidate,
   DecisionV3Conditions,
   DecisionV3KnownBoolean,
+  DecisionV3Price,
   RefineChoice,
 } from '@/types/decision-v3';
 
-type SelectDemoCandidatesInput = {
+type SelectDecisionV3CandidatesInput = {
   conditions: Partial<DecisionV3Conditions>;
   preferences: RefineChoice[];
   candidates: DecisionV3Candidate[];
@@ -56,7 +57,7 @@ const PREFERENCE_FIELD: Partial<
     RefineChoice,
     {
       field: keyof Pick<
-        DecisionV3Candidate['demoSelection'],
+        DecisionV3Candidate['selection'],
         | 'privateRoom'
         | 'tatami'
         | 'counter'
@@ -102,16 +103,27 @@ function evaluateKnownBoolean(
   return { rejected: false, reason };
 }
 
+function evaluatePrice(
+  price: DecisionV3Price,
+  budget: BudgetChoice,
+): { rejected: boolean; unknown?: boolean } {
+  if (budget === 'any') return { rejected: false };
+  if (price.kind === 'variable') return { rejected: false, unknown: true };
+
+  const limit = BUDGET_LIMITS[budget];
+  const maximum = price.kind === 'fixed' ? price.amount : price.maximum;
+  return { rejected: maximum > limit };
+}
+
 function evaluateCandidate(
   candidate: DecisionV3Candidate,
   conditions: DecisionV3Conditions,
   preferences: RefineChoice[],
 ): CandidateEvaluation {
-  const profile = candidate.demoSelection;
+  const profile = candidate.selection;
   if (!profile.supportedPartyTypes.includes(conditions.party)) return { kind: 'rejected' };
-  if (conditions.budget !== 'any' && profile.priceMax > BUDGET_LIMITS[conditions.budget]) {
-    return { kind: 'rejected' };
-  }
+  const price = evaluatePrice(profile.price, conditions.budget);
+  if (price.rejected) return { kind: 'rejected' };
   if (!profile.supportedPurposes.includes(conditions.mood)) return { kind: 'rejected' };
   if (conditions.area !== 'any' && profile.area !== conditions.area) return { kind: 'rejected' };
 
@@ -121,6 +133,7 @@ function evaluateCandidate(
   if (conditions.area !== 'any') reasons.push(AREA_REASON[conditions.area]);
 
   const unknownFields: string[] = [];
+  if (price.unknown) unknownFields.push(`${candidate.id}.price`);
   let rejected = false;
 
   for (const preference of preferences) {
@@ -192,9 +205,8 @@ function buildRelaxationHints(
   if (
     hints.length < 2
     && candidates.some((candidate) => {
-      const profile = candidate.demoSelection;
-      const budgetMatches =
-        conditions.budget === 'any' || profile.priceMax <= BUDGET_LIMITS[conditions.budget];
+      const profile = candidate.selection;
+      const budgetMatches = !evaluatePrice(profile.price, conditions.budget).rejected;
       const areaMatches = conditions.area === 'any' || profile.area === conditions.area;
       return profile.supportedPartyTypes.includes(conditions.party) && budgetMatches && areaMatches;
     })
@@ -204,11 +216,11 @@ function buildRelaxationHints(
   return hints.slice(0, 2);
 }
 
-export function selectDemoCandidates({
+export function selectDecisionV3Candidates({
   conditions,
   preferences,
   candidates,
-}: SelectDemoCandidatesInput): CandidateSelectionResult {
+}: SelectDecisionV3CandidatesInput): CandidateSelectionResult {
   const missingConditions = REQUIRED_CONDITION_KEYS
     .filter((key) => !conditions[key])
     .map((key) => `condition.${key}`);

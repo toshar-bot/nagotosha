@@ -53,7 +53,7 @@ export type CompareAxis =
   | 'late-night'
   | 'quiet';
 
-export type CandidateActionType = 'official' | 'access' | 'reservation';
+export type CandidateActionType = 'official' | 'access' | 'phone' | 'reservation';
 
 export type DemoActionAvailability = 'verified' | 'unknown' | 'unavailable';
 
@@ -81,14 +81,31 @@ export type DecisionV3KnownBoolean = boolean | 'unknown';
 export type DecisionV3SmokingPolicy = 'smoke-free' | 'smoking-ok' | 'unknown';
 
 /**
- * Operation-only fixture data used by the deterministic Decision v3 DEMO selector.
- * These values are not verified facts about real stores and must not be promoted
- * to Store Catalog or production candidate data.
+ * Candidate-selection facts used by the deterministic Decision v3 selector.
+ * DEMO fixtures use this type for QA; formal candidates are adapted only after
+ * their evidence, freshness, and release-review gates have passed.
  */
-export type DecisionV3DemoSelectionProfile = {
+export type DecisionV3Price =
+  | {
+      kind: 'fixed';
+      amount: number;
+      label: string;
+    }
+  | {
+      kind: 'range';
+      minimum: number;
+      maximum: number;
+      label: string;
+    }
+  | {
+      kind: 'variable';
+      label: string;
+      note: string;
+    };
+
+export type DecisionV3SelectionProfile = {
   supportedPartyTypes: PartyChoice[];
-  priceMin: number;
-  priceMax: number;
+  price: DecisionV3Price;
   supportedPurposes: MoodChoice[];
   area: Exclude<AreaChoice, 'any'>;
   smokingPolicy: DecisionV3SmokingPolicy;
@@ -136,13 +153,13 @@ export type DecisionV3DetailInfo = {
 
 export type DecisionV3Candidate = {
   id: string;
-  neutralLabel: '候補A' | '候補B' | '候補C';
+  neutralLabel: string;
   name: string;
   area: string;
   budget: string;
   genre: string;
-  tags: [string, string, string];
-  points: [string, string, string];
+  tags: string[];
+  points: string[];
   facts: {
     access: string;
     atmosphere: string;
@@ -158,7 +175,7 @@ export type DecisionV3Candidate = {
   actions: CandidateAction[];
   photo: DecisionV3CandidatePhoto;
   detailInfo?: DecisionV3DetailInfo;
-  demoSelection: DecisionV3DemoSelectionProfile;
+  selection: DecisionV3SelectionProfile;
 };
 
 export type CandidateSelectionResult =
@@ -192,7 +209,7 @@ export type DecisionV3Session = {
 export type DecisionV3Action =
   | { type: 'SET_CONDITION'; group: keyof DecisionV3Conditions; value: string }
   | { type: 'TOGGLE_REFINE'; value: RefineChoice }
-  | { type: 'PREPARE_CANDIDATES'; candidateSource: 'demo' | 'formal' }
+  | { type: 'PREPARE_CANDIDATES'; candidates: readonly DecisionV3Candidate[] }
   | { type: 'GO'; step: DecisionV3Step; detailId?: string | null }
   | { type: 'TOGGLE_COMPARE'; candidateId: string }
   | { type: 'REORDER_COMPARE'; candidateId: string; direction: -1 | 1 }

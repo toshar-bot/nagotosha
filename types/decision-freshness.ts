@@ -54,6 +54,7 @@ export type DecisionFreshnessPolicyKey =
   | 'price'
   | 'reservationChannel'
   | 'officialUrl'
+  | 'phone'
   | 'location'
   | 'editorialClassification';
 

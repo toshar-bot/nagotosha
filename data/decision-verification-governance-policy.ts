@@ -39,6 +39,12 @@ export const DECISION_VERIFICATION_GOVERNANCE_POLICY: DecisionVerificationGovern
       'official-instagram',
       'official-document',
     ],
+    phone: [
+      'official-email',
+      'official-form',
+      'official-instagram',
+      'official-document',
+    ],
     location: [
       'official-email',
       'official-form',

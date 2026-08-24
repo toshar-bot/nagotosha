@@ -15,6 +15,7 @@ export type DecisionVerificationFactKey =
   | 'openingHours'
   | 'price'
   | 'officialUrl'
+  | 'phone'
   | 'location'
   | 'reservationChannel'
   | 'editorialClassification'
