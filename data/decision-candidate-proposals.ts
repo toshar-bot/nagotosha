@@ -25,6 +25,8 @@ type CandidateReviewProposal = {
   gateStatus: 'provisional-blocked';
 };
 
+const S2_HELD_ACQUIRED_AT = '2026-08-24T09:07:41Z';
+const S2_HELD_REVIEW_ROOT = 'C:/Users/KAIRI/Documents/Codex/reviews/nagotosha/S2-2026-08-24';
 const ACQUIRED_AT = '2026-08-24T11:55:43Z';
 const REVIEW_ROOT = 'C:/Users/KAIRI/Documents/Codex/reviews/nagotosha/S2-3-2026-08-24';
 
@@ -80,14 +82,14 @@ export const S2_HELD_CANDIDATE_PROPOSALS: readonly CandidateReviewProposal[] = [
     sourceArtifacts: [
       {
         sourceUrl: 'https://www.yabaton.com/modules/shop/index.php?content_id=5',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/yabaton/official-store.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/yabaton/official-store.html`,
         sha256: '9c9a24b9a14b97ca95ef5159e42f549d35fee69f95fbee9e80040e64731a4af1',
       },
       {
         sourceUrl: 'https://www.esca-sc.com/takeout/',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/yabaton/esca-takeout.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/yabaton/esca-takeout.html`,
         sha256: '13e2740b37946002688da38729b0ff247961fe192f212a519105e487f0acbf50',
       },
     ],
@@ -152,14 +154,14 @@ export const S2_HELD_CANDIDATE_PROPOSALS: readonly CandidateReviewProposal[] = [
     sourceArtifacts: [
       {
         sourceUrl: 'https://porktamago.com/shop/012-pnh/',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/potama/official-shop.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/potama/official-shop.html`,
         sha256: '132d1f1014a67b9f7352858c202aca15eec8dfab67a89422a33e353666fcb4d8',
       },
       {
         sourceUrl: 'https://porktamago.com/menu/p0003/',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/potama/official-menu-misokatsu.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/potama/official-menu-misokatsu.html`,
         sha256: '63aa9b145af97e97233273a4dd295c41a3f26a5a321818298a0ff0b1d9630be4',
       },
     ],
@@ -218,14 +220,14 @@ export const S2_HELD_CANDIDATE_PROPOSALS: readonly CandidateReviewProposal[] = [
     sourceArtifacts: [
       {
         sourceUrl: 'https://www.konparu.co.jp/shop/',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/konparu/official-shop.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/konparu/official-shop.html`,
         sha256: 'b64524de35ceda20e3ccf513ff2ddb5383d813eb52516c4e8967e5668249b002',
       },
       {
         sourceUrl: 'https://www.konparu.co.jp/menu/index.html',
-        acquiredAt: ACQUIRED_AT,
-        originalPath: `${REVIEW_ROOT}/sources/konparu/official-menu.html`,
+        acquiredAt: S2_HELD_ACQUIRED_AT,
+        originalPath: `${S2_HELD_REVIEW_ROOT}/sources/konparu/official-menu.html`,
         sha256: 'e671b026e88e0ac18f3f6460bb66df4311fe1569074cc9da0aeafb50c8251c38',
       },
     ],
