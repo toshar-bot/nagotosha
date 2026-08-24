@@ -19,6 +19,7 @@ type Props = {
   onDetail: (id: string) => void;
   onCompare: () => void;
   onBack: () => void;
+  onHome: () => void;
 };
 
 const CONDITION_CHIP_LABELS = {
@@ -110,6 +111,7 @@ export function CandidateListV3({
   onDetail,
   onCompare,
   onBack,
+  onHome,
 }: Props) {
   const candidates = selectionResult.kind === 'matched'
     ? selectionResult.candidateIds
@@ -122,7 +124,7 @@ export function CandidateListV3({
       ? null
       : selectionResult.kind === 'no-match'
         ? '条件に合う候補が見つかりませんでした'
-        : 'この条件は、確認できる店舗情報が不足しています';
+        : '現在、候補情報を準備しています';
   const comparisonLabel = compareIds.length === 0
     ? '比較する店を選んでください'
     : `選んだ${compareIds.length}件を比較する`;
@@ -142,11 +144,13 @@ export function CandidateListV3({
               <>あなたにおすすめの<span>{candidates.length}件</span></>
             ) : title}
           </h1>
-          <p>
-            {selectionResult.kind === 'matched'
-              ? '選んだ条件に合うお店を、同じ優先度で並べました'
-              : '条件を変えて、もう一度候補を探せます。'}
-          </p>
+          {selectionResult.kind !== 'data-unavailable' ? (
+            <p>
+              {selectionResult.kind === 'matched'
+                ? '選んだ条件に合うお店を、同じ優先度で並べました'
+                : '条件を変えて、もう一度候補を探せます。'}
+            </p>
+          ) : null}
         </div>
       </header>
 
@@ -179,8 +183,11 @@ export function CandidateListV3({
 
       {selectionResult.kind === 'data-unavailable' ? (
         <article className={styles.candidateStateCard}>
-          <h2>候補情報を確認中です</h2>
-          <p>不足している情報を推測せず、確認できた候補だけを表示します。</p>
+          <p>確認済みの店舗情報が揃い次第、条件に合う候補をご案内します。</p>
+          <div className={styles.cardActions}>
+            <button type="button" className={styles.secondaryButton} onClick={onBack}>条件を見直す</button>
+            <button type="button" className={styles.primaryButton} onClick={onHome}>Homeへ戻る</button>
+          </div>
         </article>
       ) : null}
 

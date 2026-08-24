@@ -217,6 +217,14 @@ export function selectDemoCandidates({
   }
 
   const completeConditions = conditions as DecisionV3Conditions;
+
+  if (candidates.length === 0) {
+    return {
+      kind: 'data-unavailable',
+      missingFields: ['candidate.formal'],
+    };
+  }
+
   const matchedCandidateIds: string[] = [];
   const reasonsByCandidateId: Record<string, string[]> = {};
   const unknownFields: string[] = [];
