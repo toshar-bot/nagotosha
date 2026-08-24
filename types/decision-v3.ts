@@ -192,7 +192,7 @@ export type DecisionV3Session = {
 export type DecisionV3Action =
   | { type: 'SET_CONDITION'; group: keyof DecisionV3Conditions; value: string }
   | { type: 'TOGGLE_REFINE'; value: RefineChoice }
-  | { type: 'PREPARE_CANDIDATES' }
+  | { type: 'PREPARE_CANDIDATES'; candidateSource: 'demo' | 'formal' }
   | { type: 'GO'; step: DecisionV3Step; detailId?: string | null }
   | { type: 'TOGGLE_COMPARE'; candidateId: string }
   | { type: 'REORDER_COMPARE'; candidateId: string; direction: -1 | 1 }

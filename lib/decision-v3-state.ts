@@ -10,6 +10,8 @@ import { selectDemoCandidates } from '@/lib/decision-v3-selector';
 
 export const DEFAULT_AXES: CompareAxis[] = ['budget', 'access', 'atmosphere', 'smoking', 'seats'];
 
+export type DecisionV3CandidateSource = 'demo' | 'formal';
+
 const REFINE_AXIS: Partial<Record<RefineChoice, CompareAxis>> = {
   reservable: 'reservation',
   wifi: 'wifi',
@@ -92,7 +94,11 @@ export function decisionV3Reducer(state: DecisionV3Session, action: DecisionV3Ac
       const selectionResult = selectDemoCandidates({
         conditions: state.conditions,
         preferences: state.refine,
-        candidates: DEMO_CANDIDATES,
+        // Formal candidates are intentionally not adapted into the Decision v3
+        // presentation contract until their independent review is complete.
+        // Production therefore fails closed with no candidates rather than
+        // substituting DEMO_CANDIDATES.
+        candidates: action.candidateSource === 'demo' ? DEMO_CANDIDATES : [],
       });
       return {
         ...state,
@@ -158,6 +164,26 @@ export function decisionV3Reducer(state: DecisionV3Session, action: DecisionV3Ac
     default:
       return state;
   }
+}
+
+export function normalizeDecisionV3RestoredState(
+  state: DecisionV3Session,
+  candidateSource: DecisionV3CandidateSource,
+): DecisionV3Session {
+  if (candidateSource === 'demo' || state.step === 'home') return state;
+
+  const base = {
+    ...createInitialDecisionV3State(),
+    conditions: state.conditions,
+    refine: state.refine,
+  };
+
+  if (!hasAllRequiredConditions(base.conditions)) return base;
+
+  return {
+    ...decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidateSource }),
+    step: 'candidates',
+  };
 }
 
 export const hasAllRequiredConditions = (

@@ -25,7 +25,13 @@ import {
   readDecisionV3PartyHandoff,
   removeDecisionV3PartyHandoffParameters,
 } from '@/lib/decision-v3-party-handoff';
-import { decisionV3Reducer, hasAllRequiredConditions, createInitialDecisionV3State } from '@/lib/decision-v3-state';
+import {
+  decisionV3Reducer,
+  hasAllRequiredConditions,
+  createInitialDecisionV3State,
+  normalizeDecisionV3RestoredState,
+  type DecisionV3CandidateSource,
+} from '@/lib/decision-v3-state';
 import { loadDecisionV3Session, saveDecisionV3Session } from '@/lib/decision-v3-session';
 import type { DecisionV3Conditions, DecisionV3Step, RefineChoice } from '@/types/decision-v3';
 import { BottomNavV3 } from './BottomNavV3';
@@ -36,7 +42,11 @@ import { DecidedV3 } from './DecidedV3';
 import { DetailV3 } from './DetailV3';
 import styles from './decision-v3.module.css';
 
-export default function DecisionV3App() {
+type Props = {
+  candidateSource?: DecisionV3CandidateSource;
+};
+
+export default function DecisionV3App({ candidateSource = 'demo' }: Props) {
   const [state, dispatch] = useReducer(decisionV3Reducer, undefined, createInitialDecisionV3State);
   const [hydrated, setHydrated] = useState(false);
   const [qaWidth, setQaWidth] = useState<number | null>(null);
@@ -60,8 +70,9 @@ export default function DecisionV3App() {
             value: partyHandoff,
           }),
           { type: 'GO', step: 'home' },
-        )
+      )
       : restoredState;
+    const normalizedRestored = normalizeDecisionV3RestoredState(restored, candidateSource);
 
     if (hasDecisionV3PartyHandoffParameters(initialSearch)) {
       window.history.replaceState(
@@ -71,8 +82,8 @@ export default function DecisionV3App() {
       );
     }
 
-    dispatch({ type: 'RESTORE', state: restored });
-    replaceDecisionV3History(restored);
+    dispatch({ type: 'RESTORE', state: normalizedRestored });
+    replaceDecisionV3History(normalizedRestored);
     setHydrated(true);
 
     if (partyHandoff) {
@@ -82,7 +93,7 @@ export default function DecisionV3App() {
         scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
       });
     }
-  }, []);
+  }, [candidateSource]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -98,7 +109,10 @@ export default function DecisionV3App() {
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
     const onPopState = (event: PopStateEvent) => {
-      const restored = readDecisionV3HistoryState(event.state) ?? createInitialDecisionV3State();
+      const restored = normalizeDecisionV3RestoredState(
+        readDecisionV3HistoryState(event.state) ?? createInitialDecisionV3State(),
+        candidateSource,
+      );
       dispatch({ type: 'RESTORE', state: restored });
       setActiveHomeSection('home');
       window.requestAnimationFrame(() => {
@@ -110,7 +124,7 @@ export default function DecisionV3App() {
       window.removeEventListener('popstate', onPopState);
       window.history.scrollRestoration = previousScrollRestoration;
     };
-  }, []);
+  }, [candidateSource]);
 
   const beginTransition = useCallback((step: DecisionV3Step) => {
     if (transitionInFlightRef.current === step) return false;
@@ -241,7 +255,7 @@ export default function DecisionV3App() {
           onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
           onSubmit={() => {
             if (!beginTransition('candidates')) return;
-            const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES' });
+            const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES', candidateSource });
             const candidateState = decisionV3Reducer(preparedState, {
               type: 'GO',
               step: 'candidates',
@@ -287,6 +301,7 @@ export default function DecisionV3App() {
           }}
           onCompare={() => navigate('compare')}
           onBack={() => navigate('home')}
+          onHome={() => window.location.assign('/')}
         />
       ) : null}
 

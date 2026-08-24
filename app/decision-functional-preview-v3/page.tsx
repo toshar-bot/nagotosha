@@ -8,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function DecisionFunctionalPreviewV3Page() {
-  return <DecisionV3App />;
+  const demoAllowed = process.env.NODE_ENV === 'development'
+    || process.env.VERCEL_ENV === 'preview'
+    || process.env.VERCEL_ENV === 'development';
+  const candidateSource = demoAllowed ? 'demo' : 'formal';
+
+  return <DecisionV3App candidateSource={candidateSource} />;
 }
