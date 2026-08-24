@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
-import { DEMO_CANDIDATES, REFINE_CHOICES } from '@/data/decision-v3-demo';
+import { REFINE_CHOICES } from '@/data/decision-v3-demo';
+import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import { DECISION_V3_PARTY_LABELS } from '@/lib/decision-v3-party-handoff';
 import type {
   CandidateSelectionResult,
@@ -12,6 +13,7 @@ import styles from './decision-v3.module.css';
 
 type Props = {
   selectionResult: CandidateSelectionResult;
+  candidateLookup: DecisionV3CandidateLookup;
   conditions: DecisionV3ConditionDraft;
   refine: RefineChoice[];
   compareIds: string[];
@@ -104,6 +106,7 @@ function getSelectedConditionChips(
 
 export function CandidateListV3({
   selectionResult,
+  candidateLookup,
   conditions,
   refine,
   compareIds,
@@ -115,8 +118,8 @@ export function CandidateListV3({
 }: Props) {
   const candidates = selectionResult.kind === 'matched'
     ? selectionResult.candidateIds
-        .map((candidateId) => DEMO_CANDIDATES.find((candidate) => candidate.id === candidateId))
-        .filter((candidate): candidate is (typeof DEMO_CANDIDATES)[number] => Boolean(candidate))
+        .map((candidateId) => candidateLookup.get(candidateId))
+        .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
     : [];
   const selectedConditionChips = getSelectedConditionChips(conditions, refine);
   const title =

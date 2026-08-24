@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
+import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
+import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import type { CandidateActionType } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
@@ -11,6 +12,7 @@ import styles from './decision-v3.module.css';
 
 type Props = {
   candidateId: string | null;
+  candidateLookup: DecisionV3CandidateLookup;
   onCompare: () => void;
   onDetail: (candidateId: string) => void;
 };
@@ -31,8 +33,9 @@ const CONFIRMATION_ICONS = {
 
 const ACTION_PRIORITY: Record<CandidateActionType, number> = {
   access: 0,
-  reservation: 1,
-  official: 2,
+  phone: 1,
+  reservation: 2,
+  official: 3,
 };
 
 const CELEBRATION_ART = '/decision/v3/decided/decision-celebration-header.png';
@@ -82,7 +85,7 @@ function DecidedPageHeader({ onCompare }: { onCompare: () => void }) {
   );
 }
 
-export function DecidedV3({ candidateId, onCompare, onDetail }: Props) {
+export function DecidedV3({ candidateId, candidateLookup, onCompare, onDetail }: Props) {
   const [celebrating, setCelebrating] = useState(false);
 
   useEffect(() => {
@@ -97,9 +100,7 @@ export function DecidedV3({ candidateId, onCompare, onDetail }: Props) {
     };
   }, []);
 
-  const candidate = candidateId
-    ? DEMO_CANDIDATES.find((item) => item.id === candidateId)
-    : undefined;
+  const candidate = candidateLookup.get(candidateId);
 
   if (!candidate) {
     return (
@@ -115,7 +116,7 @@ export function DecidedV3({ candidateId, onCompare, onDetail }: Props) {
   }
 
   const displayableActions = candidate.actions
-    .filter(isCandidateActionDisplayable)
+    .filter(isDecisionV3ActionDisplayable)
     .slice()
     .sort((left, right) => ACTION_PRIORITY[left.type] - ACTION_PRIORITY[right.type]);
   const accessAction = displayableActions.find((action) => action.type === 'access');

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { ALL_COMPARE_AXES, COMPARE_AXIS_LABELS, DEMO_CANDIDATES } from '@/data/decision-v3-demo';
+import { ALL_COMPARE_AXES, COMPARE_AXIS_LABELS } from '@/data/decision-v3-demo';
+import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import { reorderDecisionV3Ids } from '@/lib/decision-v3-pointer-reorder';
 import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import type { CompareAxis } from '@/types/decision-v3';
@@ -53,6 +54,7 @@ const POINTER_REORDER_THRESHOLD = 8;
 
 type Props = {
   compareOrder: string[];
+  candidateLookup: DecisionV3CandidateLookup;
   axes: CompareAxis[];
   onBack: () => void;
   onReorder: (candidateId: string, direction: -1 | 1) => void;
@@ -62,8 +64,12 @@ type Props = {
   onDecide: (candidateId: string) => void;
 };
 
-function axisValue(candidateId: string, axis: CompareAxis) {
-  const candidate = DEMO_CANDIDATES.find((item) => item.id === candidateId);
+function axisValue(
+  candidateLookup: DecisionV3CandidateLookup,
+  candidateId: string,
+  axis: CompareAxis,
+) {
+  const candidate = candidateLookup.get(candidateId);
   if (!candidate) return '確認中';
 
   const values: Record<CompareAxis, string> = {
@@ -95,6 +101,7 @@ function axisValue(candidateId: string, axis: CompareAxis) {
 
 export function CompareV3({
   compareOrder,
+  candidateLookup,
   axes,
   onBack,
   onReorder,
@@ -117,9 +124,9 @@ export function CompareV3({
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const candidates = useMemo(
     () => compareOrder
-      .map((id) => DEMO_CANDIDATES.find((item) => item.id === id))
-      .filter((candidate): candidate is (typeof DEMO_CANDIDATES)[number] => Boolean(candidate)),
-    [compareOrder],
+      .map((id) => candidateLookup.get(id))
+      .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate)),
+    [candidateLookup, compareOrder],
   );
   const activeAxis = axes.includes(activeAxisId) ? activeAxisId : (axes[0] ?? 'budget');
 
@@ -415,7 +422,9 @@ export function CompareV3({
                   <div className={styles.compareVerticalCandidateBody}>
                     <CandidatePhotoV3 candidate={candidate} ratio="thumb" />
                     <div className={styles.compareVerticalValueBlock}>
-                      <p className={styles.compareVerticalValue}>{axisValue(candidate.id, activeAxis)}</p>
+                      <p className={styles.compareVerticalValue}>
+                        {axisValue(candidateLookup, candidate.id, activeAxis)}
+                      </p>
                       <button
                         type="button"
                         className={styles.compareDecisionButton}

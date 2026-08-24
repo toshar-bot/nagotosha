@@ -40,6 +40,7 @@ export const DECISION_PRESENTATION_POLICY: DecisionPresentationPolicy = {
   actionLabels: {
     article: '記事を読む',
     official: '公式サイト',
+    phone: '電話する',
     map: '地図を見る',
     reservation: '予約ページ',
   },

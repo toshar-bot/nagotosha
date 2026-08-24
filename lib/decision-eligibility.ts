@@ -597,6 +597,7 @@ function evaluateActionEligibility(
 
   const articleActions = candidate.actions.filter((action) => action.type === 'article');
   const officialActions = candidate.actions.filter((action) => action.type === 'official');
+  const phoneActions = candidate.actions.filter((action) => action.type === 'phone');
   const reservationActions = candidate.actions.filter((action) => action.type === 'reservation');
   const mapActions = candidate.actions.filter((action) => action.type === 'map');
   const expectedArticleUrl = candidate.relationshipTarget.kind === 'article'
@@ -655,6 +656,17 @@ function evaluateActionEligibility(
     });
   }
 
+  if (phoneActions.length > 0) {
+    const phoneEvidence = findCandidateOfficialEvidence(candidate, evidenceRecords, 'phone');
+    if (phoneActions.length !== 1 || phoneEvidence.length !== 1) {
+      exclusions.push({
+        class: 'failed-verification',
+        code: 'action-evidence-mismatch',
+        field: 'phone',
+      });
+    }
+  }
+
   for (const mapAction of mapActions) {
     const staleOn = isValidDecisionISODate(mapAction.verifiedAt)
       ? addDecisionCalendarDays(mapAction.verifiedAt, policy.mapActionRefreshAfterDays)
@@ -699,6 +711,12 @@ function getRequiredCandidateEvidence(
     requirements.push({
       field: 'reservationChannel',
       matches: findCandidateOfficialEvidence(candidate, evidenceRecords, 'reservationChannel'),
+    });
+  }
+  if (candidate.actions.some((action) => action.type === 'phone')) {
+    requirements.push({
+      field: 'phone',
+      matches: findCandidateOfficialEvidence(candidate, evidenceRecords, 'phone'),
     });
   }
   return requirements;

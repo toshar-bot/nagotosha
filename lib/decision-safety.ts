@@ -180,17 +180,23 @@ export function resolveDecisionCandidateVisual(
 export function isDecisionActionDisplayable(action: DecisionAction): boolean {
   if (
     !action.label.trim()
-    || !isSafeDecisionUrl(action.url)
     || !isValidVerificationDate(action.verifiedAt)
   ) {
     return false;
   }
+
+  if (action.type === 'phone') return isSafeDecisionPhoneUrl(action.url);
+  if (!isSafeDecisionUrl(action.url)) return false;
 
   return action.type !== 'reservation' || (
     action.availabilityConfirmed === true
     && action.availabilityScope === 'booking-channel'
     && action.availabilityMeaning === 'channel-available-not-slot-guarantee'
   );
+}
+
+function isSafeDecisionPhoneUrl(value: string): boolean {
+  return /^tel:\+?[0-9][0-9-]{5,}$/.test(value);
 }
 
 export function isDecisionCandidateDisplayable(candidate: DecisionCandidate): boolean {

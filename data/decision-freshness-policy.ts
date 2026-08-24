@@ -12,6 +12,7 @@ export const DECISION_FRESHNESS_POLICY: DecisionFreshnessPolicy = {
     price: 30,
     reservationChannel: 14,
     officialUrl: 90,
+    phone: 30,
     location: 180,
     editorialClassification: 180,
   },
@@ -30,6 +31,7 @@ export function getDecisionEvidencePolicyKey(
     case 'price':
     case 'reservationChannel':
     case 'officialUrl':
+    case 'phone':
     case 'location':
       return evidence.field;
     default:

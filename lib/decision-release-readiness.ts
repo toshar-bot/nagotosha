@@ -41,6 +41,7 @@ const FACT_KEYS = new Set<DecisionVerificationFactKey>([
   'openingHours',
   'price',
   'officialUrl',
+  'phone',
   'location',
   'reservationChannel',
   'editorialClassification',
@@ -525,6 +526,7 @@ function getRequiredFactKeys(
     || candidate.actions.some((action) => action.type === 'reservation')) {
     keys.push('reservationChannel');
   }
+  if (candidate.actions.some((action) => action.type === 'phone')) keys.push('phone');
   if (relationship.relationship === 'pr' || relationship.relationship === 'owned') {
     keys.push('disclosure');
   }

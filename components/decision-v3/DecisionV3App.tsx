@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -10,8 +11,9 @@ import {
   type MouseEvent,
 } from 'react';
 import { BrandHeader } from '@/components/common/BrandHeader';
-import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
 import { trackAnalyticsEvent } from '@/lib/analytics';
+import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
+import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import {
   pushDecisionV3History,
   readDecisionV3HistoryState,
@@ -33,7 +35,12 @@ import {
   type DecisionV3CandidateSource,
 } from '@/lib/decision-v3-state';
 import { loadDecisionV3Session, saveDecisionV3Session } from '@/lib/decision-v3-session';
-import type { DecisionV3Conditions, DecisionV3Step, RefineChoice } from '@/types/decision-v3';
+import type {
+  DecisionV3Candidate,
+  DecisionV3Conditions,
+  DecisionV3Step,
+  RefineChoice,
+} from '@/types/decision-v3';
 import { BottomNavV3 } from './BottomNavV3';
 import { CandidateListV3 } from './CandidateListV3';
 import { CompareV3 } from './CompareV3';
@@ -44,15 +51,20 @@ import styles from './decision-v3.module.css';
 
 type Props = {
   candidateSource?: DecisionV3CandidateSource;
+  candidates?: readonly DecisionV3Candidate[];
 };
 
-export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
+export default function DecisionV3App({ candidateSource = 'formal', candidates = [] }: Props) {
   const [state, dispatch] = useReducer(decisionV3Reducer, undefined, createInitialDecisionV3State);
   const [hydrated, setHydrated] = useState(false);
   const [qaWidth, setQaWidth] = useState<number | null>(null);
   const [activeHomeSection, setActiveHomeSection] = useState<'home' | 'conditions'>('home');
   const conditionsRef = useRef<HTMLElement | null>(null);
   const transitionInFlightRef = useRef<DecisionV3Step | null>(null);
+  const candidateLookup = useMemo(
+    () => createDecisionV3CandidateLookup(candidateSource, candidates),
+    [candidateSource, candidates],
+  );
 
   useEffect(() => {
     const initialSearch = window.location.search;
@@ -72,7 +84,11 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
           { type: 'GO', step: 'home' },
       )
       : restoredState;
-    const normalizedRestored = normalizeDecisionV3RestoredState(restored, candidateSource);
+    const normalizedRestored = normalizeDecisionV3RestoredState(
+      restored,
+      candidateSource,
+      candidateLookup.candidates,
+    );
 
     if (hasDecisionV3PartyHandoffParameters(initialSearch)) {
       window.history.replaceState(
@@ -93,7 +109,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
         scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
       });
     }
-  }, [candidateSource]);
+  }, [candidateLookup, candidateSource]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -112,6 +128,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       const restored = normalizeDecisionV3RestoredState(
         readDecisionV3HistoryState(event.state) ?? createInitialDecisionV3State(),
         candidateSource,
+        candidateLookup.candidates,
       );
       dispatch({ type: 'RESTORE', state: restored });
       setActiveHomeSection('home');
@@ -124,7 +141,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       window.removeEventListener('popstate', onPopState);
       window.history.scrollRestoration = previousScrollRestoration;
     };
-  }, [candidateSource]);
+  }, [candidateLookup, candidateSource]);
 
   const beginTransition = useCallback((step: DecisionV3Step) => {
     if (transitionInFlightRef.current === step) return false;
@@ -213,10 +230,10 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
     const surface = state.step === 'detail' || state.step === 'decided' ? state.step : null;
     if (!candidateId || !surface) return;
 
-    const candidate = DEMO_CANDIDATES.find((item) => item.id === candidateId);
+    const candidate = candidateLookup.get(candidateId);
     const href = anchor.getAttribute('href');
     const action = candidate?.actions.find(
-      (item) => isCandidateActionDisplayable(item) && item.href === href,
+      (item) => isDecisionV3ActionDisplayable(item) && item.href === href,
     );
     if (!action) return;
 
@@ -224,10 +241,13 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
     } else if (action.type === 'official') {
       trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
-    } else if (action.type === 'reservation' && action.href?.startsWith('tel:')) {
+    } else if (
+      action.type === 'phone'
+      || (action.type === 'reservation' && action.href?.startsWith('tel:'))
+    ) {
       trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
     }
-  }, [state.chosenId, state.detailId, state.step]);
+  }, [candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
@@ -255,7 +275,10 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
           onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
           onSubmit={() => {
             if (!beginTransition('candidates')) return;
-            const preparedState = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES', candidateSource });
+            const preparedState = decisionV3Reducer(state, {
+              type: 'PREPARE_CANDIDATES',
+              candidates: candidateLookup.candidates,
+            });
             const candidateState = decisionV3Reducer(preparedState, {
               type: 'GO',
               step: 'candidates',
@@ -287,6 +310,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       {state.step === 'candidates' && state.selectionResult ? (
         <CandidateListV3
           selectionResult={state.selectionResult}
+          candidateLookup={candidateLookup}
           conditions={state.conditions}
           refine={state.refine}
           compareIds={state.compareIds}
@@ -308,6 +332,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       {state.step === 'detail' ? (
         <DetailV3
           candidateId={detailCandidateId}
+          candidateLookup={candidateLookup}
           inCompare={Boolean(detailCandidateId && state.compareIds.includes(detailCandidateId))}
           compareLimitReached={Boolean(
             detailCandidateId
@@ -322,6 +347,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       {state.step === 'compare' ? (
         <CompareV3
           compareOrder={state.compareOrder.length ? state.compareOrder : state.compareIds}
+          candidateLookup={candidateLookup}
           axes={state.axes}
           onBack={() => navigate('candidates')}
           onReorder={(candidateId, direction) =>
@@ -351,6 +377,7 @@ export default function DecisionV3App({ candidateSource = 'formal' }: Props) {
       {state.step === 'decided' ? (
         <DecidedV3
           candidateId={state.chosenId}
+          candidateLookup={candidateLookup}
           onCompare={() => navigate('compare')}
           onDetail={(candidateId) => navigate('detail', candidateId)}
         />

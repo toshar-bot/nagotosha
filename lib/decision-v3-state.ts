@@ -1,12 +1,12 @@
 import type {
   CompareAxis,
   DecisionV3Action,
+  DecisionV3Candidate,
   DecisionV3Conditions,
   DecisionV3Session,
   RefineChoice,
 } from '@/types/decision-v3';
-import { DEMO_CANDIDATES } from '@/data/decision-v3-demo';
-import { selectDemoCandidates } from '@/lib/decision-v3-selector';
+import { selectDecisionV3Candidates } from '@/lib/decision-v3-selector';
 
 export const DEFAULT_AXES: CompareAxis[] = ['budget', 'access', 'atmosphere', 'smoking', 'seats'];
 
@@ -91,14 +91,10 @@ export function decisionV3Reducer(state: DecisionV3Session, action: DecisionV3Ac
       for (const fallback of ['smoking', 'seats'] satisfies CompareAxis[]) {
         if (!axes.includes(fallback) && axes.length < 5) axes.push(fallback);
       }
-      const selectionResult = selectDemoCandidates({
+      const selectionResult = selectDecisionV3Candidates({
         conditions: state.conditions,
         preferences: state.refine,
-        // Formal candidates are intentionally not adapted into the Decision v3
-        // presentation contract until their independent review is complete.
-        // Production therefore fails closed with no candidates rather than
-        // substituting DEMO_CANDIDATES.
-        candidates: action.candidateSource === 'demo' ? DEMO_CANDIDATES : [],
+        candidates: [...action.candidates],
       });
       return {
         ...state,
@@ -169,6 +165,7 @@ export function decisionV3Reducer(state: DecisionV3Session, action: DecisionV3Ac
 export function normalizeDecisionV3RestoredState(
   state: DecisionV3Session,
   candidateSource: DecisionV3CandidateSource,
+  candidates: readonly DecisionV3Candidate[],
 ): DecisionV3Session {
   if (candidateSource === 'demo') return state;
 
@@ -181,7 +178,7 @@ export function normalizeDecisionV3RestoredState(
   if (state.step === 'home' || !hasAllRequiredConditions(base.conditions)) return base;
 
   return {
-    ...decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidateSource }),
+    ...decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidates }),
     step: 'candidates',
   };
 }

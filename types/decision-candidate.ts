@@ -61,7 +61,7 @@ export type DecisionCandidateVisual =
     };
 
 type DecisionLinkAction = {
-  type: 'article' | 'official' | 'map';
+  type: 'article' | 'official' | 'map' | 'phone';
   label: string;
   url: string;
   verifiedAt: string;
@@ -96,6 +96,7 @@ export type DecisionOfficialFactField =
   | 'openingHours'
   | 'price'
   | 'officialUrl'
+  | 'phone'
   | 'reservationChannel'
   | 'reservationUnavailable'
   | 'location'

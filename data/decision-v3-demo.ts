@@ -1,7 +1,6 @@
 import type {
   AreaChoice,
   BudgetChoice,
-  CandidateAction,
   CompareAxis,
   DecisionV3Candidate,
   MoodChoice,
@@ -9,6 +8,7 @@ import type {
   RefineChoice,
 } from '@/types/decision-v3';
 import { buildGoogleMapsDirectionsUrl } from '@/lib/decision-v3-detail-actions';
+export { isDecisionV3ActionDisplayable as isCandidateActionDisplayable } from '@/lib/decision-v3-action-gate';
 
 // --- demo-b「矢場とん 名古屋駅エスカ店」verified store facts (2026-08-03) ---
 const YABATON_ESCA_ADDRESS = '愛知県名古屋市中村区椿町6-9 エスカ地下街';
@@ -138,15 +138,6 @@ export const COMPARE_AXIS_LABELS: Record<CompareAxis, string> = {
 
 export const ALL_COMPARE_AXES = Object.keys(COMPARE_AXIS_LABELS) as CompareAxis[];
 
-export function isCandidateActionDisplayable(action: CandidateAction) {
-  return (
-    action.availability === 'verified'
-    && Boolean(action.href?.trim())
-    && Boolean(action.verifiedAt?.trim())
-    && Boolean(action.source?.trim())
-  );
-}
-
 export const DEMO_CANDIDATES: DecisionV3Candidate[] = [
   {
     id: 'demo-a',
@@ -185,10 +176,9 @@ export const DEMO_CANDIDATES: DecisionV3Candidate[] = [
       availability: 'available',
       rightsStatus: 'unverified',
     },
-    demoSelection: {
+    selection: {
       supportedPartyTypes: ['solo', 'pair'],
-      priceMin: 1200,
-      priceMax: 2000,
+      price: { kind: 'range', minimum: 1200, maximum: 2000, label: '¥1,200〜2,000' },
       supportedPurposes: ['hearty', 'relax', 'new-experience'],
       area: 'sakae',
       smokingPolicy: 'smoke-free',
@@ -315,10 +305,9 @@ export const DEMO_CANDIDATES: DecisionV3Candidate[] = [
         },
       ],
     },
-    demoSelection: {
+    selection: {
       supportedPartyTypes: ['solo', 'pair', 'family', 'group'],
-      priceMin: 1500,
-      priceMax: 2000,
+      price: { kind: 'range', minimum: 1500, maximum: 2000, label: '¥1,500〜2,000' },
       supportedPurposes: ['hearty', 'new-experience'],
       area: 'meieki',
       smokingPolicy: 'smoke-free',
@@ -372,10 +361,9 @@ export const DEMO_CANDIDATES: DecisionV3Candidate[] = [
       availability: 'available',
       rightsStatus: 'unverified',
     },
-    demoSelection: {
+    selection: {
       supportedPartyTypes: ['solo', 'pair'],
-      priceMin: 1100,
-      priceMax: 1800,
+      price: { kind: 'range', minimum: 1100, maximum: 1800, label: '¥1,100〜1,800' },
       supportedPurposes: ['light', 'relax', 'new-experience'],
       area: 'osu',
       smokingPolicy: 'unknown',

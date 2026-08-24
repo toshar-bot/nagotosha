@@ -1,11 +1,13 @@
 import type { CSSProperties } from 'react';
-import { DEMO_CANDIDATES, isCandidateActionDisplayable } from '@/data/decision-v3-demo';
+import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
+import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
 import styles from './decision-v3.module.css';
 
 type Props = {
   candidateId: string | null;
+  candidateLookup: DecisionV3CandidateLookup;
   inCompare: boolean;
   compareLimitReached: boolean;
   onBack: () => void;
@@ -55,14 +57,13 @@ function DetailPageHeader({ onBack }: { onBack: () => void }) {
 
 export function DetailV3({
   candidateId,
+  candidateLookup,
   inCompare,
   compareLimitReached,
   onBack,
   onToggleCompare,
 }: Props) {
-  const candidate = candidateId
-    ? DEMO_CANDIDATES.find((item) => item.id === candidateId)
-    : undefined;
+  const candidate = candidateLookup.get(candidateId);
 
   if (!candidate) {
     return (
@@ -78,7 +79,7 @@ export function DetailV3({
   }
 
   const detail = candidate.detailInfo;
-  const displayableActions = candidate.actions.filter(isCandidateActionDisplayable);
+  const displayableActions = candidate.actions.filter(isDecisionV3ActionDisplayable);
   const highlights = detail?.highlights ?? [];
 
   // Basic information: verified/known values only. area & budget are always
