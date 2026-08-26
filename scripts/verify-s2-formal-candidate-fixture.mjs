@@ -50,8 +50,14 @@ try {
     normalizeDecisionV3RestoredState,
   } = require(path.join(root, 'lib/decision-v3-state.ts'));
 
-  const ids = DECISION_CANDIDATES.map((candidate) => candidate.id);
-  assert(ids.length === 3, 'fixture must provide exactly three provisional candidates');
+  const INITIAL_THREE_IDS = [
+    'meieki-erick-south-kitte-nagoya',
+    'sakae-potama-nagoya-haera',
+    'osu-sugakiya-osu',
+  ];
+  const initialThree = DECISION_CANDIDATES.filter((candidate) => INITIAL_THREE_IDS.includes(candidate.id));
+  const ids = initialThree.map((candidate) => candidate.id);
+  assert(ids.length === 3, 'fixture must retain the initial-three candidate regression set');
   assert(new Set(ids).size === 3, 'fixture candidate ids must be unique');
   assert(
     ids.join(',') === 'meieki-erick-south-kitte-nagoya,sakae-potama-nagoya-haera,osu-sugakiya-osu',
@@ -77,7 +83,7 @@ try {
     blockedCandidateCount: 0,
   };
   const adapted = adaptFormalDecisionV3Candidates({
-    candidates: DECISION_CANDIDATES,
+    candidates: initialThree,
     evidence: DECISION_CANDIDATE_EVIDENCE,
     eligibility,
     releaseReady,
@@ -150,7 +156,7 @@ try {
   );
 
   const expired = adaptFormalDecisionV3Candidates({
-    candidates: [DECISION_CANDIDATES[0]],
+    candidates: [initialThree[0]],
     evidence: DECISION_CANDIDATE_EVIDENCE,
     eligibility: [{ ...eligibility[0], eligible: false, exclusions: [{ code: 'evidence-stale' }] }],
     releaseReady: { ...releaseReady, readyCandidates: [releaseReady.readyCandidates[0]], readyCount: 1 },
@@ -159,7 +165,7 @@ try {
   assert(expired.length === 0, 'expired fixture candidate must be excluded');
 
   const unverifiedActionCandidate = {
-    ...DECISION_CANDIDATES[0],
+    ...initialThree[0],
     actions: [{
       type: 'official',
       label: '公式情報を見る',
@@ -178,9 +184,13 @@ try {
 
   const activeProduction = getActiveFormalDecisionV3Candidates({
     evaluatedAsOf: '2026-08-26',
-    evaluatedAt: '2026-08-26T00:00:00Z',
+    evaluatedAt: '2026-08-26T12:00:00Z',
   });
-  assert(activeProduction.length === 3, 'reviewed initial-three registry must activate exactly three candidates');
+  assert(activeProduction.length === 9, 'approved registry must activate all nine reviewed candidates');
+  assert(
+    INITIAL_THREE_IDS.every((candidateId) => activeProduction.some((candidate) => candidate.id === candidateId)),
+    'approved registry must retain every initial-three candidate',
+  );
 
   const decisionApp = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
   for (const eventName of ['map_click', 'official_click', 'phone_click']) {

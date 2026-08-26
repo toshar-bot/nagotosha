@@ -1,20 +1,21 @@
 import type { DecisionEvidenceFreshnessRecord } from '../types/decision-freshness';
 
-const B2_REVIEW_BLOCKER = '公式原本の人間確認、分類承認、利益相反照合、独立レビューが未完了。';
+const B2_OPERATOR_CONFIRMED_AT = '2026-08-26T11:57:32Z';
 
-function provisionalB2Freshness(
+function approvedB2Freshness(
   evidenceIds: readonly string[],
   officialUrlEvidenceId: string,
 ): readonly DecisionEvidenceFreshnessRecord[] {
   return evidenceIds.map((evidenceId) => ({
     evidenceId,
-    reviewStatus: 'provisional',
-    lastFailureReason: B2_REVIEW_BLOCKER,
+    reviewStatus: 'verified',
     ...(evidenceId === officialUrlEvidenceId
       ? {
         relationshipReview: {
-          reviewStatus: 'provisional' as const,
-          note: 'catalog targetのrelationshipはunknown。人間の内部照合と承認が完了するまで表示不可。',
+          reviewStatus: 'verified' as const,
+          confirmedBy: 'user' as const,
+          confirmedAt: B2_OPERATOR_CONFIRMED_AT,
+          note: 'operatorが利益相反なしを確認し、catalog targetのrelationship=editorialを承認。',
         },
       }
       : {}),
@@ -322,34 +323,43 @@ export const DECISION_CANDIDATE_FRESHNESS: readonly DecisionEvidenceFreshnessRec
   { evidenceId: 's26-sugakiya-mood', reviewStatus: 'verified' },
   { evidenceId: 's26-sugakiya-reservation-need', reviewStatus: 'verified' },
 
-  // B2 candidates are evidence-backed proposals only. No human-review record
-  // or production approval is created by this batch.
-  ...provisionalB2Freshness([
+  // B2 operator-approved evidence. Price evidence remains limited to the
+  // category stated in each official record; no store-wide average is inferred.
+  ...approvedB2Freshness([
     'b2-esca-sugakiya-status', 'b2-esca-sugakiya-hours', 'b2-esca-sugakiya-price',
     'b2-esca-sugakiya-location', 'b2-esca-sugakiya-official-url',
-    'b2-esca-sugakiya-phone', 'b2-esca-sugakiya-seats',
+    'b2-esca-sugakiya-phone', 'b2-esca-sugakiya-seats', 'b2-esca-sugakiya-party',
+    'b2-esca-sugakiya-budget', 'b2-esca-sugakiya-mood', 'b2-esca-sugakiya-reservation-need',
   ], 'b2-esca-sugakiya-official-url'),
-  ...provisionalB2Freshness([
+  ...approvedB2Freshness([
     'b2-komeda-nishi-status', 'b2-komeda-nishi-hours', 'b2-komeda-nishi-price',
     'b2-komeda-nishi-location', 'b2-komeda-nishi-official-url', 'b2-komeda-nishi-phone',
+    'b2-komeda-nishi-party', 'b2-komeda-nishi-budget', 'b2-komeda-nishi-mood',
+    'b2-komeda-nishi-reservation-need',
   ], 'b2-komeda-nishi-official-url'),
-  ...provisionalB2Freshness([
+  ...approvedB2Freshness([
     'b2-sutadon-status', 'b2-sutadon-hours', 'b2-sutadon-price',
     'b2-sutadon-location', 'b2-sutadon-official-url', 'b2-sutadon-phone',
+    'b2-sutadon-party', 'b2-sutadon-budget', 'b2-sutadon-mood',
+    'b2-sutadon-reservation-need',
   ], 'b2-sutadon-official-url'),
-  ...provisionalB2Freshness([
+  ...approvedB2Freshness([
     'b2-laduree-status', 'b2-laduree-hours', 'b2-laduree-price',
     'b2-laduree-location', 'b2-laduree-official-url', 'b2-laduree-phone',
-    'b2-laduree-seats',
+    'b2-laduree-seats', 'b2-laduree-party', 'b2-laduree-budget', 'b2-laduree-mood',
+    'b2-laduree-reservation-need',
   ], 'b2-laduree-official-url'),
-  ...provisionalB2Freshness([
+  ...approvedB2Freshness([
     'b2-cocoichi-status', 'b2-cocoichi-hours', 'b2-cocoichi-price',
     'b2-cocoichi-location', 'b2-cocoichi-official-url', 'b2-cocoichi-phone',
-    'b2-cocoichi-seats',
+    'b2-cocoichi-seats', 'b2-cocoichi-party', 'b2-cocoichi-budget', 'b2-cocoichi-mood',
+    'b2-cocoichi-reservation-need',
   ], 'b2-cocoichi-official-url'),
-  ...provisionalB2Freshness([
+  ...approvedB2Freshness([
     'b2-komeda-kamimaezu-status', 'b2-komeda-kamimaezu-hours', 'b2-komeda-kamimaezu-price',
     'b2-komeda-kamimaezu-location', 'b2-komeda-kamimaezu-official-url',
-    'b2-komeda-kamimaezu-phone',
+    'b2-komeda-kamimaezu-phone', 'b2-komeda-kamimaezu-party',
+    'b2-komeda-kamimaezu-budget', 'b2-komeda-kamimaezu-mood',
+    'b2-komeda-kamimaezu-reservation-need',
   ], 'b2-komeda-kamimaezu-official-url'),
 ];

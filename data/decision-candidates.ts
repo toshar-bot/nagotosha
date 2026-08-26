@@ -196,18 +196,17 @@ export const S2_HELD_DECISION_CANDIDATES: readonly DecisionCandidate[] = [
 ];
 
 /**
- * B2 preparation only. These six records are deliberately outside
- * DECISION_CANDIDATES, have no human approval records, and are never read by
- * the production candidate lookup. They are retained here as auditable
- * catalog-to-Decision proposals for the next review batch.
+ * B2 operator-approved editorial records. Their bounded price scopes and
+ * visual:none contract are preserved; release-readiness remains the sole
+ * authority for Production presentation.
  */
-export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = [
+export const B2_APPROVED_DECISION_CANDIDATES: readonly DecisionCandidate[] = [
   {
     id: 'meieki-sugakiya-nagoya-eki-esca',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'meieki-sugakiya-nagoya-eki-esca',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -233,14 +232,14 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B9%E3%82%AC%E3%82%AD%E3%83%A4%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E6%A4%BF%E7%94%BA6-9', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:08069939644', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-esca-sugakiya-status', 'b2-esca-sugakiya-hours', 'b2-esca-sugakiya-price', 'b2-esca-sugakiya-location', 'b2-esca-sugakiya-official-url', 'b2-esca-sugakiya-phone', 'b2-esca-sugakiya-seats'],
+    evidenceIds: ['b2-esca-sugakiya-status', 'b2-esca-sugakiya-hours', 'b2-esca-sugakiya-price', 'b2-esca-sugakiya-location', 'b2-esca-sugakiya-official-url', 'b2-esca-sugakiya-phone', 'b2-esca-sugakiya-seats', 'b2-esca-sugakiya-party', 'b2-esca-sugakiya-budget', 'b2-esca-sugakiya-mood', 'b2-esca-sugakiya-reservation-need', 'b2-esca-sugakiya-time-of-day', 'b2-esca-sugakiya-weather-fit'],
   },
   {
     id: 'meieki-komeda-nagoya-eki-nishi',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'meieki-komeda-nagoya-eki-nishi',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -267,14 +266,14 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E8%A5%BF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E5%89%87%E6%AD%A62%E4%B8%81%E7%9B%AE3-2', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:0524146721', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-komeda-nishi-status', 'b2-komeda-nishi-hours', 'b2-komeda-nishi-price', 'b2-komeda-nishi-location', 'b2-komeda-nishi-official-url', 'b2-komeda-nishi-phone'],
+    evidenceIds: ['b2-komeda-nishi-status', 'b2-komeda-nishi-hours', 'b2-komeda-nishi-price', 'b2-komeda-nishi-location', 'b2-komeda-nishi-official-url', 'b2-komeda-nishi-phone', 'b2-komeda-nishi-party', 'b2-komeda-nishi-budget', 'b2-komeda-nishi-mood', 'b2-komeda-nishi-reservation-need', 'b2-komeda-nishi-time-of-day', 'b2-komeda-nishi-weather-fit'],
   },
   {
     id: 'sakae-sutadon-nagoya-sakae',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'sakae-sutadon-nagoya-sakae',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -288,7 +287,9 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
     area: 'sakae',
     location: '愛知県名古屋市中区栄3-12-12 2F',
     nearestStation: '栄駅',
-    openingHours: { opens: '11:00', closes: '24:00', lastOrder: '23:45' },
+    // Midnight is represented as 00:00 in the canonical HH:mm data model;
+    // the official source itself remains recorded as 11:00〜24:00 in evidence.
+    openingHours: { opens: '11:00', closes: '00:00', lastOrder: '23:45' },
     timeOfDay: ['lunch', 'dinner'],
     weatherFit: 'indoor',
     currentStatus: 'available',
@@ -300,14 +301,14 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E4%BC%9D%E8%AA%AC%E3%81%AE%E3%81%99%E3%81%9F%E4%B8%BC%E5%B1%8B%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E6%A0%84%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-12-12', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:0526849963', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-sutadon-status', 'b2-sutadon-hours', 'b2-sutadon-price', 'b2-sutadon-location', 'b2-sutadon-official-url', 'b2-sutadon-phone'],
+    evidenceIds: ['b2-sutadon-status', 'b2-sutadon-hours', 'b2-sutadon-price', 'b2-sutadon-location', 'b2-sutadon-official-url', 'b2-sutadon-phone', 'b2-sutadon-party', 'b2-sutadon-budget', 'b2-sutadon-mood', 'b2-sutadon-reservation-need', 'b2-sutadon-time-of-day', 'b2-sutadon-weather-fit'],
   },
   {
     id: 'sakae-cafe-laduree-lachic',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'sakae-cafe-laduree-lachic',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -333,14 +334,14 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%95%E3%82%A7%E3%83%BB%E3%83%A9%E3%83%87%E3%83%A5%E3%83%AC%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%83%A9%E3%82%B7%E3%83%83%E3%82%AF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-6-1', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:0523002298', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-laduree-status', 'b2-laduree-hours', 'b2-laduree-price', 'b2-laduree-location', 'b2-laduree-official-url', 'b2-laduree-phone', 'b2-laduree-seats'],
+    evidenceIds: ['b2-laduree-status', 'b2-laduree-hours', 'b2-laduree-price', 'b2-laduree-location', 'b2-laduree-official-url', 'b2-laduree-phone', 'b2-laduree-seats', 'b2-laduree-party', 'b2-laduree-budget', 'b2-laduree-mood', 'b2-laduree-reservation-need', 'b2-laduree-time-of-day', 'b2-laduree-weather-fit'],
   },
   {
     id: 'osu-cocoichi-naka-ku-osu',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'osu-cocoichi-naka-ku-osu',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -366,14 +367,14 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%AC%E3%83%BC%E3%83%8F%E3%82%A6%E3%82%B9CoCo%E5%A3%B1%E7%95%AA%E5%B1%8B%20%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%88%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E9%96%80%E5%89%8D%E7%94%BA1-15-3', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:0523231520', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-cocoichi-status', 'b2-cocoichi-hours', 'b2-cocoichi-price', 'b2-cocoichi-location', 'b2-cocoichi-official-url', 'b2-cocoichi-phone', 'b2-cocoichi-seats'],
+    evidenceIds: ['b2-cocoichi-status', 'b2-cocoichi-hours', 'b2-cocoichi-price', 'b2-cocoichi-location', 'b2-cocoichi-official-url', 'b2-cocoichi-phone', 'b2-cocoichi-seats', 'b2-cocoichi-party', 'b2-cocoichi-budget', 'b2-cocoichi-mood', 'b2-cocoichi-reservation-need', 'b2-cocoichi-time-of-day', 'b2-cocoichi-weather-fit'],
   },
   {
     id: 'osu-komeda-kamimaezu',
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'osu-komeda-kamimaezu',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
@@ -400,7 +401,7 @@ export const B2_PROVISIONAL_DECISION_CANDIDATES: readonly DecisionCandidate[] = 
       { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E4%B8%8A%E5%89%8D%E6%B4%A5%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%883-31-42', verifiedAt: '2026-08-26' },
       { type: 'phone', label: '電話する', url: 'tel:0522421957', verifiedAt: '2026-08-26' },
     ],
-    evidenceIds: ['b2-komeda-kamimaezu-status', 'b2-komeda-kamimaezu-hours', 'b2-komeda-kamimaezu-price', 'b2-komeda-kamimaezu-location', 'b2-komeda-kamimaezu-official-url', 'b2-komeda-kamimaezu-phone'],
+    evidenceIds: ['b2-komeda-kamimaezu-status', 'b2-komeda-kamimaezu-hours', 'b2-komeda-kamimaezu-price', 'b2-komeda-kamimaezu-location', 'b2-komeda-kamimaezu-official-url', 'b2-komeda-kamimaezu-phone', 'b2-komeda-kamimaezu-party', 'b2-komeda-kamimaezu-budget', 'b2-komeda-kamimaezu-mood', 'b2-komeda-kamimaezu-reservation-need', 'b2-komeda-kamimaezu-time-of-day', 'b2-komeda-kamimaezu-weather-fit'],
   },
 ];
 
@@ -597,6 +598,7 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
       's26-sugakiya-reservation-need',
     ],
   },
+  ...B2_APPROVED_DECISION_CANDIDATES,
 ];
 
 export const PREVIEW_ASSET_AVAILABILITY: PreviewAssetAvailability = {

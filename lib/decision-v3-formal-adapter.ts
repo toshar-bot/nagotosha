@@ -1,6 +1,9 @@
 import { DECISION_CANDIDATE_EVIDENCE } from '@/data/decision-candidate-evidence';
 import { DECISION_CANDIDATE_FRESHNESS } from '@/data/decision-candidate-freshness';
-import { INITIAL_FORMAL_DECISION_V3_DEFINITIONS } from '@/data/decision-candidate-proposals';
+import {
+  B2_APPROVED_FORMAL_DECISION_V3_DEFINITIONS,
+  INITIAL_FORMAL_DECISION_V3_DEFINITIONS,
+} from '@/data/decision-candidate-proposals';
 import { DECISION_CANDIDATES } from '@/data/decision-candidates';
 import {
   DECISION_INDEPENDENT_REVIEWS,
@@ -78,7 +81,10 @@ export type FormalDecisionV3ActivationInput = {
  * production result.
  */
 export const FORMAL_DECISION_V3_DEFINITIONS: readonly FormalDecisionV3CandidateDefinition[] =
-  INITIAL_FORMAL_DECISION_V3_DEFINITIONS;
+  [
+    ...INITIAL_FORMAL_DECISION_V3_DEFINITIONS,
+    ...B2_APPROVED_FORMAL_DECISION_V3_DEFINITIONS,
+  ];
 
 const EMPTY_REFINEMENT_PROFILE: Pick<
   DecisionV3SelectionProfile,
