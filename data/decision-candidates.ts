@@ -196,9 +196,10 @@ export const S2_HELD_DECISION_CANDIDATES: readonly DecisionCandidate[] = [
 ];
 
 /**
- * S2.3 provisional initial-three records. None has human operator or
- * independent approval, so the formal adapter must continue to return zero
- * production presentation candidates until those reviews are recorded.
+ * S2.3 initial-three records. Their production availability remains governed
+ * by evidence freshness and release-readiness; only the low-risk editorial
+ * fast-track records in decision-verification-records.ts may bypass the
+ * standard cooling-off and independent-review sequence.
  */
 export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
   {
@@ -206,13 +207,13 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'meieki-erick-south-kitte-nagoya',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
     displayName: 'エリックサウス KITTE名古屋店',
     visual: { kind: 'none' },
-    // Editorial classifications are proposals and remain unapproved.
+    // Classification approval is recorded in decision-candidate-evidence.ts.
     partyTypes: ['solo', 'couple', 'group'],
     budgetBand: 'under4000',
     moodTags: ['hearty', 'newExperience'],
@@ -258,6 +259,10 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
       's23-erick-south-official-url',
       's23-erick-south-phone',
       's23-erick-south-seats',
+      's26-erick-south-party',
+      's26-erick-south-budget',
+      's26-erick-south-mood',
+      's26-erick-south-reservation-need',
     ],
   },
   {
@@ -265,13 +270,13 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'sakae-potama-nagoya-haera',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
     displayName: 'ポーたま 名古屋HAERA店',
     visual: { kind: 'none' },
-    // Editorial classifications are proposals and remain unapproved.
+    // Classification approval is recorded in decision-candidate-evidence.ts.
     partyTypes: ['solo', 'couple'],
     budgetBand: 'under2000',
     moodTags: ['quick', 'light'],
@@ -315,6 +320,10 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
       's23-potama-official-url',
       's23-potama-phone',
       's23-potama-seats',
+      's26-potama-party',
+      's26-potama-budget',
+      's26-potama-mood',
+      's26-potama-reservation-need',
     ],
   },
   {
@@ -322,13 +331,13 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
     relationshipTarget: {
       kind: 'catalog',
       storeId: 'osu-sugakiya-osu',
-      relationship: 'unknown',
+      relationship: 'editorial',
     },
     decisionMode: 'food',
     entityType: 'place',
     displayName: 'スガキヤ 大須店',
     visual: { kind: 'none' },
-    // Editorial classifications are proposals and remain unapproved.
+    // Classification approval is recorded in decision-candidate-evidence.ts.
     partyTypes: ['solo', 'family'],
     budgetBand: 'under1000',
     moodTags: ['light'],
@@ -373,6 +382,10 @@ export const DECISION_CANDIDATES: readonly DecisionCandidate[] = [
       's23-sugakiya-official-url',
       's23-sugakiya-phone',
       's23-sugakiya-seats',
+      's26-sugakiya-party',
+      's26-sugakiya-budget',
+      's26-sugakiya-mood',
+      's26-sugakiya-reservation-need',
     ],
   },
 ];
