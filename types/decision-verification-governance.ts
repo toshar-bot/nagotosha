@@ -48,8 +48,7 @@ export type DecisionVerificationArtifact = {
   approvedDisclosureText?: string;
 };
 
-export type DecisionStandardOperatorReview = {
-  reviewTrack: 'standard';
+export type DecisionOperatorReview = {
   candidateId: string;
   reviewerId: string;
   firstReviewedAt: string;
@@ -61,27 +60,6 @@ export type DecisionStandardOperatorReview = {
   result: 'confirmed' | 'conflicting' | 'incomplete';
   note: string;
 };
-
-/**
- * Low-risk editorial candidates can use this track only after every
- * candidate, artifact, freshness, and relationship condition is checked by
- * release-readiness. It deliberately has no cooling-off timestamp.
- */
-export type DecisionEditorialFastTrackOperatorReview = {
-  reviewTrack: 'editorial-fast-track';
-  candidateId: string;
-  reviewerId: string;
-  reviewedAt: string;
-  sourceArtifactIds: readonly string[];
-  factKeysReviewed: readonly DecisionVerificationFactKey[];
-  originalArtifactReread: true;
-  result: 'confirmed' | 'conflicting' | 'incomplete';
-  note: string;
-};
-
-export type DecisionOperatorReview =
-  | DecisionStandardOperatorReview
-  | DecisionEditorialFastTrackOperatorReview;
 
 export type DecisionIndependentReview = {
   candidateId: string;
@@ -118,16 +96,6 @@ export type DecisionVerificationGovernancePolicy = {
   version: string;
   freshnessPolicyVersion: string;
   minimumCoolingOffHours: number;
-  editorialFastTrack: {
-    version: string;
-    decisionMode: 'food';
-    entityType: 'place';
-    relationship: 'editorial';
-    visualKind: 'none';
-    requiredActionTypes: readonly ('official' | 'map' | 'phone')[];
-    allowedPriceKinds: readonly ('fixed' | 'range')[];
-    allowedAreas: readonly ('sakae' | 'meieki' | 'osu')[];
-  };
   requiredBaseFactKeys: readonly DecisionVerificationFactKey[];
   allowedArtifactChannelsByFact: Readonly<
     Record<DecisionVerificationFactKey, readonly DecisionVerificationArtifactChannel[]>
@@ -150,7 +118,6 @@ export type DecisionReleaseBlockerCode =
   | 'operator-review-ambiguous'
   | 'operator-review-invalid'
   | 'operator-review-not-confirmed'
-  | 'editorial-fast-track-ineligible'
   | 'cooling-off-incomplete'
   | 'operator-fact-coverage-missing'
   | 'governance-hold-invalid'
@@ -194,14 +161,6 @@ export type DecisionCandidateReleaseReadinessInput = {
   evaluatedAsOf: string;
   surface: DecisionReleaseSurface;
   relationshipResolution?: DecisionRelationshipResolution;
-  editorialFastTrackContext?: DecisionEditorialFastTrackContext;
-};
-
-/** Presentation-model price metadata that the fast-track policy must verify. */
-export type DecisionEditorialFastTrackContext = {
-  candidateId: string;
-  area: 'sakae' | 'meieki' | 'osu';
-  priceKind: 'fixed' | 'range' | 'variable';
 };
 
 export type DecisionReleaseReadyCandidate = {
@@ -228,5 +187,4 @@ export type DecisionReleaseReadyCandidatesInput = {
   holds: readonly DecisionVerificationHold[];
   evaluatedAsOf: string;
   relationshipResults?: readonly DecisionRelationshipReadinessInput[];
-  editorialFastTrackContexts?: readonly DecisionEditorialFastTrackContext[];
 };

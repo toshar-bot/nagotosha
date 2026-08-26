@@ -2,19 +2,9 @@ import { DECISION_FRESHNESS_POLICY } from './decision-freshness-policy';
 import type { DecisionVerificationGovernancePolicy } from '../types/decision-verification-governance';
 
 export const DECISION_VERIFICATION_GOVERNANCE_POLICY: DecisionVerificationGovernancePolicy = {
-  version: 'phase-2a.6-v3',
+  version: 'phase-2a.6-v2',
   freshnessPolicyVersion: DECISION_FRESHNESS_POLICY.version,
   minimumCoolingOffHours: 24,
-  editorialFastTrack: {
-    version: 'editorial-fast-track-v1',
-    decisionMode: 'food',
-    entityType: 'place',
-    relationship: 'editorial',
-    visualKind: 'none',
-    requiredActionTypes: ['official', 'map', 'phone'],
-    allowedPriceKinds: ['fixed', 'range'],
-    allowedAreas: ['sakae', 'meieki', 'osu'],
-  },
   requiredBaseFactKeys: [
     'currentStatus',
     'openingHours',
