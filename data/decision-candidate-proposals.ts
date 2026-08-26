@@ -246,6 +246,153 @@ export const S2_HELD_CANDIDATE_PROPOSALS: readonly CandidateReviewProposal[] = [
   },
 ];
 
+const B2_ACQUIRED_AT = '2026-08-26T12:00:00Z';
+const B2_REVIEW_ROOT = 'C:/Users/KAIRI/Documents/Codex/reviews/nagotosha/B2-2026-08-26';
+
+/**
+ * B2 batch proposals. These do not create an operator review, an independent
+ * review, or production approval. They must remain outside the active formal
+ * registry until a human completes both reviews.
+ */
+export const B2_PROVISIONAL_CANDIDATE_PROPOSALS: readonly CandidateReviewProposal[] = [
+  {
+    candidateId: 'meieki-sugakiya-nagoya-eki-esca',
+    catalogStoreId: 'meieki-sugakiya-nagoya-eki-esca',
+    identityFactIds: ['fact-meieki-esca-sugakiya-display-name', 'fact-meieki-esca-sugakiya-address', 'fact-meieki-esca-sugakiya-area'],
+    formalDefinition: { candidateId: 'meieki-sugakiya-nagoya-eki-esca', area: 'meieki', genre: 'ラーメン', price: { kind: 'range', minimum: 470, maximum: 790, label: '¥470〜¥790（名古屋駅エスカ店の単品ラーメン）' } },
+    proposedPartyTypes: ['solo', 'family'],
+    proposedMoodTags: ['quick', 'light'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B9%E3%82%AC%E3%82%AD%E3%83%A4%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E6%A4%BF%E7%94%BA6-9', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:08069939644', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [
+      { sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/sugakiya-esca/official-store.html`, sha256: 'ad3d64c5f581087f64badc2052c142c630217927e5a98298d990514bdf7c7678' },
+      { sourceUrl: 'https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/sugakiya-esca/official-menu.html`, sha256: 'd1789ecaf13d4c18bfe6442d4a3b121290e71c054a65c809c1d73bd38c00def2' },
+      { sourceUrl: 'https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/sugakiya-esca/official-menu-page-1.jpg`, sha256: '7f073999ec1d91ee875bddd27f3f152ff8cf677c9aed65f0ee3b7f787d07fb00' },
+    ],
+    requiredOperatorReview: ['保存原本と店名・住所・営業時間・電話・30席・3 actionを照合する。', '単品ラーメン¥470〜¥790の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '価格範囲が単品ラーメンだけであることと、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+  {
+    candidateId: 'meieki-komeda-nagoya-eki-nishi',
+    catalogStoreId: 'meieki-komeda-nagoya-eki-nishi',
+    identityFactIds: ['fact-meieki-komeda-nishi-display-name', 'fact-meieki-komeda-nishi-address', 'fact-meieki-komeda-nishi-area'],
+    formalDefinition: { candidateId: 'meieki-komeda-nagoya-eki-nishi', area: 'meieki', genre: '喫茶・軽食', price: { kind: 'range', minimum: 470, maximum: 1400, label: '¥470〜¥1,400（名古屋駅西店のスナック単品）' } },
+    proposedPartyTypes: ['couple', 'family', 'group'],
+    proposedMoodTags: ['relax', 'light'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://www.komeda.co.jp/shop/detail.html?id=400', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E8%A5%BF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E5%89%87%E6%AD%A62%E4%B8%81%E7%9B%AE3-2', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:0524146721', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [
+      { sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/478', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/komeda-nagoya-eki-nishi/official-store.json`, sha256: '907e9fcee8350dcc0d8cfababd18fc8a8e7889ebe1aaf5451ccc4c4dc0506330' },
+      { sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/478/menu', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/komeda-nagoya-eki-nishi/official-menu.json`, sha256: '5d3354cd8e45b3958a1170510dd44d13d14eb747228a4d5e28a2404096e476fe' },
+    ],
+    requiredOperatorReview: ['保存原本と当面の営業時間、住所、電話、3 actionを照合する。', 'スナック単品¥470〜¥1,400の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '店舗別メニュー価格と営業時間の適用範囲、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+  {
+    candidateId: 'sakae-sutadon-nagoya-sakae',
+    catalogStoreId: 'sakae-sutadon-nagoya-sakae',
+    identityFactIds: ['fact-sakae-sutadon-display-name', 'fact-sakae-sutadon-address', 'fact-sakae-sutadon-area'],
+    formalDefinition: { candidateId: 'sakae-sutadon-nagoya-sakae', area: 'sakae', genre: '丼・定食', price: { kind: 'range', minimum: 890, maximum: 1290, label: '¥890〜¥1,290（名古屋栄店適用の丼・定食・カレー・そば）' } },
+    proposedPartyTypes: ['solo', 'couple'],
+    proposedMoodTags: ['hearty'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://shop.sutadonya.com/store/store2082', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E4%BC%9D%E8%AA%AC%E3%81%AE%E3%81%99%E3%81%9F%E4%B8%BC%E5%B1%8B%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E6%A0%84%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-12-12', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:0526849963', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [
+      { sourceUrl: 'https://shop.sutadonya.com/store/store2082', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/sutadon-nagoya-sakae/official-store.html`, sha256: 'e0e0f53cc2d9b6d431daf16a691583dc45341fe486a64dcaba366bfae52be283' },
+      { sourceUrl: 'https://sutadonya.com/wp/wp-content/uploads/2026/03/grandmenu1.pdf', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/sutadon-nagoya-sakae/official-menu.pdf`, sha256: '6495dd6fab16ff8a1ee74b0e506609d0f3d96d57ceffe1effa8c1d05c1edea21' },
+    ],
+    requiredOperatorReview: ['保存原本と店名・住所・営業時間・電話・3 actionを照合する。', 'FC名古屋栄店への適用印、主食¥890〜¥1,290の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '名古屋栄店への価格適用範囲、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+  {
+    candidateId: 'sakae-cafe-laduree-lachic',
+    catalogStoreId: 'sakae-cafe-laduree-lachic',
+    identityFactIds: ['fact-sakae-laduree-display-name', 'fact-sakae-laduree-address', 'fact-sakae-laduree-area'],
+    formalDefinition: { candidateId: 'sakae-cafe-laduree-lachic', area: 'sakae', genre: 'カフェ', price: { kind: 'range', minimum: 486, maximum: 702, label: '¥486〜¥702（名古屋ラシック店のオリジナルブレンドコーヒー）' } },
+    proposedPartyTypes: ['couple', 'group'],
+    proposedMoodTags: ['relax', 'light'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://www.laduree.jp/view/page/nagoyaopen', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%95%E3%82%A7%E3%83%BB%E3%83%A9%E3%83%87%E3%83%A5%E3%83%AC%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%83%A9%E3%82%B7%E3%83%83%E3%82%AF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-6-1', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:0523002298', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [{ sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/laduree-nagoya-lachic/official-store-and-menu.html`, sha256: '78aee286a75e4fbdb4599488785d226f1cfae88385284775ab5593e6ffbd6563' }],
+    requiredOperatorReview: ['保存原本と店名・住所・営業時間・電話・24席・3 actionを照合する。', 'コーヒー¥486〜¥702の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '価格範囲がコーヒーS/M/Lだけであることと、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+  {
+    candidateId: 'osu-cocoichi-naka-ku-osu',
+    catalogStoreId: 'osu-cocoichi-naka-ku-osu',
+    identityFactIds: ['fact-osu-cocoichi-display-name', 'fact-osu-cocoichi-address', 'fact-osu-cocoichi-area'],
+    formalDefinition: { candidateId: 'osu-cocoichi-naka-ku-osu', area: 'osu', genre: 'カレー', price: { kind: 'range', minimum: 556, maximum: 1036, label: '¥556〜¥1,036（中区大須店のポークカレー150g〜600g）' } },
+    proposedPartyTypes: ['solo', 'couple', 'family', 'group'],
+    proposedMoodTags: ['hearty'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://tenpo.ichibanya.co.jp/map/2668/', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%AC%E3%83%BC%E3%83%8F%E3%82%A6%E3%82%B9CoCo%E5%A3%B1%E7%95%AA%E5%B1%8B%20%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%88%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E9%96%80%E5%89%8D%E7%94%BA1-15-3', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:0523231520', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [
+      { sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/cocoichi-naka-ku-osu/official-store.html`, sha256: 'f591970ed14d9dcfe2cef5a59e0c39e2350d21275f3bfc872245086eb9536a4f' },
+      { sourceUrl: 'https://www.ichibanya.co.jp/menu/pdf/menubook_others.pdf', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/cocoichi-naka-ku-osu/official-menu.pdf`, sha256: '2cec319b9c0edcc7f9cff50854a0e4c1bee84c32d5f371fc795da6c62e41cea9' },
+    ],
+    requiredOperatorReview: ['保存原本と店名・住所・営業時間・電話・31席・3 actionを照合する。', 'ポークカレー150g〜600g¥556〜¥1,036の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '価格範囲の店舗適用、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+  {
+    candidateId: 'osu-komeda-kamimaezu',
+    catalogStoreId: 'osu-komeda-kamimaezu',
+    identityFactIds: ['fact-osu-komeda-kamimaezu-display-name', 'fact-osu-komeda-kamimaezu-address', 'fact-osu-komeda-kamimaezu-area'],
+    formalDefinition: { candidateId: 'osu-komeda-kamimaezu', area: 'osu', genre: '喫茶・軽食', price: { kind: 'range', minimum: 490, maximum: 1450, label: '¥490〜¥1,450（上前津店のスナック単品）' } },
+    proposedPartyTypes: ['couple', 'group'],
+    proposedMoodTags: ['relax', 'light'],
+    relationshipProposal: 'catalog relationship: unknown。記事target・Article→Decision mappingは作成しない。',
+    visualRightsStatus: 'none',
+    reservationStatus: 'not-confirmed',
+    actions: [
+      { type: 'official', label: '公式情報を見る', url: 'https://www.komeda.co.jp/shop/detail.html?id=6', verifiedAt: '2026-08-26' },
+      { type: 'map', label: 'Google Mapsで見る', url: 'https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E4%B8%8A%E5%89%8D%E6%B4%A5%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%883-31-42', verifiedAt: '2026-08-26' },
+      { type: 'phone', label: '電話する', url: 'tel:0522421957', verifiedAt: '2026-08-26' },
+    ],
+    sourceArtifacts: [
+      { sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/13', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/komeda-kamimaezu/official-store.json`, sha256: '7adbffad90dd4e36aae99f362ddaae07ab6976ace7506587f4e5188eda9c1547' },
+      { sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/13/menu', acquiredAt: B2_ACQUIRED_AT, originalPath: `${B2_REVIEW_ROOT}/sources/komeda-kamimaezu/official-menu.json`, sha256: '9a7ad5090f9a7ceebcd7e9d324bc8effa528996e56e085a95d95e2a4343778d8' },
+    ],
+    requiredOperatorReview: ['保存原本と店名・住所・営業時間・電話・駅徒歩1分・3 actionを照合する。', 'スナック単品¥490〜¥1,450の対象・除外、party・mood・relationship unknown・visual:noneを承認または差し戻す。'],
+    requiredIndependentReview: ['保存原本SHA256と公式ページ、3 actionの一致を再確認する。', '店舗別メニュー価格の適用範囲、利益相反・visual:noneを確認する。'],
+    gateStatus: 'provisional-blocked',
+  },
+];
+
 /**
  * Initial S2.3 candidate proposals. Every entry remains blocked until the
  * original sources and the proposed classifications have both human reviews.
@@ -440,3 +587,7 @@ export const INITIAL_FORMAL_CANDIDATE_PROPOSALS: readonly CandidateReviewProposa
 
 export const INITIAL_FORMAL_DECISION_V3_DEFINITIONS: readonly FormalDecisionV3CandidateDefinition[] =
   INITIAL_FORMAL_CANDIDATE_PROPOSALS.map((proposal) => proposal.formalDefinition);
+
+/** Isolated fixture input only. This list is deliberately not wired to runtime. */
+export const B2_PROVISIONAL_FORMAL_DECISION_V3_DEFINITIONS: readonly FormalDecisionV3CandidateDefinition[] =
+  B2_PROVISIONAL_CANDIDATE_PROPOSALS.map((proposal) => proposal.formalDefinition);

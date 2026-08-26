@@ -88,6 +88,46 @@ export const STORE_DISCOVERY_RECORDS: readonly StoreDiscoveryRecord[] = [
     nameHint: 'スガキヤ 大須店',
     status: 'promoted',
   },
+  {
+    discoveryId: 'discovery-meieki-sugakiya-nagoya-eki-esca',
+    source: 'official-store',
+    capturedAt: '2026-08-26T12:00:00Z',
+    sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/',
+    nameHint: 'スガキヤ 名古屋駅エスカ店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-meieki-komeda-nagoya-eki-nishi',
+    source: 'official-store',
+    capturedAt: '2026-08-26T12:00:00Z',
+    sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400',
+    nameHint: 'コメダ珈琲店 名古屋駅西店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-sakae-sutadon-nagoya-sakae',
+    source: 'official-store',
+    capturedAt: '2026-08-26T12:00:00Z',
+    sourceUrl: 'https://shop.sutadonya.com/store/store2082',
+    nameHint: '伝説のすた丼屋 名古屋栄店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-osu-cocoichi-naka-ku-osu',
+    source: 'official-store',
+    capturedAt: '2026-08-26T12:00:00Z',
+    sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/',
+    nameHint: 'カレーハウスCoCo壱番屋 中区大須店',
+    status: 'promoted',
+  },
+  {
+    discoveryId: 'discovery-osu-komeda-kamimaezu',
+    source: 'official-store',
+    capturedAt: '2026-08-26T12:00:00Z',
+    sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6',
+    nameHint: 'コメダ珈琲店 上前津店',
+    status: 'promoted',
+  },
 ];
 
 export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [
@@ -196,6 +236,16 @@ export const STORE_SOURCE_REFERENCES: readonly StoreSourceReference[] = [
     capturedAt: '2026-08-24T11:55:43Z',
     sourceIdentity: 'スガキヤ',
   },
+  { sourceRefId: 'source-meieki-esca-sugakiya-store', kind: 'official-store', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'スガキヤ' },
+  { sourceRefId: 'source-meieki-esca-sugakiya-menu', kind: 'official-brand', sourceUrl: 'https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'スガキヤ' },
+  { sourceRefId: 'source-meieki-komeda-nishi-store', kind: 'official-store', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'コメダ珈琲店' },
+  { sourceRefId: 'source-meieki-komeda-nishi-menu', kind: 'official-brand', sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/478/menu', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'コメダ珈琲店' },
+  { sourceRefId: 'source-sakae-sutadon-store', kind: 'official-store', sourceUrl: 'https://shop.sutadonya.com/store/store2082', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: '伝説のすた丼屋' },
+  { sourceRefId: 'source-sakae-sutadon-menu', kind: 'official-brand', sourceUrl: 'https://sutadonya.com/wp/wp-content/uploads/2026/03/grandmenu1.pdf', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: '伝説のすた丼屋' },
+  { sourceRefId: 'source-osu-cocoichi-store', kind: 'official-store', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'カレーハウスCoCo壱番屋' },
+  { sourceRefId: 'source-osu-cocoichi-menu', kind: 'official-brand', sourceUrl: 'https://www.ichibanya.co.jp/menu/pdf/menubook_others.pdf', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'カレーハウスCoCo壱番屋' },
+  { sourceRefId: 'source-osu-komeda-kamimaezu-store', kind: 'official-store', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'コメダ珈琲店' },
+  { sourceRefId: 'source-osu-komeda-kamimaezu-menu', kind: 'official-brand', sourceUrl: 'https://eu.komeda.co.jp/v1/hp/shop/13/menu', capturedAt: '2026-08-26T12:00:00Z', sourceIdentity: 'コメダ珈琲店' },
 ];
 
 export const STORE_FACTS: readonly StoreFact[] = [
@@ -550,6 +600,21 @@ export const STORE_FACTS: readonly StoreFact[] = [
     observedAt: '2026-08-24T11:55:43Z',
     reviewStatus: 'verified',
   },
+  { factId: 'fact-meieki-esca-sugakiya-display-name', storeId: 'meieki-sugakiya-nagoya-eki-esca', key: 'displayName', value: 'スガキヤ 名古屋駅エスカ店', sourceRefIds: ['source-meieki-esca-sugakiya-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-meieki-esca-sugakiya-address', storeId: 'meieki-sugakiya-nagoya-eki-esca', key: 'address', value: '愛知県名古屋市中村区椿町6-9 新幹線地下街エスカB1', sourceRefIds: ['source-meieki-esca-sugakiya-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-meieki-esca-sugakiya-area', storeId: 'meieki-sugakiya-nagoya-eki-esca', key: 'area', value: 'meieki', sourceRefIds: ['source-meieki-esca-sugakiya-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-meieki-komeda-nishi-display-name', storeId: 'meieki-komeda-nagoya-eki-nishi', key: 'displayName', value: 'コメダ珈琲店 名古屋駅西店', sourceRefIds: ['source-meieki-komeda-nishi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-meieki-komeda-nishi-address', storeId: 'meieki-komeda-nagoya-eki-nishi', key: 'address', value: '愛知県名古屋市中村区則武2丁目3番2号', sourceRefIds: ['source-meieki-komeda-nishi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-meieki-komeda-nishi-area', storeId: 'meieki-komeda-nagoya-eki-nishi', key: 'area', value: 'meieki', sourceRefIds: ['source-meieki-komeda-nishi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-sakae-sutadon-display-name', storeId: 'sakae-sutadon-nagoya-sakae', key: 'displayName', value: '伝説のすた丼屋 名古屋栄店', sourceRefIds: ['source-sakae-sutadon-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-sakae-sutadon-address', storeId: 'sakae-sutadon-nagoya-sakae', key: 'address', value: '愛知県名古屋市中区栄3-12-12 2F', sourceRefIds: ['source-sakae-sutadon-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-sakae-sutadon-area', storeId: 'sakae-sutadon-nagoya-sakae', key: 'area', value: 'sakae', sourceRefIds: ['source-sakae-sutadon-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-cocoichi-display-name', storeId: 'osu-cocoichi-naka-ku-osu', key: 'displayName', value: 'カレーハウスCoCo壱番屋 中区大須店', sourceRefIds: ['source-osu-cocoichi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-cocoichi-address', storeId: 'osu-cocoichi-naka-ku-osu', key: 'address', value: '愛知県名古屋市中区門前町1番15号-3 1階', sourceRefIds: ['source-osu-cocoichi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-cocoichi-area', storeId: 'osu-cocoichi-naka-ku-osu', key: 'area', value: 'osu', sourceRefIds: ['source-osu-cocoichi-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-komeda-kamimaezu-display-name', storeId: 'osu-komeda-kamimaezu', key: 'displayName', value: 'コメダ珈琲店 上前津店', sourceRefIds: ['source-osu-komeda-kamimaezu-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-komeda-kamimaezu-address', storeId: 'osu-komeda-kamimaezu', key: 'address', value: '愛知県名古屋市中区大須3-31-42', sourceRefIds: ['source-osu-komeda-kamimaezu-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
+  { factId: 'fact-osu-komeda-kamimaezu-area', storeId: 'osu-komeda-kamimaezu', key: 'area', value: 'osu', sourceRefIds: ['source-osu-komeda-kamimaezu-store'], observedAt: '2026-08-26T12:00:00Z', reviewStatus: 'provisional' },
 ];
 
 export const STORE_ENTITIES: readonly StoreEntity[] = [
@@ -673,6 +738,11 @@ export const STORE_ENTITIES: readonly StoreEntity[] = [
       confirmedDistinctStoreIds: [],
     },
   },
+  { storeId: 'meieki-sugakiya-nagoya-eki-esca', area: 'meieki', status: 'draft', canonicalNameFactId: 'fact-meieki-esca-sugakiya-display-name', canonicalLocationFactId: 'fact-meieki-esca-sugakiya-address', discoveryRecordIds: ['discovery-meieki-sugakiya-nagoya-eki-esca'], mergeGuard: { unresolvedCandidateStoreIds: [], confirmedDistinctStoreIds: [] } },
+  { storeId: 'meieki-komeda-nagoya-eki-nishi', area: 'meieki', status: 'draft', canonicalNameFactId: 'fact-meieki-komeda-nishi-display-name', canonicalLocationFactId: 'fact-meieki-komeda-nishi-address', discoveryRecordIds: ['discovery-meieki-komeda-nagoya-eki-nishi'], mergeGuard: { unresolvedCandidateStoreIds: [], confirmedDistinctStoreIds: [] } },
+  { storeId: 'sakae-sutadon-nagoya-sakae', area: 'sakae', status: 'draft', canonicalNameFactId: 'fact-sakae-sutadon-display-name', canonicalLocationFactId: 'fact-sakae-sutadon-address', discoveryRecordIds: ['discovery-sakae-sutadon-nagoya-sakae'], mergeGuard: { unresolvedCandidateStoreIds: [], confirmedDistinctStoreIds: [] } },
+  { storeId: 'osu-cocoichi-naka-ku-osu', area: 'osu', status: 'draft', canonicalNameFactId: 'fact-osu-cocoichi-display-name', canonicalLocationFactId: 'fact-osu-cocoichi-address', discoveryRecordIds: ['discovery-osu-cocoichi-naka-ku-osu'], mergeGuard: { unresolvedCandidateStoreIds: [], confirmedDistinctStoreIds: [] } },
+  { storeId: 'osu-komeda-kamimaezu', area: 'osu', status: 'draft', canonicalNameFactId: 'fact-osu-komeda-kamimaezu-display-name', canonicalLocationFactId: 'fact-osu-komeda-kamimaezu-address', discoveryRecordIds: ['discovery-osu-komeda-kamimaezu'], mergeGuard: { unresolvedCandidateStoreIds: [], confirmedDistinctStoreIds: [] } },
 ];
 export const STORE_MERCHANT_CORRECTIONS: readonly MerchantCorrection[] = [];
 
