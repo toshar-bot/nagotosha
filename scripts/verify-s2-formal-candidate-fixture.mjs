@@ -177,10 +177,10 @@ try {
   assert(unverifiedAction[0]?.actions.length === 0, 'unverified action must have no presentation DOM action');
 
   const activeProduction = getActiveFormalDecisionV3Candidates({
-    evaluatedAsOf: '2026-08-26',
-    evaluatedAt: '2026-08-26T00:00:00Z',
+    evaluatedAsOf: '2026-08-24',
+    evaluatedAt: '2026-08-24T09:07:41Z',
   });
-  assert(activeProduction.length === 3, 'reviewed initial-three registry must activate exactly three candidates');
+  assert(activeProduction.length === 0, 'provisional registry must keep production candidates at zero');
 
   const decisionApp = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
   for (const eventName of ['map_click', 'official_click', 'phone_click']) {
