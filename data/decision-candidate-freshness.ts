@@ -182,126 +182,122 @@ export const DECISION_CANDIDATE_FRESHNESS: readonly DecisionEvidenceFreshnessRec
     lastFailureReason: '人間による原本確認待ち。',
   },
 
-  // S2.3 replacement proposals. Official facts are source-checked, but the
-  // two human reviews and relationship determination intentionally remain
-  // provisional; this keeps the production adapter fail-closed.
+  // S2.6 reviewed editorial-fast-track records. These remain subject to
+  // freshness, artifact, relationship, and release-readiness checks.
   {
     evidenceId: 's23-erick-south-status',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-erick-south-hours',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-erick-south-price',
-    reviewStatus: 'provisional',
-    lastFailureReason: '店内ランチ主食の価格対象・除外について人間確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-erick-south-location',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-erick-south-official-url',
-    reviewStatus: 'provisional',
-    lastFailureReason: '利益相反照合とrelationship確定待ち。',
+    reviewStatus: 'verified',
     relationshipReview: {
-      reviewStatus: 'provisional',
-      note: 'catalog targetのrelationshipはunknown。人間の内部照合が完了するまで表示不可。',
+      reviewStatus: 'verified',
+      confirmedBy: 'user',
+      confirmedAt: '2026-08-24T13:00:27Z',
+      note: 'operatorは利益相反なしを確認し、catalog relationshipをeditorialとして承認。',
     },
   },
   {
     evidenceId: 's23-erick-south-phone',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-erick-south-seats',
-    reviewStatus: 'provisional',
-    lastFailureReason: '公式に席数の掲載がないため、空欄扱いの人間確認待ち。',
+    reviewStatus: 'verified',
   },
 
   {
     evidenceId: 's23-potama-status',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-potama-hours',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-potama-price',
-    reviewStatus: 'provisional',
-    lastFailureReason: '全店共通とHAERA店限定の単品主食価格対象・除外について人間確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-potama-location',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-potama-official-url',
-    reviewStatus: 'provisional',
-    lastFailureReason: '利益相反照合とrelationship確定待ち。',
+    reviewStatus: 'verified',
     relationshipReview: {
-      reviewStatus: 'provisional',
-      note: 'catalog targetのrelationshipはunknown。人間の内部照合が完了するまで表示不可。',
+      reviewStatus: 'verified',
+      confirmedBy: 'user',
+      confirmedAt: '2026-08-24T13:00:27Z',
+      note: 'operatorは利益相反なしを確認し、catalog relationshipをeditorialとして承認。',
     },
   },
   {
     evidenceId: 's23-potama-phone',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-potama-seats',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
 
   {
     evidenceId: 's23-sugakiya-status',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業状態の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-sugakiya-hours',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認と営業時間の再確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-sugakiya-price',
-    reviewStatus: 'provisional',
-    lastFailureReason: '大須店ラーメンの価格対象・除外について人間確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-sugakiya-location',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-sugakiya-official-url',
-    reviewStatus: 'provisional',
-    lastFailureReason: '利益相反照合とrelationship確定待ち。',
+    reviewStatus: 'verified',
     relationshipReview: {
-      reviewStatus: 'provisional',
-      note: 'catalog targetのrelationshipはunknown。人間の内部照合が完了するまで表示不可。',
+      reviewStatus: 'verified',
+      confirmedBy: 'user',
+      confirmedAt: '2026-08-24T13:00:27Z',
+      note: 'operatorは利益相反なしを確認し、catalog relationshipをeditorialとして承認。',
     },
   },
   {
     evidenceId: 's23-sugakiya-phone',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
   {
     evidenceId: 's23-sugakiya-seats',
-    reviewStatus: 'provisional',
-    lastFailureReason: '人間による原本確認待ち。',
+    reviewStatus: 'verified',
   },
+  { evidenceId: 's26-erick-south-party', reviewStatus: 'verified' },
+  { evidenceId: 's26-erick-south-budget', reviewStatus: 'verified' },
+  { evidenceId: 's26-erick-south-mood', reviewStatus: 'verified' },
+  { evidenceId: 's26-erick-south-reservation-need', reviewStatus: 'verified' },
+  { evidenceId: 's26-potama-party', reviewStatus: 'verified' },
+  { evidenceId: 's26-potama-budget', reviewStatus: 'verified' },
+  { evidenceId: 's26-potama-mood', reviewStatus: 'verified' },
+  { evidenceId: 's26-potama-reservation-need', reviewStatus: 'verified' },
+  { evidenceId: 's26-sugakiya-party', reviewStatus: 'verified' },
+  { evidenceId: 's26-sugakiya-budget', reviewStatus: 'verified' },
+  { evidenceId: 's26-sugakiya-mood', reviewStatus: 'verified' },
+  { evidenceId: 's26-sugakiya-reservation-need', reviewStatus: 'verified' },
 ];
