@@ -24,6 +24,7 @@ import type {
 } from '@/types/decision-candidate';
 import type { DecisionCandidateEligibility, ISODate } from '@/types/decision-freshness';
 import type {
+  DecisionEditorialFastTrackContext,
   DecisionIndependentReview,
   DecisionOperatorReview,
   DecisionReleaseReadyCandidates,
@@ -114,8 +115,10 @@ const EMPTY_REFINEMENT_PROFILE: Pick<
 
 /**
  * Resolves the current production-safe presentation candidates. Both the
- * eligibility gate and the independent release-readiness gate must pass before
- * a candidate can be adapted. An empty registry intentionally returns [].
+ * eligibility gate and the release-readiness gate must pass before a candidate
+ * can be adapted. Standard candidates retain their independent-review Gate;
+ * qualifying editorial-fast-track candidates are evaluated by its narrower
+ * policy. An empty registry intentionally returns [].
  */
 export function getActiveFormalDecisionV3Candidates(
   input: FormalDecisionV3ActivationInput,
@@ -123,6 +126,7 @@ export function getActiveFormalDecisionV3Candidates(
   const candidates = input.candidates ?? DECISION_CANDIDATES;
   const evidence = input.evidence ?? DECISION_CANDIDATE_EVIDENCE;
   const freshness = input.freshness ?? DECISION_CANDIDATE_FRESHNESS;
+  const definitions = input.definitions ?? FORMAL_DECISION_V3_DEFINITIONS;
   const eligibleSet = getEligibleDecisionCandidates(
     candidates,
     evidence,
@@ -137,6 +141,7 @@ export function getActiveFormalDecisionV3Candidates(
     independentReviews: input.independentReviews ?? DECISION_INDEPENDENT_REVIEWS,
     holds: input.holds ?? DECISION_VERIFICATION_HOLDS,
     evaluatedAsOf: input.evaluatedAt,
+    editorialFastTrackContexts: toEditorialFastTrackContexts(definitions),
   });
 
   return adaptFormalDecisionV3Candidates({
@@ -144,8 +149,18 @@ export function getActiveFormalDecisionV3Candidates(
     evidence,
     eligibility: eligibleSet.eligibility,
     releaseReady,
-    definitions: input.definitions ?? FORMAL_DECISION_V3_DEFINITIONS,
+    definitions,
   });
+}
+
+function toEditorialFastTrackContexts(
+  definitions: readonly FormalDecisionV3CandidateDefinition[],
+): readonly DecisionEditorialFastTrackContext[] {
+  return definitions.map((definition) => ({
+    candidateId: definition.candidateId,
+    area: definition.area,
+    priceKind: definition.price.kind,
+  }));
 }
 
 /**
