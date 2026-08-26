@@ -328,7 +328,7 @@ export const INITIAL_FORMAL_CANDIDATE_PROPOSALS: readonly CandidateReviewProposa
         kind: 'range',
         minimum: 450,
         maximum: 1300,
-        label: '¥450〜¥1,300（全店共通7品＋名古屋HAERA店限定4品）',
+        label: '¥450〜¥1,300（全店共通7品＋名古屋HAERA店限定主食4品）',
       },
     },
     proposedPartyTypes: ['solo', 'couple'],

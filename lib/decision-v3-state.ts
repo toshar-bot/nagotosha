@@ -164,11 +164,9 @@ export function decisionV3Reducer(state: DecisionV3Session, action: DecisionV3Ac
 
 export function normalizeDecisionV3RestoredState(
   state: DecisionV3Session,
-  candidateSource: DecisionV3CandidateSource,
+  _candidateSource: DecisionV3CandidateSource,
   candidates: readonly DecisionV3Candidate[],
 ): DecisionV3Session {
-  if (candidateSource === 'demo') return state;
-
   const base = {
     ...createInitialDecisionV3State(),
     conditions: state.conditions,
@@ -177,11 +175,76 @@ export function normalizeDecisionV3RestoredState(
 
   if (state.step === 'home' || !hasAllRequiredConditions(base.conditions)) return base;
 
-  return {
-    ...decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidates }),
-    step: 'candidates',
+  const recalculated = decisionV3Reducer(base, { type: 'PREPARE_CANDIDATES', candidates });
+  if (recalculated.selectionResult?.kind !== 'matched') {
+    return { ...recalculated, step: 'candidates' };
+  }
+
+  const activeMatchedIds = new Set(recalculated.selectionResult.candidateIds);
+  const compareIds = retainActiveIds(state.compareIds, activeMatchedIds);
+  const compareOrder = retainCompareOrder(state.compareOrder, compareIds);
+  const detailId = isActiveId(state.detailId, activeMatchedIds) ? state.detailId : null;
+  const chosenId = compareIds.includes(state.chosenId ?? '') ? state.chosenId : null;
+  const restored = {
+    ...recalculated,
+    step: 'candidates' as const,
+    axes: retainAxes(state.axes),
+    compareIds,
+    compareOrder,
+    detailId,
+    chosenId,
   };
+
+  switch (state.step) {
+    case 'detail':
+      return detailId ? { ...restored, step: 'detail' } : restored;
+    case 'compare':
+      return compareIds.length > 0 ? { ...restored, step: 'compare' } : restored;
+    case 'decided':
+      return chosenId && compareIds.includes(chosenId)
+        ? { ...restored, step: 'decided' }
+        : restored;
+    case 'candidates':
+    default:
+      return restored;
+  }
 }
+
+const isActiveId = (id: string | null, activeIds: ReadonlySet<string>) =>
+  Boolean(id && activeIds.has(id));
+
+const retainActiveIds = (ids: readonly string[], activeIds: ReadonlySet<string>) => {
+  const retained: string[] = [];
+  for (const id of ids) {
+    if (activeIds.has(id) && !retained.includes(id)) retained.push(id);
+    if (retained.length === 3) break;
+  }
+  return retained;
+};
+
+const retainCompareOrder = (order: readonly string[], compareIds: readonly string[]) => {
+  const retained = retainActiveIds(order, new Set(compareIds));
+  for (const id of compareIds) {
+    if (!retained.includes(id)) retained.push(id);
+  }
+  return retained;
+};
+
+const ALL_COMPARE_AXES: readonly CompareAxis[] = [
+  'budget', 'area', 'access', 'atmosphere', 'smoking', 'seats', 'private-room', 'tatami', 'solo',
+  'kids', 'reservation', 'long-stay', 'wifi', 'power', 'rain-safe', 'parking', 'terrace',
+  'late-night', 'quiet',
+];
+
+const retainAxes = (axes: readonly CompareAxis[]) => {
+  const allowed = new Set<CompareAxis>(ALL_COMPARE_AXES);
+  const retained: CompareAxis[] = [];
+  for (const axis of axes) {
+    if (allowed.has(axis) && !retained.includes(axis)) retained.push(axis);
+    if (retained.length === 5) break;
+  }
+  return retained.length > 0 ? retained : [...DEFAULT_AXES];
+};
 
 export const hasAllRequiredConditions = (
   conditions: Partial<DecisionV3Conditions>,

@@ -4,6 +4,8 @@ import type { DecisionCandidateEligibility } from '../types/decision-freshness';
 import type {
   DecisionCandidateReleaseReadiness,
   DecisionCandidateReleaseReadinessInput,
+  DecisionEditorialFastTrackContext,
+  DecisionEditorialFastTrackOperatorReview,
   DecisionIndependentReview,
   DecisionOperatorReview,
   DecisionReleaseBlocker,
@@ -11,6 +13,7 @@ import type {
   DecisionReleaseReadyCandidatesInput,
   DecisionReleaseSurface,
   DecisionRelationshipReadinessInput,
+  DecisionStandardOperatorReview,
   DecisionVerificationArtifact,
   DecisionVerificationArtifactChannel,
   DecisionVerificationFactKey,
@@ -18,8 +21,10 @@ import type {
   DecisionVerificationHold,
 } from '../types/decision-verification-governance';
 import {
+  isDecisionActionDisplayable,
   isResolvedRelationshipDisplayable,
   isSafeExternalUrl,
+  isValidDecisionTime,
   resolveDecisionCandidateRelationship,
   type DecisionRelationshipResolution,
 } from './decision-safety';
@@ -121,6 +126,10 @@ function getReadyCandidates(
       evaluatedAsOf: input.evaluatedAsOf,
       surface,
       relationshipResolution: resolveBatchRelationship(candidate, relationshipMatches),
+      editorialFastTrackContext: resolveEditorialFastTrackContext(
+        candidate,
+        input.editorialFastTrackContexts ?? [],
+      ),
     });
 
     if (readiness.ready) {
@@ -190,6 +199,8 @@ function evaluatePreviewReadiness(
     requiredFactKeys,
     asOfTimestamp,
     holdEvaluation.latestResolvedAt,
+    relationship,
+    input.editorialFastTrackContext,
     policy,
   );
   blockers.push(...operatorEvaluation.blockers);
@@ -297,15 +308,54 @@ function evaluateOperatorReview(
   requiredFactKeys: readonly DecisionVerificationFactKey[],
   asOfTimestamp: number | undefined,
   latestResolvedAt: number | undefined,
+  relationship: DecisionRelationshipResolution,
+  editorialFastTrackContext: DecisionEditorialFastTrackContext | undefined,
   policy: DecisionVerificationGovernancePolicy,
 ): { blockers: DecisionReleaseBlocker[]; review?: DecisionOperatorReview } {
-  const blockers: DecisionReleaseBlocker[] = [];
   const candidateReviews = reviews.filter((review) => review.candidateId === candidate.id);
   if (candidateReviews.length === 0) {
     return { blockers: [{ code: 'operator-review-missing' }] };
   }
 
-  const parsedReviews = candidateReviews.map((review) => ({
+  const tracks = new Set(candidateReviews.map((review) => review.reviewTrack));
+  if (tracks.size !== 1) {
+    return { blockers: [{ code: 'operator-review-ambiguous' }] };
+  }
+
+  if (candidateReviews[0].reviewTrack === 'editorial-fast-track') {
+    return evaluateEditorialFastTrackOperatorReview(
+      candidate,
+      candidateReviews as readonly DecisionEditorialFastTrackOperatorReview[],
+      validArtifacts,
+      requiredFactKeys,
+      asOfTimestamp,
+      latestResolvedAt,
+      relationship,
+      editorialFastTrackContext,
+      policy,
+    );
+  }
+
+  return evaluateStandardOperatorReview(
+    candidateReviews as readonly DecisionStandardOperatorReview[],
+    validArtifacts,
+    requiredFactKeys,
+    asOfTimestamp,
+    latestResolvedAt,
+    policy,
+  );
+}
+
+function evaluateStandardOperatorReview(
+  reviews: readonly DecisionStandardOperatorReview[],
+  validArtifacts: readonly DecisionVerificationArtifact[],
+  requiredFactKeys: readonly DecisionVerificationFactKey[],
+  asOfTimestamp: number | undefined,
+  latestResolvedAt: number | undefined,
+  policy: DecisionVerificationGovernancePolicy,
+): { blockers: DecisionReleaseBlocker[]; review?: DecisionStandardOperatorReview } {
+  const blockers: DecisionReleaseBlocker[] = [];
+  const parsedReviews = reviews.map((review) => ({
     review,
     first: parseISOInstant(review.firstReviewedAt),
     recheck: parseISOInstant(review.coolingOffRecheckAt),
@@ -314,7 +364,7 @@ function evaluateOperatorReview(
     blockers.push({ code: 'operator-review-invalid' });
   }
   const usableTimestamps = parsedReviews.filter(
-    (entry): entry is { review: DecisionOperatorReview; first: number; recheck: number } => (
+    (entry): entry is { review: DecisionStandardOperatorReview; first: number; recheck: number } => (
       entry.first !== undefined && entry.recheck !== undefined
     ),
   );
@@ -348,6 +398,89 @@ function evaluateOperatorReview(
     blockers.push({ code: 'reverification-required' });
   }
 
+  verifyOperatorReviewArtifacts(
+    review,
+    first,
+    validArtifacts,
+    requiredFactKeys,
+    blockers,
+  );
+
+  return { blockers, review };
+}
+
+function evaluateEditorialFastTrackOperatorReview(
+  candidate: DecisionCandidate,
+  reviews: readonly DecisionEditorialFastTrackOperatorReview[],
+  validArtifacts: readonly DecisionVerificationArtifact[],
+  requiredFactKeys: readonly DecisionVerificationFactKey[],
+  asOfTimestamp: number | undefined,
+  latestResolvedAt: number | undefined,
+  relationship: DecisionRelationshipResolution,
+  context: DecisionEditorialFastTrackContext | undefined,
+  policy: DecisionVerificationGovernancePolicy,
+): { blockers: DecisionReleaseBlocker[]; review?: DecisionEditorialFastTrackOperatorReview } {
+  const blockers: DecisionReleaseBlocker[] = [];
+  if (!isEditorialFastTrackCandidate(candidate, relationship, context, policy)) {
+    return { blockers: [{ code: 'editorial-fast-track-ineligible' }] };
+  }
+
+  const parsedReviews = reviews.map((review) => ({
+    review,
+    reviewedAt: parseISOInstant(review.reviewedAt),
+  }));
+  if (parsedReviews.some((entry) => entry.reviewedAt === undefined)) {
+    blockers.push({ code: 'operator-review-invalid' });
+  }
+  const usableTimestamps = parsedReviews.filter(
+    (entry): entry is { review: DecisionEditorialFastTrackOperatorReview; reviewedAt: number } => (
+      entry.reviewedAt !== undefined
+    ),
+  );
+  if (usableTimestamps.length === 0) return { blockers };
+
+  const latestReviewedAt = Math.max(...usableTimestamps.map((entry) => entry.reviewedAt));
+  const latestMatches = usableTimestamps.filter((entry) => entry.reviewedAt === latestReviewedAt);
+  if (latestMatches.length !== 1) {
+    blockers.push({ code: 'operator-review-ambiguous' });
+    return { blockers };
+  }
+
+  const { review, reviewedAt } = latestMatches[0];
+  if (
+    !isHumanActor(review.reviewerId, policy)
+    || !review.note.trim()
+    || review.originalArtifactReread !== true
+    || asOfTimestamp === undefined
+    || reviewedAt > asOfTimestamp
+  ) {
+    blockers.push({ code: 'operator-review-invalid' });
+  }
+  if (review.result !== 'confirmed') {
+    blockers.push({ code: 'operator-review-not-confirmed' });
+  }
+  if (latestResolvedAt !== undefined && reviewedAt < latestResolvedAt) {
+    blockers.push({ code: 'reverification-required' });
+  }
+
+  verifyOperatorReviewArtifacts(
+    review,
+    reviewedAt,
+    validArtifacts,
+    requiredFactKeys,
+    blockers,
+  );
+
+  return { blockers, review };
+}
+
+function verifyOperatorReviewArtifacts(
+  review: Pick<DecisionOperatorReview, 'sourceArtifactIds' | 'factKeysReviewed'>,
+  reviewedAt: number,
+  validArtifacts: readonly DecisionVerificationArtifact[],
+  requiredFactKeys: readonly DecisionVerificationFactKey[],
+  blockers: DecisionReleaseBlocker[],
+): void {
   const referencedArtifacts = resolveReferencedArtifacts(
     review.sourceArtifactIds,
     validArtifacts,
@@ -358,7 +491,7 @@ function evaluateOperatorReview(
     || referencedArtifacts.length !== review.sourceArtifactIds.length
     || referencedArtifacts.some((artifact) => {
       const receivedAt = parseISOInstant(artifact.receivedAt);
-      return receivedAt === undefined || receivedAt > first;
+      return receivedAt === undefined || receivedAt > reviewedAt;
     })
   ) {
     blockers.push({ code: 'operator-review-invalid' });
@@ -373,8 +506,6 @@ function evaluateOperatorReview(
   if (hasDuplicates(review.factKeysReviewed)) {
     blockers.push({ code: 'operator-review-invalid' });
   }
-
-  return { blockers, review };
 }
 
 function evaluateProductionReviews(
@@ -383,6 +514,18 @@ function evaluateProductionReviews(
   policy: DecisionVerificationGovernancePolicy,
 ): DecisionReleaseBlocker[] {
   const blockers: DecisionReleaseBlocker[] = [];
+  if (
+    preview.operatorReview?.reviewTrack === 'editorial-fast-track'
+    && isEditorialFastTrackCandidate(
+      input.candidate,
+      preview.relationship,
+      input.editorialFastTrackContext,
+      policy,
+    )
+  ) {
+    return blockers;
+  }
+
   const requiredScopes: DecisionIndependentReview['factScope'][] = ['relationship'];
   if (preview.relationship.relationship === 'pr' || preview.relationship.relationship === 'owned') {
     requiredScopes.push('disclosure');
@@ -396,7 +539,7 @@ function evaluateProductionReviews(
       scope,
       input.independentReviews,
       preview.validArtifacts,
-      preview.operatorReview,
+      preview.operatorReview?.reviewTrack === 'standard' ? preview.operatorReview : undefined,
       asOfTimestamp,
       policy,
     ));
@@ -409,7 +552,7 @@ function evaluateIndependentReview(
   scope: DecisionIndependentReview['factScope'],
   reviews: readonly DecisionIndependentReview[],
   validArtifacts: readonly DecisionVerificationArtifact[],
-  operatorReview: DecisionOperatorReview | undefined,
+  operatorReview: DecisionStandardOperatorReview | undefined,
   asOfTimestamp: number | undefined,
   policy: DecisionVerificationGovernancePolicy,
 ): DecisionReleaseBlocker[] {
@@ -546,6 +689,45 @@ function resolveBatchRelationship(
     displayableOnRedesignedSurfaces: false,
     validationErrors: [...fallback.validationErrors, 'duplicate relationship readiness input'],
   };
+}
+
+function resolveEditorialFastTrackContext(
+  candidate: DecisionCandidate,
+  contexts: readonly DecisionEditorialFastTrackContext[],
+): DecisionEditorialFastTrackContext | undefined {
+  const matches = contexts.filter((context) => context.candidateId === candidate.id);
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
+function isEditorialFastTrackCandidate(
+  candidate: DecisionCandidate,
+  relationship: DecisionRelationshipResolution,
+  context: DecisionEditorialFastTrackContext | undefined,
+  policy: DecisionVerificationGovernancePolicy,
+): boolean {
+  const fastTrack = policy.editorialFastTrack;
+  if (
+    candidate.decisionMode !== fastTrack.decisionMode
+    || candidate.entityType !== fastTrack.entityType
+    || candidate.visual.kind !== fastTrack.visualKind
+    || relationship.relationship !== fastTrack.relationship
+    || !relationship.displayableOnRedesignedSurfaces
+    || relationship.validationErrors.length > 0
+    || candidate.currentStatus !== 'available'
+    || !isValidDecisionTime(candidate.openingHours.opens)
+    || !isValidDecisionTime(candidate.openingHours.closes)
+    || !context
+    || context.candidateId !== candidate.id
+    || candidate.area !== context.area
+    || !fastTrack.allowedAreas.includes(context.area)
+    || !fastTrack.allowedPriceKinds.includes(context.priceKind as 'fixed' | 'range')
+  ) {
+    return false;
+  }
+
+  return fastTrack.requiredActionTypes.every((type) => (
+    candidate.actions.some((action) => action.type === type && isDecisionActionDisplayable(action))
+  ));
 }
 
 function relationshipMatchesCandidate(

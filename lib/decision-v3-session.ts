@@ -58,7 +58,8 @@ const AXES = [
   'late-night',
   'quiet',
 ] satisfies CompareAxis[];
-const CANDIDATE_IDS = ['demo-a', 'demo-b', 'demo-c'] as const;
+const MAX_CANDIDATE_ID_LENGTH = 128;
+const CANDIDATE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SESSION_ROOT_KEYS: ReadonlySet<string> = new Set([
   'version',
   'step',
@@ -90,6 +91,28 @@ const hasExactKeys = (
 
 function isOneOf<T extends string>(value: unknown, values: readonly T[]): value is T {
   return typeof value === 'string' && values.includes(value as T);
+}
+
+function readCandidateId(value: unknown): string {
+  if (
+    typeof value !== 'string'
+    || value.length === 0
+    || value.length > MAX_CANDIDATE_ID_LENGTH
+    || value.trim() !== value
+    || !CANDIDATE_ID_PATTERN.test(value)
+  ) {
+    throw new Error('invalid candidate id');
+  }
+  return value;
+}
+
+function readCandidateIdArray(value: unknown, maximum: number, minimum = 0): string[] {
+  if (!Array.isArray(value) || value.length < minimum || value.length > maximum) {
+    throw new Error('invalid candidate id array length');
+  }
+  const ids = value.map(readCandidateId);
+  if (!hasOnlyUniqueValues(ids)) throw new Error('duplicate candidate id');
+  return ids;
 }
 
 function readConditions(value: unknown): DecisionV3ConditionDraft {
@@ -152,7 +175,7 @@ function readSelectionResult(value: unknown): CandidateSelectionResult | null {
   }
   const source = value as Record<string, unknown>;
   if (source.kind === 'matched') {
-    const candidateIds = readStringArray(source.candidateIds, CANDIDATE_IDS, 3, 1);
+    const candidateIds = readCandidateIdArray(source.candidateIds, 3, 1);
     if (
       !source.reasonsByCandidateId
       || typeof source.reasonsByCandidateId !== 'object'
@@ -163,7 +186,7 @@ function readSelectionResult(value: unknown): CandidateSelectionResult | null {
     const reasonSource = source.reasonsByCandidateId as Record<string, unknown>;
     if (
       Object.keys(reasonSource).length !== candidateIds.length
-      || Object.keys(reasonSource).some((id) => !candidateIds.includes(id as (typeof CANDIDATE_IDS)[number]))
+      || Object.keys(reasonSource).some((id) => !candidateIds.includes(id))
     ) {
       throw new Error('candidate reasons do not match selected candidates');
     }
@@ -206,31 +229,19 @@ export function parseDecisionV3Session(value: unknown): DecisionV3Session | null
     const selectionResult = readSelectionResult(source.selectionResult);
     const selectableCandidateIds =
       selectionResult?.kind === 'matched' ? selectionResult.candidateIds : [];
-    const compareIds = readStringArray(source.compareIds, CANDIDATE_IDS, 3);
+    const compareIds = readCandidateIdArray(source.compareIds, 3);
     if (compareIds.some((id) => !selectableCandidateIds.includes(id))) {
       throw new Error('compared candidate was not selected');
     }
-    const compareOrderInput = readStringArray(source.compareOrder, CANDIDATE_IDS, 3);
+    const compareOrderInput = readCandidateIdArray(source.compareOrder, 3);
     if (compareOrderInput.some((id) => !compareIds.includes(id))) throw new Error('invalid compare order');
     const compareOrder = [
       ...compareOrderInput,
       ...compareIds.filter((id) => !compareOrderInput.includes(id)),
     ];
     const axes = readStringArray(source.axes, AXES, 5, 1);
-    const chosenId = source.chosenId === null
-      ? null
-      : isOneOf(source.chosenId, CANDIDATE_IDS)
-        ? source.chosenId
-        : (() => {
-            throw new Error('invalid chosen candidate');
-          })();
-    const detailId = source.detailId === null
-      ? null
-      : isOneOf(source.detailId, CANDIDATE_IDS)
-        ? source.detailId
-        : (() => {
-            throw new Error('invalid detail candidate');
-          })();
+    const chosenId = source.chosenId === null ? null : readCandidateId(source.chosenId);
+    const detailId = source.detailId === null ? null : readCandidateId(source.detailId);
 
     if (chosenId && !compareIds.includes(chosenId)) throw new Error('chosen candidate is not compared');
     if (source.step !== 'home' && !hasAllRequiredConditions(conditions)) {
