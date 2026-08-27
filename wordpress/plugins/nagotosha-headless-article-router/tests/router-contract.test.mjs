@@ -21,7 +21,6 @@ const requiredFragments = [
   "defined( 'REST_REQUEST' ) && REST_REQUEST",
   'is_preview() || is_feed() || is_embed() || is_trackback() || wp_doing_ajax()',
   'nocache_headers();',
-  "wp_safe_redirect( $target, $status, 'Nagotosha Headless Article Router' );",
   "? 301 : 302",
   "add_filter( 'wp_sitemaps_posts_query_args'",
   "'compare' => 'NOT EXISTS'",
@@ -36,5 +35,7 @@ assert.equal(source.includes('functions.php'), false, 'theme injection is prohib
 assert.equal(source.includes('$_GET'), false, 'request input must not control redirect targets');
 assert.match(source, /self::APP_ORIGIN\s*\.\s*'\/article\/'/, 'target must be a fixed app article route');
 assert.match(source, /if \( ! self::meta_is_enabled\( \$post_id, self::META_ENABLED \) \) \{\s*return;/, 'opt-in gate must fail closed');
+assert.match(source, /if \( wp_safe_redirect\( \$target, \$status, 'Nagotosha Headless Article Router' \) \) \{\s*exit;\s*\}/, 'redirect must exit only after a successful safe redirect');
+assert.doesNotMatch(source, /wp_safe_redirect\( \$target, \$status, 'Nagotosha Headless Article Router' \);\s*exit;/, 'redirect failure must retain the normal WordPress response');
 
 console.log('Nagotosha headless article router static contract: PASS');

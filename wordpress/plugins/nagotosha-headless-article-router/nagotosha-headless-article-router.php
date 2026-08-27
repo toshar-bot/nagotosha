@@ -108,8 +108,9 @@ final class Nagotosha_Headless_Article_Router {
 		$status = self::meta_is_enabled( $post_id, self::META_PERMANENT ) ? 301 : 302;
 
 		nocache_headers();
-		wp_safe_redirect( $target, $status, 'Nagotosha Headless Article Router' );
-		exit;
+		if ( wp_safe_redirect( $target, $status, 'Nagotosha Headless Article Router' ) ) {
+			exit;
+		}
 	}
 
 	/**
