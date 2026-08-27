@@ -1,0 +1,19 @@
+{
+  "articleId": null,
+  "articleSlug": "osu-kamimaezu-three-stores-by-budget-and-stay",
+  "storeIds": [
+    "osu-sugakiya-osu",
+    "osu-cocoichi-naka-ku-osu",
+    "osu-komeda-kamimaezu"
+  ],
+  "entryMode": "article_pool",
+  "relationship": "editorial",
+  "area": "osu",
+  "verifiedAt": "2026-08-26",
+  "enabled": false,
+  "missingGates": [
+    "WordPress article ID assignment",
+    "human approval for Article-to-Decision CTA",
+    "Article-to-Decision implementation"
+  ]
+}

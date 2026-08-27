@@ -1,0 +1,19 @@
+{
+  "articleId": null,
+  "articleSlug": "sakae-three-stores-by-mood",
+  "storeIds": [
+    "sakae-potama-nagoya-haera",
+    "sakae-sutadon-nagoya-sakae",
+    "sakae-cafe-laduree-lachic"
+  ],
+  "entryMode": "article_pool",
+  "relationship": "editorial",
+  "area": "sakae",
+  "verifiedAt": "2026-08-26",
+  "enabled": false,
+  "missingGates": [
+    "WordPress article ID assignment",
+    "human approval for Article-to-Decision CTA",
+    "Article-to-Decision implementation"
+  ]
+}

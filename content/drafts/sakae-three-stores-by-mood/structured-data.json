@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "contentType": "editorial-store-comparison",
+  "articleSlug": "sakae-three-stores-by-mood",
+  "searchIntent": "栄で、軽めの主食・しっかりした主食・カフェ利用を公式情報から比較したい人",
+  "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "stores": [
+    {
+      "storeId": "sakae-potama-nagoya-haera",
+      "name": "ポーたま 名古屋HAERA店",
+      "area": "sakae",
+      "price": { "minimum": 450, "maximum": 1300, "currency": "JPY", "scope": "全店共通7品＋名古屋HAERA店限定主食4品", "excludes": ["Special", "Box", "スープ・ドリンク", "サイド", "モーニング・ランチセット", "デリバリー"] },
+      "openingHours": "7:00〜21:00",
+      "address": "愛知県名古屋市中区錦3-25-1 HAERA B2F",
+      "officialUrl": "https://porktamago.com/shop/012-pnh/",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%83%9D%E3%83%BC%E3%81%9F%E3%81%BE%20%E5%90%8D%E5%8F%A4%E5%B1%8B%20HAERA%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E9%8C%A63-25-1",
+      "verifiedAt": "2026-08-24"
+    },
+    {
+      "storeId": "sakae-sutadon-nagoya-sakae",
+      "name": "伝説のすた丼屋 名古屋栄店",
+      "area": "sakae",
+      "price": { "minimum": 890, "maximum": 1290, "currency": "JPY", "scope": "丼・定食・カレー・そば", "excludes": ["セット", "子ども向け", "トッピング", "単品", "飲料"] },
+      "openingHours": "11:00〜24:00（L.O. 23:45）",
+      "address": "愛知県名古屋市中区栄3-12-12 2F",
+      "officialUrl": "https://shop.sutadonya.com/store/store2082",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E4%BC%9D%E8%AA%AC%E3%81%AE%E3%81%99%E3%81%9F%E4%B8%BC%E5%B1%8B%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E6%A0%84%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-12-12",
+      "verifiedAt": "2026-08-26"
+    },
+    {
+      "storeId": "sakae-cafe-laduree-lachic",
+      "name": "カフェ・ラデュレ 名古屋ラシック店",
+      "area": "sakae",
+      "price": { "minimum": 486, "maximum": 702, "currency": "JPY", "scope": "オリジナルブレンドコーヒー S・M・L", "excludes": ["フード", "パティスリー", "その他ドリンク"] },
+      "openingHours": "11:00〜21:00",
+      "address": "愛知県名古屋市中区栄3-6-1 ラシック1F",
+      "officialUrl": "https://www.laduree.jp/view/page/nagoyaopen",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%95%E3%82%A7%E3%83%BB%E3%83%A9%E3%83%87%E3%83%A5%E3%83%AC%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E3%83%A9%E3%82%B7%E3%83%83%E3%82%AF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%A0%843-6-1",
+      "verifiedAt": "2026-08-26"
+    }
+  ]
+}
