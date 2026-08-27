@@ -4,6 +4,73 @@ import type {
   DecisionVerificationArtifact,
   DecisionVerificationHold,
 } from '../types/decision-verification-governance';
+import { B2_APPROVED_CANDIDATE_PROPOSALS } from './decision-candidate-proposals';
+
+const B2_OPERATOR_REVIEWED_AT = '2026-08-26T11:57:32Z';
+const B2_OPERATOR_APPROVAL_SHA256 = 'e0d8aef2120cee5a426a010e005a3d56ec8777d85d60e1812ba7e2c7e5454811';
+const B2_REVIEWED_FACT_KEYS = [
+  'currentStatus',
+  'openingHours',
+  'price',
+  'officialUrl',
+  'phone',
+  'location',
+  'editorialClassification',
+  'relationship',
+  'visualRights',
+] as const;
+
+const B2_APPROVED_VERIFICATION_ARTIFACTS: readonly DecisionVerificationArtifact[] =
+  B2_APPROVED_CANDIDATE_PROPOSALS.flatMap((proposal) => {
+    const officialSource = proposal.sourceArtifacts[0];
+    const priceSource = proposal.sourceArtifacts[proposal.sourceArtifacts.length - 1];
+    if (!officialSource || !priceSource) return [];
+
+    return [
+      {
+        artifactId: `b2-${proposal.candidateId}-official`,
+        candidateId: proposal.candidateId,
+        factKeys: ['currentStatus', 'openingHours', 'officialUrl', 'phone', 'location'],
+        channel: 'official-document',
+        sourceIdentity: `${proposal.candidateId} 公式店舗情報保存原本`,
+        sourceUrl: officialSource.sourceUrl,
+        receivedAt: officialSource.acquiredAt,
+        sha256: officialSource.sha256,
+        originalStored: true,
+      },
+      {
+        artifactId: `b2-${proposal.candidateId}-price`,
+        candidateId: proposal.candidateId,
+        factKeys: ['price'],
+        channel: 'official-document',
+        sourceIdentity: `${proposal.candidateId} 対象カテゴリー価格保存原本`,
+        sourceUrl: priceSource.sourceUrl,
+        receivedAt: priceSource.acquiredAt,
+        sha256: priceSource.sha256,
+        originalStored: true,
+      },
+      {
+        artifactId: `b2-${proposal.candidateId}-editorial-classification`,
+        candidateId: proposal.candidateId,
+        factKeys: ['editorialClassification'],
+        channel: 'editorial-note',
+        sourceIdentity: 'B2 operator初回承認記録（リポジトリ外保存原本）',
+        receivedAt: B2_OPERATOR_REVIEWED_AT,
+        sha256: B2_OPERATOR_APPROVAL_SHA256,
+        originalStored: true,
+      },
+      {
+        artifactId: `b2-${proposal.candidateId}-relationship-and-visual`,
+        candidateId: proposal.candidateId,
+        factKeys: ['relationship', 'visualRights'],
+        channel: 'internal-ledger',
+        sourceIdentity: 'B2 operator利益相反・visual:none確認記録（リポジトリ外保存原本）',
+        receivedAt: B2_OPERATOR_REVIEWED_AT,
+        sha256: B2_OPERATOR_APPROVAL_SHA256,
+        originalStored: true,
+      },
+    ];
+  });
 
 /**
  * S2.6 records are backed by stored official originals and the external-only
@@ -142,6 +209,7 @@ export const DECISION_VERIFICATION_ARTIFACTS: readonly DecisionVerificationArtif
       originalStored: true as const,
     },
   ]),
+  ...B2_APPROVED_VERIFICATION_ARTIFACTS,
 ];
 
 const S26_REVIEWED_FACT_KEYS = [
@@ -208,6 +276,22 @@ export const DECISION_OPERATOR_REVIEWS: readonly DecisionOperatorReview[] = [
     result: 'confirmed',
     note: 'official originals、限定ラーメン価格範囲、editorial分類、利益相反なしをoperatorが確認。',
   },
+  ...B2_APPROVED_CANDIDATE_PROPOSALS.map((proposal) => ({
+    reviewTrack: 'editorial-fast-track' as const,
+    candidateId: proposal.candidateId,
+    reviewerId: 'human-operator-b2-20260826',
+    reviewedAt: B2_OPERATOR_REVIEWED_AT,
+    sourceArtifactIds: [
+      `b2-${proposal.candidateId}-official`,
+      `b2-${proposal.candidateId}-price`,
+      `b2-${proposal.candidateId}-editorial-classification`,
+      `b2-${proposal.candidateId}-relationship-and-visual`,
+    ],
+    factKeysReviewed: B2_REVIEWED_FACT_KEYS,
+    originalArtifactReread: true as const,
+    result: 'confirmed' as const,
+    note: 'operatorが保存原本、対象カテゴリー限定価格、editorial分類、利益相反なし、visual:noneを確認。',
+  })),
 ];
 export const DECISION_INDEPENDENT_REVIEWS: readonly DecisionIndependentReview[] = [];
 export const DECISION_VERIFICATION_HOLDS: readonly DecisionVerificationHold[] = [];

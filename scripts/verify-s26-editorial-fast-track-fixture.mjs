@@ -32,7 +32,7 @@ Module._extensions['.ts'] = function compileTypeScript(module, filename) {
 
 const typescript = require('typescript');
 const AS_OF_DATE = '2026-08-26';
-const AS_OF_INSTANT = '2026-08-26T00:00:00Z';
+const AS_OF_INSTANT = '2026-08-26T12:00:00Z';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -60,7 +60,13 @@ try {
     normalizeDecisionV3RestoredState,
   } = require(path.join(root, 'lib/decision-v3-state.ts'));
 
-  const ids = DECISION_CANDIDATES.map((candidate) => candidate.id);
+  const INITIAL_THREE_IDS = [
+    'meieki-erick-south-kitte-nagoya',
+    'sakae-potama-nagoya-haera',
+    'osu-sugakiya-osu',
+  ];
+  const initialThree = DECISION_CANDIDATES.filter((candidate) => INITIAL_THREE_IDS.includes(candidate.id));
+  const ids = initialThree.map((candidate) => candidate.id);
   assert(
     ids.join(',') === 'meieki-erick-south-kitte-nagoya,sakae-potama-nagoya-haera,osu-sugakiya-osu',
     'S2.6 may activate only the reviewed initial-three candidate ids',
@@ -74,14 +80,14 @@ try {
     priceKind: definition.price.kind,
   }));
   const eligibleSet = getEligibleDecisionCandidates(
-    DECISION_CANDIDATES,
+    initialThree,
     DECISION_CANDIDATE_EVIDENCE,
     DECISION_CANDIDATE_FRESHNESS,
     AS_OF_DATE,
   );
   assert(eligibleSet.eligibility.every((entry) => entry.eligible), 'all three must pass freshness eligibility');
   const readiness = getProductionReadyCandidates({
-    candidates: DECISION_CANDIDATES,
+    candidates: initialThree,
     eligibleSet,
     artifacts: DECISION_VERIFICATION_ARTIFACTS,
     operatorReviews: DECISION_OPERATOR_REVIEWS,
@@ -102,8 +108,10 @@ try {
     evaluatedAsOf: AS_OF_DATE,
     evaluatedAt: AS_OF_INSTANT,
   });
-  assert(active.length === 3, 'formal runtime must adapt exactly three production candidates');
-  for (const candidate of active) {
+  assert(active.length === 9, 'formal runtime must adapt all nine reviewed production candidates');
+  const initialActive = active.filter((candidate) => INITIAL_THREE_IDS.includes(candidate.id));
+  assert(initialActive.length === 3, 'formal runtime must retain the initial-three regression set');
+  for (const candidate of initialActive) {
     assert(candidate.photo.availability === 'unregistered', `${candidate.id}: visual:none must retain fallback`);
     assert(candidate.photo.rightsStatus === 'unverified', `${candidate.id}: fallback must not claim image rights`);
     assert(candidate.actions.map((action) => action.type).sort().join(',') === 'access,official,phone', `${candidate.id}: verified actions only`);
@@ -123,7 +131,7 @@ try {
     const result = selectDecisionV3Candidates({
       conditions: { party: 'solo', budget: 'any', mood, area },
       preferences: [],
-      candidates: active,
+      candidates: initialActive,
     });
     assert(result.kind === 'matched' && result.candidateIds.includes(id), `${id}: formal area flow failed`);
   }
@@ -132,7 +140,7 @@ try {
   for (const [group, value] of Object.entries({ party: 'solo', budget: 'any', mood: 'light', area: 'any' })) {
     state = decisionV3Reducer(state, { type: 'SET_CONDITION', group, value });
   }
-  state = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES', candidates: active });
+  state = decisionV3Reducer(state, { type: 'PREPARE_CANDIDATES', candidates: initialActive });
   assert(state.selectionResult?.kind === 'matched', 'Conditions to Candidates flow failed');
   state = decisionV3Reducer(state, { type: 'GO', step: 'detail', detailId: 'sakae-potama-nagoya-haera' });
   state = decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId: 'sakae-potama-nagoya-haera' });
@@ -147,14 +155,14 @@ try {
     compareOrder: ['demo-b', 'demo-a'],
     chosenId: 'demo-b',
     detailId: 'demo-b',
-  }, 'formal', active);
+  }, 'formal', initialActive);
   assert(restored.compareIds.length === 0 && restored.chosenId === null && restored.detailId === null, 'formal restore revived demo state');
 
   assert(getDecisionV3CandidatesForSource('demo').length === 3, 'explicit preview demo source regressed');
   assert(getActiveFormalDecisionV3Candidates({ candidates: [], evaluatedAsOf: AS_OF_DATE, evaluatedAt: AS_OF_INSTANT }).length === 0, 'formal zero candidates must remain data-unavailable');
   assert(getActiveFormalDecisionV3Candidates({ evaluatedAsOf: '2026-10-01', evaluatedAt: '2026-10-01T00:00:00Z' }).length === 0, 'expired candidates must fail closed');
 
-  const base = DECISION_CANDIDATES[0];
+  const base = initialThree[0];
   const baseDefinition = INITIAL_FORMAL_DECISION_V3_DEFINITIONS[0];
   const readyCountFor = ({ candidate = base, freshness = DECISION_CANDIDATE_FRESHNESS, artifacts = DECISION_VERIFICATION_ARTIFACTS, operatorReviews = DECISION_OPERATOR_REVIEWS, holds = DECISION_VERIFICATION_HOLDS, priceKind = baseDefinition.price.kind }) => {
     const set = getEligibleDecisionCandidates([candidate], DECISION_CANDIDATE_EVIDENCE, freshness, AS_OF_DATE);

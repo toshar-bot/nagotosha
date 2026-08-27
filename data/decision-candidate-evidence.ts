@@ -1,5 +1,130 @@
 import type { DecisionCandidateEvidence } from '@/types/decision-candidate';
 
+const B2_OPERATOR_APPROVED_AT = '2026-08-26';
+
+function createB2ApprovedEditorialEvidence(input: {
+  candidateId: string;
+  prefix: string;
+  partyRationale: string;
+  budgetRationale: string;
+  moodRationale: string;
+}): readonly DecisionCandidateEvidence[] {
+  const status = `${input.prefix}-status`;
+  const hours = `${input.prefix}-hours`;
+  const price = `${input.prefix}-price`;
+  const location = `${input.prefix}-location`;
+
+  return [
+    {
+      id: `${input.prefix}-party`,
+      candidateId: input.candidateId,
+      kind: 'editorial-classification',
+      field: 'partyTypes',
+      approved: true,
+      approvedBy: 'user',
+      approvedAt: B2_OPERATOR_APPROVED_AT,
+      rationale: input.partyRationale,
+      supportingEvidenceIds: [status],
+    },
+    {
+      id: `${input.prefix}-budget`,
+      candidateId: input.candidateId,
+      kind: 'editorial-classification',
+      field: 'budgetBand',
+      approved: true,
+      approvedBy: 'user',
+      approvedAt: B2_OPERATOR_APPROVED_AT,
+      rationale: input.budgetRationale,
+      supportingEvidenceIds: [price],
+    },
+    {
+      id: `${input.prefix}-mood`,
+      candidateId: input.candidateId,
+      kind: 'editorial-classification',
+      field: 'moodTags',
+      approved: true,
+      approvedBy: 'user',
+      approvedAt: B2_OPERATOR_APPROVED_AT,
+      rationale: input.moodRationale,
+      supportingEvidenceIds: [status, hours],
+    },
+    {
+      id: `${input.prefix}-reservation-need`,
+      candidateId: input.candidateId,
+      kind: 'editorial-classification',
+      field: 'reservationNeed',
+      approved: true,
+      approvedBy: 'user',
+      approvedAt: B2_OPERATOR_APPROVED_AT,
+      rationale: '予約の必要性は未確認として維持し、予約actionを作成しない。',
+      supportingEvidenceIds: [status],
+    },
+    {
+      id: `${input.prefix}-time-of-day`,
+      candidateId: input.candidateId,
+      kind: 'derived-fact',
+      field: 'timeOfDay',
+      derivedFromEvidenceIds: [hours],
+      derivationRule: '公式営業時間と重なる時間帯だけを候補属性として記録する。',
+      verifiedAt: B2_OPERATOR_APPROVED_AT,
+    },
+    {
+      id: `${input.prefix}-weather-fit`,
+      candidateId: input.candidateId,
+      kind: 'derived-fact',
+      field: 'weatherFit',
+      derivedFromEvidenceIds: [location],
+      derivationRule: '公式住所に基づく屋内店舗の候補属性。屋外設備や雨天時の利便性は推測しない。',
+      verifiedAt: B2_OPERATOR_APPROVED_AT,
+    },
+  ];
+}
+
+const B2_APPROVED_EDITORIAL_EVIDENCE: readonly DecisionCandidateEvidence[] = [
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'meieki-sugakiya-nagoya-eki-esca',
+    prefix: 'b2-esca-sugakiya',
+    partyRationale: 'operatorは既存提案の一人・家族分類を承認。',
+    budgetRationale: '名古屋駅エスカ店の単品ラーメン¥470〜¥790だけをunder1000に分類。',
+    moodRationale: 'operatorは既存提案の手早く軽い食事の分類を承認。',
+  }),
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'meieki-komeda-nagoya-eki-nishi',
+    prefix: 'b2-komeda-nishi',
+    partyRationale: 'operatorは既存提案の二人・家族・グループ分類を承認。',
+    budgetRationale: '名古屋駅西店のスナック単品¥470〜¥1,400だけをunder2000に分類。',
+    moodRationale: 'operatorは既存提案のゆっくり・軽い利用の分類を承認。',
+  }),
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'sakae-sutadon-nagoya-sakae',
+    prefix: 'b2-sutadon',
+    partyRationale: 'operatorは既存提案の一人・二人分類を承認。',
+    budgetRationale: '名古屋栄店適用の丼・定食・カレー・そば¥890〜¥1,290だけをunder2000に分類。',
+    moodRationale: 'operatorは既存提案のしっかり食事の分類を承認。',
+  }),
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'sakae-cafe-laduree-lachic',
+    prefix: 'b2-laduree',
+    partyRationale: 'operatorは既存提案の二人・グループ分類を承認。',
+    budgetRationale: '名古屋ラシック店のオリジナルブレンドコーヒー¥486〜¥702だけをunder1000に分類。',
+    moodRationale: 'operatorは既存提案のゆっくり・軽いカフェ利用の分類を承認。',
+  }),
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'osu-cocoichi-naka-ku-osu',
+    prefix: 'b2-cocoichi',
+    partyRationale: 'operatorは既存提案の一人・二人・家族・グループ分類を承認。',
+    budgetRationale: '中区大須店のポークカレー150g〜600g¥556〜¥1,036だけをunder2000に分類。',
+    moodRationale: 'operatorは既存提案のしっかり食事の分類を承認。',
+  }),
+  ...createB2ApprovedEditorialEvidence({
+    candidateId: 'osu-komeda-kamimaezu',
+    prefix: 'b2-komeda-kamimaezu',
+    partyRationale: 'operatorは既存提案の二人・グループ分類を承認。',
+    budgetRationale: '上前津店のスナック単品¥490〜¥1,450だけをunder2000に分類。',
+    moodRationale: 'operatorは既存提案のゆっくり・軽い利用の分類を承認。',
+  }),
+];
+
 const VERIFIED_AT = '2026-07-20';
 const APPROVED_AT = '2026-07-20';
 
@@ -1020,6 +1145,54 @@ export const DECISION_CANDIDATE_EVIDENCE: readonly DecisionCandidateEvidence[] =
     rationale: '予約の必要性は未確認として維持し、予約actionを作成しない。',
     supportingEvidenceIds: ['s23-sugakiya-status'],
   },
+
+  // B2 official observations. The corresponding user-approved editorial
+  // classifications are appended below and retain their bounded price scope.
+  { id: 'b2-esca-sugakiya-status', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗ページを取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-esca-sugakiya-hours', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載の営業時間7:30〜21:00、L.O.20:30。' },
+  { id: 'b2-esca-sugakiya-price', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'price', sourceUrl: 'https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式の名古屋駅エスカ店対象メニュー画像の単品ラーメン¥470〜¥790のみ。セット、サイド、甘味、飲料、季節商品、土産を含まない。' },
+  { id: 'b2-esca-sugakiya-location', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'location', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-esca-sugakiya-official-url', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-esca-sugakiya-phone', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'phone', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-esca-sugakiya-seats', candidateId: 'meieki-sugakiya-nagoya-eki-esca', kind: 'official-fact', field: 'seats', sourceUrl: 'https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載30席。' },
+
+  { id: 'b2-komeda-nishi-status', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式の店舗情報を取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-komeda-nishi-hours', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗情報の当面の営業時間: 平日7:00〜22:00、土日祝7:00〜21:00。候補の時刻表示はより短い22:00までに限定。' },
+  { id: 'b2-komeda-nishi-price', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'price', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗メニューの店内スナック単品¥470〜¥1,400。トースト〜エビフライで、セット、ドリンク、デリバリー、持ち帰り、限定商品の価格を含まない。' },
+  { id: 'b2-komeda-nishi-location', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'location', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-komeda-nishi-official-url', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-komeda-nishi-phone', candidateId: 'meieki-komeda-nagoya-eki-nishi', kind: 'official-fact', field: 'phone', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=400', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+
+  { id: 'b2-sutadon-status', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://shop.sutadonya.com/store/store2082', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗ページを取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-sutadon-hours', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://shop.sutadonya.com/store/store2082', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載の営業時間11:00〜24:00、L.O.23:45。' },
+  { id: 'b2-sutadon-price', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'price', sourceUrl: 'https://sutadonya.com/wp/wp-content/uploads/2026/03/grandmenu1.pdf', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式グランドメニューでFC名古屋栄店への適用印を確認。主食の丼・定食・カレー・そば¥890〜¥1,290のみで、セット、子ども向け、トッピング、単品、飲料を含まない。' },
+  { id: 'b2-sutadon-location', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'location', sourceUrl: 'https://shop.sutadonya.com/store/store2082', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-sutadon-official-url', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://shop.sutadonya.com/store/store2082', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-sutadon-phone', candidateId: 'sakae-sutadon-nagoya-sakae', kind: 'official-fact', field: 'phone', sourceUrl: 'https://shop.sutadonya.com/store/store2082', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+
+  { id: 'b2-laduree-status', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗ページを取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-laduree-hours', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載の営業時間11:00〜21:00。' },
+  { id: 'b2-laduree-price', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'price', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載の名古屋ラシック店オリジナルブレンドコーヒーS/M/L¥486〜¥702のみ。フード、パティスリー、その他ドリンクを含まない。' },
+  { id: 'b2-laduree-location', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'location', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-laduree-official-url', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-laduree-phone', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'phone', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-laduree-seats', candidateId: 'sakae-cafe-laduree-lachic', kind: 'official-fact', field: 'seats', sourceUrl: 'https://www.laduree.jp/view/page/nagoyaopen', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載24席。' },
+
+  { id: 'b2-cocoichi-status', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗ページを取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-cocoichi-hours', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載11:00〜22:30。営業時間外の注文受付は含意しない。' },
+  { id: 'b2-cocoichi-price', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'price', sourceUrl: 'https://www.ichibanya.co.jp/menu/pdf/menubook_others.pdf', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式メニューのポークカレー（具材・トッピングなし）150g〜600g¥556〜¥1,036のみ。トッピング、サラダ、ドリンク、限定商品、デリバリー、持ち帰りを含まない。' },
+  { id: 'b2-cocoichi-location', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'location', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-cocoichi-official-url', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-cocoichi-phone', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'phone', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-cocoichi-seats', candidateId: 'osu-cocoichi-naka-ku-osu', kind: 'official-fact', field: 'seats', sourceUrl: 'https://tenpo.ichibanya.co.jp/map/2668/', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載31席。' },
+
+  { id: 'b2-komeda-kamimaezu-status', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'currentStatus', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式の店舗情報を取得。現在時刻の営業中や空席を意味しない。' },
+  { id: 'b2-komeda-kamimaezu-hours', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'openingHours', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式掲載6:45〜21:00。' },
+  { id: 'b2-komeda-kamimaezu-price', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'price', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at', note: '公式店舗メニューの店内スナック単品¥490〜¥1,450。トースト〜エビフライで、セット、ドリンク、デリバリー、持ち帰り、限定商品の価格を含まない。' },
+  { id: 'b2-komeda-kamimaezu-location', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'location', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-komeda-kamimaezu-official-url', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'officialUrl', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  { id: 'b2-komeda-kamimaezu-phone', candidateId: 'osu-komeda-kamimaezu', kind: 'official-fact', field: 'phone', sourceUrl: 'https://www.komeda.co.jp/shop/detail.html?id=6', sourceType: 'official-site', verifiedAt: '2026-08-26', verificationMethod: 'source-accessed-at' },
+  ...B2_APPROVED_EDITORIAL_EVIDENCE,
 ];
 
 export function getDecisionCandidateEvidence(candidateId: string): DecisionCandidateEvidence[] {

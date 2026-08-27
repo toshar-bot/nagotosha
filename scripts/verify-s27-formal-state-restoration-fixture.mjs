@@ -46,13 +46,13 @@ try {
 
   const active = getActiveFormalDecisionV3Candidates({
     evaluatedAsOf: '2026-08-26',
-    evaluatedAt: '2026-08-26T00:00:00Z',
+    evaluatedAt: '2026-08-26T12:00:00Z',
   });
   const potamaId = 'sakae-potama-nagoya-haera';
   const sugakiyaId = 'osu-sugakiya-osu';
   const erickId = 'meieki-erick-south-kitte-nagoya';
 
-  assert(active.length === 3, 'fixture requires three active formal candidates');
+  assert(active.length === 9, 'fixture requires nine active formal candidates after B2 approval');
   assert(
     active.find((candidate) => candidate.id === potamaId)?.selection.price.label
       === '¥450〜¥1,300（全店共通7品＋名古屋HAERA店限定主食4品）',
