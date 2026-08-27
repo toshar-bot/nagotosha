@@ -4,6 +4,22 @@
   "articleSlug": "sakae-three-stores-by-mood",
   "searchIntent": "栄で、軽めの主食・しっかりした主食・カフェ利用を公式情報から比較したい人",
   "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "editorialGuidance": {
+    "format": "decision-with-confirmed-scope",
+    "comparisonColumns": ["店舗", "向いている状況", "確認済み価格対象", "利用できる時間帯", "注意点"],
+    "thirtySecondChoice": [
+      { "storeId": "sakae-potama-nagoya-haera", "when": "対象11品を基準に選ぶ", "caveat": "セット等は価格対象外" },
+      { "storeId": "sakae-sutadon-nagoya-sakae", "when": "丼・定食・カレー・そばを基準に選ぶ", "caveat": "トッピング等は価格対象外" },
+      { "storeId": "sakae-cafe-laduree-lachic", "when": "オリジナルブレンドコーヒーだけで比較する", "caveat": "カフェ利用全体の予算ではない" }
+    ],
+    "storeGuidance": [
+      { "storeId": "sakae-potama-nagoya-haera", "chooseWhen": ["対象11品を確認済み範囲で選ぶ", "7:00〜21:00の営業時間内で選ぶ"], "avoidWhen": ["セット等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "ポーたま 公式メニュー", "url": "https://porktamago.com/menu/" } },
+      { "storeId": "sakae-sutadon-nagoya-sakae", "chooseWhen": ["丼・定食・カレー・そばを確認済み範囲で選ぶ", "11:00〜24:00の営業時間内で選ぶ"], "avoidWhen": ["トッピング等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "伝説のすた丼屋 公式メニュー", "url": "https://sutadonya.com/wp/wp-content/uploads/2026/03/grandmenu1.pdf" } },
+      { "storeId": "sakae-cafe-laduree-lachic", "chooseWhen": ["オリジナルブレンドコーヒーを確認済み範囲で選ぶ", "11:00〜21:00の営業時間内で選ぶ"], "avoidWhen": ["フード等を含むカフェ利用全体の価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "カフェ・ラデュレ 名古屋 公式メニュー", "url": "https://www.laduree.jp/view/page/nagoyaopen" } }
+    ],
+    "finalChoice": ["対象11品ならポーたま", "対象カテゴリーなら伝説のすた丼屋", "コーヒーだけの価格ならカフェ・ラデュレ"],
+    "readerCaveat": "掲載の価格は確認済み対象カテゴリーに限る。来店前に店舗公式と公式メニューを確認する。"
+  },
   "stores": [
     {
       "storeId": "sakae-potama-nagoya-haera",

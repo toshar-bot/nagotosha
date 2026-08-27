@@ -4,6 +4,22 @@
   "articleSlug": "nagoya-station-three-stores-by-budget-and-mood",
   "searchIntent": "名古屋駅周辺で、対象メニューの価格と食事の気分から店を比較したい人",
   "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "editorialGuidance": {
+    "format": "decision-with-confirmed-scope",
+    "comparisonColumns": ["店舗", "向いている状況", "確認済み価格対象", "利用できる時間帯", "注意点"],
+    "thirtySecondChoice": [
+      { "storeId": "meieki-erick-south-kitte-nagoya", "when": "KITTE名古屋店ランチ主食を基準に選ぶ", "caveat": "ディナー等は価格対象外" },
+      { "storeId": "meieki-sugakiya-nagoya-eki-esca", "when": "単品ラーメンを基準に選ぶ", "caveat": "セット等は価格対象外" },
+      { "storeId": "meieki-komeda-nagoya-eki-nishi", "when": "店内スナック単品を基準に選ぶ", "caveat": "ドリンク等は価格対象外" }
+    ],
+    "storeGuidance": [
+      { "storeId": "meieki-erick-south-kitte-nagoya", "chooseWhen": ["KITTE名古屋店ランチ主食を確認済み範囲で選ぶ", "11:00〜23:00の営業時間内で選ぶ"], "avoidWhen": ["ディナー等を含む価格で比較する", "11:00前またはL.O.後に利用する"], "priceSource": { "label": "エリックサウス KITTE名古屋店 公式メニュー", "url": "https://info.erickcurry.jp/kitte/" } },
+      { "storeId": "meieki-sugakiya-nagoya-eki-esca", "chooseWhen": ["単品ラーメンを確認済み範囲で選ぶ", "7:30〜21:00の営業時間内で選ぶ"], "avoidWhen": ["セット等を含む価格で比較する", "7:30前またはL.O.後に利用する"], "priceSource": { "label": "スガキヤ 公式メニュー", "url": "https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/" } },
+      { "storeId": "meieki-komeda-nagoya-eki-nishi", "chooseWhen": ["店内スナック単品を確認済み範囲で選ぶ", "曜日別営業時間内で選ぶ"], "avoidWhen": ["セット・ドリンク等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "コメダ珈琲店 名古屋駅西店 公式メニュー", "url": "https://eu.komeda.co.jp/v1/hp/shop/478/menu" } }
+    ],
+    "finalChoice": ["ランチ主食ならエリックサウス", "単品ラーメンならスガキヤ", "店内スナック単品ならコメダ珈琲店"],
+    "readerCaveat": "掲載の価格は確認済み対象カテゴリーに限る。来店前に店舗公式と公式メニューを確認する。"
+  },
   "stores": [
     {
       "storeId": "meieki-erick-south-kitte-nagoya",

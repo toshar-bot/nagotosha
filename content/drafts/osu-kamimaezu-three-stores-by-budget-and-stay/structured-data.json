@@ -4,6 +4,22 @@
   "articleSlug": "osu-kamimaezu-three-stores-by-budget-and-stay",
   "searchIntent": "大須・上前津で、ラーメン・カレー・喫茶の対象価格と過ごし方を公式情報から比較したい人",
   "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "editorialGuidance": {
+    "format": "decision-with-confirmed-scope",
+    "comparisonColumns": ["店舗", "向いている状況", "確認済み価格対象", "利用できる時間帯", "注意点"],
+    "thirtySecondChoice": [
+      { "storeId": "osu-sugakiya-osu", "when": "ラーメンカテゴリーを基準に選ぶ", "caveat": "セット等は価格対象外" },
+      { "storeId": "osu-cocoichi-naka-ku-osu", "when": "ポークカレー150g〜600gを基準に選ぶ", "caveat": "トッピング等は価格対象外" },
+      { "storeId": "osu-komeda-kamimaezu", "when": "店内スナック単品を基準に選ぶ", "caveat": "セット・ドリンク等は価格対象外" }
+    ],
+    "storeGuidance": [
+      { "storeId": "osu-sugakiya-osu", "chooseWhen": ["大須店ラーメンカテゴリーを確認済み範囲で選ぶ", "8:00〜20:00の営業時間内で選ぶ"], "avoidWhen": ["セット等を含む価格で比較する", "8:00前またはL.O.後に利用する"], "priceSource": { "label": "スガキヤ 大須店 公式メニュー", "url": "https://www.sugakico.co.jp/menu/osu/" } },
+      { "storeId": "osu-cocoichi-naka-ku-osu", "chooseWhen": ["ポークカレー150g〜600gを確認済み範囲で選ぶ", "11:00〜22:30の営業時間内で選ぶ"], "avoidWhen": ["トッピング等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "CoCo壱番屋 公式メニュー", "url": "https://www.ichibanya.co.jp/menu/pdf/menubook_others.pdf" } },
+      { "storeId": "osu-komeda-kamimaezu", "chooseWhen": ["店内スナック単品を確認済み範囲で選ぶ", "6:45〜21:00の営業時間内で選ぶ"], "avoidWhen": ["セット・ドリンク等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "コメダ珈琲店 上前津店 公式メニュー", "url": "https://eu.komeda.co.jp/v1/hp/shop/13/menu" } }
+    ],
+    "finalChoice": ["ラーメンカテゴリーならスガキヤ", "ポークカレーの量で選ぶならCoCo壱番屋", "店内スナック単品ならコメダ珈琲店"],
+    "readerCaveat": "掲載の価格は確認済み対象カテゴリーに限る。来店前に店舗公式と公式メニューを確認する。"
+  },
   "stores": [
     {
       "storeId": "osu-sugakiya-osu",
