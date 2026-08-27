@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "contentType": "editorial-store-comparison",
+  "articleSlug": "osu-kamimaezu-three-stores-by-budget-and-stay",
+  "searchIntent": "大須・上前津で、ラーメン・カレー・喫茶の対象価格と過ごし方を公式情報から比較したい人",
+  "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "editorialGuidance": {
+    "format": "decision-with-confirmed-scope",
+    "comparisonColumns": ["店舗", "向いている状況", "確認済み価格対象", "利用できる時間帯", "注意点"],
+    "thirtySecondChoice": [
+      { "storeId": "osu-sugakiya-osu", "when": "ラーメンカテゴリーを基準に選ぶ", "caveat": "セット等は価格対象外" },
+      { "storeId": "osu-cocoichi-naka-ku-osu", "when": "ポークカレー150g〜600gを基準に選ぶ", "caveat": "トッピング等は価格対象外" },
+      { "storeId": "osu-komeda-kamimaezu", "when": "店内スナック単品を基準に選ぶ", "caveat": "セット・ドリンク等は価格対象外" }
+    ],
+    "storeGuidance": [
+      { "storeId": "osu-sugakiya-osu", "chooseWhen": ["大須店ラーメンカテゴリーを確認済み範囲で選ぶ", "8:00〜20:00の営業時間内で選ぶ"], "avoidWhen": ["セット等を含む価格で比較する", "8:00前またはL.O.後に利用する"], "priceSource": { "label": "スガキヤ 大須店 公式メニュー", "url": "https://www.sugakico.co.jp/menu/osu/" } },
+      { "storeId": "osu-cocoichi-naka-ku-osu", "chooseWhen": ["ポークカレー150g〜600gを確認済み範囲で選ぶ", "11:00〜22:30の営業時間内で選ぶ"], "avoidWhen": ["トッピング等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "CoCo壱番屋 公式メニュー", "url": "https://www.ichibanya.co.jp/menu/pdf/menubook_others.pdf" } },
+      { "storeId": "osu-komeda-kamimaezu", "chooseWhen": ["店内スナック単品を確認済み範囲で選ぶ", "6:45〜21:00の営業時間内で選ぶ"], "avoidWhen": ["セット・ドリンク等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "コメダ珈琲店 上前津店 公式メニュー", "url": "https://eu.komeda.co.jp/v1/hp/shop/13/menu" } }
+    ],
+    "finalChoice": ["ラーメンカテゴリーならスガキヤ", "ポークカレーの量で選ぶならCoCo壱番屋", "店内スナック単品ならコメダ珈琲店"],
+    "readerCaveat": "掲載の価格は確認済み対象カテゴリーに限る。来店前に店舗公式と公式メニューを確認する。"
+  },
+  "stores": [
+    {
+      "storeId": "osu-sugakiya-osu",
+      "name": "スガキヤ 大須店",
+      "area": "osu",
+      "price": { "minimum": 290, "maximum": 680, "currency": "JPY", "scope": "大須店ラーメンカテゴリー", "excludes": ["トッピング", "ごはん・サラダ", "セット", "甘味", "飲料", "土産", "季節商品"] },
+      "openingHours": "8:00〜20:00（L.O. 19:30）",
+      "address": "愛知県名古屋市中区大須3-45-2 よ志だやビル1F",
+      "officialUrl": "https://www.sugakico.co.jp/area/%E5%A4%A7%E9%A0%88%E5%BA%97/",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%B9%E3%82%AC%E3%82%AD%E3%83%A4%20%E5%A4%A7%E9%A0%88%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%883-45-2",
+      "verifiedAt": "2026-08-24"
+    },
+    {
+      "storeId": "osu-cocoichi-naka-ku-osu",
+      "name": "カレーハウスCoCo壱番屋 中区大須店",
+      "area": "osu",
+      "price": { "minimum": 556, "maximum": 1036, "currency": "JPY", "scope": "ポークカレー（具材・トッピングなし）150g〜600g", "excludes": ["トッピング", "サラダ", "ドリンク", "限定商品", "デリバリー", "持ち帰り"] },
+      "openingHours": "11:00〜22:30",
+      "address": "愛知県名古屋市中区門前町1番15号-3 1階",
+      "officialUrl": "https://tenpo.ichibanya.co.jp/map/2668/",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%AB%E3%83%AC%E3%83%BC%E3%83%8F%E3%82%A6%E3%82%B9CoCo%E5%A3%B1%E7%95%AA%E5%B1%8B%20%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%88%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E9%96%80%E5%89%8D%E7%94%BA1-15-3",
+      "verifiedAt": "2026-08-26"
+    },
+    {
+      "storeId": "osu-komeda-kamimaezu",
+      "name": "コメダ珈琲店 上前津店",
+      "area": "osu",
+      "price": { "minimum": 490, "maximum": 1450, "currency": "JPY", "scope": "店内スナック単品", "excludes": ["セット", "ドリンク", "デリバリー", "持ち帰り", "限定商品"] },
+      "openingHours": "6:45〜21:00",
+      "address": "愛知県名古屋市中区大須3-31-42",
+      "officialUrl": "https://www.komeda.co.jp/shop/detail.html?id=6",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E4%B8%8A%E5%89%8D%E6%B4%A5%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E5%A4%A7%E9%A0%883-31-42",
+      "verifiedAt": "2026-08-26"
+    }
+  ]
+}

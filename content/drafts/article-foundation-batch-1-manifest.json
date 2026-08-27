@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "batch": "article-foundation-batch-1",
+  "status": "publish-ready-bundles",
+  "articles": [
+    {
+      "slug": "nagoya-station-three-stores-by-budget-and-mood",
+      "storeIds": [
+        "meieki-erick-south-kitte-nagoya",
+        "meieki-sugakiya-nagoya-eki-esca",
+        "meieki-komeda-nagoya-eki-nishi"
+      ],
+      "hero": "none",
+      "mappingProposal": {
+        "articleId": null,
+        "entryMode": "article_pool",
+        "enabled": false
+      }
+    },
+    {
+      "slug": "sakae-three-stores-by-mood",
+      "storeIds": [
+        "sakae-potama-nagoya-haera",
+        "sakae-sutadon-nagoya-sakae",
+        "sakae-cafe-laduree-lachic"
+      ],
+      "hero": "none",
+      "mappingProposal": {
+        "articleId": null,
+        "entryMode": "article_pool",
+        "enabled": false
+      }
+    },
+    {
+      "slug": "osu-kamimaezu-three-stores-by-budget-and-stay",
+      "storeIds": [
+        "osu-sugakiya-osu",
+        "osu-cocoichi-naka-ku-osu",
+        "osu-komeda-kamimaezu"
+      ],
+      "hero": "none",
+      "mappingProposal": {
+        "articleId": null,
+        "entryMode": "article_pool",
+        "enabled": false
+      }
+    }
+  ],
+  "holdForRefresh": [
+    {
+      "articleId": 221,
+      "status": "HOLD_FOR_REFRESH",
+      "reason": [
+        "related articles are unavailable",
+        "listed events are past dates",
+        "no supported replacement event or related-article data is available"
+      ],
+      "scope": "existing-route-regression-only"
+    }
+  ],
+  "contracts": {
+    "wordPressPublish": false,
+    "productionChange": false,
+    "decisionMappingEnabled": false,
+    "imageRights": "visual:none fallback only"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "contentType": "editorial-store-comparison",
+  "articleSlug": "nagoya-station-three-stores-by-budget-and-mood",
+  "searchIntent": "名古屋駅周辺で、対象メニューの価格と食事の気分から店を比較したい人",
+  "hero": { "kind": "none", "reason": "visual rights verified asset unavailable" },
+  "editorialGuidance": {
+    "format": "decision-with-confirmed-scope",
+    "comparisonColumns": ["店舗", "向いている状況", "確認済み価格対象", "利用できる時間帯", "注意点"],
+    "thirtySecondChoice": [
+      { "storeId": "meieki-erick-south-kitte-nagoya", "when": "KITTE名古屋店ランチ主食を基準に選ぶ", "caveat": "ディナー等は価格対象外" },
+      { "storeId": "meieki-sugakiya-nagoya-eki-esca", "when": "単品ラーメンを基準に選ぶ", "caveat": "セット等は価格対象外" },
+      { "storeId": "meieki-komeda-nagoya-eki-nishi", "when": "店内スナック単品を基準に選ぶ", "caveat": "ドリンク等は価格対象外" }
+    ],
+    "storeGuidance": [
+      { "storeId": "meieki-erick-south-kitte-nagoya", "chooseWhen": ["KITTE名古屋店ランチ主食を確認済み範囲で選ぶ", "11:00〜23:00の営業時間内で選ぶ"], "avoidWhen": ["ディナー等を含む価格で比較する", "11:00前またはL.O.後に利用する"], "priceSource": { "label": "エリックサウス KITTE名古屋店 公式メニュー", "url": "https://info.erickcurry.jp/kitte/" } },
+      { "storeId": "meieki-sugakiya-nagoya-eki-esca", "chooseWhen": ["単品ラーメンを確認済み範囲で選ぶ", "7:30〜21:00の営業時間内で選ぶ"], "avoidWhen": ["セット等を含む価格で比較する", "7:30前またはL.O.後に利用する"], "priceSource": { "label": "スガキヤ 公式メニュー", "url": "https://www.sugakico.co.jp/menu/centralpark_esca_astygifu/" } },
+      { "storeId": "meieki-komeda-nagoya-eki-nishi", "chooseWhen": ["店内スナック単品を確認済み範囲で選ぶ", "曜日別営業時間内で選ぶ"], "avoidWhen": ["セット・ドリンク等を含む価格で比較する", "営業時間外に利用する"], "priceSource": { "label": "コメダ珈琲店 名古屋駅西店 公式メニュー", "url": "https://eu.komeda.co.jp/v1/hp/shop/478/menu" } }
+    ],
+    "finalChoice": ["ランチ主食ならエリックサウス", "単品ラーメンならスガキヤ", "店内スナック単品ならコメダ珈琲店"],
+    "readerCaveat": "掲載の価格は確認済み対象カテゴリーに限る。来店前に店舗公式と公式メニューを確認する。"
+  },
+  "stores": [
+    {
+      "storeId": "meieki-erick-south-kitte-nagoya",
+      "name": "エリックサウス KITTE名古屋店",
+      "area": "meieki",
+      "price": { "minimum": 1089, "maximum": 2350, "currency": "JPY", "scope": "KITTE名古屋店ランチ主食", "excludes": ["追加", "飲料", "デザート", "ディナー", "テイクアウト"] },
+      "openingHours": "11:00〜23:00（L.O. 22:00）",
+      "address": "愛知県名古屋市中村区名駅1-1-1 KITTE名古屋 地下1階",
+      "officialUrl": "https://info.erickcurry.jp/kitte/",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%A8%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B5%E3%82%A6%E3%82%B9%20KITTE%E5%90%8D%E5%8F%A4%E5%B1%8B%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E5%90%8D%E9%A7%851-1-1",
+      "verifiedAt": "2026-08-24"
+    },
+    {
+      "storeId": "meieki-sugakiya-nagoya-eki-esca",
+      "name": "スガキヤ 名古屋駅エスカ店",
+      "area": "meieki",
+      "price": { "minimum": 470, "maximum": 790, "currency": "JPY", "scope": "単品ラーメン", "excludes": ["セット", "サイド", "甘味", "飲料", "季節商品", "土産"] },
+      "openingHours": "7:30〜21:00（L.O. 20:30）",
+      "address": "愛知県名古屋市中村区椿町6-9 新幹線地下街エスカB1",
+      "officialUrl": "https://www.sugakico.co.jp/area/%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97/",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%B9%E3%82%AC%E3%82%AD%E3%83%A4%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E3%82%A8%E3%82%B9%E3%82%AB%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E6%A4%BF%E7%94%BA6-9",
+      "verifiedAt": "2026-08-26"
+    },
+    {
+      "storeId": "meieki-komeda-nagoya-eki-nishi",
+      "name": "コメダ珈琲店 名古屋駅西店",
+      "area": "meieki",
+      "price": { "minimum": 470, "maximum": 1400, "currency": "JPY", "scope": "店内スナック単品", "excludes": ["セット", "ドリンク", "デリバリー", "持ち帰り", "限定商品"] },
+      "openingHours": "平日 7:00〜22:00／土日祝 7:00〜21:00",
+      "address": "愛知県名古屋市中村区則武2丁目3番2号",
+      "officialUrl": "https://www.komeda.co.jp/shop/detail.html?id=400",
+      "mapUrl": "https://www.google.com/maps/dir/?api=1&destination=%E3%82%B3%E3%83%A1%E3%83%80%E7%8F%88%E7%90%B2%E5%BA%97%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85%E8%A5%BF%E5%BA%97%2C%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E6%9D%91%E5%8C%BA%E5%89%87%E6%AD%A62%E4%B8%81%E7%9B%AE3-2",
+      "verifiedAt": "2026-08-26"
+    }
+  ]
+}
