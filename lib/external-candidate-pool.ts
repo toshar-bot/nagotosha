@@ -194,9 +194,9 @@ export function shouldRequestGoogleForArea(
 }
 
 /**
- * Formal candidates always win. Exact provider/entity, phone, and website
- * matches are merged. Name/address proximity alone remains visible but marked
- * unresolved so it never causes an automatic merge.
+ * Formal candidates always win. Exact provider/entity, phone, and normalized
+ * complete website URL matches are merged. A shared brand domain or
+ * name/address assistance remains visible but unresolved.
  */
 export function dedupeExternalCandidates(
   formal: readonly DecisionV3Candidate[],
@@ -291,12 +291,15 @@ function isExactProviderMatch(left: DecisionV3Candidate, right: DecisionV3Candid
   const leftPhone = normalizedPhone(left);
   const rightPhone = normalizedPhone(right);
   if (leftPhone && rightPhone && leftPhone === rightPhone) return true;
-  const leftDomain = normalizedWebsiteDomain(left);
-  const rightDomain = normalizedWebsiteDomain(right);
-  return Boolean(leftDomain && rightDomain && leftDomain === rightDomain);
+  const leftUrl = normalizedWebsiteUrl(left);
+  const rightUrl = normalizedWebsiteUrl(right);
+  return Boolean(leftUrl && rightUrl && leftUrl === rightUrl);
 }
 
 function isAmbiguousProviderMatch(left: DecisionV3Candidate, right: DecisionV3Candidate): boolean {
+  const leftDomain = normalizedWebsiteDomain(left);
+  const rightDomain = normalizedWebsiteDomain(right);
+  if (leftDomain && rightDomain && leftDomain === rightDomain) return true;
   if (normalizeIdentity(left.name) !== normalizeIdentity(right.name)) return false;
   const leftAddress = normalizeIdentity(left.detailInfo?.address?.value ?? '');
   const rightAddress = normalizeIdentity(right.detailInfo?.address?.value ?? '');
@@ -339,10 +342,27 @@ function normalizedPhone(candidate: DecisionV3Candidate): string | null {
   return normalized.length >= 6 ? normalized : null;
 }
 
-function normalizedWebsiteDomain(candidate: DecisionV3Candidate): string | null {
+function websiteHref(candidate: DecisionV3Candidate): string | null {
   const href = candidate.provenance?.providerActions.find((action) => action.kind === 'website')?.href
     ?? candidate.actions.find((action) => action.type === 'official')?.href;
-  if (!href || !isSafeExternalUrl(href)) return null;
+  return href && isSafeExternalUrl(href) ? href : null;
+}
+
+function normalizedWebsiteUrl(candidate: DecisionV3Candidate): string | null {
+  const href = websiteHref(candidate);
+  if (!href) return null;
+  try {
+    const url = new URL(href);
+    url.hash = '';
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function normalizedWebsiteDomain(candidate: DecisionV3Candidate): string | null {
+  const href = websiteHref(candidate);
+  if (!href) return null;
   try {
     return new URL(href).hostname.toLowerCase().replace(/^www\./, '');
   } catch {

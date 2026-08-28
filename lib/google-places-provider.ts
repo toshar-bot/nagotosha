@@ -7,6 +7,8 @@ import { isSafeExternalUrl } from '@/lib/decision-safety';
 import {
   GOOGLE_PLACES_NEARBY_FIELD_MASK,
   type ExternalCandidatePoolRecord,
+  type GooglePlacesMoney,
+  type GooglePlacesPriceRange,
   type GooglePlacesRequestBudget,
 } from '@/types/external-candidate-pool';
 
@@ -31,7 +33,7 @@ type GooglePlace = {
   formattedAddress?: string;
   currentOpeningHours?: { weekdayDescriptions?: string[] };
   priceLevel?: string;
-  priceRange?: unknown;
+  priceRange?: GooglePlacesPriceRange;
   googleMapsUri?: string;
   websiteUri?: string;
   nationalPhoneNumber?: string;
@@ -115,6 +117,8 @@ export function mapGooglePlaceToExternalRecord(
     || !isSafeExternalUrl(googleMapsUri)
   ) return null;
 
+  const price = toVerifiedGoogleJpyPrice(place.priceRange);
+
   return {
     externalId: `google-${toCanonicalId(providerEntityId)}`,
     provider: 'google-places',
@@ -132,7 +136,7 @@ export function mapGooglePlaceToExternalRecord(
       : place.businessStatus === 'CLOSED_PERMANENTLY' || place.businessStatus === 'CLOSED_TEMPORARILY'
         ? 'closed'
         : 'unknown',
-    budgetState: 'unknown',
+    budgetState: price ? 'known' : 'unknown',
     openingState: place.currentOpeningHours?.weekdayDescriptions?.length ? 'provider-reported' : 'unknown',
     sourceRetrievedAt: now.toISOString(),
     attribution: {
@@ -141,17 +145,47 @@ export function mapGooglePlaceToExternalRecord(
       license: 'Google Maps Platform',
     },
     confidence: 'provider-reported',
-    verifiedFields: [],
-    unknownFields: ['price', 'party', 'mood', 'officialAction', 'phoneAction'],
+    verifiedFields: price ? ['price'] : [],
+    unknownFields: [
+      ...(price ? [] : ['price']),
+      'party',
+      'mood',
+      'officialAction',
+      'phoneAction',
+    ],
+    price,
     google: {
       googleMapsUri,
       websiteUri: readText(place.websiteUri),
       phone: readText(place.nationalPhoneNumber),
       currentOpeningHours: place.currentOpeningHours?.weekdayDescriptions,
       priceLevel: readText(place.priceLevel),
-      priceRange: typeof place.priceRange === 'string' ? place.priceRange : undefined,
+      priceRange: place.priceRange,
     },
   };
+}
+
+function toVerifiedGoogleJpyPrice(
+  range: GooglePlacesPriceRange | undefined,
+): ExternalCandidatePoolRecord['price'] | undefined {
+  const start = toWholeJpy(range?.startPrice);
+  const end = toWholeJpy(range?.endPrice);
+  if (start === null || end === null || start >= end) return undefined;
+
+  return {
+    minimum: start,
+    maximum: end,
+    // Google defines endPrice as exclusive; keep that visible rather than
+    // presenting the provider range as a Nagotosha-reviewed menu price.
+    label: `¥${start.toLocaleString('ja-JP')}〜¥${end.toLocaleString('ja-JP')}未満（Google Maps情報）`,
+  };
+}
+
+function toWholeJpy(value: GooglePlacesMoney | undefined): number | null {
+  if (!value || value.currencyCode !== 'JPY' || !/^\d+$/.test(value.units ?? '')) return null;
+  if (value.nanos !== undefined && value.nanos !== 0) return null;
+  const units = Number(value.units);
+  return Number.isSafeInteger(units) && units >= 0 ? units : null;
 }
 
 function readText(value: unknown): string | undefined {
