@@ -1076,6 +1076,49 @@
   letter-spacing: 0px;
 }
 
+.externalCandidateSource {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  margin: 7px 0 0;
+  color: var(--ink-600);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.externalCandidateSource > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid #cddbec;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: var(--chip);
+  color: var(--chip-ink);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.externalCandidateSource > p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.externalCandidateSource > a {
+  color: var(--ink-600);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.externalCandidateSource > a:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
 .candidateMetadata {
   display: grid;
   gap: 1px;
