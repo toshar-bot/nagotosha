@@ -19,6 +19,19 @@ export type ExternalCandidateLocation = {
   formattedAddress?: string;
 };
 
+/** Google Places API (New) Money JSON shape. `units` is int64-as-string. */
+export type GooglePlacesMoney = {
+  currencyCode?: string;
+  units?: string;
+  nanos?: number;
+};
+
+/** Google Places API (New) PriceRange JSON shape. */
+export type GooglePlacesPriceRange = {
+  startPrice?: GooglePlacesMoney;
+  endPrice?: GooglePlacesMoney;
+};
+
 /**
  * Provider-scoped data before it is adapted to the Decision presentation
  * model. It intentionally keeps provider fields and unknowns separate from
@@ -61,7 +74,7 @@ export type ExternalCandidatePoolRecord = {
     phone?: string;
     currentOpeningHours?: readonly string[];
     priceLevel?: string;
-    priceRange?: string;
+    priceRange?: GooglePlacesPriceRange;
   };
 };
 

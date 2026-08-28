@@ -15,7 +15,10 @@ export const GOOGLE_PLACES_CONTRACT_FIXTURE = {
       formattedAddress: 'Contract fixture address',
       currentOpeningHours: { weekdayDescriptions: ['Mon-Sun: 10:00-20:00'] },
       priceLevel: 'PRICE_LEVEL_MODERATE',
-      priceRange: 'provider-reported',
+      priceRange: {
+        startPrice: { currencyCode: 'JPY', units: '600' },
+        endPrice: { currencyCode: 'JPY', units: '900' },
+      },
       googleMapsUri: 'https://maps.google.com/?q=contract-fixture-cafe-001',
       websiteUri: 'https://example.invalid/contract-fixture-cafe-001',
       nationalPhoneNumber: '+81-00-0000-0000',

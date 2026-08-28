@@ -11,7 +11,7 @@ import {
   type MouseEvent,
 } from 'react';
 import { BrandHeader } from '@/components/common/BrandHeader';
-import { trackAnalyticsEvent } from '@/lib/analytics';
+import { trackAnalyticsEvent, type DecisionCandidateAnalyticsSource } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
 import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
@@ -216,9 +216,11 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
-  const candidateAnalyticsFields = useCallback((candidate: DecisionV3Candidate | undefined) => {
+  const candidateAnalyticsFields = useCallback((candidate: DecisionV3Candidate | undefined): {
+    candidate_source?: DecisionCandidateAnalyticsSource;
+  } => {
     if (!candidate?.provenance) {
-      return { candidate_source: candidateSource === 'demo' ? 'demo' : 'formal-reviewed' };
+      return candidateSource === 'demo' ? {} : { candidate_source: 'formal-reviewed' };
     }
     return {
       candidate_source: candidate.provenance.provider === 'google-places' ? 'google' : 'osm',

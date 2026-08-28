@@ -2,31 +2,6 @@
 
 type AnalyticsParameterValue = string | number | boolean | null | undefined;
 
-/**
- * Provider identifiers and location/contact data are not analytics fields.
- * Keep this deny-list at the transport boundary so future callers fail safe.
- */
-const FORBIDDEN_PROVIDER_ANALYTICS_PARAMETERS = new Set([
-  'provider_entity_id',
-  'providerEntityId',
-  'google_place_id',
-  'osm_entity_id',
-  'provider_url',
-  'googleMapsUri',
-  'websiteUri',
-  'nationalPhoneNumber',
-  'formattedAddress',
-  'osmId',
-  'location',
-  'phone',
-  'address',
-  'latitude',
-  'longitude',
-  'raw_response',
-  'api_key',
-  'user_location',
-]);
-
 export type DecisionFunnelEventName =
   | 'decision_start'
   | 'conditions_complete'
@@ -38,8 +13,37 @@ export type DecisionFunnelEventName =
   | 'official_click'
   | 'phone_click';
 
-export function isAnalyticsParameterAllowed(parameterName: string): boolean {
-  return !FORBIDDEN_PROVIDER_ANALYTICS_PARAMETERS.has(parameterName);
+export type DecisionCandidateAnalyticsSource = 'formal-reviewed' | 'google' | 'osm';
+
+const DECISION_FUNNEL_EVENT_PARAMETER_ALLOW_LIST: Readonly<Record<
+  DecisionFunnelEventName,
+  readonly string[]
+>> = {
+  decision_start: ['party', 'source'],
+  conditions_complete: ['party', 'area', 'budget', 'refine_count'],
+  candidates_view: ['party', 'candidate_count', 'result_status'],
+  candidate_detail_view: ['store_id', 'source', 'candidate_source'],
+  compare_view: ['compare_count', 'source'],
+  store_decided: ['store_id', 'compare_count', 'party', 'candidate_source'],
+  map_click: ['store_id', 'surface', 'candidate_source'],
+  official_click: ['store_id', 'surface', 'candidate_source'],
+  phone_click: ['store_id', 'surface', 'candidate_source'],
+};
+
+const DECISION_CANDIDATE_ANALYTICS_SOURCES = new Set<DecisionCandidateAnalyticsSource>([
+  'formal-reviewed',
+  'google',
+  'osm',
+]);
+
+export function isAnalyticsParameterAllowed(
+  eventName: DecisionFunnelEventName,
+  parameterName: string,
+  value: AnalyticsParameterValue,
+): boolean {
+  if (!DECISION_FUNNEL_EVENT_PARAMETER_ALLOW_LIST[eventName].includes(parameterName)) return false;
+  return parameterName !== 'candidate_source'
+    || (typeof value === 'string' && DECISION_CANDIDATE_ANALYTICS_SOURCES.has(value as DecisionCandidateAnalyticsSource));
 }
 
 export function trackAnalyticsEvent(
@@ -50,7 +54,7 @@ export function trackAnalyticsEvent(
 
   const payload = Object.fromEntries(
     Object.entries(parameters).filter(([key, value]) => (
-      isAnalyticsParameterAllowed(key) && value !== undefined && value !== null
+      value !== undefined && value !== null && isAnalyticsParameterAllowed(name, key, value)
     )),
   );
 

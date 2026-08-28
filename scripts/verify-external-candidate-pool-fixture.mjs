@@ -71,7 +71,10 @@ try {
     isGooglePlacesPreviewProviderEnabled,
     shouldGrantGooglePlacesRequest,
   } = require(path.join(root, 'lib/google-places-policy.ts'));
-  const { isAnalyticsParameterAllowed } = require(path.join(root, 'lib/analytics.ts'));
+  const {
+    isAnalyticsParameterAllowed,
+    trackAnalyticsEvent,
+  } = require(path.join(root, 'lib/analytics.ts'));
   const {
     mapGooglePlaceToExternalRecord,
     searchGooglePlacesNearby,
@@ -117,6 +120,12 @@ try {
   );
   const adaptedGoogle = googleRecord && adaptExternalCandidatePoolRecord(googleRecord);
   assert(googleRecord?.provider === 'google-places', 'Google contract fixture must map to Google provider');
+  assert(
+    googleRecord?.budgetState === 'known'
+      && googleRecord.price?.minimum === 600
+      && googleRecord.price?.maximum === 900,
+    'valid JPY startPrice/endPrice must become a known external price range',
+  );
   assert(adaptedGoogle?.provenance?.kind === 'external-live-google', 'Google presentation must retain source type');
   assert(adaptedGoogle?.actions.length === 0, 'Google website/phone must not become verified actions');
   assert(
@@ -143,6 +152,32 @@ try {
       new Date('2026-08-28T00:00:00.000Z'),
     ) === null,
     'a Google record without provider attribution/map URI must render zero candidate DOM',
+  );
+  for (const invalidPriceRange of [
+    { startPrice: { currencyCode: 'JPY', units: '600' } },
+    { startPrice: { currencyCode: 'USD', units: '600' }, endPrice: { currencyCode: 'USD', units: '900' } },
+    { startPrice: { currencyCode: 'JPY', units: '900' }, endPrice: { currencyCode: 'JPY', units: '600' } },
+    { startPrice: { currencyCode: 'JPY', units: '600', nanos: 1 }, endPrice: { currencyCode: 'JPY', units: '900' } },
+    { startPrice: { currencyCode: 'JPY', units: 'not-a-number' }, endPrice: { currencyCode: 'JPY', units: '900' } },
+  ]) {
+    const invalidPriceRecord = mapGooglePlaceToExternalRecord(
+      'sakae',
+      { ...GOOGLE_PLACES_CONTRACT_FIXTURE.places[0], priceRange: invalidPriceRange },
+      new Date('2026-08-28T00:00:00.000Z'),
+    );
+    assert(
+      invalidPriceRecord?.budgetState === 'unknown' && !invalidPriceRecord.price,
+      'missing upper bound, currency mismatch, or invalid Money values must keep Google price unknown',
+    );
+  }
+  const priceLevelOnlyRecord = mapGooglePlaceToExternalRecord(
+    'sakae',
+    { ...GOOGLE_PLACES_CONTRACT_FIXTURE.places[0], priceRange: undefined, priceLevel: 'PRICE_LEVEL_INEXPENSIVE' },
+    new Date('2026-08-28T00:00:00.000Z'),
+  );
+  assert(
+    priceLevelOnlyRecord?.budgetState === 'unknown' && !priceLevelOnlyRecord.price,
+    'priceLevel alone must not infer a yen budget range',
   );
 
   assert(GOOGLE_PRODUCTION_READY === false, 'Google Production readiness must be hard-blocked without durable counters');
@@ -180,14 +215,72 @@ try {
     }),
     'the second eligible request in one browser session must be rejected',
   );
-  for (const forbiddenParameter of [
-    'provider_entity_id', 'providerEntityId', 'google_place_id', 'osm_entity_id',
-    'provider_url', 'googleMapsUri', 'websiteUri', 'nationalPhoneNumber', 'formattedAddress', 'osmId', 'location',
-    'phone', 'address', 'latitude', 'longitude', 'raw_response', 'api_key', 'user_location',
-  ]) {
-    assert(!isAnalyticsParameterAllowed(forbiddenParameter), `analytics must reject ${forbiddenParameter}`);
+  const approvedEventParameters = {
+    decision_start: { party: 'solo', source: 'root_home' },
+    conditions_complete: { party: 'solo', area: 'sakae', budget: 'under1000', refine_count: 1 },
+    candidates_view: { party: 'solo', candidate_count: 3, result_status: 'matched' },
+    candidate_detail_view: { store_id: 'formal-fixture', source: 'candidates', candidate_source: 'formal-reviewed' },
+    compare_view: { compare_count: 2, source: 'detail' },
+    store_decided: { store_id: 'formal-fixture', compare_count: 2, party: 'solo', candidate_source: 'formal-reviewed' },
+    map_click: { store_id: 'google-fixture', surface: 'detail', candidate_source: 'google' },
+    official_click: { store_id: 'osm-fixture', surface: 'decided', candidate_source: 'osm' },
+    phone_click: { store_id: 'formal-fixture', surface: 'detail', candidate_source: 'formal-reviewed' },
+  };
+  for (const [eventName, parameters] of Object.entries(approvedEventParameters)) {
+    for (const [parameterName, value] of Object.entries(parameters)) {
+      assert(
+        isAnalyticsParameterAllowed(eventName, parameterName, value),
+        `${eventName}.${parameterName} must remain an allowed existing GA4 parameter`,
+      );
+    }
   }
-  assert(isAnalyticsParameterAllowed('candidate_source'), 'analytics must retain the provider class only');
+  for (const forbiddenParameter of [
+    'provider_entity_id', 'providerEntityId', 'providerId', 'place_id', 'placeId', 'google_place_id', 'osm_entity_id', 'osmId',
+    'provider_url', 'providerUrl', 'url', 'href', 'map_url', 'googleMapsUri', 'websiteUri', 'official_url',
+    'nationalPhoneNumber', 'phone', 'phoneNumber', 'tel',
+    'formattedAddress', 'address', 'location', 'lat', 'lng', 'latitude', 'longitude', 'coordinates',
+    'raw_response', 'api_key', 'user_location',
+  ]) {
+    assert(
+      !isAnalyticsParameterAllowed('map_click', forbiddenParameter, 'fixture-value'),
+      `analytics must reject unlisted provider/contact/location alias ${forbiddenParameter}`,
+    );
+  }
+  for (const source of ['formal-reviewed', 'google', 'osm']) {
+    assert(isAnalyticsParameterAllowed('map_click', 'candidate_source', source), `analytics must retain ${source} candidate source`);
+  }
+  assert(
+    !isAnalyticsParameterAllowed('map_click', 'candidate_source', 'demo')
+      && !isAnalyticsParameterAllowed('map_click', 'candidate_source', 'untrusted'),
+    'candidate_source must be formal-reviewed, google, or osm only',
+  );
+  const originalWindow = globalThis.window;
+  const gtagCalls = [];
+  try {
+    globalThis.window = { gtag: (...args) => gtagCalls.push(args) };
+    trackAnalyticsEvent('map_click', {
+      store_id: 'google-fixture',
+      surface: 'detail',
+      candidate_source: 'google',
+      providerEntityId: 'places/provider-secret',
+      placeId: 'provider-place-id',
+      providerUrl: 'https://provider.example/secret',
+      phoneNumber: '+81-00-0000-0000',
+      formattedAddress: 'provider address',
+      coordinates: '35.1,136.9',
+      unlisted_key: 'must-not-send',
+    });
+    const payload = gtagCalls[0]?.[2];
+    assert(
+      gtagCalls.length === 1
+        && Object.keys(payload).sort().join(',') === 'candidate_source,store_id,surface'
+        && payload.candidate_source === 'google',
+      'unlisted keys must be absent from the GA4 payload while approved keys remain',
+    );
+  } finally {
+    if (originalWindow === undefined) delete globalThis.window;
+    else globalThis.window = originalWindow;
+  }
 
   const activeFormal = getActiveFormalDecisionV3Candidates({
     evaluatedAsOf: '2026-08-28',
@@ -231,6 +324,42 @@ try {
   assert(
     strictUnknown.kind !== 'matched' || strictUnknown.candidateIds.length === 0,
     'strict budget must not include external unknown prices',
+  );
+  const googlePriceCandidate = adaptExternalCandidatePoolRecord(
+    mapGooglePlaceToExternalRecord(
+      'sakae',
+      {
+        ...GOOGLE_PLACES_CONTRACT_FIXTURE.places[0],
+        priceRange: {
+          startPrice: { currencyCode: 'JPY', units: '1200' },
+          endPrice: { currencyCode: 'JPY', units: '1800' },
+        },
+      },
+      new Date('2026-08-28T00:00:00.000Z'),
+    ),
+  );
+  assert(googlePriceCandidate, 'valid JPY Google price range must adapt');
+  const strictGoogleCandidate = {
+    ...googlePriceCandidate,
+    id: 'google-strict-budget-fixture',
+    selection: {
+      ...googlePriceCandidate.selection,
+      supportedPartyTypes: ['solo'],
+      supportedPurposes: ['light'],
+    },
+  };
+  assert(
+    selectDecisionV3Candidates({
+      conditions: { ...conditions, budget: 'under1000' },
+      preferences: [],
+      candidates: [strictGoogleCandidate],
+    }).kind !== 'matched'
+      && selectDecisionV3Candidates({
+        conditions: { ...conditions, budget: 'under2000' },
+        preferences: [],
+        candidates: [strictGoogleCandidate],
+      }).kind === 'matched',
+    'strict budget must use the verified Google JPY price range rather than priceLevel inference',
   );
   assert(
     adaptExternalCandidatePoolRecord({ ...catalog[0], externalId: 'osm-closed-fixture', businessStatus: 'closed' }) === null,
@@ -297,6 +426,45 @@ try {
       && googlePriority.candidates[0].provenance?.provider === 'google-places'
       && googlePriority.candidates[0].provenance?.linkedProviderEntities.length === 2,
     'exact Google/OSM duplicate must keep Google presentation and both provider links',
+  );
+  const sameBrandStores = [
+    ['meieki-komeda-nagoya-eki-nishi', 'コメダ珈琲店 名古屋駅西店', 'https://komeda-fixture.example/nagoya-eki-nishi'],
+    ['osu-komeda-kamimaezu', 'コメダ珈琲店 上前津店', 'https://komeda-fixture.example/kamimaezu'],
+    ['meieki-sugakiya-nagoya-eki-esca', 'スガキヤ 名古屋駅エスカ店', 'https://sugakiya-fixture.example/nagoya-eki-esca'],
+    ['osu-sugakiya-osu', 'スガキヤ 大須店', 'https://sugakiya-fixture.example/osu'],
+  ].map(([id, name, href]) => ({
+    ...knownExternal,
+    id,
+    name,
+    provenance: {
+      ...knownExternal.provenance,
+      providerEntityId: `node/${id}`,
+      providerActions: [{ kind: 'website', label: 'ウェブサイトを見る', href }],
+      linkedProviderEntities: [{ provider: 'openstreetmap', providerEntityId: `node/${id}` }],
+    },
+  }));
+  const sameBrandDedupe = dedupeExternalCandidates([], sameBrandStores);
+  assert(
+    sameBrandDedupe.candidates.length === 4
+      && sameBrandDedupe.candidates.filter((candidate) => candidate.provenance?.duplicateStatus === 'unresolved').length === 2,
+    'two Komeda and two Sugakiya stores must remain distinct while shared brand domains are unresolved',
+  );
+  const exactUrlDedupe = dedupeExternalCandidates([], [
+    sameBrandStores[0],
+    {
+      ...sameBrandStores[0],
+      id: 'same-komeda-url-with-fragment',
+      provenance: {
+        ...sameBrandStores[0].provenance,
+        providerEntityId: 'node/same-komeda-url-with-fragment',
+        providerActions: [{ kind: 'website', label: 'ウェブサイトを見る', href: 'https://komeda-fixture.example/nagoya-eki-nishi#menu' }],
+        linkedProviderEntities: [{ provider: 'openstreetmap', providerEntityId: 'node/same-komeda-url-with-fragment' }],
+      },
+    },
+  ]);
+  assert(
+    exactUrlDedupe.candidates.length === 1 && exactUrlDedupe.summary.merged === 1,
+    'only a normalized complete URL match may merge same-brand store records',
   );
   assert(
     shouldRequestGoogleForArea('sakae', true),
@@ -420,6 +588,7 @@ try {
   const appSource = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
   assert(!appSource.includes('provider_entity_id'), 'GA4 must never receive a provider entity identifier');
   assert(appSource.includes("candidate_source: candidate.provenance.provider === 'google-places' ? 'google' : 'osm'"), 'external GA4 must retain only the provider class');
+  assert(!appSource.includes("candidateSource === 'demo' ? 'demo'"), 'demo must not be emitted as candidate_source');
   const middlewareSource = fs.readFileSync(path.join(root, 'middleware.ts'), 'utf8');
   assert(middlewareSource.includes('GOOGLE_PLACES_SESSION_COOKIE'), 'Preview Google request must be session-capped with a cookie');
   assert(middlewareSource.includes('GOOGLE_PLACES_REQUEST_HEADER'), 'Only middleware may grant a single server request');
