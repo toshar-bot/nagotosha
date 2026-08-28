@@ -221,6 +221,19 @@ export function CandidateListV3({
                     </div>
                     <div className={`${styles.candidateBody} ${styles.candidateCardBody}`}>
                       <h2>{candidate.name}</h2>
+                      {candidate.provenance ? (
+                        <div className={styles.externalCandidateSource}>
+                          <span>{candidate.provenance.label}</span>
+                          <p>{candidate.provenance.reason}・人数／気分の適性は未確認</p>
+                          <a
+                            href={candidate.provenance.attribution.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {candidate.provenance.attribution.label}
+                          </a>
+                        </div>
+                      ) : null}
                       <dl className={styles.candidateMetadata}>
                         <div>
                           <dt>
