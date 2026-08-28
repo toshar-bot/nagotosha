@@ -171,6 +171,24 @@ export type DecisionV3CandidateProvenance = {
   verifiedFields: readonly string[];
   unknownFields: readonly string[];
   reason: string;
+  /**
+   * Provider-supplied actions are intentionally separate from verified formal
+   * actions. They never pass isDecisionV3ActionDisplayable.
+   */
+  providerActions: readonly DecisionV3ExternalProviderAction[];
+  linkedProviderEntities: readonly DecisionV3ProviderEntityLink[];
+  duplicateStatus: 'distinct' | 'unresolved';
+};
+
+export type DecisionV3ExternalProviderAction = {
+  kind: 'map' | 'website' | 'phone';
+  label: string;
+  href: string;
+};
+
+export type DecisionV3ProviderEntityLink = {
+  provider: 'google-places' | 'openstreetmap';
+  providerEntityId: string;
 };
 
 export type DecisionV3Candidate = {

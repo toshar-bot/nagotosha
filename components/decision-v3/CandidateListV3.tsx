@@ -225,13 +225,10 @@ export function CandidateListV3({
                         <div className={styles.externalCandidateSource}>
                           <span>{candidate.provenance.label}</span>
                           <p>{candidate.provenance.reason}・人数／気分の適性は未確認</p>
-                          <a
-                            href={candidate.provenance.attribution.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {candidate.provenance.attribution.label}
-                          </a>
+                          <span>{candidate.provenance.attribution.label}</span>
+                          {candidate.provenance.duplicateStatus === 'unresolved' ? (
+                            <p>提供元間の同一性は確認中です</p>
+                          ) : null}
                         </div>
                       ) : null}
                       <dl className={styles.candidateMetadata}>

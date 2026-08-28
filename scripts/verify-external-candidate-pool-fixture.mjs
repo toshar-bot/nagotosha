@@ -57,11 +57,25 @@ try {
   );
   const {
     adaptExternalCandidatePoolRecord,
+    dedupeExternalCandidates,
     excludeExternalDuplicates,
     getExternalPreviewDecisionV3Candidates,
     getOsmExternalCandidatePool,
+    shouldRequestGoogleForArea,
   } = require(path.join(root, 'lib/external-candidate-pool.ts'));
-  const { mapGooglePlaceToExternalRecord } = require(path.join(root, 'lib/google-places-provider.ts'));
+  const { getDecisionV3ExternalProviderActions } = require(
+    path.join(root, 'lib/decision-v3-external-actions.ts'),
+  );
+  const {
+    GOOGLE_PRODUCTION_READY,
+    isGooglePlacesPreviewProviderEnabled,
+    shouldGrantGooglePlacesRequest,
+  } = require(path.join(root, 'lib/google-places-policy.ts'));
+  const { isAnalyticsParameterAllowed } = require(path.join(root, 'lib/analytics.ts'));
+  const {
+    mapGooglePlaceToExternalRecord,
+    searchGooglePlacesNearby,
+  } = require(path.join(root, 'lib/google-places-provider.ts'));
   const { getActiveFormalDecisionV3Candidates } = require(path.join(root, 'lib/decision-v3-formal-adapter.ts'));
   const { getDecisionV3CandidatesForSource } = require(path.join(root, 'lib/decision-v3-candidate-lookup.ts'));
   const { selectDecisionV3Candidates } = require(path.join(root, 'lib/decision-v3-selector.ts'));
@@ -91,6 +105,10 @@ try {
   const adaptedOsm = adaptExternalCandidatePoolRecord(catalog[0]);
   assert(adaptedOsm?.provenance?.kind === 'external-catalog-osm', 'OSM presentation must retain source type');
   assert(adaptedOsm?.actions.length === 0, 'OSM website/phone tags must not create verified actions');
+  assert(
+    adaptedOsm?.provenance?.providerActions.some((action) => action.kind === 'map'),
+    'OSM must expose only its canonical provider map action outside the formal action gate',
+  );
 
   const googleRecord = mapGooglePlaceToExternalRecord(
     'sakae',
@@ -101,6 +119,75 @@ try {
   assert(googleRecord?.provider === 'google-places', 'Google contract fixture must map to Google provider');
   assert(adaptedGoogle?.provenance?.kind === 'external-live-google', 'Google presentation must retain source type');
   assert(adaptedGoogle?.actions.length === 0, 'Google website/phone must not become verified actions');
+  assert(
+    getDecisionV3ExternalProviderActions(adaptedGoogle).some((action) => action.kind === 'map'),
+    'Google must expose a provider map action only when the provider supplied it',
+  );
+  assert(
+    getDecisionV3ExternalProviderActions(adaptedGoogle).every((action) => action.href),
+    'external provider actions require a nonempty safe href',
+  );
+  const noActionGoogle = adaptExternalCandidatePoolRecord({
+    ...googleRecord,
+    externalId: 'google-no-actions-fixture',
+    google: {},
+  });
+  assert(
+    getDecisionV3ExternalProviderActions(noActionGoogle).length === 0,
+    'external records with no provider actions must render zero action DOM',
+  );
+  assert(
+    mapGooglePlaceToExternalRecord(
+      'sakae',
+      { ...GOOGLE_PLACES_CONTRACT_FIXTURE.places[0], googleMapsUri: undefined },
+      new Date('2026-08-28T00:00:00.000Z'),
+    ) === null,
+    'a Google record without provider attribution/map URI must render zero candidate DOM',
+  );
+
+  assert(GOOGLE_PRODUCTION_READY === false, 'Google Production readiness must be hard-blocked without durable counters');
+  assert(
+    !isGooglePlacesPreviewProviderEnabled({ NODE_ENV: 'production', EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true', GOOGLE_PLACES_PROVIDER_ENABLED: 'true', GOOGLE_PLACES_PREVIEW_ENABLED: 'true' }),
+    'Production must keep Google provider off even with flags',
+  );
+  assert(
+    !isGooglePlacesPreviewProviderEnabled({ NODE_ENV: 'development' }),
+    'unknown environment flags must keep Google provider off',
+  );
+  assert(
+    isGooglePlacesPreviewProviderEnabled({ NODE_ENV: 'development', EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true', GOOGLE_PLACES_PROVIDER_ENABLED: 'true', GOOGLE_PLACES_PREVIEW_ENABLED: 'true' }),
+    'development requires all three explicit flags before Google is eligible',
+  );
+  const enabledPreviewEnvironment = {
+    NODE_ENV: 'development',
+    EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true',
+    GOOGLE_PLACES_PROVIDER_ENABLED: 'true',
+    GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
+  };
+  assert(
+    shouldGrantGooglePlacesRequest({
+      environment: enabledPreviewEnvironment,
+      externalAreaRequested: true,
+      sessionRequestAlreadyUsed: false,
+    }),
+    'the first eligible Preview browser-session request may be granted',
+  );
+  assert(
+    !shouldGrantGooglePlacesRequest({
+      environment: enabledPreviewEnvironment,
+      externalAreaRequested: true,
+      sessionRequestAlreadyUsed: true,
+    }),
+    'the second eligible request in one browser session must be rejected',
+  );
+  for (const forbiddenParameter of [
+    'provider_entity_id', 'providerEntityId', 'google_place_id', 'osm_entity_id',
+    'provider_url', 'googleMapsUri', 'websiteUri', 'nationalPhoneNumber', 'formattedAddress', 'osmId', 'location',
+    'phone', 'address', 'latitude', 'longitude', 'raw_response', 'api_key', 'user_location',
+  ]) {
+    assert(!isAnalyticsParameterAllowed(forbiddenParameter), `analytics must reject ${forbiddenParameter}`);
+  }
+  assert(isAnalyticsParameterAllowed('candidate_source'), 'analytics must retain the provider class only');
 
   const activeFormal = getActiveFormalDecisionV3Candidates({
     evaluatedAsOf: '2026-08-28',
@@ -149,10 +236,111 @@ try {
     adaptExternalCandidatePoolRecord({ ...catalog[0], externalId: 'osm-closed-fixture', businessStatus: 'closed' }) === null,
     'closed external candidates must be excluded before presentation',
   );
+  const exactFormal = {
+    ...formal[0],
+    actions: [],
+    detailInfo: { phone: { value: '052-1234-5678', verifiedAt: '2026-08-28', source: 'fixture' } },
+  };
+  const exactExternal = {
+    ...knownExternal,
+    id: 'osm-duplicate',
+    provenance: {
+      ...knownExternal.provenance,
+      providerActions: [{ kind: 'phone', label: '電話する', href: 'tel:052-1234-5678' }],
+    },
+  };
+  const exactDedupe = dedupeExternalCandidates([exactFormal], [exactExternal]);
   assert(
-    excludeExternalDuplicates(formal, [{ ...knownExternal, id: 'osm-duplicate', name: formal[0].name }]).length === 0,
-    'formal identity must win over an external duplicate',
+    exactDedupe.candidates.length === 0 && exactDedupe.summary.merged === 1,
+    'exact phone identity must keep the formal candidate only',
   );
+  const unresolvedExternal = {
+    ...knownExternal,
+    id: 'osm-unresolved',
+    name: exactFormal.name,
+    detailInfo: { address: { value: '名古屋市中区fixture 1-2-3', verifiedAt: '2026-08-28', source: 'fixture' } },
+  };
+  const unresolvedFormal = {
+    ...exactFormal,
+    detailInfo: { address: { value: '名古屋市中区fixture 1-2-3', verifiedAt: '2026-08-28', source: 'fixture' } },
+  };
+  const unresolvedDedupe = dedupeExternalCandidates([unresolvedFormal], [unresolvedExternal]);
+  assert(
+    unresolvedDedupe.candidates.length === 1
+      && unresolvedDedupe.summary.unresolved === 1
+      && unresolvedDedupe.candidates[0].provenance?.duplicateStatus === 'unresolved',
+    'name/address assistance must remain unresolved, not auto-merged',
+  );
+  const osmDuplicate = {
+    ...exactExternal,
+    id: 'osm-google-link-fixture',
+    provenance: {
+      ...exactExternal.provenance,
+      provider: 'openstreetmap',
+      providerEntityId: 'node/101',
+      linkedProviderEntities: [{ provider: 'openstreetmap', providerEntityId: 'node/101' }],
+    },
+  };
+  const googleDuplicate = {
+    ...adaptedGoogle,
+    id: 'google-osm-link-fixture',
+    provenance: {
+      ...adaptedGoogle.provenance,
+      providerEntityId: 'places/101',
+      linkedProviderEntities: [{ provider: 'google-places', providerEntityId: 'places/101' }],
+      providerActions: [{ kind: 'phone', label: '電話する', href: 'tel:052-1234-5678' }],
+    },
+  };
+  const googlePriority = dedupeExternalCandidates([], [osmDuplicate, googleDuplicate]);
+  assert(
+    googlePriority.candidates.length === 1
+      && googlePriority.candidates[0].provenance?.provider === 'google-places'
+      && googlePriority.candidates[0].provenance?.linkedProviderEntities.length === 2,
+    'exact Google/OSM duplicate must keep Google presentation and both provider links',
+  );
+  assert(
+    !shouldRequestGoogleForArea([...formal, knownExternal], 'sakae', true),
+    'formal plus OSM three candidates must make zero Google requests',
+  );
+  assert(
+    !shouldRequestGoogleForArea([...formal, buildFormal(activeFormal[2], 'formal-c')], 'sakae', true),
+    'three formal candidates must make zero Google requests',
+  );
+  assert(
+    shouldRequestGoogleForArea(formal.slice(0, 2), 'sakae', true),
+    'fewer than three candidates may make one explicitly allowed Google request',
+  );
+  assert(
+    !shouldRequestGoogleForArea(formal.slice(0, 2), 'sakae', false),
+    'an ungranted request marker must prevent Google access',
+  );
+
+  const originalFetch = globalThis.fetch;
+  let providerFetches = 0;
+  try {
+    globalThis.fetch = (_input, init) => {
+      providerFetches += 1;
+      return new Promise((_resolve, reject) => {
+        init.signal?.addEventListener('abort', () => reject(new Error('fixture timeout')), { once: true });
+      });
+    };
+    const timedOut = await searchGooglePlacesNearby(
+      'sakae',
+      { allowLiveRequest: true, maxRequests: 1, timeoutMs: 1 },
+      new Date('2026-08-28T00:00:00.000Z'),
+      { ...enabledPreviewEnvironment, GOOGLE_PLACES_API_KEY: 'fixture-only-key' },
+    );
+    assert(timedOut.length === 0 && providerFetches === 1, 'timeout must fall back after one request with retry 0');
+    const productionBlocked = await searchGooglePlacesNearby(
+      'sakae',
+      { allowLiveRequest: true, maxRequests: 1, timeoutMs: 2_500 },
+      new Date('2026-08-28T00:00:00.000Z'),
+      { ...enabledPreviewEnvironment, NODE_ENV: 'production', GOOGLE_PLACES_API_KEY: 'fixture-only-key' },
+    );
+    assert(productionBlocked.length === 0 && providerFetches === 1, 'Production must issue zero Google requests');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 
   let state = createInitialDecisionV3State();
   for (const [group, value] of Object.entries(conditions)) {
@@ -177,13 +365,71 @@ try {
   assert(!previewCandidates.some((candidate) => candidate.id.startsWith('demo-')), 'external preview must not contain demo candidates');
   assert(previewCandidates.length > 9, 'external preview must retain formal plus external pool');
 
+  const allOsmPresentationCandidates = catalog
+    .map(adaptExternalCandidatePoolRecord)
+    .filter((candidate) => Boolean(candidate));
+  const runtimeDedupe = dedupeExternalCandidates(activeFormal, allOsmPresentationCandidates);
+  const matrix = {
+    formalOnly: { matched: 0, noMatch: 0, dataUnavailable: 0 },
+    formalPlusOsm: { matched: 0, noMatch: 0, dataUnavailable: 0, externallyFilled: 0 },
+  };
+  for (const party of ['solo', 'pair', 'family', 'group']) {
+    for (const budget of ['under1000', 'under2000', 'under4000', 'any']) {
+      for (const mood of ['hearty', 'light', 'relax', 'new-experience']) {
+        for (const area of ['meieki', 'sakae', 'osu', 'any']) {
+          const input = { party, budget, mood, area };
+          const formalOnly = selectDecisionV3Candidates({
+            conditions: input,
+            preferences: [],
+            candidates: activeFormal,
+          });
+          const combined = selectDecisionV3Candidates({
+            conditions: input,
+            preferences: [],
+            candidates: [...activeFormal, ...runtimeDedupe.candidates],
+          });
+          if (formalOnly.kind === 'matched') matrix.formalOnly.matched += 1;
+          else if (formalOnly.kind === 'no-match') matrix.formalOnly.noMatch += 1;
+          else matrix.formalOnly.dataUnavailable += 1;
+          if (combined.kind === 'matched') {
+            matrix.formalPlusOsm.matched += 1;
+            if (combined.candidateIds.some((id) => id.startsWith('osm-'))) {
+              matrix.formalPlusOsm.externallyFilled += 1;
+            }
+          } else if (combined.kind === 'no-match') matrix.formalPlusOsm.noMatch += 1;
+          else matrix.formalPlusOsm.dataUnavailable += 1;
+        }
+      }
+    }
+  }
+  assert(matrix.formalOnly.matched + matrix.formalOnly.noMatch + matrix.formalOnly.dataUnavailable === 256, 'formal-only no-match matrix must cover every condition set');
+  assert(matrix.formalPlusOsm.matched + matrix.formalPlusOsm.noMatch + matrix.formalPlusOsm.dataUnavailable === 256, 'formal plus OSM matrix must cover every condition set');
+
   const previewPage = fs.readFileSync(path.join(root, 'app/decision-functional-preview-v3/page.tsx'), 'utf8');
   assert(previewPage.includes('EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG'), 'external pool must be feature-flagged');
   assert(previewPage.includes("demoAllowed") && previewPage.includes("'formal'"), 'Production path must remain formal');
   const appSource = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
-  assert(appSource.includes('provider_entity_id'), 'external GA4 parameters must retain provider entity identifier');
+  assert(!appSource.includes('provider_entity_id'), 'GA4 must never receive a provider entity identifier');
+  assert(appSource.includes("candidate_source: candidate.provenance.provider === 'google-places' ? 'google' : 'osm'"), 'external GA4 must retain only the provider class');
+  const middlewareSource = fs.readFileSync(path.join(root, 'middleware.ts'), 'utf8');
+  assert(middlewareSource.includes('GOOGLE_PLACES_SESSION_COOKIE'), 'Preview Google request must be session-capped with a cookie');
+  assert(middlewareSource.includes('GOOGLE_PLACES_REQUEST_HEADER'), 'Only middleware may grant a single server request');
+  assert(middlewareSource.includes('requestHeaders.delete'), 'Client-supplied request budget headers must be stripped');
+  const providerSource = fs.readFileSync(path.join(root, 'lib/google-places-provider.ts'), 'utf8');
+  assert(providerSource.includes('allowLiveRequest') && providerSource.includes('isGooglePlacesPreviewProviderEnabled'), 'Google provider must fail closed before a fetch');
+  assert(providerSource.includes('setTimeout') && providerSource.includes('controller.abort'), 'Google provider must enforce its timeout');
+  const clientSources = [
+    'components/decision-v3/CandidateListV3.tsx',
+    'components/decision-v3/DetailV3.tsx',
+    'components/decision-v3/DecidedV3.tsx',
+    'components/decision-v3/DecisionV3App.tsx',
+  ].map((file) => fs.readFileSync(path.join(root, file), 'utf8')).join('\n');
+  assert(!clientSources.includes('GOOGLE_PLACES_API_KEY') && !clientSources.includes('NEXT_PUBLIC_GOOGLE'), 'Google API key must have zero client exposure');
 
-  console.log('D1 external-candidate-pool fixture: PASS');
+  console.log(`D1 external-candidate-pool fixture: PASS ${JSON.stringify({
+    runtimeDedupe: runtimeDedupe.summary,
+    noMatchMatrix: matrix,
+  })}`);
 } finally {
   Module._resolveFilename = originalResolveFilename;
   if (originalTsExtension) Module._extensions['.ts'] = originalTsExtension;

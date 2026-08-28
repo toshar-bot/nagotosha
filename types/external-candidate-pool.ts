@@ -78,6 +78,7 @@ export type ExternalCandidatePoolFixture = {
 export type GooglePlacesRequestBudget = {
   maxRequests: number;
   timeoutMs: number;
+  allowLiveRequest: boolean;
 };
 
 export const GOOGLE_PLACES_NEARBY_FIELD_MASK = [

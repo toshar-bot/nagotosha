@@ -1,20 +1,57 @@
-# D1 Google Places Preview setup — human action required
+# D1 Google Places enablement — human-only checklist
 
-Do not add a key to source control, client-side variables, logs, screenshots, or this document.
+Do not put an API key in source control, client variables, logs, screenshots, or this document. This checklist does not authorize Production activation.
 
-1. In the Google Cloud project, enable **Places API (New)** and billing.
-2. Create a server-restricted key with an API restriction for Places API (New); set a conservative quota and billing budget alert.
-3. Add `GOOGLE_PLACES_API_KEY` only to the Preview server environment.
-4. Add `EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED=true` only to Preview/development. Do not set it in Production.
-5. Confirm the deployed Preview has the required Google Maps attribution treatment before displaying any live Google content. Do not add or store Google photos in this phase.
-6. Open the existing Preview route with one optional server-side area parameter:
+## Required Google Cloud configuration
 
-   ```text
-   /decision-functional-preview-v3?externalArea=meieki
-   /decision-functional-preview-v3?externalArea=sakae
-   /decision-functional-preview-v3?externalArea=osu
-   ```
+1. In the intended Google Cloud project, enable billing and **Places API (New)** only.
+2. Create a server-only API key. Restrict it to the Places API (New); do not allow unrestricted API access.
+3. Restrict the key to the intended server deployment path and review its project ownership. Do not put the key in a public client variable.
+4. In Google Maps Platform > Quotas, set the smallest approved rate quota/alert available for Nearby Search (New). Record the exact effective quota and reviewer outside the repository.
+5. In Cloud Billing, create a ¥5,000 monthly budget with alert thresholds and named human recipients. An alerts-only budget does **not** stop billing; document the response owner and kill-switch procedure.
+6. Confirm Google Maps attribution and the applicable Places policies for the exact live fields and links before turning on Preview display.
 
-7. Verify the request is server-side, no key appears in HTML/JS/network payloads, one render makes at most one Nearby Search request, and provider failure leaves the formal flow usable.
+## Required durable counter decision
 
-The production branch does not read this feature flag for candidate source selection; it stays formal-only.
+Places API quota is a rate quota, not a durable monthly 500-request counter. Before any Production Google activation, choose and independently approve one of:
+
+- a durable shared daily/monthly request counter with atomic increment,
+- provider/Cloud enforcement that demonstrably meets the monthly/daily cap, or
+- a decision to keep Google Production permanently off.
+
+Without this decision and proof, `GOOGLE_PRODUCTION_READY` remains `false` and Production Google must remain off.
+
+## Preview-only activation sequence
+
+After the Cloud controls and attribution review are complete, add these server-side values only to development or Vercel Preview:
+
+```text
+EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED=true
+GOOGLE_PLACES_PROVIDER_ENABLED=true
+GOOGLE_PLACES_PREVIEW_ENABLED=true
+GOOGLE_PLACES_API_KEY=(server secret; never display or commit)
+```
+
+Do not set these values in Production. The master kill switch is `GOOGLE_PLACES_PROVIDER_ENABLED`; changing a budget does not replace setting it to `false` during an incident.
+
+Open one Preview browser session at one of:
+
+```text
+/decision-functional-preview-v3?externalArea=meieki
+/decision-functional-preview-v3?externalArea=sakae
+/decision-functional-preview-v3?externalArea=osu
+```
+
+Verify that no request occurs when formal plus OSM has three candidates, otherwise that only the first eligible browser-session request is made. Verify no retry after timeout/failure, no API key in client HTML/JS/network payloads, source attribution on every Google candidate, and formal plus OSM fallback after failure.
+
+## Production activation checklist — currently blocked
+
+- [ ] Cloud project owner verifies API restriction and minimum rate quota.
+- [ ] Billing owner verifies the ¥5,000 budget alert and incident response owner.
+- [ ] Durable shared daily/monthly counter or equivalent provider enforcement is tested.
+- [ ] 500/month and 25/day caps are demonstrated, not inferred from process memory.
+- [ ] Google attribution/policy review is recorded.
+- [ ] Security review confirms no client key exposure or secret logs.
+- [ ] Human approval explicitly changes the Production readiness decision.
+
+Until every item is independently complete, do not set a Production Google flag or describe Google Production as ready.
