@@ -58,5 +58,9 @@ export function trackAnalyticsEvent(
     )),
   );
 
-  window.gtag('event', name, payload);
+  try {
+    window.gtag('event', name, payload);
+  } catch {
+    // Analytics must never block a user-initiated Decision transition.
+  }
 }

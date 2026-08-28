@@ -398,6 +398,13 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
             if (chosenState.chosenId !== candidateId) return;
             if (!beginTransition('decided')) return;
+
+            const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
+            replaceDecisionV3History(state);
+            dispatch({ type: 'RESTORE', state: decidedState });
+            pushDecisionV3History(decidedState);
+            window.scrollTo({ top: 0, behavior: 'auto' });
+
             const candidate = candidateLookup.get(candidateId);
             trackAnalyticsEvent('store_decided', {
               store_id: candidateId,
@@ -405,11 +412,6 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
               party: chosenState.conditions.party,
               ...candidateAnalyticsFields(candidate),
             });
-            const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
-            replaceDecisionV3History(state);
-            dispatch({ type: 'RESTORE', state: decidedState });
-            pushDecisionV3History(decidedState);
-            window.scrollTo({ top: 0, behavior: 'auto' });
           }}
         />
       ) : null}
