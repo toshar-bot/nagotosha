@@ -72,7 +72,12 @@ export async function searchGooglePlacesNearby(
       body: JSON.stringify({
         includedTypes: ['restaurant', 'cafe', 'fast_food', 'food_court', 'ice_cream_shop'],
         maxResultCount: 20,
-        locationRestriction: { circle: { center: circle, radius: circle.radius } },
+        locationRestriction: {
+          circle: {
+            center: { latitude: circle.latitude, longitude: circle.longitude },
+            radius: circle.radius,
+          },
+        },
         languageCode: 'ja',
       }),
       cache: 'no-store',
