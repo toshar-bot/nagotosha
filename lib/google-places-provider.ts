@@ -1,5 +1,10 @@
 import type { AreaChoice } from '@/types/decision-v3';
 import {
+  isGooglePlacesPreviewProviderEnabled,
+  type GooglePlacesEnvironment,
+} from '@/lib/google-places-policy';
+import { isSafeExternalUrl } from '@/lib/decision-safety';
+import {
   GOOGLE_PLACES_NEARBY_FIELD_MASK,
   type ExternalCandidatePoolRecord,
   type GooglePlacesRequestBudget,
@@ -33,6 +38,9 @@ type GooglePlace = {
 };
 
 type GoogleNearbyResponse = { places?: GooglePlace[] };
+type GooglePlacesRuntimeEnvironment = GooglePlacesEnvironment & {
+  GOOGLE_PLACES_API_KEY?: string;
+};
 
 /**
  * Returns an in-memory Google Places result only when the server has a key.
@@ -43,8 +51,10 @@ export async function searchGooglePlacesNearby(
   area: Exclude<AreaChoice, 'any'>,
   requestBudget: GooglePlacesRequestBudget,
   now = new Date(),
+  environment: GooglePlacesRuntimeEnvironment = process.env,
 ): Promise<readonly ExternalCandidatePoolRecord[]> {
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!requestBudget.allowLiveRequest || !isGooglePlacesPreviewProviderEnabled(environment)) return [];
+  const apiKey = environment.GOOGLE_PLACES_API_KEY;
   if (!apiKey || requestBudget.maxRequests < 1) return [];
 
   const controller = new AbortController();
@@ -90,9 +100,16 @@ export function mapGooglePlaceToExternalRecord(
   const name = readText(place.displayName?.text);
   const latitude = place.location?.latitude;
   const longitude = place.location?.longitude;
-  if (!providerEntityId || !name || !Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-
   const googleMapsUri = readText(place.googleMapsUri);
+  if (
+    !providerEntityId
+    || !name
+    || !Number.isFinite(latitude)
+    || !Number.isFinite(longitude)
+    || !googleMapsUri
+    || !isSafeExternalUrl(googleMapsUri)
+  ) return null;
+
   return {
     externalId: `google-${toCanonicalId(providerEntityId)}`,
     provider: 'google-places',
@@ -115,7 +132,7 @@ export function mapGooglePlaceToExternalRecord(
     sourceRetrievedAt: now.toISOString(),
     attribution: {
       label: 'Google Maps',
-      href: googleMapsUri ?? 'https://maps.google.com/',
+      href: googleMapsUri,
       license: 'Google Maps Platform',
     },
     confidence: 'provider-reported',

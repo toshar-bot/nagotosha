@@ -1,73 +1,91 @@
 # D1 External Candidate Pool v1
 
-## Scope and source separation
+## Source separation and Production boundary
 
 | presentation kind | source of truth | may become formal automatically | Production availability | visible provenance |
 | --- | --- | --- | --- | --- |
 | `formal-reviewed` | existing Decision registry, evidence, freshness, and review gates | n/a | yes | existing Nagotosha presentation |
-| `external-live-google` | one in-memory Places API (New) response | no | no | `Google Maps情報` and Google Maps attribution |
-| `external-catalog-osm` | one-time OSM development fixture | no | no | `OpenStreetMap基礎情報` and `© OpenStreetMap contributors` |
+| `external-live-google` | one in-memory Places API (New) response | no | **off** | `Google Maps情報` |
+| `external-catalog-osm` | normalized OSM development fixture | no | Preview/development only | `OpenStreetMap基礎情報` and ODbL attribution |
 
-Provider data never supplies a formal verification, operator review, independent review, verified action, or image right. Provider website and phone fields stay in the provider record and produce no official/phone action DOM.
+Provider data never supplies a formal verification, operator review, independent review, formal verified action, image right, or automatic candidate promotion. Formal candidate actions remain unchanged.
 
-## Architecture
+`GOOGLE_PRODUCTION_READY = false` is deliberate. Production is formal-only until the Cloud-side limits and a durable shared usage counter described below have been independently configured and reviewed. Missing, unknown, or false flags keep Google off.
 
-1. `formal` candidates are selected with the existing full deterministic matcher.
-2. Only if the result has fewer than three formal candidates does the selector evaluate external candidates.
-3. External candidates are added after formal candidates, up to three total.
-4. External area is a hard filter. A `closed` provider business status is removed before presentation.
-5. With `under1000` / `under2000` / `under4000`, an external candidate needs a known fixed/range price. Unknown/variable price is never interpreted as inexpensive.
-6. Provider data does not establish party, mood, or refine facts. Those unknowns remain visible as `人数／気分の適性は未確認`, not a negative exclusion.
-7. Formal/external duplicate IDs or normalized names keep the formal candidate only.
-8. Session/history schema remains v2. Restore recalculates against the active lookup, so stale, removed, expired, and demo IDs cannot return.
+## Selection and duplication contract
 
-`DecisionV3App` sends `candidate_source` and `provider_entity_id` only on existing candidate-specific analytics events. Existing event names and page_view behavior are unchanged.
+1. Formal candidates are selected first with the existing deterministic matcher.
+2. External candidates can only fill a result below three candidates, up to three total.
+3. Area is hard-filtered. `closed` records are excluded before presentation.
+4. Strict budgets require a provider-known fixed/range price. Unknown or variable price is never assumed inexpensive.
+5. Party, mood, and refinements remain unknown rather than being inferred as false.
+6. Formal wins over an exact external duplicate. Google wins over an exact OSM duplicate, while its OSM provider link is retained in the presentation record.
+7. Exact duplicate evidence is: an existing explicit provider/entity link, same provider/entity ID, same normalized phone, or same normalized website domain.
+8. Matching name plus address/coordinates is assistance only. It stays `unresolved` and is never automatically merged.
+9. Restore always recalculates against the active lookup, removing stale, removed, expired, and demo IDs.
 
-## Preview and failure policy
+The runtime reports `merged`, `distinct`, and `unresolved` outcomes; the coverage document records the fixture result separately from any future Google result.
 
-- The existing Preview route stays `demo` by default.
-- Only Preview/development plus `EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED=true` can select `external-preview`.
-- Production keeps `formal`; it has no demo or external fallback.
-- A server render can make at most one Google Places request, uses a 2.5 second timeout, and otherwise returns the formal + OSM candidate pool.
-- Google provider failure, quota failure, no key, or invalid response returns no Google candidates. It never interrupts the formal flow.
-- No client receives an API key. No Google response body or photo is committed. Google Place IDs are the only values eligible for durable retention.
-- No Overpass or Nominatim request is made at application runtime. The OSM file is a development fixture only.
+## External actions and trust labels
 
-## Google Places API (New) contract
+External actions are rendered outside the formal verified-action gate.
 
-`Nearby Search (New)` is server-only and uses an explicit, non-wildcard field mask:
+| provider | allowed action | visible label | rules |
+| --- | --- | --- | --- |
+| Google | provider-returned `googleMapsUri` | Google Mapsで確認 | safe HTTP(S) only |
+| Google | provider-returned `websiteUri` | ウェブサイトを見る | never called Nagotosha-verified official information |
+| Google | provider-returned phone | 電話する | safe `tel:` only |
+| OSM | canonical `https://www.openstreetmap.org/{type}/{id}` | OpenStreetMapで確認 | only a validated OSM type/positive ID can form this provider URL |
+| OSM | OSM website/phone tags | ウェブサイトを見る / 電話する | safe value only; no guessed official URL |
+
+Missing values render no action DOM. Every external candidate keeps its source badge. OSM presentation includes `© OpenStreetMap contributors` and ODbL attribution. Provider actions do not become formal verified actions.
+
+## GA4 minimization
+
+Existing event names and page-view behavior are unchanged. On an explicit external candidate interaction, the only added identity fields are:
 
 ```text
-id, displayName, primaryType, businessStatus, location, formattedAddress,
-currentOpeningHours, priceLevel, priceRange, googleMapsUri, websiteUri,
-nationalPhoneNumber
+store_id = internal canonical external candidate ID
+candidate_source = google | osm
 ```
 
-Ratings, reviews, AI summaries, and photos are not requested. Photo handling is intentionally deferred: any future live photo display requires the returned author attributions and a separate rights/attribution review.
+Google Place IDs, OSM entity IDs, `providerEntityId`, provider URLs, phones, addresses, coordinates, raw responses, API keys, and user location are never sent. Hydration, reload, and popstate remain non-emitting paths.
 
-The current environment has no Google Places key. Consequently no live Google request was made for D1; the synthetic contract fixture exercises the response shape without saving Google content.
+## Google Places request safety
 
-## License and attribution matrix
+Google uses Nearby Search (New), server-only, with an explicit non-wildcard field mask. Ratings, reviews, AI summaries, and photos are not requested or stored.
 
-| provider | data use | storage | required presentation | current implementation |
-| --- | --- | --- | --- | --- |
-| Google Places | live, preview-only provider response | no response body; place ID only is retainable | Google Maps attribution; use Google-provided attribution treatment before enabling live cards | textual source/attribution component; live flag remains off pending setup/review |
-| OpenStreetMap | one-time derived development fixture | normalized OSM catalog fields with source date | `© OpenStreetMap contributors`, linked copyright page, ODbL 1.0 | implemented on every OSM candidate card |
+The provider is eligible only when all of these are true:
 
-Google policies: <https://developers.google.com/maps/documentation/places/web-service/policies>
+1. The environment is development or Vercel Preview, never Production.
+2. `EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED=true`.
+3. `GOOGLE_PLACES_PROVIDER_ENABLED=true` (master kill switch).
+4. `GOOGLE_PLACES_PREVIEW_ENABLED=true` (live-request opt-in).
+5. Middleware grants a one-time HttpOnly session-cookie request marker.
+6. Formal plus OSM has fewer than three candidates for the selected area.
 
-Google Nearby Search field-mask reference: <https://developers.google.com/maps/documentation/places/web-service/nearby-search>
+The code makes at most one request for that browser session, retries zero times, and aborts at 2,500 ms. Provider failure, timeout, quota failure, missing attribution, no key, or invalid response falls back to formal plus OSM without breaking the flow. A client-supplied request marker is removed by middleware; only middleware can set the internal header used by the server component.
 
-OpenStreetMap copyright and ODbL: <https://www.openstreetmap.org/copyright>
+## Cost controls and unresolved hard limits
 
-## Cost estimate and operational cap
+The initial operating proposal is: 500 Google requests/month, 25/day, one/session, and a ¥5,000 monthly budget. It is an operating target, not a current hard guarantee.
 
-The live Google route uses Nearby Search (New) only; Place Details is not called in D1. The authoritative global list dated 2026-08-25 lists a 5,000-event monthly free cap, then USD $32 per 1,000 Nearby Search Pro requests and USD $17 per 1,000 Place Details Pro requests. See <https://developers.google.com/maps/billing-and-pricing/pricing>.
+Google documents Places API (New) quotas as rate limits per method per project, while Cloud Billing alerts do not automatically stop usage or billing. Therefore Cloud rate quotas alone cannot express a reliable monthly 500-request cap. A Production rollout needs both Cloud settings and either a durable shared daily/monthly counter or an approved provider-side enforcement mechanism. D1 adds neither a database nor a paid KV service.
 
-| scenario | maximum Google requests | estimate before account-wide free cap / volume tier |
-| --- | ---: | ---: |
-| one Preview server render with `externalArea` | 1 Nearby Search | USD $0.032 at the first paid Nearby Pro tier |
-| 1,000 such Preview renders | 1,000 Nearby Search | USD $32 at the first paid Nearby Pro tier |
-| Production | 0 | USD $0 |
+| control | D1 code status | Cloud / durable status |
+| --- | --- | --- |
+| master kill switch | implemented, default off | environment value intentionally unset |
+| Production Google off | implemented | enforced by code |
+| one browser session request | implemented with HttpOnly session cookie | not a global quota |
+| retry 0 / 2.5s timeout | implemented | n/a |
+| monthly 500 | not claimable from process memory | requires Cloud configuration plus durable counter/enforcement |
+| daily 25 shared | not claimable from process memory | requires durable shared counter/enforcement |
+| ¥5,000 budget | no code hard stop | human must create budget alert and response path |
 
-Actual billed cost depends on the linked billing account's aggregate monthly usage and current price table. Enable budget alerts and a per-project quota before a live-key rollout. The Preview flag remains off by default.
+At the current public price list, Nearby Search Pro has a 5,000-event free usage cap and lists US$32 per 1,000 billable events in the first paid tier. The 500-request operating target therefore has a **published-rate upper estimate of US$16/month before any free allowance, tax, or exchange-rate conversion**; billing-account-wide free usage means the actual incremental cost cannot be inferred from this repository. The ¥5,000 budget is an alert threshold, not a hard stop. See the official [Places usage/billing](https://developers.google.com/maps/documentation/places/web-service/usage-and-billing), [pricing list](https://developers.google.com/maps/billing-and-pricing/pricing), and [Cloud budget behavior](https://cloud.google.com/billing/docs/how-to/budgets).
+
+## Data minimization and licensing
+
+The repository may contain only normalized OSM fixture data, OSM acquisition metadata, provider schema fixtures, and synthetic Google contract data. It must not contain raw PBF/Overpass payloads, Google live responses, Google photos, API keys, source archives, or temporary cache.
+
+Google attribution and applicable Places policies are required before any live Preview display. OSM attribution is `© OpenStreetMap contributors` under ODbL. No Overpass/Nominatim request happens in application runtime.

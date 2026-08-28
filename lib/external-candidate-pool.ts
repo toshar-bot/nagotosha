@@ -1,11 +1,14 @@
 import osmFixture from '@/data/external-candidate-pool/osm-nagoya-fixture.json';
 import { getActiveFormalDecisionV3Candidates } from '@/lib/decision-v3-formal-adapter';
 import { searchGooglePlacesNearby } from '@/lib/google-places-provider';
+import { isSafeExternalUrl } from '@/lib/decision-safety';
 import type {
   AreaChoice,
   DecisionV3Candidate,
+  DecisionV3ExternalProviderAction,
   DecisionV3KnownBoolean,
   DecisionV3Price,
+  DecisionV3ProviderEntityLink,
   MoodChoice,
   PartyChoice,
 } from '@/types/decision-v3';
@@ -33,13 +36,24 @@ const UNKNOWN_BOOLEAN: DecisionV3KnownBoolean = 'unknown';
 const UNKNOWN_PARTY: PartyChoice[] = [];
 const UNKNOWN_MOOD: MoodChoice[] = [];
 
-export const EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG = 'EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED';
+export { EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG } from '@/lib/google-places-policy';
 export const EXTERNAL_CANDIDATE_POOL_LIMITS = {
   maxCandidatesPerArea: 50,
   maxCandidatesPerResult: 3,
-  maxProviderRequestsPerServerRender: 1,
+  maxProviderRequestsPerSession: 1,
   providerTimeoutMs: 2_500,
 } as const;
+
+export type ExternalCandidateDedupeSummary = {
+  merged: number;
+  distinct: number;
+  unresolved: number;
+};
+
+export type ExternalCandidateDedupeResult = {
+  candidates: readonly DecisionV3Candidate[];
+  summary: ExternalCandidateDedupeSummary;
+};
 
 export function getOsmExternalCandidatePool(): readonly ExternalCandidatePoolRecord[] {
   const fixture = osmFixture as ExternalCandidatePoolFixture;
@@ -60,6 +74,7 @@ export function adaptExternalCandidatePoolRecord(
     ? 'Google Maps情報'
     : 'OpenStreetMap基礎情報';
   const sourceReason = buildSourceReason(record);
+  const providerActions = buildProviderActions(record);
 
   return {
     id: record.externalId,
@@ -119,6 +134,9 @@ export function adaptExternalCandidatePoolRecord(
       verifiedFields: record.verifiedFields,
       unknownFields: record.unknownFields,
       reason: sourceReason,
+      providerActions,
+      linkedProviderEntities: [{ provider: record.provider, providerEntityId: record.providerEntityId }],
+      duplicateStatus: 'distinct',
     },
   };
 }
@@ -138,7 +156,7 @@ export function getExternalPreviewDecisionV3Candidates(
   const external = externalRecords
     .map(adaptExternalCandidatePoolRecord)
     .filter((candidate): candidate is DecisionV3Candidate => Boolean(candidate));
-  return [...formal, ...excludeExternalDuplicates(formal, external)];
+  return [...formal, ...dedupeExternalCandidates(formal, external).candidates];
 }
 
 /**
@@ -148,37 +166,194 @@ export function getExternalPreviewDecisionV3Candidates(
  */
 export async function getExternalPreviewDecisionV3CandidatesWithGoogle(
   area: Exclude<AreaChoice, 'any'> | null,
+  allowLiveRequest: boolean,
   now = new Date(),
 ): Promise<readonly DecisionV3Candidate[]> {
   const base = getExternalPreviewDecisionV3Candidates(now);
-  if (!area) return base;
+  if (!area || !shouldRequestGoogleForArea(base, area, allowLiveRequest)) return base;
 
   const googleRecords = await searchGooglePlacesNearby(area, {
-    maxRequests: EXTERNAL_CANDIDATE_POOL_LIMITS.maxProviderRequestsPerServerRender,
+    maxRequests: EXTERNAL_CANDIDATE_POOL_LIMITS.maxProviderRequestsPerSession,
     timeoutMs: EXTERNAL_CANDIDATE_POOL_LIMITS.providerTimeoutMs,
+    allowLiveRequest,
   }, now);
   const googleCandidates = googleRecords
     .map(adaptExternalCandidatePoolRecord)
     .filter((candidate): candidate is DecisionV3Candidate => Boolean(candidate));
-  return [...base, ...excludeExternalDuplicates(base, googleCandidates)];
+  return [...base, ...dedupeExternalCandidates(base, googleCandidates).candidates];
 }
 
+export function shouldRequestGoogleForArea(
+  candidates: readonly DecisionV3Candidate[],
+  area: Exclude<AreaChoice, 'any'> | null,
+  allowLiveRequest: boolean,
+): boolean {
+  if (!area || !allowLiveRequest) return false;
+  return !hasThreeAreaCandidates(candidates, area);
+}
+
+/**
+ * Formal candidates always win. Exact provider/entity, phone, and website
+ * matches are merged. Name/address proximity alone remains visible but marked
+ * unresolved so it never causes an automatic merge.
+ */
+export function dedupeExternalCandidates(
+  formal: readonly DecisionV3Candidate[],
+  external: readonly DecisionV3Candidate[],
+): ExternalCandidateDedupeResult {
+  const accepted: DecisionV3Candidate[] = [];
+  const summary: ExternalCandidateDedupeSummary = { merged: 0, distinct: 0, unresolved: 0 };
+
+  for (let candidate of external) {
+    const formalMatch = formal.find((item) => isExactProviderMatch(item, candidate));
+    if (formalMatch) {
+      summary.merged += 1;
+      continue;
+    }
+
+    const exactExternal = accepted.find((item) => isExactProviderMatch(item, candidate));
+    if (exactExternal) {
+      mergeProviderEntity(exactExternal, candidate);
+      summary.merged += 1;
+      continue;
+    }
+
+    const ambiguous = [...formal, ...accepted].some((item) => isAmbiguousProviderMatch(item, candidate));
+    if (ambiguous && candidate.provenance) {
+      candidate = {
+        ...candidate,
+        provenance: { ...candidate.provenance, duplicateStatus: 'unresolved' },
+      };
+      summary.unresolved += 1;
+    } else {
+      summary.distinct += 1;
+    }
+    accepted.push(candidate);
+  }
+
+  return { candidates: accepted, summary };
+}
+
+/** Backward-compatible list-only helper used by existing callers. */
 export function excludeExternalDuplicates(
   formal: readonly DecisionV3Candidate[],
   external: readonly DecisionV3Candidate[],
 ): readonly DecisionV3Candidate[] {
-  const formalIds = new Set(formal.map((candidate) => candidate.id));
-  const formalNames = new Set(formal.map((candidate) => normalizeIdentity(candidate.name)));
-  const retained = new Set<string>();
+  return dedupeExternalCandidates(formal, external).candidates;
+}
 
-  return external.filter((candidate) => {
-    const normalizedName = normalizeIdentity(candidate.name);
-    if (formalIds.has(candidate.id) || formalNames.has(normalizedName) || retained.has(candidate.id)) {
-      return false;
+function buildProviderActions(record: ExternalCandidatePoolRecord): readonly DecisionV3ExternalProviderAction[] {
+  const actions: DecisionV3ExternalProviderAction[] = [];
+  if (record.provider === 'google-places') {
+    if (isSafeExternalUrl(record.google?.googleMapsUri ?? '')) {
+      actions.push({ kind: 'map', label: 'Google Mapsで確認', href: record.google!.googleMapsUri! });
     }
-    retained.add(candidate.id);
-    return true;
+    if (isSafeExternalUrl(record.google?.websiteUri ?? '')) {
+      actions.push({ kind: 'website', label: 'ウェブサイトを見る', href: record.google!.websiteUri! });
+    }
+    const phoneAction = toProviderPhoneAction(record.google?.phone, '電話する');
+    if (phoneAction) actions.push(phoneAction);
+    return actions;
+  }
+
+  const osm = record.osm;
+  if (osm && Number.isSafeInteger(osm.osmId) && osm.osmId > 0) {
+    actions.push({
+      kind: 'map',
+      label: 'OpenStreetMapで確認',
+      href: `https://www.openstreetmap.org/${osm.osmType}/${osm.osmId}`,
+    });
+  }
+  if (isSafeExternalUrl(osm?.website ?? '')) {
+    actions.push({ kind: 'website', label: 'ウェブサイトを見る', href: osm!.website! });
+  }
+  const phoneAction = toProviderPhoneAction(osm?.phone, '電話する');
+  if (phoneAction) actions.push(phoneAction);
+  return actions;
+}
+
+function toProviderPhoneAction(value: string | undefined, label: string): DecisionV3ExternalProviderAction | null {
+  if (!value || !/^\+?[0-9][0-9().\-\s]{5,30}$/.test(value)) return null;
+  return { kind: 'phone', label, href: `tel:${value}` };
+}
+
+function hasThreeAreaCandidates(
+  candidates: readonly DecisionV3Candidate[],
+  area: Exclude<AreaChoice, 'any'>,
+) {
+  return candidates.filter((candidate) => candidate.selection.area === area).length >= 3;
+}
+
+function isExactProviderMatch(left: DecisionV3Candidate, right: DecisionV3Candidate): boolean {
+  if (left.id === right.id) return true;
+  const leftProvenance = left.provenance;
+  const rightProvenance = right.provenance;
+  if (leftProvenance && rightProvenance) {
+    if (
+      leftProvenance.provider === rightProvenance.provider
+      && leftProvenance.providerEntityId === rightProvenance.providerEntityId
+    ) return true;
+  }
+  const leftPhone = normalizedPhone(left);
+  const rightPhone = normalizedPhone(right);
+  if (leftPhone && rightPhone && leftPhone === rightPhone) return true;
+  const leftDomain = normalizedWebsiteDomain(left);
+  const rightDomain = normalizedWebsiteDomain(right);
+  return Boolean(leftDomain && rightDomain && leftDomain === rightDomain);
+}
+
+function isAmbiguousProviderMatch(left: DecisionV3Candidate, right: DecisionV3Candidate): boolean {
+  if (normalizeIdentity(left.name) !== normalizeIdentity(right.name)) return false;
+  const leftAddress = normalizeIdentity(left.detailInfo?.address?.value ?? '');
+  const rightAddress = normalizeIdentity(right.detailInfo?.address?.value ?? '');
+  return Boolean(leftAddress && rightAddress && leftAddress === rightAddress);
+}
+
+function mergeProviderEntity(
+  retained: DecisionV3Candidate,
+  duplicate: DecisionV3Candidate,
+) {
+  if (!retained.provenance || !duplicate.provenance) return;
+  const links: DecisionV3ProviderEntityLink[] = [
+    ...retained.provenance.linkedProviderEntities,
+    ...duplicate.provenance.linkedProviderEntities,
+  ].filter((link, index, all) => all.findIndex((item) => (
+    item.provider === link.provider && item.providerEntityId === link.providerEntityId
+  )) === index);
+  const retainedIsGoogle = retained.provenance.provider === 'google-places';
+  const duplicateIsGoogle = duplicate.provenance.provider === 'google-places';
+  const winner = duplicateIsGoogle && !retainedIsGoogle ? duplicate : retained;
+  const loser = winner === retained ? duplicate : retained;
+  if (winner === retained) {
+    retained.provenance = { ...retained.provenance, linkedProviderEntities: links };
+    return;
+  }
+  // The accepted array keeps the current object reference. Copy Google data
+  // into it when a later exact duplicate has the higher provider priority.
+  Object.assign(retained, {
+    ...winner,
+    provenance: { ...winner.provenance!, linkedProviderEntities: links },
   });
+  void loser;
+}
+
+function normalizedPhone(candidate: DecisionV3Candidate): string | null {
+  const phoneAction = candidate.provenance?.providerActions.find((action) => action.kind === 'phone')?.href
+    ?? candidate.actions.find((action) => action.type === 'phone')?.href
+    ?? candidate.detailInfo?.phone?.value;
+  const normalized = (phoneAction ?? '').replace(/^tel:/i, '').replace(/\D/g, '');
+  return normalized.length >= 6 ? normalized : null;
+}
+
+function normalizedWebsiteDomain(candidate: DecisionV3Candidate): string | null {
+  const href = candidate.provenance?.providerActions.find((action) => action.kind === 'website')?.href
+    ?? candidate.actions.find((action) => action.type === 'official')?.href;
+  if (!href || !isSafeExternalUrl(href)) return null;
+  try {
+    return new URL(href).hostname.toLowerCase().replace(/^www\./, '');
+  } catch {
+    return null;
+  }
 }
 
 function toPresentationPrice(record: ExternalCandidatePoolRecord): DecisionV3Price {

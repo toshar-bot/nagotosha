@@ -14,6 +14,7 @@ import { BrandHeader } from '@/components/common/BrandHeader';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
+import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import {
   pushDecisionV3History,
   readDecisionV3HistoryState,
@@ -220,8 +221,7 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
       return { candidate_source: candidateSource === 'demo' ? 'demo' : 'formal-reviewed' };
     }
     return {
-      candidate_source: candidate.provenance.kind,
-      provider_entity_id: candidate.provenance.providerEntityId,
+      candidate_source: candidate.provenance.provider === 'google-places' ? 'google' : 'osm',
     };
   }, [candidateSource]);
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
@@ -244,19 +244,44 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     const action = candidate?.actions.find(
       (item) => isDecisionV3ActionDisplayable(item) && item.href === href,
     );
-    if (!action) return;
+    const providerAction = getDecisionV3ExternalProviderActions(candidate)
+      .find((item) => item.href === href);
+    if (!action && !providerAction) return;
 
-    if (action.type === 'access') {
-      trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
-    } else if (action.type === 'official') {
-      trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
-    } else if (
-      action.type === 'phone'
-      || (action.type === 'reservation' && action.href?.startsWith('tel:'))
-    ) {
-      trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+    if (!providerAction) {
+      if (action?.type === 'access') {
+        trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
+      } else if (action?.type === 'official') {
+        trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+      } else if (
+        action?.type === 'phone'
+        || (action?.type === 'reservation' && action.href?.startsWith('tel:'))
+      ) {
+        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+      }
+      return;
     }
-  }, [candidateLookup, state.chosenId, state.detailId, state.step]);
+
+    if (providerAction.kind === 'map') {
+      trackAnalyticsEvent('map_click', {
+        store_id: candidateId,
+        surface,
+        ...candidateAnalyticsFields(candidate),
+      });
+    } else if (providerAction.kind === 'website') {
+      trackAnalyticsEvent('official_click', {
+        store_id: candidateId,
+        surface,
+        ...candidateAnalyticsFields(candidate),
+      });
+    } else if (providerAction.kind === 'phone') {
+      trackAnalyticsEvent('phone_click', {
+        store_id: candidateId,
+        surface,
+        ...candidateAnalyticsFields(candidate),
+      });
+    }
+  }, [candidateAnalyticsFields, candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
