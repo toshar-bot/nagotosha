@@ -215,6 +215,15 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
+  const candidateAnalyticsFields = useCallback((candidate: DecisionV3Candidate | undefined) => {
+    if (!candidate?.provenance) {
+      return { candidate_source: candidateSource === 'demo' ? 'demo' : 'formal-reviewed' };
+    }
+    return {
+      candidate_source: candidate.provenance.kind,
+      provider_entity_id: candidate.provenance.providerEntityId,
+    };
+  }, [candidateSource]);
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -317,9 +326,11 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
           onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
           onDetail={(candidateId) => {
             if (!beginTransition('detail')) return;
+            const candidate = candidateLookup.get(candidateId);
             trackAnalyticsEvent('candidate_detail_view', {
               store_id: candidateId,
               source: 'candidates',
+              ...candidateAnalyticsFields(candidate),
             });
             navigate('detail', candidateId);
           }}
@@ -360,10 +371,12 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
             if (chosenState.chosenId !== candidateId) return;
             if (!beginTransition('decided')) return;
+            const candidate = candidateLookup.get(candidateId);
             trackAnalyticsEvent('store_decided', {
               store_id: candidateId,
               compare_count: state.compareIds.length,
               party: chosenState.conditions.party,
+              ...candidateAnalyticsFields(candidate),
             });
             const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
             replaceDecisionV3History(state);
