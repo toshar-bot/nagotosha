@@ -299,29 +299,31 @@ try {
     'exact Google/OSM duplicate must keep Google presentation and both provider links',
   );
   assert(
-    !shouldRequestGoogleForArea([...formal, knownExternal], 'sakae', true),
-    'formal plus OSM three candidates must make zero Google requests',
+    shouldRequestGoogleForArea('sakae', true),
+    'an explicit area plus the middleware grant must permit one controlled Google request despite OSM coverage',
   );
   assert(
-    !shouldRequestGoogleForArea([...formal, buildFormal(activeFormal[2], 'formal-c')], 'sakae', true),
-    'three formal candidates must make zero Google requests',
+    shouldRequestGoogleForArea('sakae', true),
+    'raw formal candidate count must not suppress the controlled Preview Google request',
   );
   assert(
-    shouldRequestGoogleForArea(formal.slice(0, 2), 'sakae', true),
-    'fewer than three candidates may make one explicitly allowed Google request',
+    !shouldRequestGoogleForArea(null, true),
+    'a missing explicit external area must prevent Google access',
   );
   assert(
-    !shouldRequestGoogleForArea(formal.slice(0, 2), 'sakae', false),
+    !shouldRequestGoogleForArea('sakae', false),
     'an ungranted request marker must prevent Google access',
   );
 
   const originalFetch = globalThis.fetch;
   let providerFetches = 0;
+  let nearbyRequestBody;
   try {
     globalThis.fetch = (_input, init) => {
       providerFetches += 1;
+      nearbyRequestBody = JSON.parse(String(init?.body ?? ''));
       return new Promise((_resolve, reject) => {
-        init.signal?.addEventListener('abort', () => reject(new Error('fixture timeout')), { once: true });
+        init?.signal?.addEventListener('abort', () => reject(new Error('fixture timeout')), { once: true });
       });
     };
     const timedOut = await searchGooglePlacesNearby(
@@ -331,6 +333,13 @@ try {
       { ...enabledPreviewEnvironment, GOOGLE_PLACES_API_KEY: 'fixture-only-key' },
     );
     assert(timedOut.length === 0 && providerFetches === 1, 'timeout must fall back after one request with retry 0');
+    assert(
+      nearbyRequestBody?.locationRestriction?.circle?.center?.latitude === 35.1694
+        && nearbyRequestBody?.locationRestriction?.circle?.center?.longitude === 136.9081
+        && nearbyRequestBody?.locationRestriction?.circle?.radius === 1_000
+        && Object.keys(nearbyRequestBody.locationRestriction.circle.center).length === 2,
+      'Nearby Search request body must normalize center latitude/longitude separately from radius',
+    );
     const productionBlocked = await searchGooglePlacesNearby(
       'sakae',
       { allowLiveRequest: true, maxRequests: 1, timeoutMs: 2_500 },

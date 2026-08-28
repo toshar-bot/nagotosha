@@ -170,7 +170,7 @@ export async function getExternalPreviewDecisionV3CandidatesWithGoogle(
   now = new Date(),
 ): Promise<readonly DecisionV3Candidate[]> {
   const base = getExternalPreviewDecisionV3Candidates(now);
-  if (!area || !shouldRequestGoogleForArea(base, area, allowLiveRequest)) return base;
+  if (!area || !shouldRequestGoogleForArea(area, allowLiveRequest)) return base;
 
   const googleRecords = await searchGooglePlacesNearby(area, {
     maxRequests: EXTERNAL_CANDIDATE_POOL_LIMITS.maxProviderRequestsPerSession,
@@ -184,12 +184,13 @@ export async function getExternalPreviewDecisionV3CandidatesWithGoogle(
 }
 
 export function shouldRequestGoogleForArea(
-  candidates: readonly DecisionV3Candidate[],
   area: Exclude<AreaChoice, 'any'> | null,
   allowLiveRequest: boolean,
 ): boolean {
-  if (!area || !allowLiveRequest) return false;
-  return !hasThreeAreaCandidates(candidates, area);
+  // `allowLiveRequest` is the middleware-issued, one-time session grant. An
+  // explicit area plus that grant intentionally permits one Preview request
+  // even when the raw OSM catalog already has three records for the area.
+  return Boolean(area && allowLiveRequest);
 }
 
 /**
@@ -275,13 +276,6 @@ function buildProviderActions(record: ExternalCandidatePoolRecord): readonly Dec
 function toProviderPhoneAction(value: string | undefined, label: string): DecisionV3ExternalProviderAction | null {
   if (!value || !/^\+?[0-9][0-9().\-\s]{5,30}$/.test(value)) return null;
   return { kind: 'phone', label, href: `tel:${value}` };
-}
-
-function hasThreeAreaCandidates(
-  candidates: readonly DecisionV3Candidate[],
-  area: Exclude<AreaChoice, 'any'>,
-) {
-  return candidates.filter((candidate) => candidate.selection.area === area).length >= 3;
 }
 
 function isExactProviderMatch(left: DecisionV3Candidate, right: DecisionV3Candidate): boolean {

@@ -53,7 +53,7 @@ Google Place IDs, OSM entity IDs, `providerEntityId`, provider URLs, phones, add
 
 ## Google Places request safety
 
-Google uses Nearby Search (New), server-only, with an explicit non-wildcard field mask. Ratings, reviews, AI summaries, and photos are not requested or stored.
+Google uses **Nearby Search (New) Enterprise**, server-only, with an explicit non-wildcard field mask. `currentOpeningHours`, `priceLevel`, `priceRange`, `websiteUri`, and `nationalPhoneNumber` in the current mask place the request in the Enterprise SKU. Ratings, reviews, AI summaries, and photos are not requested or stored.
 
 The provider is eligible only when all of these are true:
 
@@ -62,9 +62,9 @@ The provider is eligible only when all of these are true:
 3. `GOOGLE_PLACES_PROVIDER_ENABLED=true` (master kill switch).
 4. `GOOGLE_PLACES_PREVIEW_ENABLED=true` (live-request opt-in).
 5. Middleware grants a one-time HttpOnly session-cookie request marker.
-6. Formal plus OSM has fewer than three candidates for the selected area.
+6. A valid, explicit `externalArea` is selected. Raw OSM/formal area counts do not suppress this controlled request.
 
-The code makes at most one request for that browser session, retries zero times, and aborts at 2,500 ms. Provider failure, timeout, quota failure, missing attribution, no key, or invalid response falls back to formal plus OSM without breaking the flow. A client-supplied request marker is removed by middleware; only middleware can set the internal header used by the server component.
+The code makes at most one request for that browser session, retries zero times, and aborts at 2,500 ms. Provider failure, timeout, quota failure, missing attribution, no key, or invalid response falls back to formal plus OSM without breaking the flow. A client-supplied request marker is removed by middleware; only middleware can set the internal header used by the server component. Production remains Google-off regardless of flags or catalog coverage.
 
 ## Cost controls and unresolved hard limits
 
@@ -82,7 +82,7 @@ Google documents Places API (New) quotas as rate limits per method per project, 
 | daily 25 shared | not claimable from process memory | requires durable shared counter/enforcement |
 | ¥5,000 budget | no code hard stop | human must create budget alert and response path |
 
-At the current public price list, Nearby Search Pro has a 5,000-event free usage cap and lists US$32 per 1,000 billable events in the first paid tier. The 500-request operating target therefore has a **published-rate upper estimate of US$16/month before any free allowance, tax, or exchange-rate conversion**; billing-account-wide free usage means the actual incremental cost cannot be inferred from this repository. The ¥5,000 budget is an alert threshold, not a hard stop. See the official [Places usage/billing](https://developers.google.com/maps/documentation/places/web-service/usage-and-billing), [pricing list](https://developers.google.com/maps/billing-and-pricing/pricing), and [Cloud budget behavior](https://cloud.google.com/billing/docs/how-to/budgets).
+At the current public price list, **Places API Nearby Search Enterprise** has a 1,000-event free usage cap and lists US$35 per 1,000 billable events in the first paid tier. The 500-request operating target has a **pre-free-allowance estimate of US$17.50** (`500 × US$35 / 1,000`); a standalone first 500 requests would be within that SKU's 1,000-event free cap, but billing-account-wide usage means the actual incremental cost cannot be inferred from this repository. Tax and exchange-rate conversion are excluded. The ¥5,000 budget is an alert threshold, not a hard stop. See the official [Places usage/billing](https://developers.google.com/maps/documentation/places/web-service/usage-and-billing), [pricing list](https://developers.google.com/maps/billing-and-pricing/pricing), and [Cloud budget behavior](https://cloud.google.com/billing/docs/how-to/budgets).
 
 ## Data minimization and licensing
 

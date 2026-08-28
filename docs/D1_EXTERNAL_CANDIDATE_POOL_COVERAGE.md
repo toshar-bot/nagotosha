@@ -26,7 +26,9 @@ fixture result (not a claim about Google):
 | formal only | 137 | 119 | 0 | 0 |
 | formal + OSM | 157 | 99 | 0 | 56 |
 
-OSM therefore improves 20 formal-only no-match combinations in this fixture.
+OSM therefore improves external fallback coverage for 20 formal-only no-match
+combinations in this fixture (119 to 99). This is not a claim that party/mood
+complete-match quality improved: external party and mood remain unverified.
 It also fills a remaining slot in 56 matched combinations without replacing a
 formal candidate. Exact dedupe against the formal-nine set reports `merged: 1`,
 `distinct: 149`, and `unresolved: 0`; the normalized OSM acquisition itself
