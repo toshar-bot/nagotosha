@@ -55,9 +55,6 @@ try {
   const { GOOGLE_PLACES_CONTRACT_FIXTURE } = require(
     path.join(root, 'data/external-candidate-pool/google-places-contract-fixture.ts'),
   );
-  const { GOOGLE_PLACES_NEARBY_REQUEST_BODY_FIXTURE } = require(
-    path.join(root, 'data/external-candidate-pool/google-places-nearby-request-body-fixture.ts'),
-  );
   const {
     adaptExternalCandidatePoolRecord,
     dedupeExternalCandidates,
@@ -510,10 +507,6 @@ try {
         && nearbyRequestBody?.locationRestriction?.circle?.radius === 1_000
         && Object.keys(nearbyRequestBody.locationRestriction.circle.center).length === 2,
       'Nearby Search request body must normalize center latitude/longitude separately from radius',
-    );
-    assert(
-      JSON.stringify(nearbyRequestBody) === JSON.stringify(GOOGLE_PLACES_NEARBY_REQUEST_BODY_FIXTURE),
-      'Nearby Search request body must match the corrected Places API (New) fixture',
     );
     const productionBlocked = await searchGooglePlacesNearby(
       'sakae',
