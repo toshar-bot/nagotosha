@@ -10,12 +10,15 @@ import {
   type CSSProperties,
   type MouseEvent,
 } from 'react';
-import { flushSync } from 'react-dom';
 import { BrandHeader } from '@/components/common/BrandHeader';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
-import { readDecisionV3HistoryState } from '@/lib/decision-v3-history';
+import {
+  pushDecisionV3History,
+  readDecisionV3HistoryState,
+  replaceDecisionV3History,
+} from '@/lib/decision-v3-history';
 import {
   scrollDecisionV3ElementIntoView,
 } from '@/lib/decision-v3-motion';
@@ -31,13 +34,7 @@ import {
   normalizeDecisionV3RestoredState,
   type DecisionV3CandidateSource,
 } from '@/lib/decision-v3-state';
-import { loadDecisionV3Session } from '@/lib/decision-v3-session';
-import {
-  createDecisionV3TransitionGuard,
-  deferDecisionV3Analytics,
-  persistDecisionV3State,
-  type DecisionV3HistoryWriteMode,
-} from '@/lib/decision-v3-transition';
+import { loadDecisionV3Session, saveDecisionV3Session } from '@/lib/decision-v3-session';
 import type {
   DecisionV3Candidate,
   DecisionV3Conditions,
@@ -63,26 +60,11 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const [qaWidth, setQaWidth] = useState<number | null>(null);
   const [activeHomeSection, setActiveHomeSection] = useState<'home' | 'conditions'>('home');
   const conditionsRef = useRef<HTMLElement | null>(null);
-  const transitionGuardRef = useRef(createDecisionV3TransitionGuard());
+  const transitionInFlightRef = useRef<DecisionV3Step | null>(null);
   const candidateLookup = useMemo(
     () => createDecisionV3CandidateLookup(candidateSource, candidates),
     [candidateSource, candidates],
   );
-
-  const commitDecisionState = useCallback((
-    nextState: ReturnType<typeof createInitialDecisionV3State>,
-    history: DecisionV3HistoryWriteMode,
-    scroll = true,
-  ) => {
-    flushSync(() => {
-      dispatch({ type: 'RESTORE', state: nextState });
-    });
-    persistDecisionV3State(nextState, { history, scroll });
-  }, []);
-
-  const runTransition = useCallback((operation: () => void) => {
-    transitionGuardRef.current.run(operation);
-  }, []);
 
   useEffect(() => {
     const initialSearch = window.location.search;
@@ -109,33 +91,35 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     );
 
     if (hasDecisionV3PartyHandoffParameters(initialSearch)) {
-      try {
-        window.history.replaceState(
-          window.history.state,
-          '',
-          removeDecisionV3PartyHandoffParameters(window.location.href),
-        );
-      } catch {
-        // The restored state below remains valid when the browser rejects a URL rewrite.
-      }
+      window.history.replaceState(
+        window.history.state,
+        '',
+        removeDecisionV3PartyHandoffParameters(window.location.href),
+      );
     }
 
     dispatch({ type: 'RESTORE', state: normalizedRestored });
-    persistDecisionV3State(normalizedRestored, { history: 'replace', scroll: false });
+    replaceDecisionV3History(normalizedRestored);
     setHydrated(true);
 
     if (partyHandoff) {
       setActiveHomeSection('conditions');
       window.requestAnimationFrame(() => {
         conditionsRef.current = document.getElementById('decision-v3-conditions');
-        try {
-          scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
-        } catch {
-          // A failed decorative scroll must not affect the restored handoff state.
-        }
+        scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
       });
     }
   }, [candidateLookup, candidateSource]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    saveDecisionV3Session(state);
+    replaceDecisionV3History(state);
+  }, [hydrated, state]);
+
+  useEffect(() => {
+    transitionInFlightRef.current = null;
+  }, [state.step]);
 
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
@@ -147,8 +131,10 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
         candidateLookup.candidates,
       );
       dispatch({ type: 'RESTORE', state: restored });
-      persistDecisionV3State(restored, { history: 'none', scroll: true });
       setActiveHomeSection('home');
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      });
     };
     window.addEventListener('popstate', onPopState);
     return () => {
@@ -157,32 +143,30 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     };
   }, [candidateLookup, candidateSource]);
 
-  const navigate = useCallback((
-    step: DecisionV3Step,
-    detailId?: string | null,
-    afterCommit?: () => void,
-  ) => {
-    const shouldTrackCompare = step === 'compare'
-      && (state.step === 'candidates' || state.step === 'detail' || state.step === 'decided');
+  const beginTransition = useCallback((step: DecisionV3Step) => {
+    if (transitionInFlightRef.current === step) return false;
+    transitionInFlightRef.current = step;
+    return true;
+  }, []);
 
-    runTransition(() => {
-      const nextState = decisionV3Reducer(state, { type: 'GO', step, detailId });
-      if (nextState.step === state.step && nextState.detailId === state.detailId) return;
+  const navigate = useCallback((step: DecisionV3Step, detailId?: string | null) => {
+    if (
+      step === 'compare'
+      && (state.step === 'candidates' || state.step === 'detail' || state.step === 'decided')
+    ) {
+      if (!beginTransition('compare')) return;
+      trackAnalyticsEvent('compare_view', {
+        compare_count: state.compareIds.length,
+        source: state.step,
+      });
+    }
 
-      commitDecisionState(nextState, 'push');
-
-      if (shouldTrackCompare) {
-        deferDecisionV3Analytics(() => {
-          trackAnalyticsEvent('compare_view', {
-            compare_count: state.compareIds.length,
-            source: state.step,
-          });
-        });
-      }
-
-      if (afterCommit) deferDecisionV3Analytics(afterCommit);
-    });
-  }, [commitDecisionState, runTransition, state]);
+    const nextState = decisionV3Reducer(state, { type: 'GO', step, detailId });
+    replaceDecisionV3History(state);
+    dispatch({ type: 'RESTORE', state: nextState });
+    pushDecisionV3History(nextState);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [beginTransition, state]);
 
   useEffect(() => {
     if (state.step !== 'home') return;
@@ -222,18 +206,10 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     if (state.step !== 'home') {
       navigate('home');
     }
-    try {
-      window.setTimeout(() => {
-        conditionsRef.current = document.getElementById('decision-v3-conditions');
-        try {
-          scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
-        } catch {
-          // The selected Home section remains usable without this optional scroll.
-        }
-      }, state.step === 'home' ? 0 : 40);
-    } catch {
-      // The selected Home section remains usable if scheduling a scroll fails.
-    }
+    window.setTimeout(() => {
+      conditionsRef.current = document.getElementById('decision-v3-conditions');
+      scrollDecisionV3ElementIntoView(conditionsRef.current, { block: 'start' });
+    }, state.step === 'home' ? 0 : 40);
   }, [navigate, state.step]);
 
   const conditionsReady = hasAllRequiredConditions(state.conditions);
@@ -293,52 +269,40 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
         <ConditionPanelV3
           conditions={state.conditions}
           refine={state.refine}
-          onCondition={(group: keyof DecisionV3Conditions, value: string) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'SET_CONDITION', group, value }),
-              'replace',
-              false,
-            );
-          }}
-          onRefine={(value: RefineChoice) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'TOGGLE_REFINE', value }),
-              'replace',
-              false,
-            );
-          }}
+          onCondition={(group: keyof DecisionV3Conditions, value: string) =>
+            dispatch({ type: 'SET_CONDITION', group, value })
+          }
+          onRefine={(value: RefineChoice) => dispatch({ type: 'TOGGLE_REFINE', value })}
           onSubmit={() => {
-            runTransition(() => {
-              const preparedState = decisionV3Reducer(state, {
-                type: 'PREPARE_CANDIDATES',
-                candidates: candidateLookup.candidates,
-              });
-              const candidateState = decisionV3Reducer(preparedState, {
-                type: 'GO',
-                step: 'candidates',
-              });
-              const selectionResult = candidateState.selectionResult;
-
-              commitDecisionState(candidateState, 'push');
-
-              if (hasAllRequiredConditions(candidateState.conditions) && selectionResult) {
-                deferDecisionV3Analytics(() => {
-                  trackAnalyticsEvent('conditions_complete', {
-                    party: candidateState.conditions.party,
-                    area: candidateState.conditions.area,
-                    budget: candidateState.conditions.budget,
-                    refine_count: candidateState.refine.length,
-                  });
-                  trackAnalyticsEvent('candidates_view', {
-                    party: candidateState.conditions.party,
-                    candidate_count: selectionResult.kind === 'matched'
-                      ? selectionResult.candidateIds.length
-                      : 0,
-                    result_status: selectionResult.kind.replace('-', '_'),
-                  });
-                });
-              }
+            if (!beginTransition('candidates')) return;
+            const preparedState = decisionV3Reducer(state, {
+              type: 'PREPARE_CANDIDATES',
+              candidates: candidateLookup.candidates,
             });
+            const candidateState = decisionV3Reducer(preparedState, {
+              type: 'GO',
+              step: 'candidates',
+            });
+            const selectionResult = candidateState.selectionResult;
+            if (hasAllRequiredConditions(candidateState.conditions) && selectionResult) {
+              trackAnalyticsEvent('conditions_complete', {
+                party: candidateState.conditions.party,
+                area: candidateState.conditions.area,
+                budget: candidateState.conditions.budget,
+                refine_count: candidateState.refine.length,
+              });
+              trackAnalyticsEvent('candidates_view', {
+                party: candidateState.conditions.party,
+                candidate_count: selectionResult.kind === 'matched'
+                  ? selectionResult.candidateIds.length
+                  : 0,
+                result_status: selectionResult.kind.replace('-', '_'),
+              });
+            }
+            replaceDecisionV3History(state);
+            dispatch({ type: 'RESTORE', state: candidateState });
+            pushDecisionV3History(candidateState);
+            window.scrollTo({ top: 0, behavior: 'auto' });
           }}
         />
       ) : null}
@@ -350,19 +314,15 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
           conditions={state.conditions}
           refine={state.refine}
           compareIds={state.compareIds}
-          onToggleCompare={(candidateId) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId }),
-              'replace',
-              false,
-            );
-          }}
-          onDetail={(candidateId) => navigate('detail', candidateId, () => {
+          onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
+          onDetail={(candidateId) => {
+            if (!beginTransition('detail')) return;
             trackAnalyticsEvent('candidate_detail_view', {
               store_id: candidateId,
               source: 'candidates',
             });
-          })}
+            navigate('detail', candidateId);
+          }}
           onCompare={() => navigate('compare')}
           onBack={() => navigate('home')}
           onHome={() => window.location.assign('/')}
@@ -380,13 +340,7 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             && state.compareIds.length >= 3
           )}
           onBack={() => navigate('candidates')}
-          onToggleCompare={(candidateId) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'TOGGLE_COMPARE', candidateId }),
-              'replace',
-              false,
-            );
-          }}
+          onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
         />
       ) : null}
 
@@ -396,50 +350,26 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
           candidateLookup={candidateLookup}
           axes={state.axes}
           onBack={() => navigate('candidates')}
-          onReorder={(candidateId, direction) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'REORDER_COMPARE', candidateId, direction }),
-              'replace',
-              false,
-            );
-          }}
-          onSetOrder={(ids) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'SET_COMPARE_ORDER', ids }),
-              'replace',
-              false,
-            );
-          }}
-          onToggleAxis={(axis) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'TOGGLE_AXIS', axis }),
-              'replace',
-              false,
-            );
-          }}
-          onReorderAxis={(axis, direction) => {
-            commitDecisionState(
-              decisionV3Reducer(state, { type: 'REORDER_AXIS', axis, direction }),
-              'replace',
-              false,
-            );
-          }}
+          onReorder={(candidateId, direction) =>
+            dispatch({ type: 'REORDER_COMPARE', candidateId, direction })
+          }
+          onSetOrder={(ids) => dispatch({ type: 'SET_COMPARE_ORDER', ids })}
+          onToggleAxis={(axis) => dispatch({ type: 'TOGGLE_AXIS', axis })}
+          onReorderAxis={(axis, direction) => dispatch({ type: 'REORDER_AXIS', axis, direction })}
           onDecide={(candidateId) => {
             const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
             if (chosenState.chosenId !== candidateId) return;
-            runTransition(() => {
-              const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
-              if (decidedState.step !== 'decided' || decidedState.chosenId !== candidateId) return;
-
-              commitDecisionState(decidedState, 'push');
-              deferDecisionV3Analytics(() => {
-                trackAnalyticsEvent('store_decided', {
-                  store_id: candidateId,
-                  compare_count: state.compareIds.length,
-                  party: chosenState.conditions.party,
-                });
-              });
+            if (!beginTransition('decided')) return;
+            trackAnalyticsEvent('store_decided', {
+              store_id: candidateId,
+              compare_count: state.compareIds.length,
+              party: chosenState.conditions.party,
             });
+            const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
+            replaceDecisionV3History(state);
+            dispatch({ type: 'RESTORE', state: decidedState });
+            pushDecisionV3History(decidedState);
+            window.scrollTo({ top: 0, behavior: 'auto' });
           }}
         />
       ) : null}

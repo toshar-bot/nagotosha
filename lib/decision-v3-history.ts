@@ -81,34 +81,22 @@ export function readDecisionV3HistoryState(value: unknown): DecisionV3Session | 
   });
 }
 
-export function replaceDecisionV3History(state: DecisionV3Session): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    window.history.replaceState(
-      createDecisionV3HistoryState(state),
-      '',
-      decisionV3Url(state.step, state.detailId),
-    );
-    return true;
-  } catch {
-    return false;
-  }
+export function replaceDecisionV3History(state: DecisionV3Session) {
+  if (typeof window === 'undefined') return;
+  window.history.replaceState(
+    createDecisionV3HistoryState(state),
+    '',
+    decisionV3Url(state.step, state.detailId),
+  );
 }
 
-export function pushDecisionV3History(state: DecisionV3Session): boolean {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    window.history.pushState(
-      createDecisionV3HistoryState(state),
-      '',
-      decisionV3Url(state.step, state.detailId),
-    );
-    return true;
-  } catch {
-    return false;
-  }
+export function pushDecisionV3History(state: DecisionV3Session) {
+  if (typeof window === 'undefined') return;
+  window.history.pushState(
+    createDecisionV3HistoryState(state),
+    '',
+    decisionV3Url(state.step, state.detailId),
+  );
 }
 
 export function isDecisionV3HistoryState(value: unknown): value is DecisionV3HistoryState {
