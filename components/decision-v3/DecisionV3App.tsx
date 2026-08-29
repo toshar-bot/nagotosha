@@ -11,10 +11,9 @@ import {
   type MouseEvent,
 } from 'react';
 import { BrandHeader } from '@/components/common/BrandHeader';
-import { trackAnalyticsEvent, type DecisionCandidateAnalyticsSource } from '@/lib/analytics';
+import { trackAnalyticsEvent } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
-import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import {
   pushDecisionV3History,
   readDecisionV3HistoryState,
@@ -216,16 +215,6 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
-  const candidateAnalyticsFields = useCallback((candidate: DecisionV3Candidate | undefined): {
-    candidate_source?: DecisionCandidateAnalyticsSource;
-  } => {
-    if (!candidate?.provenance) {
-      return candidateSource === 'demo' ? {} : { candidate_source: 'formal-reviewed' };
-    }
-    return {
-      candidate_source: candidate.provenance.provider === 'google-places' ? 'google' : 'osm',
-    };
-  }, [candidateSource]);
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -246,44 +235,19 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     const action = candidate?.actions.find(
       (item) => isDecisionV3ActionDisplayable(item) && item.href === href,
     );
-    const providerAction = getDecisionV3ExternalProviderActions(candidate)
-      .find((item) => item.href === href);
-    if (!action && !providerAction) return;
+    if (!action) return;
 
-    if (!providerAction) {
-      if (action?.type === 'access') {
-        trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
-      } else if (action?.type === 'official') {
-        trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
-      } else if (
-        action?.type === 'phone'
-        || (action?.type === 'reservation' && action.href?.startsWith('tel:'))
-      ) {
-        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
-      }
-      return;
+    if (action.type === 'access') {
+      trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
+    } else if (action.type === 'official') {
+      trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+    } else if (
+      action.type === 'phone'
+      || (action.type === 'reservation' && action.href?.startsWith('tel:'))
+    ) {
+      trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
     }
-
-    if (providerAction.kind === 'map') {
-      trackAnalyticsEvent('map_click', {
-        store_id: candidateId,
-        surface,
-        ...candidateAnalyticsFields(candidate),
-      });
-    } else if (providerAction.kind === 'website') {
-      trackAnalyticsEvent('official_click', {
-        store_id: candidateId,
-        surface,
-        ...candidateAnalyticsFields(candidate),
-      });
-    } else if (providerAction.kind === 'phone') {
-      trackAnalyticsEvent('phone_click', {
-        store_id: candidateId,
-        surface,
-        ...candidateAnalyticsFields(candidate),
-      });
-    }
-  }, [candidateAnalyticsFields, candidateLookup, state.chosenId, state.detailId, state.step]);
+  }, [candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
@@ -353,11 +317,9 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
           onToggleCompare={(candidateId) => dispatch({ type: 'TOGGLE_COMPARE', candidateId })}
           onDetail={(candidateId) => {
             if (!beginTransition('detail')) return;
-            const candidate = candidateLookup.get(candidateId);
             trackAnalyticsEvent('candidate_detail_view', {
               store_id: candidateId,
               source: 'candidates',
-              ...candidateAnalyticsFields(candidate),
             });
             navigate('detail', candidateId);
           }}
@@ -398,20 +360,16 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             const chosenState = decisionV3Reducer(state, { type: 'CHOOSE', candidateId });
             if (chosenState.chosenId !== candidateId) return;
             if (!beginTransition('decided')) return;
-
+            trackAnalyticsEvent('store_decided', {
+              store_id: candidateId,
+              compare_count: state.compareIds.length,
+              party: chosenState.conditions.party,
+            });
             const decidedState = decisionV3Reducer(chosenState, { type: 'GO', step: 'decided' });
             replaceDecisionV3History(state);
             dispatch({ type: 'RESTORE', state: decidedState });
             pushDecisionV3History(decidedState);
             window.scrollTo({ top: 0, behavior: 'auto' });
-
-            const candidate = candidateLookup.get(candidateId);
-            trackAnalyticsEvent('store_decided', {
-              store_id: candidateId,
-              compare_count: state.compareIds.length,
-              party: chosenState.conditions.party,
-              ...candidateAnalyticsFields(candidate),
-            });
           }}
         />
       ) : null}

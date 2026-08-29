@@ -151,46 +151,6 @@ export type DecisionV3DetailInfo = {
   highlights?: VerifiedDetailItem[];
 };
 
-/**
- * Presentation provenance is display-only. Formal records omit it and retain
- * their existing reviewed presentation. External values never represent a
- * Nagotosha verification or an action verification.
- */
-export type DecisionV3CandidateProvenance = {
-  kind: 'external-live-google' | 'external-catalog-osm';
-  label: 'Google Maps情報' | 'OpenStreetMap基礎情報';
-  provider: 'google-places' | 'openstreetmap';
-  providerEntityId: string;
-  sourceRetrievedAt: string;
-  attribution: {
-    label: string;
-    href: string;
-    license?: string;
-  };
-  businessStatus: 'operational' | 'closed' | 'unknown';
-  verifiedFields: readonly string[];
-  unknownFields: readonly string[];
-  reason: string;
-  /**
-   * Provider-supplied actions are intentionally separate from verified formal
-   * actions. They never pass isDecisionV3ActionDisplayable.
-   */
-  providerActions: readonly DecisionV3ExternalProviderAction[];
-  linkedProviderEntities: readonly DecisionV3ProviderEntityLink[];
-  duplicateStatus: 'distinct' | 'unresolved';
-};
-
-export type DecisionV3ExternalProviderAction = {
-  kind: 'map' | 'website' | 'phone';
-  label: string;
-  href: string;
-};
-
-export type DecisionV3ProviderEntityLink = {
-  provider: 'google-places' | 'openstreetmap';
-  providerEntityId: string;
-};
-
 export type DecisionV3Candidate = {
   id: string;
   neutralLabel: string;
@@ -215,7 +175,6 @@ export type DecisionV3Candidate = {
   actions: CandidateAction[];
   photo: DecisionV3CandidatePhoto;
   detailInfo?: DecisionV3DetailInfo;
-  provenance?: DecisionV3CandidateProvenance;
   selection: DecisionV3SelectionProfile;
 };
 

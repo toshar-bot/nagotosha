@@ -10,7 +10,7 @@ import { selectDecisionV3Candidates } from '@/lib/decision-v3-selector';
 
 export const DEFAULT_AXES: CompareAxis[] = ['budget', 'access', 'atmosphere', 'smoking', 'seats'];
 
-export type DecisionV3CandidateSource = 'demo' | 'formal' | 'external-preview';
+export type DecisionV3CandidateSource = 'demo' | 'formal';
 
 const REFINE_AXIS: Partial<Record<RefineChoice, CompareAxis>> = {
   reservable: 'reservation',
