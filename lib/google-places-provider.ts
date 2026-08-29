@@ -72,7 +72,7 @@ export async function searchGooglePlacesNearby(
         'X-Goog-FieldMask': GOOGLE_PLACES_NEARBY_FIELD_MASK.join(','),
       },
       body: JSON.stringify({
-        includedTypes: ['restaurant', 'cafe', 'fast_food', 'food_court', 'ice_cream_shop'],
+        includedTypes: ['restaurant', 'cafe', 'fast_food_restaurant', 'food_court', 'ice_cream_shop'],
         maxResultCount: 20,
         locationRestriction: {
           circle: {
