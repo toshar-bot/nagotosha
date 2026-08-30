@@ -1929,7 +1929,7 @@
   display: grid;
   width: 100%;
   min-width: 0;
-  grid-template-rows: 44px 60px;
+  grid-template-rows: minmax(44px, auto) auto;
   gap: 6px;
   overflow: visible;
   border: 1px solid #dfd2bd;
@@ -2011,6 +2011,7 @@
 .compareVerticalCandidateBody {
   display: grid;
   min-width: 0;
+  min-height: 60px;
   grid-template-columns: 96px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
@@ -2072,6 +2073,7 @@
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.25;
+  scroll-margin-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
   white-space: nowrap;
 }
 
@@ -2114,7 +2116,7 @@
   }
 
   .compareVerticalCandidate {
-    grid-template-rows: 44px 50px;
+    grid-template-rows: minmax(44px, auto) auto;
     gap: 4px;
     border-radius: 16px;
     padding: 6px;
@@ -2148,6 +2150,7 @@
   }
 
   .compareVerticalCandidateBody {
+    min-height: 50px;
     grid-template-columns: 80px minmax(0, 1fr);
     gap: 6px;
   }
