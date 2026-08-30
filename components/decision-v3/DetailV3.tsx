@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
+import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
 import styles from './decision-v3.module.css';
@@ -80,6 +81,7 @@ export function DetailV3({
 
   const detail = candidate.detailInfo;
   const displayableActions = candidate.actions.filter(isDecisionV3ActionDisplayable);
+  const providerActions = getDecisionV3ExternalProviderActions(candidate);
   const highlights = detail?.highlights ?? [];
 
   // Basic information: verified/known values only. area & budget are always
@@ -141,6 +143,28 @@ export function DetailV3({
                 className={action.type === 'access' ? styles.detailActionPrimary : styles.detailActionSecondary}
                 href={action.href}
                 {...(action.href && isExternalHref(action.href) ? { target: '_blank' } : {})}
+                rel="noopener noreferrer"
+              >
+                {action.label}
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {providerActions.length > 0 && candidate.provenance ? (
+        <section className={styles.detailSection} aria-labelledby="detail-provider-actions-title">
+          <h2 id="detail-provider-actions-title">提供元の情報を開く</h2>
+          <p className={styles.detailPendingMessage}>
+            {candidate.provenance.label}。なごとしゃ確認済みの公式情報ではありません。
+          </p>
+          <div className={styles.detailActions}>
+            {providerActions.map((action) => (
+              <a
+                key={`${action.kind}-${action.href}`}
+                className={action.kind === 'map' ? styles.detailActionPrimary : styles.detailActionSecondary}
+                href={action.href}
+                {...(isExternalHref(action.href) ? { target: '_blank' } : {})}
                 rel="noopener noreferrer"
               >
                 {action.label}

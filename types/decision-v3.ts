@@ -77,6 +77,37 @@ export type DecisionV3CandidatePhoto = {
   rightsStatus: DecisionV3CandidatePhotoRightsStatus;
 };
 
+export type DecisionV3ExternalProviderAction = {
+  kind: 'map' | 'website' | 'phone';
+  label: string;
+  href: string;
+};
+
+export type DecisionV3ProviderEntityLink = {
+  provider: 'google-places' | 'openstreetmap';
+  providerEntityId: string;
+};
+
+export type DecisionV3CandidateProvenance = {
+  kind: 'external-live-google' | 'external-catalog-osm';
+  label: 'Google Maps情報' | 'OpenStreetMap基礎情報';
+  reason: string;
+  attribution: {
+    label: string;
+    href: string;
+    license?: string;
+  };
+  provider: 'google-places' | 'openstreetmap';
+  providerEntityId: string;
+  businessStatus: 'operational' | 'closed' | 'unknown';
+  sourceRetrievedAt: string;
+  verifiedFields: readonly string[];
+  unknownFields: readonly string[];
+  providerActions: readonly DecisionV3ExternalProviderAction[];
+  linkedProviderEntities: readonly DecisionV3ProviderEntityLink[];
+  duplicateStatus: 'distinct' | 'unresolved';
+};
+
 export type DecisionV3KnownBoolean = boolean | 'unknown';
 export type DecisionV3SmokingPolicy = 'smoke-free' | 'smoking-ok' | 'unknown';
 
@@ -175,6 +206,8 @@ export type DecisionV3Candidate = {
   actions: CandidateAction[];
   photo: DecisionV3CandidatePhoto;
   detailInfo?: DecisionV3DetailInfo;
+  /** External provider provenance; omitted for reviewed and DEMO candidates. */
+  provenance?: DecisionV3CandidateProvenance;
   selection: DecisionV3SelectionProfile;
 };
 

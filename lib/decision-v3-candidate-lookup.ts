@@ -1,5 +1,6 @@
 import { DEMO_CANDIDATES } from '@/data/decision-v3-demo';
 import { getActiveFormalDecisionV3Candidates } from '@/lib/decision-v3-formal-adapter';
+import { getExternalPreviewDecisionV3Candidates } from '@/lib/external-candidate-pool';
 import type { DecisionV3CandidateSource } from '@/lib/decision-v3-state';
 import type { DecisionV3Candidate } from '@/types/decision-v3';
 
@@ -41,6 +42,7 @@ export function getDecisionV3CandidatesForSource(
   now = new Date(),
 ): readonly DecisionV3Candidate[] {
   if (source === 'demo') return DEMO_CANDIDATES;
+  if (source === 'external-preview') return getExternalPreviewDecisionV3Candidates(now);
   return getActiveFormalDecisionV3Candidates({
     evaluatedAsOf: toTokyoISODate(now),
     evaluatedAt: now.toISOString(),

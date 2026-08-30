@@ -1082,6 +1082,25 @@
   margin: 6px 0 0;
 }
 
+.externalCandidateSource {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0;
+  color: var(--ink-subtle, #555);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.externalCandidateSource strong {
+  color: var(--ink, #222);
+  font-size: 14px;
+}
+
+.externalCandidateSource p,
+.externalCandidateSource span {
+  margin: 0;
+}
+
 .candidateMetadata > div {
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr);

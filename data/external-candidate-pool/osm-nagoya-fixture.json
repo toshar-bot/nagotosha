@@ -1,0 +1,5935 @@
+{
+  "schemaVersion": 1,
+  "purpose": "development-fixture-only",
+  "source": "OpenStreetMap via Nominatim one-time retrieval",
+  "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+  "attribution": {
+    "label": "© OpenStreetMap contributors",
+    "href": "https://www.openstreetmap.org/copyright",
+    "license": "ODbL 1.0"
+  },
+  "runtimePolicy": "Never query Overpass or Nominatim from Production runtime.",
+  "areas": {
+    "meieki": [
+      {
+        "externalId": "osm-node-10298033983",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10298033983",
+        "name": "大かまど飯 寅福",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1707015,
+          "longitude": 136.8829523,
+          "formattedAddress": "大かまど飯 寅福, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10298033983,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "大かまど飯 寅福, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10298033990",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10298033990",
+        "name": "京たまごキッチンモレット",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1708797,
+          "longitude": 136.8827042,
+          "formattedAddress": "京たまごキッチンモレット, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10298033990,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "京たまごキッチンモレット, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10298033991",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10298033991",
+        "name": "寿司嘉文",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1709296,
+          "longitude": 136.8825969,
+          "formattedAddress": "寿司嘉文, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10298033991,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "寿司嘉文, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10298033997",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10298033997",
+        "name": "洋麺屋五右衛門",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1706698,
+          "longitude": 136.8827163,
+          "formattedAddress": "洋麺屋五右衛門, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10298033997,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "洋麺屋五右衛門, タワーズテラス, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6013, 日本",
+          "website": "https://www.yomenya-goemon.com/"
+        }
+      },
+      {
+        "externalId": "osm-node-11146310941",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11146310941",
+        "name": "すき家",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1613103,
+          "longitude": 136.8837626,
+          "formattedAddress": "すき家, 笹島線, 平池町四丁目, 平池町, 中村区, 名古屋市, 愛知県, 456-6113, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11146310941,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "すき家, 笹島線, 平池町四丁目, 平池町, 中村区, 名古屋市, 愛知県, 456-6113, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-11297363337",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11297363337",
+        "name": "新道",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1771199,
+          "longitude": 136.888522,
+          "formattedAddress": "新道, 円頓寺本町商店街, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11297363337,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "barbecue",
+          "address": "新道, 円頓寺本町商店街, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-11297363339",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11297363339",
+        "name": "ぼんともん",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1769871,
+          "longitude": 136.8887798,
+          "formattedAddress": "ぼんともん, 円頓寺本町商店街, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11297363339,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "ぼんともん, 円頓寺本町商店街, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-11927282664",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11927282664",
+        "name": "Used like new beer",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1778974,
+          "longitude": 136.8834979,
+          "formattedAddress": "Used like new beer, 外堀通り, 名駅二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0044, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11927282664,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "Used like new beer, 外堀通り, 名駅二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0044, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12098317766",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12098317766",
+        "name": "Bucyo Coffee",
+        "area": "meieki",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1660579,
+          "longitude": 136.8905777,
+          "formattedAddress": "Bucyo Coffee, 三蔵通, 名駅南二丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12098317766,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "Bucyo Coffee, 三蔵通, 名駅南二丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12229194364",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12229194364",
+        "name": "住よし",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1716255,
+          "longitude": 136.8805707,
+          "formattedAddress": "住よし, 椿町線, 名駅一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12229194364,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "noodle",
+          "address": "住よし, 椿町線, 名駅一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12229210374",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12229210374",
+        "name": "DELiCA STATiON",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1712437,
+          "longitude": 136.8807585,
+          "formattedAddress": "DELiCA STATiON, 椿町線, 名駅一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12229210374,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "sandwich",
+          "address": "DELiCA STATiON, 椿町線, 名駅一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12791707997",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12791707997",
+        "name": "ミスタードーナツ",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.169962,
+          "longitude": 136.886189,
+          "formattedAddress": "ミスタードーナツ, 15, 名駅四丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-0002, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12791707997,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "donut",
+          "address": "ミスタードーナツ, 15, 名駅四丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-0002, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12866613902",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12866613902",
+        "name": "海老どて食堂 エスカ店",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1696956,
+          "longitude": 136.8804888,
+          "formattedAddress": "海老どて食堂 エスカ店, 6-9, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12866613902,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "fish;friture;japanese",
+          "address": "海老どて食堂 エスカ店, 6-9, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本",
+          "openingHours": "Mo-Su 11:00-21:30",
+          "website": "https://www.ebidote-shokudo.jp/shop/"
+        }
+      },
+      {
+        "externalId": "osm-node-12991054541",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12991054541",
+        "name": "ARANCIA",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1774141,
+          "longitude": 136.8873471,
+          "formattedAddress": "ARANCIA, 上畠那古野町線, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12991054541,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "ARANCIA, 上畠那古野町線, 那古野二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12993532735",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12993532735",
+        "name": "SWING BY",
+        "area": "meieki",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1779898,
+          "longitude": 136.888499,
+          "formattedAddress": "SWING BY, 外堀通り, 新道二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12993532735,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "SWING BY, 外堀通り, 新道二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12995258495",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12995258495",
+        "name": "Salt Water by David Myers",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1723591,
+          "longitude": 136.8846273,
+          "formattedAddress": "Salt Water by David Myers, 12, 名駅通, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6401, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12995258495,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "Salt Water by David Myers, 12, 名駅通, 名駅一丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6401, 日本",
+          "website": "https://tabelog.com/aichi/A2301/A230101/23059325/"
+        }
+      },
+      {
+        "externalId": "osm-node-13092073760",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13092073760",
+        "name": "矢場とん",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1697625,
+          "longitude": 136.8811957,
+          "formattedAddress": "矢場とん, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13092073760,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "矢場とん, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13408468737",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13408468737",
+        "name": "デザインフードマーケット",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1739028,
+          "longitude": 136.8833011,
+          "formattedAddress": "デザインフードマーケット, 名駅通, 名駅二丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6301, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13408468737,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "デザインフードマーケット, 名駅通, 名駅二丁目, 牛島町, 中村区, 名古屋市, 愛知県, 450-6301, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13423664663",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13423664663",
+        "name": "グレインズ",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1768316,
+          "longitude": 136.8821572,
+          "formattedAddress": "グレインズ, 外堀通り, 名駅二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0044, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13423664663,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "japanese",
+          "address": "グレインズ, 外堀通り, 名駅二丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0044, 日本",
+          "openingHours": "Mo-Su 11:00-15:00, 17:00-21:00",
+          "website": "https://grains.nagoya/"
+        }
+      },
+      {
+        "externalId": "osm-node-13873158809",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13873158809",
+        "name": "Banana Panic",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.16842,
+          "longitude": 136.8900811,
+          "formattedAddress": "Banana Panic, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13873158809,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "juice",
+          "address": "Banana Panic, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1874214313",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1874214313",
+        "name": "和食さと",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1592504,
+          "longitude": 136.8911285,
+          "formattedAddress": "和食さと, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1874214313,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "japanese",
+          "address": "和食さと, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本",
+          "openingHours": "Mo-Su 00:00-02:00,11:00-24:00",
+          "phone": "+81 52-350-7411"
+        }
+      },
+      {
+        "externalId": "osm-node-1874216097",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1874216097",
+        "name": "かっぱ寿司",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1593182,
+          "longitude": 136.8908716,
+          "formattedAddress": "かっぱ寿司, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 454-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1874216097,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "sushi",
+          "address": "かっぱ寿司, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 454-0003, 日本",
+          "openingHours": "Mo-Sa 11:00-23:00; Su 10:25-23:00",
+          "phone": "+81 52-350-4121"
+        }
+      },
+      {
+        "externalId": "osm-node-1909862264",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1909862264",
+        "name": "ラーメン申家",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.167224,
+          "longitude": 136.87836,
+          "formattedAddress": "ラーメン申家, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1909862264,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "ramen",
+          "address": "ラーメン申家, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本",
+          "website": "http://www.noodle-shinya.com/"
+        }
+      },
+      {
+        "externalId": "osm-node-1927359748",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1927359748",
+        "name": "一茶",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1649214,
+          "longitude": 136.878512,
+          "formattedAddress": "一茶, 牧野第43号線, 下米野町一丁目, 下米野町, 中村区, 名古屋市, 愛知県, 456-6113, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1927359748,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "一茶, 牧野第43号線, 下米野町一丁目, 下米野町, 中村区, 名古屋市, 愛知県, 456-6113, 日本",
+          "phone": "+81 52 4521989"
+        }
+      },
+      {
+        "externalId": "osm-node-1927361523",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1927361523",
+        "name": "Four Seasons",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1646665,
+          "longitude": 136.8785946,
+          "formattedAddress": "Four Seasons, 牧野第43号線, 下米野町一丁目, 下米野町, 中村区, 名古屋市, 愛知県, 456-6113, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1927361523,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "french",
+          "address": "Four Seasons, 牧野第43号線, 下米野町一丁目, 下米野町, 中村区, 名古屋市, 愛知県, 456-6113, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1932142082",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1932142082",
+        "name": "キッチンタカキ",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1597872,
+          "longitude": 136.8907405,
+          "formattedAddress": "キッチンタカキ, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 454-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1932142082,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "キッチンタカキ, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 454-0003, 日本",
+          "phone": "+81 52-551-1570"
+        }
+      },
+      {
+        "externalId": "osm-node-1932142947",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1932142947",
+        "name": "加納めん",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.159783,
+          "longitude": 136.8906711,
+          "formattedAddress": "加納めん, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1932142947,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "加納めん, 大須通, 名駅南五丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本",
+          "phone": "+81 52-586-7727"
+        }
+      },
+      {
+        "externalId": "osm-node-1964150468",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1964150468",
+        "name": "かつさと",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1773447,
+          "longitude": 136.8731805,
+          "formattedAddress": "かつさと, 環状線, 則武本通一丁目, 則武本通, 中村区, 名古屋市, 愛知県, 453-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1964150468,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "かつさと, 環状線, 則武本通一丁目, 則武本通, 中村区, 名古屋市, 愛知県, 453-0021, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1979232793",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1979232793",
+        "name": "まるしば",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1638033,
+          "longitude": 136.8741722,
+          "formattedAddress": "まるしば, 環状線, 黄金通一丁目, 上米野町, 中村区, 名古屋市, 愛知県, 453-0809, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1979232793,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "まるしば, 環状線, 黄金通一丁目, 上米野町, 中村区, 名古屋市, 愛知県, 453-0809, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2034714670",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2034714670",
+        "name": "万夢",
+        "area": "meieki",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1623029,
+          "longitude": 136.8745077,
+          "formattedAddress": "万夢, 環状線, 黄金通五丁目, 黄金通, 中村区, 名古屋市, 愛知県, 453-0804, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2034714670,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "万夢, 環状線, 黄金通五丁目, 黄金通, 中村区, 名古屋市, 愛知県, 453-0804, 日本",
+          "phone": "+81 52-452-7688"
+        }
+      },
+      {
+        "externalId": "osm-node-2041463284",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2041463284",
+        "name": "すき家",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.16848,
+          "longitude": 136.8803745,
+          "formattedAddress": "すき家, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2041463284,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "すき家, 中村区, 名古屋市, 愛知県, 453-0015, 日本",
+          "openingHours": "24/7"
+        }
+      },
+      {
+        "externalId": "osm-node-2074448222",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2074448222",
+        "name": "大橋庵",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1614632,
+          "longitude": 136.8921643,
+          "formattedAddress": "大橋庵, 洲崎橋, 大須一丁目, 門前町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2074448222,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle",
+          "address": "大橋庵, 洲崎橋, 大須一丁目, 門前町, 中村区, 名古屋市, 愛知県, 450-0003, 日本",
+          "openingHours": "Mo-Su 11:00-14:00,17:30-20:00",
+          "phone": "+81 52 5828861"
+        }
+      },
+      {
+        "externalId": "osm-node-2076147506",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2076147506",
+        "name": "Aoki's Pizza",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1627809,
+          "longitude": 136.8936943,
+          "formattedAddress": "Aoki's Pizza, 若宮大通, 大須一丁目, 門前町, 中区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2076147506,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "pizza",
+          "address": "Aoki's Pizza, 若宮大通, 大須一丁目, 門前町, 中区, 名古屋市, 愛知県, 450-0003, 日本",
+          "phone": "+81 52 2229333"
+        }
+      },
+      {
+        "externalId": "osm-node-2082021151",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2082021151",
+        "name": "ミスタードーナツ",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.157565,
+          "longitude": 136.8922704,
+          "formattedAddress": "ミスタードーナツ, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 454-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2082021151,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "donut",
+          "address": "ミスタードーナツ, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 454-0003, 日本",
+          "openingHours": "Mo-Su 08:00-24:00",
+          "phone": "+81 52-332-5712"
+        }
+      },
+      {
+        "externalId": "osm-node-2086840492",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2086840492",
+        "name": "魚忠",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.172019,
+          "longitude": 136.872568,
+          "formattedAddress": "魚忠, 環状線, 則武本通三丁目, 則武本通, 中村区, 名古屋市, 愛知県, 453-0017, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2086840492,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "sushi",
+          "address": "魚忠, 環状線, 則武本通三丁目, 則武本通, 中村区, 名古屋市, 愛知県, 453-0017, 日本",
+          "phone": "+81 52-486-2780"
+        }
+      },
+      {
+        "externalId": "osm-node-2088042877",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2088042877",
+        "name": "ほっかほか亭",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.168125,
+          "longitude": 136.878576,
+          "formattedAddress": "ほっかほか亭, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2088042877,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "ほっかほか亭, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本",
+          "openingHours": "Mo-Su 09:00-22:00",
+          "phone": "+81 52-451-2810"
+        }
+      },
+      {
+        "externalId": "osm-node-2088050411",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2088050411",
+        "name": "Ohana",
+        "area": "meieki",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1665119,
+          "longitude": 136.8782563,
+          "formattedAddress": "Ohana, 牧野第14号線, 太閤四丁目, 上米野町, 中村区, 名古屋市, 愛知県, 453-0801, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2088050411,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "Ohana, 牧野第14号線, 太閤四丁目, 上米野町, 中村区, 名古屋市, 愛知県, 453-0801, 日本",
+          "website": "http://ohana.main.jp/"
+        }
+      },
+      {
+        "externalId": "osm-node-2101398301",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2101398301",
+        "name": "千龍",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.167143,
+          "longitude": 136.882761,
+          "formattedAddress": "千龍, 牧野第53号線, 牧野町三丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0801, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2101398301,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "千龍, 牧野第53号線, 牧野町三丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0801, 日本",
+          "website": "http://www.ai-chuka.com/aichi/senryu/",
+          "phone": "+81 52-452-2377"
+        }
+      },
+      {
+        "externalId": "osm-node-2113550631",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2113550631",
+        "name": "ベントマン",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.167389,
+          "longitude": 136.875293,
+          "formattedAddress": "ベントマン, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0801, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2113550631,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "ベントマン, 太閤通, 太閤通三丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0801, 日本",
+          "phone": "+81 52-452-0355"
+        }
+      },
+      {
+        "externalId": "osm-node-2174889205",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2174889205",
+        "name": "ザ・どん",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1574832,
+          "longitude": 136.8922921,
+          "formattedAddress": "ザ・どん, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2174889205,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "ザ・どん, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2174890472",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2174890472",
+        "name": "モスバーガー",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1577365,
+          "longitude": 136.8922406,
+          "formattedAddress": "モスバーガー, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2174890472,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "モスバーガー, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2285469458",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2285469458",
+        "name": "珈琲屋富士",
+        "area": "meieki",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.175409,
+          "longitude": 136.888669,
+          "formattedAddress": "珈琲屋富士, 那古野志摩町線, 名駅三丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2285469458,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "珈琲屋富士, 那古野志摩町線, 名駅三丁目, 牛島町, 西区, 名古屋市, 愛知県, 451-0042, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2343290767",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2343290767",
+        "name": "宝",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1652661,
+          "longitude": 136.8936402,
+          "formattedAddress": "宝, 竪三蔵通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2343290767,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "宝, 竪三蔵通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本",
+          "phone": "+81 52-222-8687"
+        }
+      },
+      {
+        "externalId": "osm-node-2354487558",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2354487558",
+        "name": "松屋",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1679074,
+          "longitude": 136.890701,
+          "formattedAddress": "松屋, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2354487558,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "松屋, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2389597397",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2389597397",
+        "name": "CoCo壱番屋",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1669813,
+          "longitude": 136.8902387,
+          "formattedAddress": "CoCo壱番屋, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2389597397,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "CoCo壱番屋, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2392699335",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2392699335",
+        "name": "吉野家",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1696781,
+          "longitude": 136.8800745,
+          "formattedAddress": "吉野家, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2392699335,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 椿町線, 太閤一丁目, 椿町, 中村区, 名古屋市, 愛知県, 453-0015, 日本",
+          "openingHours": "Mo-Su 05:00-02:00"
+        }
+      },
+      {
+        "externalId": "osm-node-2447689718",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2447689718",
+        "name": "べんとう屋本店",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1573851,
+          "longitude": 136.8916437,
+          "formattedAddress": "べんとう屋本店, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2447689718,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "べんとう屋本店, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本",
+          "phone": "+81 523210470"
+        }
+      },
+      {
+        "externalId": "osm-node-2686380601",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2686380601",
+        "name": "松屋",
+        "area": "meieki",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1745975,
+          "longitude": 136.8789193,
+          "formattedAddress": "松屋, 駅西第60号線, 亀島二丁目, 牛島町, 中村区, 名古屋市, 愛知県, 451-0046, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2686380601,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "松屋, 駅西第60号線, 亀島二丁目, 牛島町, 中村区, 名古屋市, 愛知県, 451-0046, 日本",
+          "openingHours": "24/7",
+          "phone": "+81-52-459-1226"
+        }
+      },
+      {
+        "externalId": "osm-node-2730788190",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2730788190",
+        "name": "六三六",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1700485,
+          "longitude": 136.8776804,
+          "formattedAddress": "六三六, 駅西第56号線, 則武二丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2730788190,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle;ramen",
+          "address": "六三六, 駅西第56号線, 則武二丁目, 竹橋町, 中村区, 名古屋市, 愛知県, 453-0016, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2783397391",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2783397391",
+        "name": "藤一番",
+        "area": "meieki",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1678678,
+          "longitude": 136.890784,
+          "formattedAddress": "藤一番, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2783397391,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle",
+          "address": "藤一番, 広小路通, 名駅五丁目, 平池町, 中村区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      }
+    ],
+    "sakae": [
+      {
+        "externalId": "osm-node-10309776509",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10309776509",
+        "name": "Pizza Marino",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1659043,
+          "longitude": 136.905332,
+          "formattedAddress": "Pizza Marino, 白川通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10309776509,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "Pizza Marino, 白川通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10536425764",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10536425764",
+        "name": "中華そば 佐とう",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1758389,
+          "longitude": 136.8980365,
+          "formattedAddress": "中華そば 佐とう, 桑名町通, 丸の内二丁目, 二の丸, 中区, 名古屋市, 愛知県, 460-0002, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10536425764,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "ramen",
+          "address": "中華そば 佐とう, 桑名町通, 丸の内二丁目, 二の丸, 中区, 名古屋市, 愛知県, 460-0002, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10538706376",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10538706376",
+        "name": "門",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1800602,
+          "longitude": 136.9135334,
+          "formattedAddress": "門, 空港線, 主税町二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-8621, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10538706376,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "門, 空港線, 主税町二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-8621, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10542197483",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10542197483",
+        "name": "喫茶　新",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1791537,
+          "longitude": 136.9134851,
+          "formattedAddress": "喫茶　新, 空港線, 主税町二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-8621, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10542197483,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "sandwich;coffee_shop;cake;ice_cream;dessert;pasta;juice",
+          "address": "喫茶　新, 空港線, 主税町二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-8621, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10555892198",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10555892198",
+        "name": "Freshness Burger",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1627587,
+          "longitude": 136.9070587,
+          "formattedAddress": "Freshness Burger, 若宮大通, 千代田一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-8430, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10555892198,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "burger",
+          "address": "Freshness Burger, 若宮大通, 千代田一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-8430, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10564143080",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10564143080",
+        "name": "明城",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1753895,
+          "longitude": 136.9053326,
+          "formattedAddress": "明城, 魚ノ棚通, 丸の内三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0002, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10564143080,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "明城, 魚ノ棚通, 丸の内三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0002, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10654287547",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10654287547",
+        "name": "くら寿司",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1688989,
+          "longitude": 136.9108492,
+          "formattedAddress": "くら寿司, 武平通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10654287547,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "sushi",
+          "address": "くら寿司, 武平通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10654287549",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10654287549",
+        "name": "カフェ・ド・クリエ",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.169,
+          "longitude": 136.9113743,
+          "formattedAddress": "カフェ・ド・クリエ, 広小路通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-0004, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10654287549,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "カフェ・ド・クリエ, 広小路通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-0004, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10654287551",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10654287551",
+        "name": "丸岡商店",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1695295,
+          "longitude": 136.9135253,
+          "formattedAddress": "丸岡商店, 広小路通, 新栄町三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0004, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10654287551,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "丸岡商店, 広小路通, 新栄町三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0004, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10654287580",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10654287580",
+        "name": "ドミノ・ピザ",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1794282,
+          "longitude": 136.9214681,
+          "formattedAddress": "ドミノ・ピザ, 外堀通り, 橦木町三丁目, 飯田町, 東区, 名古屋市, 愛知県, 461-0025, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10654287580,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "pizza",
+          "address": "ドミノ・ピザ, 外堀通り, 橦木町三丁目, 飯田町, 東区, 名古屋市, 愛知県, 461-0025, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10877296217",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10877296217",
+        "name": "吉野家",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1721564,
+          "longitude": 136.9076468,
+          "formattedAddress": "吉野家, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0005, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10877296217,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0005, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-10951188788",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10951188788",
+        "name": "ロイヤルキッチン",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1662127,
+          "longitude": 136.9110303,
+          "formattedAddress": "ロイヤルキッチン, 武平通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10951188788,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "indian",
+          "address": "ロイヤルキッチン, 武平通, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-11257675421",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11257675421",
+        "name": "KHUSI",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1670413,
+          "longitude": 136.9230644,
+          "formattedAddress": "KHUSI, 飯田街道, 千種一丁目, 大久手町, 中区, 名古屋市, 愛知県, 464-8635, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11257675421,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "indian",
+          "address": "KHUSI, 飯田街道, 千種一丁目, 大久手町, 中区, 名古屋市, 愛知県, 464-8635, 日本",
+          "openingHours": "11:00-10:30"
+        }
+      },
+      {
+        "externalId": "osm-node-11306428028",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11306428028",
+        "name": "CoCo壱番屋",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1711541,
+          "longitude": 136.9064089,
+          "formattedAddress": "CoCo壱番屋, 大津通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11306428028,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "CoCo壱番屋, 大津通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-11959570482",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/11959570482",
+        "name": "Delish Lunch",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1574249,
+          "longitude": 136.9148481,
+          "formattedAddress": "Delish Lunch, 松ケ枝通, 千代田二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 11959570482,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "Delish Lunch, 松ケ枝通, 千代田二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本",
+          "website": "https://www.delishlunch.jp/"
+        }
+      },
+      {
+        "externalId": "osm-node-12076084592",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12076084592",
+        "name": "おかげ庵",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1688159,
+          "longitude": 136.9026476,
+          "formattedAddress": "おかげ庵, 広小路通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12076084592,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "おかげ庵, 広小路通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本",
+          "openingHours": "Mo-Sa 07:00-22:00; Su,PH 07:00-21:00"
+        }
+      },
+      {
+        "externalId": "osm-node-12123175128",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12123175128",
+        "name": "Hario Cafe & Lampwork",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1735535,
+          "longitude": 136.9083083,
+          "formattedAddress": "Hario Cafe & Lampwork, 桜通, 東桜一丁目, 久屋町, 中区, 名古屋市, 愛知県, 460-0005, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12123175128,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "Hario Cafe & Lampwork, 桜通, 東桜一丁目, 久屋町, 中区, 名古屋市, 愛知県, 460-0005, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12123197762",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12123197762",
+        "name": "Caffé Vigore",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1705752,
+          "longitude": 136.9098273,
+          "formattedAddress": "Caffé Vigore, 1, ソラマチ, 東区, 名古屋市, 愛知県, 460-0005, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12123197762,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "Caffé Vigore, 1, ソラマチ, 東区, 名古屋市, 愛知県, 460-0005, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12123197763",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12123197763",
+        "name": "Café de Crié",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1705874,
+          "longitude": 136.9098486,
+          "formattedAddress": "Café de Crié, 1, ソラマチ, 東区, 名古屋市, 愛知県, 460-0005, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12123197763,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "Café de Crié, 1, ソラマチ, 東区, 名古屋市, 愛知県, 460-0005, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12556128201",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12556128201",
+        "name": "Mori no Curry",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1671069,
+          "longitude": 136.9103277,
+          "formattedAddress": "Mori no Curry, 南久屋武平町線, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12556128201,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "curry;oriental",
+          "address": "Mori no Curry, 南久屋武平町線, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13090565100",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13090565100",
+        "name": "とん八",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1764528,
+          "longitude": 136.9212478,
+          "formattedAddress": "とん八, 葵水筒先町線, 泉三丁目, 代官町, 東区, 名古屋市, 愛知県, 461-0002, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13090565100,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "tonkatsu",
+          "address": "とん八, 葵水筒先町線, 泉三丁目, 代官町, 東区, 名古屋市, 愛知県, 461-0002, 日本",
+          "website": "https://ton8.jp/"
+        }
+      },
+      {
+        "externalId": "osm-node-13098708197",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13098708197",
+        "name": "めんつるび",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1703674,
+          "longitude": 136.9030882,
+          "formattedAddress": "めんつるび, 七間町通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13098708197,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "めんつるび, 七間町通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13135811901",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13135811901",
+        "name": "Craft Diner Nagoroba in Y.MARKET",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1717341,
+          "longitude": 136.9085813,
+          "formattedAddress": "Craft Diner Nagoroba in Y.MARKET, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13135811901,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "japanese",
+          "address": "Craft Diner Nagoroba in Y.MARKET, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本",
+          "openingHours": "Mo-Fr 11:00-14:00, 17:00-23:00; Sa 11:00-23:00; Su 11:00-22:00",
+          "website": "https://ymarket-nagoroba.com/"
+        }
+      },
+      {
+        "externalId": "osm-node-13137990102",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13137990102",
+        "name": "うどん料理",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1675183,
+          "longitude": 136.9017228,
+          "formattedAddress": "うどん料理, 入江町通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13137990102,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "japanese",
+          "address": "うどん料理, 入江町通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本",
+          "openingHours": "Mo-Sa 11:00-14:00, 17:30-22:00",
+          "website": "https://udonsen.owst.jp"
+        }
+      },
+      {
+        "externalId": "osm-node-13395054147",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13395054147",
+        "name": "俊貴",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1699728,
+          "longitude": 136.9243987,
+          "formattedAddress": "俊貴, 広小路通, 葵一丁目, 新栄町, 中区, 名古屋市, 愛知県, 461-0004, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13395054147,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "俊貴, 広小路通, 葵一丁目, 新栄町, 中区, 名古屋市, 愛知県, 461-0004, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13451905513",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13451905513",
+        "name": "東京油組総本店",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1671588,
+          "longitude": 136.9048618,
+          "formattedAddress": "東京油組総本店, 呉服町通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13451905513,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "ramen",
+          "address": "東京油組総本店, 呉服町通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13770115954",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13770115954",
+        "name": "モスバーガー",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1678446,
+          "longitude": 136.8972612,
+          "formattedAddress": "モスバーガー, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13770115954,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "モスバーガー, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13901066659",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13901066659",
+        "name": "李さんの台湾名物屋台",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1601229,
+          "longitude": 136.9052015,
+          "formattedAddress": "李さんの台湾名物屋台, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13901066659,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "李さんの台湾名物屋台, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13901091921",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13901091921",
+        "name": "まる芳",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.159383,
+          "longitude": 136.9048821,
+          "formattedAddress": "まる芳, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13901091921,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "まる芳, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13973826299",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13973826299",
+        "name": "マクドナルド",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1708538,
+          "longitude": 136.9096183,
+          "formattedAddress": "マクドナルド, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13973826299,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "マクドナルド, 久屋大通, 新栄町一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0033, 日本",
+          "website": "https://map.mcdonalds.co.jp/map/23703"
+        }
+      },
+      {
+        "externalId": "osm-node-1633662206",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1633662206",
+        "name": "味園",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1762676,
+          "longitude": 136.9146983,
+          "formattedAddress": "味園, 高岳萱屋町線, 泉二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-0001, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1633662206,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "味園, 高岳萱屋町線, 泉二丁目, 東片端町, 東区, 名古屋市, 愛知県, 461-0001, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1636164673",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1636164673",
+        "name": "鶴の舞",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1572034,
+          "longitude": 136.9168181,
+          "formattedAddress": "鶴の舞, 葵町線, 千代田五丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1636164673,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "鶴の舞, 葵町線, 千代田五丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本",
+          "openingHours": "11:30-14:30,18:00-02:00"
+        }
+      },
+      {
+        "externalId": "osm-node-1641481222",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1641481222",
+        "name": "サイゼリヤ",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.161012,
+          "longitude": 136.9242724,
+          "formattedAddress": "サイゼリヤ, 若宮大通, 吹上二丁目, 大久手町, 千種区, 名古屋市, 愛知県, 464-8635, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1641481222,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "italian",
+          "address": "サイゼリヤ, 若宮大通, 吹上二丁目, 大久手町, 千種区, 名古屋市, 愛知県, 464-8635, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1641486196",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1641486196",
+        "name": "La TRILOGIE",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1601018,
+          "longitude": 136.9201245,
+          "formattedAddress": "La TRILOGIE, 葵町線, 千代田三丁目, 新栄町, 中区, 名古屋市, 愛知県, 466-0065, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1641486196,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "french",
+          "address": "La TRILOGIE, 葵町線, 千代田三丁目, 新栄町, 中区, 名古屋市, 愛知県, 466-0065, 日本",
+          "openingHours": "Tu-Su 11:30-14:00,17:30-21:30",
+          "website": "http://www.la-trilogie.com/",
+          "phone": "+81 52-262-9020"
+        }
+      },
+      {
+        "externalId": "osm-node-1641499911",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1641499911",
+        "name": "本家かまどや",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.157791,
+          "longitude": 136.9181422,
+          "formattedAddress": "本家かまどや, 松ヶ枝老松町線, 千代田五丁目, 中区, 名古屋市, 愛知県, 466-0065, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1641499911,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "本家かまどや, 松ヶ枝老松町線, 千代田五丁目, 中区, 名古屋市, 愛知県, 466-0065, 日本",
+          "website": "http://www.g-gyao.jp/s/0002098651/top/"
+        }
+      },
+      {
+        "externalId": "osm-node-1941280056",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1941280056",
+        "name": "CoCo壱番屋",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1576031,
+          "longitude": 136.9002076,
+          "formattedAddress": "CoCo壱番屋, 大須通, 上前津一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1941280056,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "CoCo壱番屋, 大須通, 上前津一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本",
+          "openingHours": "Mo-Su 00:00-01:00,11:00-24:00",
+          "phone": "+81 52-323-1520"
+        }
+      },
+      {
+        "externalId": "osm-node-1944003392",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1944003392",
+        "name": "スターバックス",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1739367,
+          "longitude": 136.9059977,
+          "formattedAddress": "スターバックス, 桜通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0002, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1944003392,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "スターバックス, 桜通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0002, 日本",
+          "openingHours": "Mo-Th 07:00-22:00; Fr,Sa 07:00-22:30; Su,PH 08:00-22:00",
+          "website": "https://www.starbucks.co.jp/",
+          "phone": "+81-52-9621055"
+        }
+      },
+      {
+        "externalId": "osm-node-1966017677",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1966017677",
+        "name": "コメダ珈琲店",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1665857,
+          "longitude": 136.9106384,
+          "formattedAddress": "コメダ珈琲店, 南久屋宮出町線, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1966017677,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "コメダ珈琲店, 南久屋宮出町線, 栄四丁目, 栄, 中区, 名古屋市, 愛知県, 460-8787, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1969897488",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1969897488",
+        "name": "かつや",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1763545,
+          "longitude": 136.8962198,
+          "formattedAddress": "かつや, 京町通, 丸の内一丁目, 二の丸, 中区, 名古屋市, 愛知県, 460-8511, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1969897488,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "fried_food",
+          "address": "かつや, 京町通, 丸の内一丁目, 二の丸, 中区, 名古屋市, 愛知県, 460-8511, 日本",
+          "openingHours": "10:00-03:00, Su 10:00-24:00"
+        }
+      },
+      {
+        "externalId": "osm-node-1976073618",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1976073618",
+        "name": "吉野家",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.166077,
+          "longitude": 136.897322,
+          "formattedAddress": "吉野家, 三蔵通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1976073618,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 三蔵通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本",
+          "openingHours": "Mo-Su 07:00-23:00",
+          "website": "https://stores.yoshinoya.com/ysn_043972",
+          "phone": "+81 52-265-7251"
+        }
+      },
+      {
+        "externalId": "osm-node-2004489001",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2004489001",
+        "name": "ほっかほっか亭",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1573698,
+          "longitude": 136.9031045,
+          "formattedAddress": "ほっかほっか亭, 大須通, 上前津一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2004489001,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "ほっかほっか亭, 大須通, 上前津一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本",
+          "phone": "+81 3226543"
+        }
+      },
+      {
+        "externalId": "osm-node-2034266998",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2034266998",
+        "name": "スターバックス",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1682844,
+          "longitude": 136.8945788,
+          "formattedAddress": "スターバックス, 広小路通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2034266998,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "スターバックス, 広小路通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本",
+          "openingHours": "Mo-Fr 07:00-22:00; Sa,Su,PH 08:00-21:00",
+          "website": "https://www.starbucks.co.jp/",
+          "phone": "+81-52-2206232"
+        }
+      },
+      {
+        "externalId": "osm-node-2059372967",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2059372967",
+        "name": "吉野家",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1575949,
+          "longitude": 136.9061533,
+          "formattedAddress": "吉野家, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2059372967,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0011, 日本",
+          "openingHours": "24/7",
+          "phone": "+81 52-249-2366"
+        }
+      },
+      {
+        "externalId": "osm-node-2063877389",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2063877389",
+        "name": "タリーズコーヒー",
+        "area": "sakae",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1695363,
+          "longitude": 136.9062155,
+          "formattedAddress": "タリーズコーヒー, 錦通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2063877389,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "タリーズコーヒー, 錦通, 錦三丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0003, 日本",
+          "openingHours": "Mo-Th,Su,PH 08:00-22:00; Fr,Sa 08:00-23:00",
+          "website": "https://www.tullys.co.jp/",
+          "phone": "+81-52-9552110"
+        }
+      },
+      {
+        "externalId": "osm-node-2081806544",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2081806544",
+        "name": "吉野家",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1620604,
+          "longitude": 136.9135231,
+          "formattedAddress": "吉野家, 若宮大通, 新栄一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2081806544,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 若宮大通, 新栄一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-0008, 日本",
+          "openingHours": "24/7",
+          "website": "https://www.yoshinoya.com/",
+          "phone": "+81-52-2382018"
+        }
+      },
+      {
+        "externalId": "osm-node-2292212728",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2292212728",
+        "name": "餃子の王将",
+        "area": "sakae",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1590429,
+          "longitude": 136.8994307,
+          "formattedAddress": "餃子の王将, 大須表参道, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2292212728,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese;gyoza",
+          "address": "餃子の王将, 大須表参道, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本",
+          "openingHours": "Mo-Th 11:00-22:30; Fr-Su 11:00-24:00",
+          "phone": "+81 52-231-6887"
+        }
+      },
+      {
+        "externalId": "osm-node-2297715824",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2297715824",
+        "name": "丸亀製麺",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1589165,
+          "longitude": 136.9062411,
+          "formattedAddress": "丸亀製麺, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2297715824,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "noodle",
+          "address": "丸亀製麺, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2297715855",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2297715855",
+        "name": "なか卯",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1596679,
+          "longitude": 136.9058472,
+          "formattedAddress": "なか卯, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2297715855,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "udon",
+          "address": "なか卯, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2341887730",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2341887730",
+        "name": "すき家",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1638537,
+          "longitude": 136.8975399,
+          "formattedAddress": "すき家, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2341887730,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "すき家, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8799, 日本",
+          "openingHours": "24/7"
+        }
+      },
+      {
+        "externalId": "osm-node-2343290770",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2343290770",
+        "name": "松屋",
+        "area": "sakae",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1654447,
+          "longitude": 136.8962669,
+          "formattedAddress": "松屋, 御園通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2343290770,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "松屋, 御園通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本",
+          "phone": "+81 52-201-7584"
+        }
+      }
+    ],
+    "osu": [
+      {
+        "externalId": "osm-node-10870599169",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/10870599169",
+        "name": "ドミノ",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1563778,
+          "longitude": 136.9063781,
+          "formattedAddress": "ドミノ, 前津通り, 上前津二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 10870599169,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "pizza",
+          "address": "ドミノ, 前津通り, 上前津二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0013, 日本",
+          "openingHours": "Mo-Th 11:00-01:00; Fr-Su 10:30-01:00",
+          "website": "https://www.dominos.jp/store/86926"
+        }
+      },
+      {
+        "externalId": "osm-node-12099770970",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12099770970",
+        "name": "金まる餃子",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.148044,
+          "longitude": 136.9030131,
+          "formattedAddress": "金まる餃子, 銅アルミ　ステンレス　榊原株式会社　古沢歩道橋, 伊勢山二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12099770970,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "金まる餃子, 銅アルミ　ステンレス　榊原株式会社　古沢歩道橋, 伊勢山二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0021, 日本",
+          "openingHours": "17:00-23:00"
+        }
+      },
+      {
+        "externalId": "osm-node-12265459931",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12265459931",
+        "name": "MYOHO",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1655968,
+          "longitude": 136.9011231,
+          "formattedAddress": "MYOHO, 白川通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12265459931,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "MYOHO, 白川通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12560738801",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12560738801",
+        "name": "Sama sama Nagoya",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1674554,
+          "longitude": 136.9035968,
+          "formattedAddress": "Sama sama Nagoya, 入江町通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12560738801,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "indonesian",
+          "address": "Sama sama Nagoya, 入江町通, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12878134815",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12878134815",
+        "name": "BURGER",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1563117,
+          "longitude": 136.911901,
+          "formattedAddress": "BURGER, 大須通り, 千代田三丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12878134815,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "BURGER, 大須通り, 千代田三丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0012, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-12878282745",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/12878282745",
+        "name": "有楽",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1629436,
+          "longitude": 136.9027316,
+          "formattedAddress": "有楽, 34, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 12878282745,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "有楽, 34, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13789681907",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13789681907",
+        "name": "Soup Stock Tokyo",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1676847,
+          "longitude": 136.907596,
+          "formattedAddress": "Soup Stock Tokyo, 1, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13789681907,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "soup;curry",
+          "address": "Soup Stock Tokyo, 1, 栄三丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本",
+          "openingHours": "Mo-Su 11:00-21:00; PH 11:00-21:00",
+          "website": "https://www.soup-stock-tokyo.com/store/detail/?id=1025",
+          "phone": "052-259-6268"
+        }
+      },
+      {
+        "externalId": "osm-node-13901066662",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13901066662",
+        "name": "韓まだん",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1602517,
+          "longitude": 136.9050392,
+          "formattedAddress": "韓まだん, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13901066662,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "韓まだん, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-13901091920",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/13901091920",
+        "name": "丁字屋",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1592736,
+          "longitude": 136.9047704,
+          "formattedAddress": "丁字屋, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 13901091920,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "japanese",
+          "address": "丁字屋, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1432696558",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1432696558",
+        "name": "シューターズ",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1666164,
+          "longitude": 136.8980918,
+          "formattedAddress": "シューターズ, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1432696558,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "シューターズ, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本",
+          "website": "https://www.shooters-nagoya.com/",
+          "phone": "+81 52-202-7077"
+        }
+      },
+      {
+        "externalId": "osm-node-1874206383",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1874206383",
+        "name": "CoCo壱番屋",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.153676,
+          "longitude": 136.8983596,
+          "formattedAddress": "CoCo壱番屋, 松原第3号線, 松原三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1874206383,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "CoCo壱番屋, 松原第3号線, 松原三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本",
+          "openingHours": "Mo-Su 11:00-24:00",
+          "phone": "+81 52-350-5517"
+        }
+      },
+      {
+        "externalId": "osm-node-1874206444",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1874206444",
+        "name": "パスタデココ",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1536293,
+          "longitude": 136.89836,
+          "formattedAddress": "パスタデココ, 松原第3号線, 松原三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1874206444,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "パスタデココ, 松原第3号線, 松原三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本",
+          "openingHours": "Mo-Su 11:00-22:00",
+          "phone": "+81 52-350-5519"
+        }
+      },
+      {
+        "externalId": "osm-node-1874213127",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1874213127",
+        "name": "ガスト",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1588754,
+          "longitude": 136.8912278,
+          "formattedAddress": "ガスト, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1874213127,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "western;japanese",
+          "address": "ガスト, 江川線, 名駅南三丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本",
+          "openingHours": "24/7",
+          "phone": "+81 52-339-2661"
+        }
+      },
+      {
+        "externalId": "osm-node-1875918897",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1875918897",
+        "name": "だるま寿司",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1571081,
+          "longitude": 136.8908093,
+          "formattedAddress": "だるま寿司, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1875918897,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "sushi",
+          "address": "だるま寿司, 江川線, 名駅南三丁目, 松重町, 中川区, 名古屋市, 愛知県, 450-0003, 日本",
+          "openingHours": "Mo-Sa 17:00-22:00",
+          "phone": "+81 52-331-3553"
+        }
+      },
+      {
+        "externalId": "osm-node-1880816193",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1880816193",
+        "name": "すき家",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.152381,
+          "longitude": 136.888823,
+          "formattedAddress": "すき家, 山王通, 山王一丁目, 西日置町, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1880816193,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "すき家, 山王通, 山王一丁目, 西日置町, 中川区, 名古屋市, 愛知県, 454-0011, 日本",
+          "openingHours": "24/7"
+        }
+      },
+      {
+        "externalId": "osm-node-1886378825",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1886378825",
+        "name": "CoCo壱番屋",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1463472,
+          "longitude": 136.9032217,
+          "formattedAddress": "CoCo壱番屋, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1886378825,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "CoCo壱番屋, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本",
+          "openingHours": "Mo-Su 00:00-05:00,11:00-24:00",
+          "phone": "+81 52 324 0067"
+        }
+      },
+      {
+        "externalId": "osm-node-1889623049",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1889623049",
+        "name": "ガスト",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1497892,
+          "longitude": 136.8985575,
+          "formattedAddress": "ガスト, 伏見通, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0025, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1889623049,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "western;japanese",
+          "address": "ガスト, 伏見通, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0025, 日本",
+          "openingHours": "24/7",
+          "phone": "+81 52-339-1257"
+        }
+      },
+      {
+        "externalId": "osm-node-1889638766",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1889638766",
+        "name": "新瀋陽",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1576873,
+          "longitude": 136.8981409,
+          "formattedAddress": "新瀋陽, 伏見通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1889638766,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "新瀋陽, 伏見通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0016, 日本",
+          "openingHours": "Mo-Su 11:00-14:00,17:00-24:00",
+          "phone": "+81 52-265-8885"
+        }
+      },
+      {
+        "externalId": "osm-node-1935054933",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1935054933",
+        "name": "Peco Peco Cup",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1497115,
+          "longitude": 136.9034669,
+          "formattedAddress": "Peco Peco Cup, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1935054933,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "japanese",
+          "address": "Peco Peco Cup, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1936314384",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1936314384",
+        "name": "サンモリッツ",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1463072,
+          "longitude": 136.9027515,
+          "formattedAddress": "サンモリッツ, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1936314384,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "サンモリッツ, 大津通, 金山二丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本",
+          "openingHours": "Mo-Su 09:00-19:30"
+        }
+      },
+      {
+        "externalId": "osm-node-1941283260",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1941283260",
+        "name": "吉野家",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1581983,
+          "longitude": 136.8991325,
+          "formattedAddress": "吉野家, 大須通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1941283260,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "吉野家, 大須通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本",
+          "openingHours": "24/7",
+          "phone": "+81 52-220-1759"
+        }
+      },
+      {
+        "externalId": "osm-node-1943754628",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1943754628",
+        "name": "すき家",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1567199,
+          "longitude": 136.9056193,
+          "formattedAddress": "すき家, 大津通, 上前津二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0013, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1943754628,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "すき家, 大津通, 上前津二丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0013, 日本",
+          "openingHours": "24/7"
+        }
+      },
+      {
+        "externalId": "osm-node-1943756387",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1943756387",
+        "name": "Mega Kebab",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1593222,
+          "longitude": 136.9057722,
+          "formattedAddress": "Mega Kebab, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1943756387,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "kebab",
+          "address": "Mega Kebab, 大津通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-1947386801",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1947386801",
+        "name": "一楽",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.148204,
+          "longitude": 136.9017349,
+          "formattedAddress": "一楽, 銅アルミ　ステンレス　榊原株式会社　古沢歩道橋, 伊勢山二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1947386801,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "sushi",
+          "address": "一楽, 銅アルミ　ステンレス　榊原株式会社　古沢歩道橋, 伊勢山二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0021, 日本",
+          "phone": "+81 52-321-5288"
+        }
+      },
+      {
+        "externalId": "osm-node-1990926801",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1990926801",
+        "name": "Azur Cafe",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1510004,
+          "longitude": 136.8997652,
+          "formattedAddress": "Azur Cafe, 山王通, 伊勢山一丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0026, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1990926801,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "Azur Cafe, 山王通, 伊勢山一丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0026, 日本",
+          "openingHours": "Mo-Fr 10:00-21:00; Sa 10:00-20:00",
+          "phone": "+81 52-339-4151"
+        }
+      },
+      {
+        "externalId": "osm-node-1993131259",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/1993131259",
+        "name": "紅林",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.151798,
+          "longitude": 136.892306,
+          "formattedAddress": "紅林, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 1993131259,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "紅林, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本",
+          "phone": "+81 52 3215577"
+        }
+      },
+      {
+        "externalId": "osm-node-2004398267",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2004398267",
+        "name": "喜多楽",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.15248,
+          "longitude": 136.904658,
+          "formattedAddress": "喜多楽, 大津通, 平和一丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0014, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2004398267,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "喜多楽, 大津通, 平和一丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0014, 日本",
+          "openingHours": "Tu-Sa 11:00-14:00,18:00-23:00; Su 11:00-14:30,17:30-23:00",
+          "phone": "+81 52-332-5515"
+        }
+      },
+      {
+        "externalId": "osm-node-2072670663",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2072670663",
+        "name": "ラパン",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.155319,
+          "longitude": 136.88834,
+          "formattedAddress": "ラパン, 名駅通, 西日置町九丁目, 柳堀町, 中川区, 名古屋市, 愛知県, 454-0004, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2072670663,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "ラパン, 名駅通, 西日置町九丁目, 柳堀町, 中川区, 名古屋市, 愛知県, 454-0004, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2108418336",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2108418336",
+        "name": "フレッシュネスバーガー",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1627522,
+          "longitude": 136.9070434,
+          "formattedAddress": "フレッシュネスバーガー, 若宮大通, 千代田一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-8430, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2108418336,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "フレッシュネスバーガー, 若宮大通, 千代田一丁目, 新栄町, 中区, 名古屋市, 愛知県, 460-8430, 日本",
+          "openingHours": "Mo-Su,PH 10:00-21:00"
+        }
+      },
+      {
+        "externalId": "osm-node-2135822130",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2135822130",
+        "name": "コメダ珈琲店",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1456621,
+          "longitude": 136.8948221,
+          "formattedAddress": "コメダ珈琲店, 正木通第14号, 正木三丁目, 古渡町, 中区, 名古屋市, 愛知県, 454-0024, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2135822130,
+          "osmType": "node",
+          "amenity": "cafe",
+          "cuisine": "coffee_shop",
+          "address": "コメダ珈琲店, 正木通第14号, 正木三丁目, 古渡町, 中区, 名古屋市, 愛知県, 454-0024, 日本",
+          "phone": "+81 52-331-5341"
+        }
+      },
+      {
+        "externalId": "osm-node-2303489706",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2303489706",
+        "name": "rajakivi",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1453729,
+          "longitude": 136.9048293,
+          "formattedAddress": "rajakivi, 中央線西通, 金山三丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2303489706,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "rajakivi, 中央線西通, 金山三丁目, 大井町, 中区, 名古屋市, 愛知県, 460-0021, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2343290842",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2343290842",
+        "name": "大連飯店",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1618297,
+          "longitude": 136.8990726,
+          "formattedAddress": "大連飯店, 若宮大通, 大須一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2343290842,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "大連飯店, 若宮大通, 大須一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-8799, 日本",
+          "phone": "+81 52-229-0125"
+        }
+      },
+      {
+        "externalId": "osm-node-2372917618",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2372917618",
+        "name": "フジヤマ55",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1607005,
+          "longitude": 136.9051107,
+          "formattedAddress": "フジヤマ55, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2372917618,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle",
+          "address": "フジヤマ55, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2372917623",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2372917623",
+        "name": "松屋",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1584141,
+          "longitude": 136.9066411,
+          "formattedAddress": "松屋, 松ケ枝通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "provider-reported",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2372917623,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "beef_bowl",
+          "address": "松屋, 松ケ枝通, 大須四丁目, 富士見町, 中区, 名古屋市, 愛知県, 460-0015, 日本",
+          "openingHours": "24/7",
+          "phone": "+81-52-238-3671"
+        }
+      },
+      {
+        "externalId": "osm-node-2392699344",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2392699344",
+        "name": "御幸亭",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1581251,
+          "longitude": 136.901593,
+          "formattedAddress": "御幸亭, 門前町通り, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2392699344,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "御幸亭, 門前町通り, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2423978152",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2423978152",
+        "name": "いふう",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1451525,
+          "longitude": 136.9010057,
+          "formattedAddress": "いふう, 向田町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0022, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2423978152,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "korean",
+          "address": "いふう, 向田町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0022, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2451364199",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2451364199",
+        "name": "新大黒",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1458427,
+          "longitude": 136.8977252,
+          "formattedAddress": "新大黒, 正木町第12号線, 正木二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0024, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2451364199,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle",
+          "address": "新大黒, 正木町第12号線, 正木二丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0024, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2469865005",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2469865005",
+        "name": "マクドナルド",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1501813,
+          "longitude": 136.8933393,
+          "formattedAddress": "マクドナルド, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2469865005,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "マクドナルド, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2783397458",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2783397458",
+        "name": "ディープティ",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1659009,
+          "longitude": 136.8950249,
+          "formattedAddress": "ディープティ, 中ノ町通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2783397458,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "curry",
+          "address": "ディープティ, 中ノ町通, 栄一丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2843290054",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2843290054",
+        "name": "マグノリア",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1457664,
+          "longitude": 136.8921625,
+          "formattedAddress": "マグノリア, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2843290054,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "マグノリア, 江川線, 尾頭橋三丁目, 尾頭橋, 中川区, 名古屋市, 愛知県, 454-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2886936407",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2886936407",
+        "name": "栄福",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1611837,
+          "longitude": 136.8896402,
+          "formattedAddress": "栄福, 名古屋高速5号万場線, 畑江通二丁目, 畑江通, 中村区, 名古屋市, 愛知県, 453-0851, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2886936407,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "chinese",
+          "address": "栄福, 名古屋高速5号万場線, 畑江通二丁目, 畑江通, 中村区, 名古屋市, 愛知県, 453-0851, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2892814501",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2892814501",
+        "name": "男前パスタ",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.16611,
+          "longitude": 136.898203,
+          "formattedAddress": "男前パスタ, 三蔵通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2892814501,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "pasta",
+          "address": "男前パスタ, 三蔵通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-0008, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-2923491665",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/2923491665",
+        "name": "SMASH",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1602767,
+          "longitude": 136.8993334,
+          "formattedAddress": "SMASH, 赤門明王通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 2923491665,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "burger",
+          "address": "SMASH, 赤門明王通, 大須二丁目, 門前町, 中区, 名古屋市, 愛知県, 460-8799, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3510394712",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3510394712",
+        "name": "Sochi",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1667393,
+          "longitude": 136.8970271,
+          "formattedAddress": "Sochi, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3510394712,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "russian",
+          "address": "Sochi, 伏見通, 栄二丁目, 栄, 中区, 名古屋市, 愛知県, 460-8633, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3703982453",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3703982453",
+        "name": "まるす",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1663263,
+          "longitude": 136.8908609,
+          "formattedAddress": "まるす, 三蔵通, 名駅南二丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3703982453,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "cuisine": "noodle",
+          "address": "まるす, 三蔵通, 名駅南二丁目, 松重町, 中村区, 名古屋市, 愛知県, 450-0003, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3704401365",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3704401365",
+        "name": "ぼちぼち Farmers",
+        "area": "osu",
+        "category": "cafe",
+        "location": {
+          "latitude": 35.1564468,
+          "longitude": 136.9011286,
+          "formattedAddress": "ぼちぼち Farmers, 岩井橘町線, 橘一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3704401365,
+          "osmType": "node",
+          "amenity": "cafe",
+          "address": "ぼちぼち Farmers, 岩井橘町線, 橘一丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0018, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3832394126",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3832394126",
+        "name": "オゼキ",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.1455267,
+          "longitude": 136.897625,
+          "formattedAddress": "オゼキ, 正木古渡町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0024, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3832394126,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "オゼキ, 正木古渡町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0024, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3833928222",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3833928222",
+        "name": "Cesari",
+        "area": "osu",
+        "category": "restaurant",
+        "location": {
+          "latitude": 35.158576,
+          "longitude": 136.9026733,
+          "formattedAddress": "Cesari, 東仁王門通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3833928222,
+          "osmType": "node",
+          "amenity": "restaurant",
+          "address": "Cesari, 東仁王門通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-3833928235",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/3833928235",
+        "name": "たこ本舗",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1588675,
+          "longitude": 136.9048111,
+          "formattedAddress": "たこ本舗, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 3833928235,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "address": "たこ本舗, 新天地通, 大須三丁目, 門前町, 中区, 名古屋市, 愛知県, 460-0011, 日本"
+        }
+      },
+      {
+        "externalId": "osm-node-4066615304",
+        "provider": "openstreetmap",
+        "providerEntityId": "node/4066615304",
+        "name": "ドミノ・ピザ",
+        "area": "osu",
+        "category": "fast_food",
+        "location": {
+          "latitude": 35.1457351,
+          "longitude": 136.901058,
+          "formattedAddress": "ドミノ・ピザ, 向田町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0022, 日本"
+        },
+        "businessStatus": "unknown",
+        "budgetState": "unknown",
+        "openingState": "unknown",
+        "sourceRetrievedAt": "2026-08-28T06:08:06.13Z",
+        "attribution": {
+          "label": "© OpenStreetMap contributors",
+          "href": "https://www.openstreetmap.org/copyright",
+          "license": "ODbL 1.0"
+        },
+        "confidence": "provider-reported",
+        "verifiedFields": [],
+        "unknownFields": [
+          "businessStatus",
+          "price",
+          "party",
+          "mood",
+          "officialAction",
+          "phoneAction"
+        ],
+        "osm": {
+          "osmId": 4066615304,
+          "osmType": "node",
+          "amenity": "fast_food",
+          "cuisine": "pizza",
+          "address": "ドミノ・ピザ, 向田町線, 金山一丁目, 古渡町, 中区, 名古屋市, 愛知県, 460-0022, 日本"
+        }
+      }
+    ]
+  }
+}

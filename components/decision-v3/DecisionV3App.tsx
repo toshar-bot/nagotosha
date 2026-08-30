@@ -15,6 +15,7 @@ import { BrandHeader } from '@/components/common/BrandHeader';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
+import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import { readDecisionV3HistoryState } from '@/lib/decision-v3-history';
 import {
   scrollDecisionV3ElementIntoView,
@@ -239,6 +240,13 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
+  const candidateAnalyticsSource = useCallback((candidateId: string | null | undefined) => {
+    const candidate = candidateLookup.get(candidateId);
+    if (!candidate || candidateSource === 'demo') return undefined;
+    if (!candidate.provenance) return 'formal-reviewed' as const;
+    return candidate.provenance.provider === 'google-places' ? 'google' as const : 'osm' as const;
+  }, [candidateLookup, candidateSource]);
+
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -259,19 +267,36 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     const action = candidate?.actions.find(
       (item) => isDecisionV3ActionDisplayable(item) && item.href === href,
     );
-    if (!action) return;
+    const providerAction = getDecisionV3ExternalProviderActions(candidate)
+      .find((item) => item.href === href);
+    if (!action && !providerAction) return;
+    const candidateSource = candidateAnalyticsSource(candidateId);
+    const analyticsFields = candidateSource ? { candidate_source: candidateSource } : {};
 
-    if (action.type === 'access') {
-      trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
-    } else if (action.type === 'official') {
-      trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+    if (action?.type === 'access' || providerAction?.kind === 'map') {
+      if (candidateSource) {
+        trackAnalyticsEvent('map_click', { store_id: candidateId, surface, ...analyticsFields });
+      } else {
+        trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
+      }
+    } else if (action?.type === 'official' || providerAction?.kind === 'website') {
+      if (candidateSource) {
+        trackAnalyticsEvent('official_click', { store_id: candidateId, surface, ...analyticsFields });
+      } else {
+        trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+      }
     } else if (
-      action.type === 'phone'
-      || (action.type === 'reservation' && action.href?.startsWith('tel:'))
+      action?.type === 'phone'
+      || (action?.type === 'reservation' && action.href?.startsWith('tel:'))
+      || providerAction?.kind === 'phone'
     ) {
-      trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+      if (candidateSource) {
+        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface, ...analyticsFields });
+      } else {
+        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+      }
     }
-  }, [candidateLookup, state.chosenId, state.detailId, state.step]);
+  }, [candidateAnalyticsSource, candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
@@ -358,9 +383,11 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             );
           }}
           onDetail={(candidateId) => navigate('detail', candidateId, () => {
+            const candidateSource = candidateAnalyticsSource(candidateId);
             trackAnalyticsEvent('candidate_detail_view', {
               store_id: candidateId,
               source: 'candidates',
+              ...(candidateSource ? { candidate_source: candidateSource } : {}),
             });
           })}
           onCompare={() => navigate('compare')}
@@ -433,10 +460,12 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
 
               commitDecisionState(decidedState, 'push');
               deferDecisionV3Analytics(() => {
+                const candidateSource = candidateAnalyticsSource(candidateId);
                 trackAnalyticsEvent('store_decided', {
                   store_id: candidateId,
                   compare_count: state.compareIds.length,
                   party: chosenState.conditions.party,
+                  ...(candidateSource ? { candidate_source: candidateSource } : {}),
                 });
               });
             });

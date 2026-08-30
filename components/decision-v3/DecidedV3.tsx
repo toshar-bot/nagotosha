@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
+import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import type { CandidateActionType } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
@@ -121,6 +122,7 @@ export function DecidedV3({ candidateId, candidateLookup, onCompare, onDetail }:
     .sort((left, right) => ACTION_PRIORITY[left.type] - ACTION_PRIORITY[right.type]);
   const accessAction = displayableActions.find((action) => action.type === 'access');
   const supplementalExternalActions = displayableActions.filter((action) => action.type !== 'access');
+  const providerActions = getDecisionV3ExternalProviderActions(candidate);
   const hours = candidate.detailInfo?.hours?.value.split('（')[0];
   const confirmationItems = [
     {
@@ -259,6 +261,27 @@ export function DecidedV3({ candidateId, candidateLookup, onCompare, onDetail }:
                 return (
                   <a
                     key={action.type}
+                    href={action.href}
+                    className={styles.decidedActionSecondary}
+                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {action.label}
+                  </a>
+                );
+              })}
+            </div>
+          ) : null}
+
+          {providerActions.length > 0 && candidate.provenance ? (
+            <div className={styles.decidedSecondaryActions}>
+              <p className={styles.detailPendingMessage}>
+                {candidate.provenance.label}。なごとしゃ確認済みの公式情報ではありません。
+              </p>
+              {providerActions.map((action) => {
+                const external = isExternalHref(action.href);
+                return (
+                  <a
+                    key={`${action.kind}-${action.href}`}
                     href={action.href}
                     className={styles.decidedActionSecondary}
                     {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}

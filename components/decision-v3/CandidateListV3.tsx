@@ -221,6 +221,16 @@ export function CandidateListV3({
                     </div>
                     <div className={`${styles.candidateBody} ${styles.candidateCardBody}`}>
                       <h2>{candidate.name}</h2>
+                      {candidate.provenance ? (
+                        <div className={styles.externalCandidateSource}>
+                          <strong>{candidate.provenance.label}</strong>
+                          <p>{candidate.provenance.reason}・人数／気分の適性は未確認</p>
+                          <span>{candidate.provenance.attribution.label}</span>
+                          {candidate.provenance.duplicateStatus === 'unresolved' ? (
+                            <p>提供元間の同一性は確認中です</p>
+                          ) : null}
+                        </div>
+                      ) : null}
                       <dl className={styles.candidateMetadata}>
                         <div>
                           <dt>
