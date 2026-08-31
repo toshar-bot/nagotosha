@@ -390,9 +390,9 @@ function toPresentationPrice(record: ExternalCandidatePoolRecord): DecisionV3Pri
 function buildSourceReason(record: ExternalCandidatePoolRecord): string {
   const area = AREA_LABEL[record.area];
   const opening = record.businessStatus === 'operational'
-    ? '現在営業中'
+    ? '営業状態は提供元情報・現在の開店状況は未確認'
     : record.openingState === 'provider-reported'
-      ? '営業時間はprovider掲載'
+      ? '営業時間はprovider掲載・現在の開店状況は未確認'
       : '営業状態は未確認';
   return `${area}・${opening}`;
 }

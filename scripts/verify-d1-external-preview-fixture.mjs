@@ -93,6 +93,39 @@ try {
   assert(getDecisionV3ExternalProviderActions(adaptedOsm).every((action) => action.href),
     'external action DOM needs an explicit safe href');
 
+  const statusOverclaimWords = ['現在営業中', '今開いている', 'すぐ入れる', '予約可能'];
+  const assertStatusCopy = (candidate, label) => {
+    const reason = candidate?.provenance?.reason ?? '';
+    assert(statusOverclaimWords.every((word) => !reason.includes(word)),
+      `${label} status reason must not overclaim current opening`);
+    assert(reason.includes('現在の開店状況は未確認'),
+      `${label} status reason must explicitly limit current opening claims`);
+  };
+
+  const googleOperational = mapGooglePlaceToExternalRecord(
+    'sakae',
+    { ...GOOGLE_PLACES_CONTRACT_FIXTURE.places[0], businessStatus: 'OPERATIONAL' },
+    new Date('2026-08-30T00:00:00.000Z'),
+  );
+  assertStatusCopy(adaptExternalCandidatePoolRecord(googleOperational), 'Google OPERATIONAL');
+
+  const osmOperational = { ...rawOsm[0], businessStatus: 'operational', openingState: 'provider-reported' };
+  assertStatusCopy(adaptExternalCandidatePoolRecord(osmOperational), 'OSM operational');
+
+  const providerReported = adaptExternalCandidatePoolRecord({
+    ...rawOsm[0], businessStatus: 'unknown', openingState: 'provider-reported',
+  });
+  assertStatusCopy(providerReported, 'provider-reported opening');
+
+  const unknownStatus = adaptExternalCandidatePoolRecord({
+    ...rawOsm[0], businessStatus: 'unknown', openingState: 'unknown',
+  });
+  assert(unknownStatus?.provenance?.reason.includes('営業状態は未確認'),
+    'unknown status copy must remain explicit');
+
+  const closed = adaptExternalCandidatePoolRecord({ ...rawOsm[0], businessStatus: 'closed' });
+  assert(closed === null, 'closed external candidates must remain excluded');
+
   const googleRecord = mapGooglePlaceToExternalRecord(
     'sakae',
     GOOGLE_PLACES_CONTRACT_FIXTURE.places[0],
