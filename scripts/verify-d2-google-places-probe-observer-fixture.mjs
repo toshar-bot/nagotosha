@@ -123,8 +123,9 @@ export async function runGooglePlacesObserverFixture() {
     };
     const { searchGooglePlacesNearby } = require(path.join(root, 'lib/google-places-provider.ts'));
     const environment = Object.freeze({
-      NODE_ENV: 'production', VERCEL_ENV: 'preview', EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true',
-      GOOGLE_PLACES_PROVIDER_ENABLED: 'true', GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
+      NODE_ENV: 'production',
+      GOOGLE_PLACES_PROVIDER_ENABLED: 'true', GOOGLE_PLACES_LOCAL_DIAGNOSTIC_ENABLED: 'true',
+      GOOGLE_PLACES_DIAGNOSTIC_CONTEXT: 'local-one-shot',
       GOOGLE_PLACES_API_KEY: 'synthetic-observer-token',
     });
     const now = new Date('2026-09-02T00:00:00Z');
@@ -133,6 +134,27 @@ export async function runGooglePlacesObserverFixture() {
     const makeObserver = (transport, budget, area, onRecord) => createObservedGooglePlacesFetch({
       transport, budget, area, providerEntryPoint: ENTRY, providerSourceSha256, onRecord,
     });
+
+    // These calls exercise the actual provider guard, not only the pure policy.
+    // Any attempted outbound call hits denyNetwork and fails the fixture.
+    const blockedEnvironments = [
+      {},
+      { NODE_ENV: 'development', EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true',
+        GOOGLE_PLACES_PROVIDER_ENABLED: 'true', GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
+        GOOGLE_PLACES_API_KEY: 'synthetic-observer-token' },
+      ...['production', 'preview', 'development', 'unknown', ''].map((value) => ({
+        ...environment, VERCEL_ENV: value, GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
+      })),
+      ...['1', '0', 'unknown', ''].map((value) => ({ ...environment, VERCEL: value })),
+      ...['development', 'test', 'unknown', undefined].map((value) => ({ ...environment, NODE_ENV: value })),
+      ...['GOOGLE_PLACES_PROVIDER_ENABLED', 'GOOGLE_PLACES_LOCAL_DIAGNOSTIC_ENABLED',
+        'GOOGLE_PLACES_DIAGNOSTIC_CONTEXT', 'GOOGLE_PLACES_API_KEY'].flatMap((field) =>
+        [undefined, ''].map((value) => ({ ...environment, [field]: value }))),
+    ];
+    for (const blockedEnvironment of blockedEnvironments) {
+      const blocked = await searchGooglePlacesNearby('meieki', providerBudget, now, blockedEnvironment);
+      check(blocked.length === 0 && networkAttempts === 0, 'DIAGNOSTIC_ONLY_PROVIDER_GUARD');
+    }
 
     async function runCase(name, factory, expected, options = {}) {
       let providerFetchCalls = 0;
@@ -328,7 +350,9 @@ export async function runGooglePlacesObserverFixture() {
       cases: results, records,
       hard_cap: { limit_three_transport_calls: capCalls, fourth_blocked_before_transport: true,
         concurrent_limit_one_transport_calls: concurrentCalls, concurrent_second_blocked: true,
-        middleware_race: 'CONCURRENT_FIRST_REQUEST_RACE_PRESENT', middleware_changed: false },
+        scope: 'LOCAL_DIAGNOSTIC_PROCESS_ONLY',
+        deployed_google_budget: 'NOT_APPLICABLE_LIVE_PATH_REMOVED',
+        blocked_provider_environment_cases: blockedEnvironments.length },
       integrity: { response_identity: true, original_body_consumption_before_provider: 0, provider_results_unchanged: true,
         request_identity: true, coordinate_redacted_digest_same_across_areas: true, sink_failure_preserves_response: true },
       retention: { sentinel_count: SENTINELS.length, sentinel_leaks: 0, raw_body_saved: 0, error_messages_saved: 0,

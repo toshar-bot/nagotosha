@@ -1,6 +1,5 @@
 import osmFixture from '@/data/external-candidate-pool/osm-nagoya-fixture.json';
 import { getActiveFormalDecisionV3Candidates } from '@/lib/decision-v3-formal-adapter';
-import { searchGooglePlacesNearby } from '@/lib/google-places-provider';
 import { isSafeExternalUrl } from '@/lib/decision-safety';
 import type {
   AreaChoice,
@@ -37,7 +36,7 @@ const UNKNOWN_BOOLEAN: DecisionV3KnownBoolean = 'unknown';
 const UNKNOWN_PARTY: PartyChoice[] = [];
 const UNKNOWN_MOOD: MoodChoice[] = [];
 
-export { EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG } from '@/lib/google-places-policy';
+export const EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG = 'EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED';
 export const EXTERNAL_CANDIDATE_POOL_LIMITS = {
   maxCandidatesPerArea: 50,
   maxCandidatesPerResult: 3,
@@ -130,7 +129,9 @@ export function adaptExternalCandidatePoolRecord(
       provider: record.provider,
       providerEntityId: record.providerEntityId,
       sourceRetrievedAt: record.sourceRetrievedAt,
-      attribution: record.attribution,
+      attribution: record.provider === 'openstreetmap' && record.attribution.license
+        ? { ...record.attribution, label: `${record.attribution.label} / ${record.attribution.license}` }
+        : record.attribution,
       businessStatus: record.businessStatus,
       verifiedFields: record.verifiedFields,
       unknownFields: record.unknownFields,
@@ -158,40 +159,6 @@ export function getExternalPreviewDecisionV3Candidates(
     .map(adaptExternalCandidatePoolRecord)
     .filter((candidate): candidate is DecisionV3Candidate => Boolean(candidate));
   return [...formal, ...dedupeExternalCandidates(formal, external).candidates];
-}
-
-/**
- * Preview-only live composition. It makes at most one Places request for the
- * caller-selected area and retains OSM/formal candidates if Google is absent,
- * over quota, timed out, or unavailable. It is never called by Production.
- */
-export async function getExternalPreviewDecisionV3CandidatesWithGoogle(
-  area: Exclude<AreaChoice, 'any'> | null,
-  allowLiveRequest: boolean,
-  now = new Date(),
-): Promise<readonly DecisionV3Candidate[]> {
-  const base = getExternalPreviewDecisionV3Candidates(now);
-  if (!area || !shouldRequestGoogleForArea(area, allowLiveRequest)) return base;
-
-  const googleRecords = await searchGooglePlacesNearby(area, {
-    maxRequests: EXTERNAL_CANDIDATE_POOL_LIMITS.maxProviderRequestsPerSession,
-    timeoutMs: EXTERNAL_CANDIDATE_POOL_LIMITS.providerTimeoutMs,
-    allowLiveRequest,
-  }, now);
-  const googleCandidates = googleRecords
-    .map(adaptExternalCandidatePoolRecord)
-    .filter((candidate): candidate is DecisionV3Candidate => Boolean(candidate));
-  return [...base, ...dedupeExternalCandidates(base, googleCandidates).candidates];
-}
-
-export function shouldRequestGoogleForArea(
-  area: Exclude<AreaChoice, 'any'> | null,
-  allowLiveRequest: boolean,
-): boolean {
-  // `allowLiveRequest` is the middleware-issued, one-time session grant. An
-  // explicit area plus that grant intentionally permits one Preview request
-  // even when the raw OSM catalog already has three records for the area.
-  return Boolean(area && allowLiveRequest);
 }
 
 /**

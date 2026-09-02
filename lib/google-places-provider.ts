@@ -1,6 +1,6 @@
 import type { AreaChoice } from '@/types/decision-v3';
 import {
-  isGooglePlacesPreviewProviderEnabled,
+  isGooglePlacesLocalDiagnosticEnabled,
   type GooglePlacesEnvironment,
 } from '@/lib/google-places-policy';
 import { isSafeExternalUrl } from '@/lib/decision-safety';
@@ -45,9 +45,10 @@ type GooglePlacesRuntimeEnvironment = GooglePlacesEnvironment & {
 };
 
 /**
- * Returns an in-memory Google Places result only when the server has a key.
- * This function is server-only by convention: callers must never serialize
- * the key or raw response to a client, repository fixture, or log.
+ * Diagnostic-only in-memory provider, unreachable from deployed Web routes.
+ * Local callers must inject explicit diagnostic conditions and a temporary
+ * key in their process environment. Synthetic tests may inject an environment
+ * and transport. Never serialize keys or raw responses to clients or logs.
  */
 export async function searchGooglePlacesNearby(
   area: Exclude<AreaChoice, 'any'>,
@@ -55,7 +56,7 @@ export async function searchGooglePlacesNearby(
   now = new Date(),
   environment: GooglePlacesRuntimeEnvironment = process.env,
 ): Promise<readonly ExternalCandidatePoolRecord[]> {
-  if (!requestBudget.allowLiveRequest || !isGooglePlacesPreviewProviderEnabled(environment)) return [];
+  if (!requestBudget.allowLiveRequest || !isGooglePlacesLocalDiagnosticEnabled(environment)) return [];
   const apiKey = environment.GOOGLE_PLACES_API_KEY;
   if (!apiKey || requestBudget.maxRequests < 1) return [];
 

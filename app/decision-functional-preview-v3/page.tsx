@@ -1,15 +1,10 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import DecisionV3App from '@/components/decision-v3/DecisionV3App';
 import { getDecisionV3CandidatesForSource } from '@/lib/decision-v3-candidate-lookup';
 import {
   EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG,
-  getExternalPreviewDecisionV3CandidatesWithGoogle,
+  getExternalPreviewDecisionV3Candidates,
 } from '@/lib/external-candidate-pool';
-import {
-  GOOGLE_PLACES_REQUEST_HEADER,
-  isGooglePlacesPreviewProviderEnabled,
-} from '@/lib/google-places-policy';
 import type { AreaChoice } from '@/types/decision-v3';
 
 export const metadata: Metadata = {
@@ -27,20 +22,19 @@ type Props = {
 };
 
 export default async function DecisionFunctionalPreviewV3Page({ searchParams }: Props) {
-  const demoAllowed = process.env.NODE_ENV === 'development'
+  const demoAllowed = process.env.VERCEL_ENV !== 'production' && (
+    process.env.NODE_ENV === 'development'
     || process.env.VERCEL_ENV === 'preview'
-    || process.env.VERCEL_ENV === 'development';
+    || process.env.VERCEL_ENV === 'development'
+  );
   const externalArea = readExternalArea(searchParams?.externalArea);
   const externalPoolEnabled = demoAllowed
     && process.env[EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG] === 'true'
     && externalArea !== null;
-  const allowGoogleRequest = externalPoolEnabled
-    && isGooglePlacesPreviewProviderEnabled(process.env)
-    && headers().get(GOOGLE_PLACES_REQUEST_HEADER) === '1';
   const candidateSource = demoAllowed ? 'demo' : 'formal';
   const activeCandidateSource = externalPoolEnabled ? 'external-preview' : candidateSource;
   const candidates = externalPoolEnabled
-    ? await getExternalPreviewDecisionV3CandidatesWithGoogle(externalArea, allowGoogleRequest)
+    ? getExternalPreviewDecisionV3Candidates()
     : getDecisionV3CandidatesForSource(candidateSource);
 
   return <DecisionV3App candidateSource={activeCandidateSource} candidates={candidates} />;

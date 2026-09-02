@@ -52,13 +52,10 @@ try {
     dedupeExternalCandidates,
     getExternalPreviewDecisionV3Candidates,
     getOsmExternalCandidatePool,
-    shouldRequestGoogleForArea,
   } = require(path.join(root, 'lib/external-candidate-pool.ts'));
   const {
     GOOGLE_PRODUCTION_READY,
-    isGooglePlacesExternalArea,
-    isGooglePlacesPreviewProviderEnabled,
-    shouldGrantGooglePlacesRequest,
+    isGooglePlacesLocalDiagnosticEnabled,
   } = require(path.join(root, 'lib/google-places-policy.ts'));
   const { GOOGLE_PLACES_NEARBY_FIELD_MASK } = require(
     path.join(root, 'types/external-candidate-pool.ts'),
@@ -89,6 +86,10 @@ try {
     'OSM records must retain isolated provider identity');
 
   const adaptedOsm = adaptExternalCandidatePoolRecord(rawOsm[0]);
+  assert(adaptedOsm?.provenance?.attribution.label.includes(rawOsm[0].attribution.license),
+    'OSM visible attribution must include the supplied license');
+  assert(rawOsm[0].attribution.label === '© OpenStreetMap contributors',
+    'OSM presentation must not mutate source attribution');
   assert(adaptedOsm?.actions.length === 0, 'OSM fields must not become verified formal actions');
   assert(getDecisionV3ExternalProviderActions(adaptedOsm).every((action) => action.href),
     'external action DOM needs an explicit safe href');
@@ -148,6 +149,8 @@ try {
     priceLevel: 'PRICE_LEVEL_INEXPENSIVE',
   }, new Date())?.budgetState === 'unknown', 'priceLevel must never infer a yen range');
   const adaptedGoogle = adaptExternalCandidatePoolRecord(googleRecord);
+  assert(adaptedGoogle?.provenance?.attribution === googleRecord.attribution,
+    'Google attribution must remain unchanged');
   const strictBudget = selectDecisionV3Candidates({
     conditions: conditions('solo', 'under1000', 'light', 'sakae'),
     preferences: [],
@@ -157,30 +160,50 @@ try {
     'known Google JPY range must participate in strict budget fallback');
 
   assert(GOOGLE_PRODUCTION_READY === false, 'Production Google readiness must remain hard-off');
-  assert(!isGooglePlacesPreviewProviderEnabled({
+  const localDiagnosticEnvironment = {
     NODE_ENV: 'production',
-    EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true',
     GOOGLE_PLACES_PROVIDER_ENABLED: 'true',
-    GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
-  }), 'Production must never enable Google even with flags');
-  assert(!isGooglePlacesPreviewProviderEnabled({ NODE_ENV: 'development' }),
-    'unknown flags must fail closed');
-  const previewEnvironment = {
+    GOOGLE_PLACES_LOCAL_DIAGNOSTIC_ENABLED: 'true',
+    GOOGLE_PLACES_DIAGNOSTIC_CONTEXT: 'local-one-shot',
+  };
+  assert(isGooglePlacesLocalDiagnosticEnabled(localDiagnosticEnvironment),
+    'local diagnostic requires every explicit diagnostic-only condition');
+  let diagnosticPolicyCases = 1;
+  const assertDiagnosticDisabled = (environment, label) => {
+    diagnosticPolicyCases += 1;
+    assert(!isGooglePlacesLocalDiagnosticEnabled(environment), label);
+  };
+  assertDiagnosticDisabled({}, 'unset environment must fail closed');
+  assertDiagnosticDisabled({
     NODE_ENV: 'development',
     EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED: 'true',
     GOOGLE_PLACES_PROVIDER_ENABLED: 'true',
     GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
-  };
-  assert(isGooglePlacesExternalArea('meieki') && !isGooglePlacesExternalArea('any'),
-    'Google gate must accept only supported explicit areas');
-  assert(shouldGrantGooglePlacesRequest({
-    environment: previewEnvironment, externalAreaRequested: true, sessionRequestAlreadyUsed: false,
-  }), 'one explicit Preview request may be granted');
-  assert(!shouldGrantGooglePlacesRequest({
-    environment: previewEnvironment, externalAreaRequested: true, sessionRequestAlreadyUsed: true,
-  }), 'a second session request must be denied');
-  assert(shouldRequestGoogleForArea('meieki', true), 'valid granted area may request Google once');
-  assert(!shouldRequestGoogleForArea(null, true), 'no external area must keep Google off');
+  }, 'legacy Preview flags must not enable Google');
+  for (const nodeEnvironment of ['production', 'development', 'test', 'unknown', undefined]) {
+    for (const vercelEnvironment of ['production', 'preview', 'development', 'unknown', '']) {
+      assertDiagnosticDisabled({
+        ...localDiagnosticEnvironment,
+        NODE_ENV: nodeEnvironment,
+        VERCEL_ENV: vercelEnvironment,
+        GOOGLE_PLACES_PREVIEW_ENABLED: 'true',
+      }, 'every Vercel environment must reject diagnostic Google calls');
+    }
+  }
+  for (const vercelMarker of ['1', '0', 'true', 'false', 'unknown', '']) {
+    assertDiagnosticDisabled({ ...localDiagnosticEnvironment, VERCEL: vercelMarker },
+      'any declared Vercel runtime marker must fail closed');
+  }
+  for (const field of Object.keys(localDiagnosticEnvironment)) {
+    for (const value of [undefined, '', 'false', 'unknown']) {
+      assertDiagnosticDisabled({ ...localDiagnosticEnvironment, [field]: value },
+        'missing or unknown local diagnostic contract field must fail closed');
+    }
+  }
+  for (const nodeEnvironment of ['development', 'test']) {
+    assertDiagnosticDisabled({ ...localDiagnosticEnvironment, NODE_ENV: nodeEnvironment },
+      'ordinary development and test environment must not enable diagnostics');
+  }
   assert(GOOGLE_PLACES_NEARBY_REQUEST_BODY_FIXTURE.includedTypes.includes('fast_food_restaurant')
     && !GOOGLE_PLACES_NEARBY_REQUEST_BODY_FIXTURE.includedTypes.includes('fast_food'),
   'Nearby request must use the valid fast_food_restaurant type');
@@ -263,6 +286,13 @@ try {
     'formal condition matrix must cover exactly 256 combinations');
   assert(report.external.matched + report.external.no_match + report.external.data_unavailable === 256,
     'external condition matrix must cover exactly 256 combinations');
+  assert(report.formal.matched === 137 && report.formal.no_match === 119
+    && report.formal.data_unavailable === 0,
+  'formal-only coverage baseline must remain 137 matched and 119 no-match');
+  assert(report.external.matched === 157 && report.external.no_match === 99
+    && report.external.data_unavailable === 0 && report.external.filled === 56
+    && report.external.externalOnly === 20,
+  'formal plus OSM fallback coverage must remain 157/99 with 56 fills and 20 external-only');
 
   const allowed = sanitizeDecisionAnalyticsPayload('map_click', {
     store_id: 'google-contract-fixture',
@@ -284,6 +314,7 @@ try {
     osmPerArea: Object.fromEntries(areas.map((area) => [area, fixture.areas[area].length])),
     formalCount: formal.length,
     externalCandidateCount: external.length,
+    diagnosticPolicyCases,
     matrix: report,
     liveGoogleRequests: 0,
     rawProviderResponsesStored: 0,

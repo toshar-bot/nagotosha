@@ -1,13 +1,8 @@
 /**
- * Configuration-only Google Places policy. Every environment must explicitly
- * opt in; missing or unknown values are fail-closed.
+ * Diagnostic-only Google Places policy. This module is not part of a Web
+ * entry chain. Local one-shot callers must explicitly opt in via their process
+ * environment; no deployed environment, cookie or request header can grant it.
  */
-export const EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG = 'EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED';
-export const GOOGLE_PLACES_PROVIDER_ENABLED_FLAG = 'GOOGLE_PLACES_PROVIDER_ENABLED';
-export const GOOGLE_PLACES_PREVIEW_ENABLED_FLAG = 'GOOGLE_PLACES_PREVIEW_ENABLED';
-export const GOOGLE_PLACES_SESSION_COOKIE = 'nago.d1.google-places-used';
-export const GOOGLE_PLACES_REQUEST_HEADER = 'x-nagotosha-google-places-request';
-
 /**
  * Monthly/daily usage needs Cloud quota plus durable shared state. D1 has
  * neither configured, so an app deployment must never enable Google in
@@ -17,43 +12,21 @@ export const GOOGLE_PRODUCTION_READY = false;
 
 export type GooglePlacesEnvironment = {
   NODE_ENV?: string;
+  VERCEL?: string;
   VERCEL_ENV?: string;
-  EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED?: string;
   GOOGLE_PLACES_PROVIDER_ENABLED?: string;
-  GOOGLE_PLACES_PREVIEW_ENABLED?: string;
+  GOOGLE_PLACES_LOCAL_DIAGNOSTIC_ENABLED?: string;
+  GOOGLE_PLACES_DIAGNOSTIC_CONTEXT?: string;
 };
 
-export function isGooglePlacesExternalArea(value: string | null | undefined): boolean {
-  return value === 'meieki' || value === 'sakae' || value === 'osu';
-}
-
-export function isNonProductionPreviewEnvironment(environment: GooglePlacesEnvironment): boolean {
-  return environment.NODE_ENV === 'development'
-    || environment.VERCEL_ENV === 'preview'
-    || environment.VERCEL_ENV === 'development';
-}
-
-export function isGooglePlacesPreviewProviderEnabled(
+export function isGooglePlacesLocalDiagnosticEnabled(
   environment: GooglePlacesEnvironment,
 ): boolean {
-  return isNonProductionPreviewEnvironment(environment)
-    && environment.EXTERNAL_CANDIDATE_POOL_PREVIEW_ENABLED === 'true'
+  return environment.NODE_ENV === 'production'
+    && environment.VERCEL === undefined
+    && environment.VERCEL_ENV === undefined
     && environment.GOOGLE_PLACES_PROVIDER_ENABLED === 'true'
-    && environment.GOOGLE_PLACES_PREVIEW_ENABLED === 'true'
+    && environment.GOOGLE_PLACES_LOCAL_DIAGNOSTIC_ENABLED === 'true'
+    && environment.GOOGLE_PLACES_DIAGNOSTIC_CONTEXT === 'local-one-shot'
     && GOOGLE_PRODUCTION_READY === false;
-}
-
-/**
- * Pure request-budget decision shared by middleware and fixtures. The cookie
- * only limits a browser session; it is intentionally not treated as a
- * durable daily or monthly counter.
- */
-export function shouldGrantGooglePlacesRequest(input: {
-  environment: GooglePlacesEnvironment;
-  externalAreaRequested: boolean;
-  sessionRequestAlreadyUsed: boolean;
-}): boolean {
-  return isGooglePlacesPreviewProviderEnabled(input.environment)
-    && input.externalAreaRequested
-    && !input.sessionRequestAlreadyUsed;
 }
