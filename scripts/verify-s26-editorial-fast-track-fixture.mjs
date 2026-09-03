@@ -199,11 +199,62 @@ try {
     note: 'fixture',
   }] }) === 0, 'active hold must fail closed');
 
-  const decisionApp = fs.readFileSync(path.join(root, 'components/decision-v3/DecisionV3App.tsx'), 'utf8');
-  for (const eventName of ['candidates_view', 'candidate_detail_view', 'compare_view', 'store_decided', 'map_click', 'official_click', 'phone_click']) {
-    assert(decisionApp.includes(`trackAnalyticsEvent('${eventName}'`), `${eventName}: GA4 event contract missing`);
+  const { sanitizeDecisionAnalyticsPayload } = require(path.join(root, 'lib/analytics.ts'));
+  const formalCandidateId = active[0]?.id;
+  assert(typeof formalCandidateId === 'string' && formalCandidateId.length > 0,
+    'analytics regression fixture requires an actual active formal candidate ID');
+  const formalAnalyticsCases = [
+    ['candidate_detail_view', {
+      store_id: formalCandidateId, source: 'candidates', candidate_source: 'formal-reviewed',
+    }],
+    ['store_decided', {
+      store_id: formalCandidateId, compare_count: 2, party: 'solo', candidate_source: 'formal-reviewed',
+    }],
+    ...['map_click', 'official_click', 'phone_click'].map((eventName) => [eventName, {
+      store_id: formalCandidateId, surface: 'detail', candidate_source: 'formal-reviewed',
+    }]),
+  ];
+  for (const [eventName, parameters] of formalAnalyticsCases) {
+    const expected = JSON.stringify(parameters);
+    const payload = sanitizeDecisionAnalyticsPayload(eventName, { ...parameters });
+    assert(Object.prototype.hasOwnProperty.call(payload, 'store_id')
+      && payload.store_id === formalCandidateId
+      && payload.candidate_source === 'formal-reviewed',
+    `${eventName}: formal-reviewed store_id must remain present and unchanged`);
+    assert(JSON.stringify(payload) === expected,
+      `${eventName}: formal analytics must retain the complete allowed payload`);
   }
-  assert(decisionApp.includes('store_id: candidateId'), 'GA4 candidate events must use the active formal store id');
+
+  const externalPrivateValue = 'synthetic-external-private-value';
+  const prohibitedAliases = Object.fromEntries([
+    'provider_entity_id', 'place_id', 'placeId', 'PlaceID', 'candidate_id', 'external_id',
+    'provider_id', 'osm_id', 'hashed_id', 'token', 'url', 'phone', 'address',
+    'latitude', 'longitude', 'coordinates', 'query', 'raw_response', 'api_key',
+    'cookie', 'session_marker',
+  ].map((key) => [key, externalPrivateValue]));
+  for (const candidateSource of ['google', 'osm']) {
+    for (const eventName of ['candidate_detail_view', 'store_decided', 'map_click', 'official_click', 'phone_click']) {
+      for (const sourceFirst of [false, true]) {
+        const parameters = sourceFirst
+          ? { candidate_source: candidateSource, store_id: externalPrivateValue, ...prohibitedAliases }
+          : { store_id: externalPrivateValue, ...prohibitedAliases, candidate_source: candidateSource };
+        const payload = sanitizeDecisionAnalyticsPayload(eventName, parameters);
+        assert(!Object.prototype.hasOwnProperty.call(payload, 'store_id'),
+          `${eventName}: external store_id must be absent regardless of key order`);
+        assert(JSON.stringify(payload) === JSON.stringify({ candidate_source: candidateSource })
+          && !JSON.stringify(payload).includes(externalPrivateValue),
+        `${eventName}: external analytics must retain only its coarse provider source`);
+      }
+    }
+  }
+
+  assert(JSON.stringify(sanitizeDecisionAnalyticsPayload('candidates_view', {
+    party: 'solo', candidate_count: 2, result_status: 'matched',
+  })) === JSON.stringify({ party: 'solo', candidate_count: 2, result_status: 'matched' }),
+  'candidates_view must preserve party, candidate count, and match status');
+  assert(JSON.stringify(sanitizeDecisionAnalyticsPayload('compare_view', { compare_count: 2, source: 'candidates' }))
+    === JSON.stringify({ compare_count: 2, source: 'candidates' }),
+  'compare_view must preserve the comparison count and originating surface');
 
   console.log('S2.6 editorial-fast-track fixture: PASS');
 } finally {

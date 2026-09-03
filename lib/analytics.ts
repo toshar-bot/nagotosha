@@ -60,8 +60,13 @@ export function sanitizeDecisionAnalyticsPayload(
 ): Record<string, string | number | boolean> {
   const allowedKeys = new Set(EVENT_PARAMETER_ALLOWLIST[name]);
   const payload: Record<string, string | number | boolean> = {};
+  // Read the source before iterating so provider IDs are redacted regardless
+  // of parameter insertion order, even if a caller includes store_id.
+  const externalSource = parameters.candidate_source === 'google'
+    || parameters.candidate_source === 'osm';
 
   for (const [key, value] of Object.entries(parameters)) {
+    if (key === 'store_id' && externalSource) continue;
     if (allowedKeys.has(key as AnalyticsParameterKey) && isAnalyticsParameterAllowed(name, key, value)) {
       payload[key] = value as string | number | boolean;
     }

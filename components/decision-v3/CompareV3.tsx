@@ -7,6 +7,7 @@ import { reorderDecisionV3Ids } from '@/lib/decision-v3-pointer-reorder';
 import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import type { CompareAxis } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
+import ExternalCandidateProvenanceV3 from './ExternalCandidateProvenanceV3';
 import styles from './decision-v3.module.css';
 
 const compareLabel = (index: number) => `候補${String.fromCharCode(65 + index)}`;
@@ -419,6 +420,7 @@ export function CompareV3({
                     </button>
                   </header>
 
+                  <ExternalCandidateProvenanceV3 candidate={candidate} density="compact" />
                   <div className={styles.compareVerticalCandidateBody}>
                     <CandidatePhotoV3 candidate={candidate} ratio="thumb" />
                     <div className={styles.compareVerticalValueBlock}>

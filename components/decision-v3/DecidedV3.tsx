@@ -9,6 +9,7 @@ import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import type { CandidateActionType } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
+import ExternalCandidateProvenanceV3 from './ExternalCandidateProvenanceV3';
 import styles from './decision-v3.module.css';
 
 type Props = {
@@ -216,6 +217,7 @@ export function DecidedV3({ candidateId, candidateLookup, onCompare, onDetail }:
               <dd>{candidate.genre}</dd>
             </div>
           </dl>
+          <ExternalCandidateProvenanceV3 candidate={candidate} />
         </div>
 
         {accessAction ? (
@@ -272,11 +274,8 @@ export function DecidedV3({ candidateId, candidateLookup, onCompare, onDetail }:
             </div>
           ) : null}
 
-          {providerActions.length > 0 && candidate.provenance ? (
+          {providerActions.length > 0 ? (
             <div className={styles.decidedSecondaryActions}>
-              <p className={styles.detailPendingMessage}>
-                {candidate.provenance.label}。なごとしゃ確認済みの公式情報ではありません。
-              </p>
               {providerActions.map((action) => {
                 const external = isExternalHref(action.href);
                 return (

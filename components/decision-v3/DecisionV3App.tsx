@@ -240,11 +240,16 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
-  const candidateAnalyticsSource = useCallback((candidateId: string | null | undefined) => {
+  const candidateAnalyticsFields = useCallback((candidateId: string | null | undefined) => {
     const candidate = candidateLookup.get(candidateId);
-    if (!candidate || candidateSource === 'demo') return undefined;
-    if (!candidate.provenance) return 'formal-reviewed' as const;
-    return candidate.provenance.provider === 'google-places' ? 'google' as const : 'osm' as const;
+    if (!candidate) return {};
+    if (candidateSource === 'demo') return { store_id: candidate.id };
+    if (!candidate.provenance) {
+      return { store_id: candidate.id, candidate_source: 'formal-reviewed' as const };
+    }
+    return {
+      candidate_source: candidate.provenance.provider === 'google-places' ? 'google' as const : 'osm' as const,
+    };
   }, [candidateLookup, candidateSource]);
 
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
@@ -270,33 +275,20 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     const providerAction = getDecisionV3ExternalProviderActions(candidate)
       .find((item) => item.href === href);
     if (!action && !providerAction) return;
-    const candidateSource = candidateAnalyticsSource(candidateId);
-    const analyticsFields = candidateSource ? { candidate_source: candidateSource } : {};
+    const analyticsFields = candidateAnalyticsFields(candidateId);
 
     if (action?.type === 'access' || providerAction?.kind === 'map') {
-      if (candidateSource) {
-        trackAnalyticsEvent('map_click', { store_id: candidateId, surface, ...analyticsFields });
-      } else {
-        trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
-      }
+      trackAnalyticsEvent('map_click', { surface, ...analyticsFields });
     } else if (action?.type === 'official' || providerAction?.kind === 'website') {
-      if (candidateSource) {
-        trackAnalyticsEvent('official_click', { store_id: candidateId, surface, ...analyticsFields });
-      } else {
-        trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
-      }
+      trackAnalyticsEvent('official_click', { surface, ...analyticsFields });
     } else if (
       action?.type === 'phone'
       || (action?.type === 'reservation' && action.href?.startsWith('tel:'))
       || providerAction?.kind === 'phone'
     ) {
-      if (candidateSource) {
-        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface, ...analyticsFields });
-      } else {
-        trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
-      }
+      trackAnalyticsEvent('phone_click', { surface, ...analyticsFields });
     }
-  }, [candidateAnalyticsSource, candidateLookup, state.chosenId, state.detailId, state.step]);
+  }, [candidateAnalyticsFields, candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
@@ -383,11 +375,9 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
             );
           }}
           onDetail={(candidateId) => navigate('detail', candidateId, () => {
-            const candidateSource = candidateAnalyticsSource(candidateId);
             trackAnalyticsEvent('candidate_detail_view', {
-              store_id: candidateId,
               source: 'candidates',
-              ...(candidateSource ? { candidate_source: candidateSource } : {}),
+              ...candidateAnalyticsFields(candidateId),
             });
           })}
           onCompare={() => navigate('compare')}
@@ -460,12 +450,10 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
 
               commitDecisionState(decidedState, 'push');
               deferDecisionV3Analytics(() => {
-                const candidateSource = candidateAnalyticsSource(candidateId);
                 trackAnalyticsEvent('store_decided', {
-                  store_id: candidateId,
                   compare_count: state.compareIds.length,
                   party: chosenState.conditions.party,
-                  ...(candidateSource ? { candidate_source: candidateSource } : {}),
+                  ...candidateAnalyticsFields(candidateId),
                 });
               });
             });

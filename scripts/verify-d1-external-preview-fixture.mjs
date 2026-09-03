@@ -305,9 +305,15 @@ try {
     latitude: 35,
   });
   assert(JSON.stringify(allowed) === JSON.stringify({
-    store_id: 'google-contract-fixture',
     candidate_source: 'google',
-  }), 'analytics allow-list must strip provider, URL, phone, address, and coordinates');
+  }), 'analytics allow-list must strip external store_id, provider, URL, phone, address, and coordinates');
+  const allowedFormal = sanitizeDecisionAnalyticsPayload('candidate_detail_view', {
+    store_id: formal[0].id,
+    candidate_source: 'formal-reviewed',
+  });
+  assert(allowedFormal.store_id === formal[0].id
+    && allowedFormal.candidate_source === 'formal-reviewed',
+  'formal-reviewed analytics must retain the formal store_id');
 
   console.log(JSON.stringify({
     status: 'PASS',

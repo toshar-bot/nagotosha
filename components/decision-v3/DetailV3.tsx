@@ -4,6 +4,7 @@ import type { DecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-look
 import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import { isExternalHref } from '@/lib/decision-v3-detail-actions';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
+import ExternalCandidateProvenanceV3 from './ExternalCandidateProvenanceV3';
 import styles from './decision-v3.module.css';
 
 type Props = {
@@ -130,6 +131,7 @@ export function DetailV3({
               <dd>{candidate.genre}</dd>
             </div>
           </dl>
+          <ExternalCandidateProvenanceV3 candidate={candidate} />
         </div>
       </article>
 
@@ -152,12 +154,9 @@ export function DetailV3({
         </section>
       ) : null}
 
-      {providerActions.length > 0 && candidate.provenance ? (
+      {providerActions.length > 0 ? (
         <section className={styles.detailSection} aria-labelledby="detail-provider-actions-title">
           <h2 id="detail-provider-actions-title">提供元の情報を開く</h2>
-          <p className={styles.detailPendingMessage}>
-            {candidate.provenance.label}。なごとしゃ確認済みの公式情報ではありません。
-          </p>
           <div className={styles.detailActions}>
             {providerActions.map((action) => (
               <a
