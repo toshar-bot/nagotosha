@@ -252,10 +252,13 @@ export function selectDecisionV3Candidates({
   }
 
   if (matchedCandidateIds.length > 0) {
+    const candidateIds = matchedCandidateIds.slice(0, 3);
     return {
       kind: 'matched',
-      candidateIds: matchedCandidateIds.slice(0, 3),
-      reasonsByCandidateId,
+      candidateIds,
+      reasonsByCandidateId: Object.fromEntries(
+        candidateIds.map((candidateId) => [candidateId, reasonsByCandidateId[candidateId]]),
+      ),
     };
   }
   if (unknownFields.length > 0) {
