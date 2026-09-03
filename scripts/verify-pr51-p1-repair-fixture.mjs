@@ -29,6 +29,26 @@ const textOnly = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 const load = (file) => require(path.join(root, file));
 
+function verifyRawIdentifiers(html, candidates, label) {
+  check(!/data-(?:compare-candidate-id|candidate-id|external-id|provider-id)\b/.test(html),
+    `${label}_NO_IDENTIFIER_ATTRIBUTE_ALIAS`);
+  let externalCandidates = 0, linkedProviderIdentifiers = 0;
+  for (const candidate of candidates) {
+    if (!candidate.provenance) continue;
+    externalCandidates += 1;
+    check(!html.includes(candidate.id), `${label}_RAW_EXTERNAL_ID_ZERO`);
+    check(!html.includes(candidate.provenance.providerEntityId), `${label}_RAW_PROVIDER_ID_ZERO`);
+    for (const link of candidate.provenance.linkedProviderEntities) {
+      check(!html.includes(link.providerEntityId), `${label}_RAW_LINKED_PROVIDER_ID_ZERO`);
+      linkedProviderIdentifiers += 1;
+    }
+  }
+  // Raw markup includes every attribute, aria value and hidden input. Checking
+  // visible text alone would miss the previous Compare row-attribute leak.
+  return { externalCandidates, linkedProviderIdentifiers, externalIdOccurrences: 0,
+    providerEntityIdOccurrences: 0, linkedProviderIdOccurrences: 0, identifierAttributes: 0 };
+}
+
 function replace(object, key, value) {
   const previous = object[key];
   object[key] = value;
@@ -91,6 +111,7 @@ function verifySurfaces(cases, modules) {
       const text = textOnly(html);
       const provenance = candidate.provenance;
       const blocks = count(html, 'data-external-provenance=');
+      const identifiers = verifyRawIdentifiers(html, [candidate], `${label}_${surface}`);
       check(blocks === (provenance ? 1 : 0), `${label}_${surface}_BLOCK_COUNT`);
       if (provenance) {
         check(text.includes(provenance.label), `${label}_${surface}_SOURCE_LABEL`);
@@ -125,7 +146,7 @@ function verifySurfaces(cases, modules) {
       } else {
         check(!text.includes('ODbL'), `${label}_${surface}_NO_EXTERNAL_LICENSE`);
       }
-      results.push({ cohort: label, surface, provenanceBlocks: blocks, passed: true });
+      results.push({ cohort: label, surface, provenanceBlocks: blocks, ...identifiers, passed: true });
     }
     for (const density of ['default', 'compact']) {
       const html = renderToStaticMarkup(React.createElement(ExternalCandidateProvenanceV3, { candidate, density }));
@@ -140,6 +161,176 @@ function verifySurfaces(cases, modules) {
   const unresolved = { ...cases[0].candidate, provenance: { ...cases[0].candidate.provenance, duplicateStatus: 'unresolved' } };
   check(renderToStaticMarkup(React.createElement(ExternalCandidateProvenanceV3, { candidate: unresolved }))
     .includes('提供元間の同一性は確認中です'), 'UNRESOLVED_COPY_RETAINED');
+  return results;
+}
+
+function verifyCompareCohorts(cohorts, modules) {
+  const { createDecisionV3CandidateLookup, CompareV3 } = modules;
+  return cohorts.map(({ label, candidates, source }) => {
+    const html = renderToStaticMarkup(React.createElement(CompareV3, {
+      candidateLookup: createDecisionV3CandidateLookup(source, candidates),
+      compareOrder: candidates.map((candidate) => candidate.id), axes: ['budget', 'area'],
+      onBack: noOp, onReorder: noOp, onSetOrder: noOp,
+      onToggleAxis: noOp, onReorderAxis: noOp, onDecide: noOp,
+    }));
+    const identifiers = verifyRawIdentifiers(html, candidates, label);
+    const rows = html.match(/<article\b[\s\S]*?<\/article>/g) ?? [];
+    check(rows.length === candidates.length, `${label}_ARTICLE_COUNT`);
+    check(count(html, 'data-compare-candidate-row="true"') === candidates.length,
+      `${label}_NON_IDENTIFYING_ROW_COUNT`);
+    const escapeHtml = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#x27;');
+    for (const [index, row] of rows.entries()) {
+      const candidate = candidates[index], provenance = candidate.provenance;
+      check(row.includes(`<h2>${escapeHtml(candidate.name)}</h2>`), `${label}_VISIBLE_ORDER`);
+      check(count(row, 'data-external-provenance=') === (provenance ? 1 : 0),
+        `${label}_ROW_PROVENANCE_COUNT`);
+      check(count(row, 'data-external-provider=') === (provenance ? 1 : 0),
+        `${label}_ROW_PROVIDER_BADGE_COUNT`);
+      if (provenance?.provider === 'openstreetmap') {
+        check(count(row, 'ODbL 1.0') === 1 && row.includes('© OpenStreetMap contributors'),
+          `${label}_ROW_OSM_ATTRIBUTION`);
+      } else {
+        check(!row.includes('OpenStreetMap') && !row.includes('ODbL'), `${label}_ROW_OSM_ATTRIBUTION_ABSENT`);
+        if (provenance) check(row.includes('Google Maps'), `${label}_ROW_GOOGLE_ATTRIBUTION`);
+      }
+    }
+    return { cohort: label, rows: rows.length, visibleOrderPreserved: true,
+      provenanceBlocks: count(html, 'data-external-provenance='), ...identifiers, passed: true };
+  });
+}
+
+function verifyCompareReorder(cohorts, createDecisionV3CandidateLookup) {
+  const comparePath = path.join(root, 'components/decision-v3/CompareV3.tsx');
+  const source = fs.readFileSync(comparePath, 'utf8');
+  check(!source.includes('data-compare-candidate-id'), 'COMPARE_SOURCE_OLD_ATTRIBUTE_ZERO');
+  check(!source.includes('dataset.compareCandidateId'), 'COMPARE_SOURCE_DATASET_ID_ZERO');
+  check(source.includes('data-compare-candidate-row="true"'), 'COMPARE_SOURCE_ROW_MARKER');
+  check(/const COMPARE_REORDER_DRAG_TOKEN\s*=\s*['"]decision-v3-compare-reorder['"]/.test(source),
+    'COMPARE_SOURCE_FIXED_DRAG_TOKEN');
+  check(/setData\(\s*['"]text\/plain['"]\s*,\s*COMPARE_REORDER_DRAG_TOKEN\s*,?\s*\)/.test(source),
+    'COMPARE_SOURCE_FIXED_DRAG_PAYLOAD');
+  check(!/setData\([^)]*candidate\.id/s.test(source), 'COMPARE_SOURCE_DRAG_ID_ZERO');
+  check(!source.includes('.getData('), 'COMPARE_SOURCE_NO_PAYLOAD_READBACK');
+  const compiled = ts.transpileModule(source, { fileName: comparePath, compilerOptions: {
+    target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS,
+    jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
+  } }).outputText;
+  const results = [];
+  for (const { label, candidates, source: candidateSource } of cohorts) {
+    if (candidates.length !== 3) continue;
+    const initialOrder = candidates.map((candidate) => candidate.id);
+    const candidateLookup = createDecisionV3CandidateLookup(candidateSource, candidates);
+    const slots = [];
+    let cursor = 0, order = [...initialOrder], rowCount = 3, rootAvailable = true;
+    let orderCalls = 0, keyboardCalls = 0, scopedQueries = 0;
+    const hooks = {
+      useState(initial) {
+        const index = cursor++;
+        if (!slots[index]) slots[index] = { value: typeof initial === 'function' ? initial() : initial };
+        return [slots[index].value, (value) => { slots[index].value = typeof value === 'function'
+          ? value(slots[index].value) : value; }];
+      },
+      useRef(initial) { const index = cursor++; if (!slots[index]) slots[index] = { current: initial }; return slots[index]; },
+      useMemo(factory) { cursor += 1; return factory(); },
+      useEffect: noOp,
+    };
+    const module = { exports: {} };
+    const context = vm.createContext({ document: { querySelectorAll: () => {
+      throw new Error('P1_FIXTURE_COMPARE_UNSCOPED_DOCUMENT_QUERY');
+    } } });
+    const localRequire = (request) => request === 'react' ? hooks
+      : request === 'react/jsx-runtime' ? jsxRuntime
+        : request.startsWith('@/') ? load(request.slice(2))
+          : request.startsWith('.') ? require(path.resolve(path.dirname(comparePath), request)) : require(request);
+    new vm.Script(`(function(require,module,exports){${compiled}\n})`, { filename: comparePath })
+      .runInContext(context)(localRequire, module, module.exports);
+    const flatten = (element) => !element || typeof element !== 'object' ? []
+      : [element, ...[element.props?.children].flat(Infinity).flatMap(flatten)];
+    const render = () => {
+      cursor = 0;
+      const elements = flatten(module.exports.CompareV3({ compareOrder: order, candidateLookup,
+        axes: ['budget', 'area'], onBack: noOp, onDecide: noOp,
+        onToggleAxis: noOp, onReorderAxis: noOp,
+        onSetOrder: (next) => { order = [...next]; orderCalls += 1; },
+        onReorder: (id, direction) => {
+          const index = order.indexOf(id), target = index + direction;
+          if (target >= 0 && target < order.length) [order[index], order[target]] = [order[target], order[index]];
+          keyboardCalls += 1;
+        },
+      }));
+      const host = elements.find((element) => element.type === 'div' && element.ref);
+      check(host, 'COMPARE_HARNESS_SCOPED_HOST');
+      host.ref.current = rootAvailable ? { querySelectorAll: (selector) => {
+        check(selector === '[data-compare-candidate-row]', 'COMPARE_HARNESS_NON_ID_SELECTOR');
+        scopedQueries += 1;
+        return Array.from({ length: rowCount }, (_, index) => ({
+          getBoundingClientRect: () => ({ top: index * 100, height: 80 }),
+          get dataset() { throw new Error('P1_FIXTURE_COMPARE_DOM_DATASET_READ'); },
+          getAttribute() { throw new Error('P1_FIXTURE_COMPARE_DOM_ATTRIBUTE_READ'); },
+        }));
+      } } : null;
+      return { rows: elements.filter((element) => element.props['data-compare-candidate-row']),
+        handles: elements.filter((element) => element.props['data-compare-reorder-handle']) };
+    };
+    const pointerTarget = { setPointerCapture: noOp, hasPointerCapture: () => true, releasePointerCapture: noOp };
+    const pointer = (pointerType, from, to) => {
+      const handle = render().handles[from];
+      const event = (clientY) => ({ pointerType, pointerId: 17, clientX: 10, clientY,
+        currentTarget: pointerTarget, preventDefault: noOp });
+      handle.props.onPointerDown(event(from * 100 + 40));
+      handle.props.onPointerMove(event(to * 100 + 40));
+      handle.props.onPointerUp(event(to * 100 + 40));
+    };
+    let pointerCases = 0, rowCountRejected = 0;
+    for (const pointerType of ['touch', 'pen']) {
+      for (const [from, to, expected] of [[0, 2, [1, 2, 0]], [2, 0, [2, 0, 1]]]) {
+        order = [...initialOrder]; rowCount = 3; rootAvailable = true;
+        const before = orderCalls;
+        pointer(pointerType, from, to);
+        check(orderCalls === before + 1 && order.every((id, index) => id === initialOrder[expected[index]]),
+          `${label}_${pointerType}_ACTUAL_TARGET_MAPPING`);
+        const displayed = render().rows;
+        check(displayed.every((row, index) => row.key === order[index]), `${label}_RENDER_ORDER_AFTER_POINTER`);
+        pointerCases += 1;
+      }
+      for (const invalidCount of [0, 2, 4]) {
+        order = [...initialOrder]; rowCount = invalidCount;
+        const before = orderCalls;
+        pointer(pointerType, 0, 2);
+        check(orderCalls === before && order.every((id, index) => id === initialOrder[index]),
+          `${label}_${pointerType}_ROW_COUNT_FAIL_CLOSED`);
+        rowCountRejected += 1;
+      }
+      rootAvailable = false; rowCount = 3;
+      const before = orderCalls;
+      pointer(pointerType, 0, 2);
+      check(orderCalls === before, `${label}_${pointerType}_MISSING_ROOT_FAIL_CLOSED`);
+      rootAvailable = true;
+    }
+    let nativeDragCases = 0;
+    for (const [from, to, expected] of [[0, 2, [1, 2, 0]], [2, 0, [2, 0, 1]]]) {
+      order = [...initialOrder]; rowCount = 3;
+      const payloads = [];
+      render().handles[from].props.onDragStart({ dataTransfer: { effectAllowed: '',
+        setData: (type, value) => payloads.push({ type, value }) } });
+      check(payloads.length === 1 && payloads[0].type === 'text/plain'
+        && payloads[0].value === 'decision-v3-compare-reorder', `${label}_ACTUAL_NATIVE_FIXED_TOKEN`);
+      for (const candidate of candidates) check(!payloads[0].value.includes(candidate.id)
+        && (!candidate.provenance || !payloads[0].value.includes(candidate.provenance.providerEntityId)),
+      `${label}_NATIVE_NO_IDENTIFIER_PAYLOAD`);
+      render().rows[to].props.onDrop();
+      check(order.every((id, index) => id === initialOrder[expected[index]]), `${label}_NATIVE_STATE_REORDER`);
+      nativeDragCases += 1;
+    }
+    order = [...initialOrder];
+    render().handles[0].props.onKeyDown({ key: ' ', preventDefault: noOp });
+    render().handles[0].props.onKeyDown({ key: 'ArrowDown', preventDefault: noOp });
+    check(keyboardCalls === 1 && order[1] === initialOrder[0], `${label}_KEYBOARD_REORDER`);
+    results.push({ cohort: label, pointerCases, rowCountRejected, missingRootRejected: 2,
+      nativeDragCases, keyboardCases: 1, scopedQueries, fixedTokenOnly: true,
+      domIdentifierReads: 0, targetMappingPassed: true });
+  }
   return results;
 }
 
@@ -369,8 +560,9 @@ try {
     evaluatedAsOf: '2026-09-02', evaluatedAt: '2026-09-02T00:00:00.000Z',
   });
   check(formal.length === 9, 'FORMAL_NINE');
-  const osmActionless = external.getOsmExternalCandidatePool().map(external.adaptExternalCandidatePoolRecord)
-    .find((candidate) => candidate && candidate.provenance.providerActions.length === 0);
+  const osmCandidates = external.getOsmExternalCandidatePool().map(external.adaptExternalCandidatePoolRecord)
+    .filter(Boolean);
+  const osmActionless = osmCandidates.find((candidate) => candidate.provenance.providerActions.length === 0);
   check(osmActionless, 'ACTUAL_ACTIONLESS_OSM_EXISTS');
   const syntheticActions = [
     { kind: 'map', label: 'Synthetic map action', href: 'https://fixture.example/map' },
@@ -381,10 +573,12 @@ try {
   // an OSM URL in the product adapter or change any provider/action contract.
   const osmActionable = { ...osmActionless, id: 'osm-synthetic-p1-candidate', name: 'Synthetic OSM candidate',
     provenance: { ...osmActionless.provenance, providerEntityId: 'synthetic-private-osm-entity',
-      providerActions: syntheticActions, linkedProviderEntities: [] } };
+      providerActions: syntheticActions,
+      linkedProviderEntities: [{ provider: 'openstreetmap', providerEntityId: 'synthetic-private-linked-osm-entity' }] } };
   const google = { ...osmActionable, id: 'google-synthetic-p1-candidate', name: 'Synthetic Google candidate',
     provenance: { ...osmActionable.provenance, kind: 'external-live-google', provider: 'google-places',
       providerEntityId: 'synthetic-private-google-entity', label: 'Google Maps情報',
+      linkedProviderEntities: [{ provider: 'google-places', providerEntityId: 'synthetic-private-linked-google-entity' }],
       attribution: { label: 'Google Maps', href: 'https://fixture.example/attribution', license: 'Google Maps Platform' } } };
   const { DEMO_CANDIDATES } = load('data/decision-v3-demo.ts');
   const cases = [
@@ -399,6 +593,18 @@ try {
   ]));
   const analytics = load('lib/analytics.ts');
   const provenance = verifySurfaces(cases, { createDecisionV3CandidateLookup, ExternalCandidateProvenanceV3, surfaces });
+  const cohorts = [
+    { label: 'osm-actionless-one', candidates: [osmActionless], source: 'external-preview' },
+    { label: 'osm-actionable-synthetic-one', candidates: [osmActionable], source: 'external-preview' },
+    { label: 'google-synthetic-one', candidates: [google], source: 'external-preview' },
+    { label: 'osm-three', candidates: osmCandidates.slice(0, 3), source: 'external-preview' },
+    { label: 'mixed-three', candidates: [google, osmActionless, osmActionable], source: 'external-preview' },
+    { label: 'formal-three', candidates: formal.slice(0, 3), source: 'formal' },
+  ];
+  check(cohorts.every(({ candidates }) => new Set(candidates.map(({ id }) => id)).size === candidates.length),
+    'COHORT_UNIQUE_IDENTITIES');
+  const compareCohorts = verifyCompareCohorts(cohorts, { createDecisionV3CandidateLookup, CompareV3: surfaces.Compare });
+  const compareReorder = verifyCompareReorder(cohorts, createDecisionV3CandidateLookup);
   const sanitizer = verifySanitizer(analytics.sanitizeDecisionAnalyticsPayload, formal[0]);
   const appCallbacks = verifyAppCallbacks(cases.filter(({ label }) => label !== 'osm-actionless'), {
     analytics, stateModule: load('lib/decision-v3-state.ts'), historyModule: load('lib/decision-v3-history.ts'),
@@ -406,7 +612,7 @@ try {
     isDecisionV3ActionDisplayable: load('lib/decision-v3-action-gate.ts').isDecisionV3ActionDisplayable,
   });
   check(networkAttempts === 0, 'NETWORK_ATTEMPTS_ZERO');
-  console.log(JSON.stringify({ status: 'PASS', provenance, sanitizer, appCallbacks, networkAttempts,
+  console.log(JSON.stringify({ status: 'PASS', provenance, compareCohorts, compareReorder, sanitizer, appCallbacks, networkAttempts,
     liveGoogleRequests: 0, liveOsmRequests: 0, credentialReads: 0,
     note: 'Callback harness uses actual App, analytics, state, transition, session and history; real viewport/pointer QA remains a separate gate.' }, null, 2));
 } catch (error) {
