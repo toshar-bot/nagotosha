@@ -1103,6 +1103,28 @@
   font-size: 14px;
 }
 
+.externalCandidateSource[data-provenance-density='card-footnote'] {
+  max-width: 100%;
+  gap: 1px;
+  margin: 5px 0 0;
+  color: var(--ink-600, #667085);
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.externalCandidateSource[data-provenance-density='card-footnote'] strong {
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.externalCandidateStatus {
+  margin: 4px 0 0;
+  color: var(--ink-600, #667085);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .externalCandidateSource p,
 .externalCandidateSource span {
   margin: 0;

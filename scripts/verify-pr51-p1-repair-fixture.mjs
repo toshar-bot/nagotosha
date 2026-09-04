@@ -49,6 +49,122 @@ function verifyRawIdentifiers(html, candidates, label) {
     providerEntityIdOccurrences: 0, linkedProviderIdOccurrences: 0, identifierAttributes: 0 };
 }
 
+function parseMarkupTree(html) {
+  const rootNode = { tag: '#root', attributes: {}, children: [], start: 0, end: html.length };
+  const stack = [rootNode];
+  const voidTags = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+    'link', 'meta', 'param', 'source', 'track', 'wbr']);
+  const tagPattern = /<\/?[a-z][^>]*>/gi;
+  let match;
+  while ((match = tagPattern.exec(html))) {
+    const token = match[0];
+    const closing = token.startsWith('</');
+    const tag = token.match(/^<\/?([a-z0-9-]+)/i)?.[1].toLowerCase();
+    if (!tag) continue;
+    if (closing) {
+      const nodeIndex = stack.findLastIndex((node) => node.tag === tag);
+      if (nodeIndex > 0) {
+        stack[nodeIndex].end = tagPattern.lastIndex;
+        stack.length = nodeIndex;
+      }
+      continue;
+    }
+    const attributes = {};
+    for (const attribute of token.matchAll(/\s([^\s=/>]+)(?:="([^"]*)")?/g)) {
+      attributes[attribute[1]] = attribute[2] ?? '';
+    }
+    const node = { tag, attributes, children: [], start: match.index, end: tagPattern.lastIndex };
+    stack.at(-1).children.push(node);
+    if (!token.endsWith('/>') && !voidTags.has(tag)) stack.push(node);
+  }
+  return rootNode;
+}
+
+const descendants = (node) => node.children.flatMap((child) => [child, ...descendants(child)]);
+const hasClass = (node, className) => (node.attributes.class ?? '').split(/\s+/).includes(className);
+
+function verifyCandidateCardProvenancePlacement(cases, modules) {
+  const { CandidateListV3, createDecisionV3CandidateLookup } = modules;
+  return cases.map(({ label, candidate, source }) => {
+    const html = renderToStaticMarkup(React.createElement(CandidateListV3, {
+      candidateLookup: createDecisionV3CandidateLookup(source, [candidate]),
+      selectionResult: { kind: 'matched', candidateIds: [candidate.id] },
+      conditions: { party: 'solo', budget: 'any', mood: 'hearty', area: 'any' },
+      refine: [], compareIds: [], onToggleCompare: noOp, onDetail: noOp,
+      onCompare: noOp, onBack: noOp, onHome: noOp,
+    }));
+    const identifiers = verifyRawIdentifiers(html, [candidate], `${label}_CANDIDATE_CARD`);
+    const tree = parseMarkupTree(html);
+    const card = descendants(tree).find((node) => node.tag === 'article' && hasClass(node, 'candidateCard'));
+    check(card, `${label}_CANDIDATE_CARD_EXISTS`);
+    const cardNodes = descendants(card);
+    const cardMain = cardNodes.find((node) => hasClass(node, 'candidateCardMain'));
+    const media = cardNodes.find((node) => hasClass(node, 'candidateMedia'));
+    const body = cardNodes.find((node) => hasClass(node, 'candidateCardBody'));
+    check(cardMain && media && body, `${label}_CANDIDATE_CARD_COLUMNS_EXIST`);
+    const cardProvenance = cardNodes.filter((node) => node.attributes['data-external-provenance'] === 'true');
+    const mediaProvenance = descendants(media)
+      .filter((node) => node.attributes['data-external-provenance'] === 'true');
+    const bodyProvenance = descendants(body)
+      .filter((node) => node.attributes['data-external-provenance'] === 'true');
+    const bodyStatus = descendants(body)
+      .filter((node) => hasClass(node, 'externalCandidateStatus'));
+    const expectedBlocks = candidate.provenance ? 1 : 0;
+    check(cardProvenance.length === expectedBlocks, `${label}_CARD_PROVENANCE_EXACT`);
+    check(mediaProvenance.length === expectedBlocks, `${label}_MEDIA_PROVENANCE_EXACT`);
+    check(bodyProvenance.length === 0, `${label}_BODY_PROVENANCE_ZERO`);
+    check(bodyStatus.length === expectedBlocks, `${label}_BODY_EXTERNAL_STATUS_EXACT`);
+    check(descendants(cardMain).includes(media) && descendants(cardMain).includes(body),
+      `${label}_PROVENANCE_WITHIN_CARD_MAIN_LAYOUT`);
+    if (candidate.provenance) {
+      const provenance = mediaProvenance[0];
+      check(provenance.attributes['data-provenance-density'] === 'card-footnote',
+        `${label}_CARD_FOOTNOTE_DENSITY`);
+      const provenanceText = textOnly(html.slice(provenance.start, provenance.end));
+      const areaPrefix = `${candidate.area}・`;
+      const status = candidate.provenance.reason.startsWith(areaPrefix)
+        ? candidate.provenance.reason.slice(areaPrefix.length)
+        : candidate.provenance.reason;
+      const statusText = textOnly(html.slice(bodyStatus[0].start, bodyStatus[0].end)).trim();
+      const bodyText = textOnly(html.slice(body.start, body.end));
+      const { label: combinedAttributionLabel, license = '' } = candidate.provenance.attribution;
+      const attributionLabel = license && combinedAttributionLabel.endsWith(` / ${license}`)
+        ? combinedAttributionLabel.slice(0, -(` / ${license}`.length))
+        : combinedAttributionLabel;
+      const expectedLines = [candidate.provenance.label, '人数／気分の適性は未確認',
+        attributionLabel, license].filter(Boolean);
+      const actualLines = provenance.children
+        .map((node) => textOnly(html.slice(node.start, node.end)).trim())
+        .filter(Boolean);
+      check(expectedLines.length === 4 && actualLines.length === 4
+        && actualLines.every((line, index) => line === expectedLines[index]),
+      `${label}_CARD_FOOTNOTE_EXACT_FOUR_ORDERED_LINES`);
+      check(!provenanceText.includes(candidate.provenance.reason)
+        && !provenanceText.includes(status)
+        && !provenanceText.includes('提供元間の同一性は確認中です'),
+      `${label}_CARD_FOOTNOTE_DETAIL_COPY_ZERO`);
+      check(statusText === status && count(bodyText, status) === 1,
+        `${label}_BODY_STATUS_ONCE_WITHOUT_AREA_PREFIX`);
+      check(count(bodyText, candidate.area) === 1 && !bodyText.includes(candidate.provenance.reason),
+        `${label}_BODY_AREA_PREFIX_NOT_DUPLICATED`);
+      if (candidate.provenance.provider === 'openstreetmap') {
+        check(provenanceText.includes('© OpenStreetMap contributors')
+          && provenanceText.includes('ODbL 1.0'), `${label}_OSM_ATTRIBUTION_RETAINED`);
+      }
+    } else {
+      const bodyText = textOnly(html.slice(body.start, body.end));
+      check(!bodyText.includes('営業状態は提供元情報')
+        && !bodyText.includes('営業時間はprovider掲載')
+        && !bodyText.includes('現在の開店状況は未確認'), `${label}_FORMAL_EXTERNAL_STATUS_ZERO`);
+    }
+    return { cohort: label, cardProvenanceBlocks: cardProvenance.length,
+      mediaProvenanceBlocks: mediaProvenance.length, bodyProvenanceBlocks: bodyProvenance.length,
+      bodyExternalStatusBlocks: bodyStatus.length, cardFootnoteDensity: Boolean(candidate.provenance),
+      cardFootnoteLines: candidate.provenance ? 4 : 0,
+      ...identifiers, passed: true };
+  });
+}
+
 function replace(object, key, value) {
   const previous = object[key];
   object[key] = value;
@@ -115,8 +231,14 @@ function verifySurfaces(cases, modules) {
       check(blocks === (provenance ? 1 : 0), `${label}_${surface}_BLOCK_COUNT`);
       if (provenance) {
         check(text.includes(provenance.label), `${label}_${surface}_SOURCE_LABEL`);
-        check(text.includes(provenance.reason), `${label}_${surface}_REASON`);
-        check(text.includes(provenance.attribution.label), `${label}_${surface}_ATTRIBUTION_LABEL`);
+        if (surface !== 'Candidates') {
+          check(text.includes(provenance.reason), `${label}_${surface}_REASON`);
+        }
+        const attributionLabel = surface === 'Candidates' && provenance.attribution.license
+          && provenance.attribution.label.endsWith(` / ${provenance.attribution.license}`)
+          ? provenance.attribution.label.slice(0, -(` / ${provenance.attribution.license}`.length))
+          : provenance.attribution.label;
+        check(text.includes(attributionLabel), `${label}_${surface}_ATTRIBUTION_LABEL`);
         if (provenance.attribution.license) check(text.includes(provenance.attribution.license),
           `${label}_${surface}_ATTRIBUTION_LICENSE`);
         check(text.includes('人数／気分の適性は未確認'), `${label}_${surface}_UNKNOWN_SUITABILITY`);
@@ -133,6 +255,21 @@ function verifySurfaces(cases, modules) {
         }
         if (surface === 'Compare') {
           check(html.includes('data-provenance-density="compact"'), `${label}_COMPARE_COMPACT`);
+        }
+        if (surface !== 'Candidates') {
+          const unresolvedCandidate = {
+            ...candidate,
+            provenance: { ...provenance, duplicateStatus: 'unresolved' },
+          };
+          const unresolvedLookup = createDecisionV3CandidateLookup(source, [unresolvedCandidate]);
+          const unresolvedHtml = renderToStaticMarkup(React.createElement(Component, {
+            ...props[surface], candidateLookup: unresolvedLookup,
+          }));
+          const unresolvedText = textOnly(unresolvedHtml);
+          check(unresolvedText.includes(provenance.reason),
+            `${label}_${surface}_UNRESOLVED_REASON_RETAINED`);
+          check(unresolvedText.includes('提供元間の同一性は確認中です'),
+            `${label}_${surface}_UNRESOLVED_COPY_RETAINED`);
         }
         if (surface === 'Detail' || surface === 'Decided') {
           const actions = provenance.providerActions;
@@ -158,9 +295,22 @@ function verifySurfaces(cases, modules) {
       }
     }
   }
-  const unresolved = { ...cases[0].candidate, provenance: { ...cases[0].candidate.provenance, duplicateStatus: 'unresolved' } };
-  check(renderToStaticMarkup(React.createElement(ExternalCandidateProvenanceV3, { candidate: unresolved }))
-    .includes('提供元間の同一性は確認中です'), 'UNRESOLVED_COPY_RETAINED');
+  const unresolved = { ...cases[0].candidate,
+    provenance: { ...cases[0].candidate.provenance, duplicateStatus: 'unresolved' } };
+  for (const density of ['default', 'compact']) {
+    const html = renderToStaticMarkup(React.createElement(ExternalCandidateProvenanceV3, {
+      candidate: unresolved, density,
+    }));
+    check(textOnly(html).includes(unresolved.provenance.reason),
+      `UNRESOLVED_${density}_REASON_RETAINED`);
+    check(html.includes('提供元間の同一性は確認中です'),
+      `UNRESOLVED_${density}_COPY_RETAINED`);
+  }
+  const cardFootnote = renderToStaticMarkup(React.createElement(ExternalCandidateProvenanceV3, {
+    candidate: unresolved, density: 'card-footnote',
+  }));
+  check(!textOnly(cardFootnote).includes(unresolved.provenance.reason), 'CARD_FOOTNOTE_REASON_ZERO');
+  check(!cardFootnote.includes('提供元間の同一性は確認中です'), 'CARD_FOOTNOTE_UNRESOLVED_ZERO');
   return results;
 }
 
@@ -593,6 +743,12 @@ try {
   ]));
   const analytics = load('lib/analytics.ts');
   const provenance = verifySurfaces(cases, { createDecisionV3CandidateLookup, ExternalCandidateProvenanceV3, surfaces });
+  const candidateCardPlacement = verifyCandidateCardProvenancePlacement([
+    { label: 'candidate-card-osm-actionless', candidate: osmActionless, source: 'external-preview' },
+    { label: 'candidate-card-osm-actionable', candidate: osmActionable, source: 'external-preview' },
+    { label: 'candidate-card-google-synthetic', candidate: google, source: 'external-preview' },
+    { label: 'candidate-card-formal', candidate: formal[0], source: 'formal' },
+  ], { CandidateListV3: surfaces.Candidates, createDecisionV3CandidateLookup });
   const cohorts = [
     { label: 'osm-actionless-one', candidates: [osmActionless], source: 'external-preview' },
     { label: 'osm-actionable-synthetic-one', candidates: [osmActionable], source: 'external-preview' },
@@ -612,7 +768,8 @@ try {
     isDecisionV3ActionDisplayable: load('lib/decision-v3-action-gate.ts').isDecisionV3ActionDisplayable,
   });
   check(networkAttempts === 0, 'NETWORK_ATTEMPTS_ZERO');
-  console.log(JSON.stringify({ status: 'PASS', provenance, compareCohorts, compareReorder, sanitizer, appCallbacks, networkAttempts,
+  console.log(JSON.stringify({ status: 'PASS', provenance, candidateCardPlacement,
+    compareCohorts, compareReorder, sanitizer, appCallbacks, networkAttempts,
     liveGoogleRequests: 0, liveOsmRequests: 0, credentialReads: 0,
     note: 'Callback harness uses actual App, analytics, state, transition, session and history; real viewport/pointer QA remains a separate gate.' }, null, 2));
 } catch (error) {

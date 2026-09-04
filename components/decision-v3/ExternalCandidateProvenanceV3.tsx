@@ -3,7 +3,7 @@ import styles from './decision-v3.module.css';
 
 type Props = {
   candidate: DecisionV3Candidate;
-  density?: 'default' | 'compact';
+  density?: 'default' | 'compact' | 'card-footnote';
 };
 
 export default function ExternalCandidateProvenanceV3({ candidate, density = 'default' }: Props) {
@@ -12,6 +12,26 @@ export default function ExternalCandidateProvenanceV3({ candidate, density = 'de
 
   const { label, license } = provenance.attribution;
   const attribution = license && !label.includes(license) ? `${label} / ${license}` : label;
+
+  if (density === 'card-footnote') {
+    const attributionLabel = license && label.endsWith(` / ${license}`)
+      ? label.slice(0, -(` / ${license}`).length)
+      : label;
+
+    return (
+      <div
+        className={styles.externalCandidateSource}
+        data-external-provenance="true"
+        data-external-provider={provenance.provider}
+        data-provenance-density={density}
+      >
+        <strong>{provenance.label}</strong>
+        <p>人数／気分の適性は未確認</p>
+        <span>{attributionLabel}</span>
+        <span>{license ?? ''}</span>
+      </div>
+    );
+  }
 
   return (
     <div
