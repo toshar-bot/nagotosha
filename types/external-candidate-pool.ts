@@ -1,0 +1,109 @@
+import type { AreaChoice } from '@/types/decision-v3';
+
+export type ExternalCandidateProvider = 'google-places' | 'openstreetmap';
+export type ExternalCandidateKind = 'external-live-google' | 'external-catalog-osm';
+export type ExternalBusinessStatus = 'operational' | 'closed' | 'unknown';
+export type ExternalBudgetState = 'known' | 'unknown';
+export type ExternalOpeningState = 'current' | 'provider-reported' | 'unknown';
+export type ExternalCandidateConfidence = 'provider-reported' | 'provider-limited';
+
+export type ExternalCandidateAttribution = {
+  label: string;
+  href: string;
+  license?: string;
+};
+
+export type ExternalCandidateLocation = {
+  latitude: number;
+  longitude: number;
+  formattedAddress?: string;
+};
+
+/** Google Places API (New) Money JSON shape. \`units\` is int64-as-string. */
+export type GooglePlacesMoney = {
+  currencyCode?: string;
+  units?: string;
+  nanos?: number;
+};
+
+/** Google Places API (New) PriceRange JSON shape. */
+export type GooglePlacesPriceRange = {
+  startPrice?: GooglePlacesMoney;
+  endPrice?: GooglePlacesMoney;
+};
+
+/**
+ * Provider-scoped facts before adaptation to a Decision presentation candidate.
+ * They deliberately remain distinct from Nagotosha-reviewed facts.
+ */
+export type ExternalCandidatePoolRecord = {
+  externalId: string;
+  provider: ExternalCandidateProvider;
+  providerEntityId: string;
+  name: string;
+  area: Exclude<AreaChoice, 'any'>;
+  category: string;
+  location: ExternalCandidateLocation;
+  businessStatus: ExternalBusinessStatus;
+  budgetState: ExternalBudgetState;
+  openingState: ExternalOpeningState;
+  sourceRetrievedAt: string;
+  attribution: ExternalCandidateAttribution;
+  confidence: ExternalCandidateConfidence;
+  verifiedFields: readonly string[];
+  unknownFields: readonly string[];
+  price?: {
+    minimum?: number;
+    maximum?: number;
+    label?: string;
+  };
+  osm?: {
+    osmId: number;
+    osmType: 'node' | 'way' | 'relation';
+    amenity?: string;
+    cuisine?: string;
+    address?: string;
+    openingHours?: string;
+    website?: string;
+    phone?: string;
+  };
+  google?: {
+    googleMapsUri?: string;
+    websiteUri?: string;
+    phone?: string;
+    currentOpeningHours?: readonly string[];
+    priceLevel?: string;
+    priceRange?: GooglePlacesPriceRange;
+  };
+};
+
+export type ExternalCandidatePoolFixture = {
+  schemaVersion: 1;
+  purpose: 'development-fixture-only';
+  source: string;
+  sourceRetrievedAt: string;
+  attribution: ExternalCandidateAttribution;
+  runtimePolicy: string;
+  areas: Record<Exclude<AreaChoice, 'any'>, readonly ExternalCandidatePoolRecord[]>;
+};
+
+export type GooglePlacesRequestBudget = {
+  maxRequests: number;
+  timeoutMs: number;
+  allowLiveRequest: boolean;
+};
+
+export const GOOGLE_PLACES_NEARBY_FIELD_MASK = [
+  'places.id',
+  'places.displayName',
+  'places.primaryType',
+  'places.businessStatus',
+  'places.location',
+  'places.formattedAddress',
+  'places.currentOpeningHours',
+  'places.priceLevel',
+  'places.priceRange',
+  'places.googleMapsUri',
+  'places.websiteUri',
+  'places.nationalPhoneNumber',
+] as const;

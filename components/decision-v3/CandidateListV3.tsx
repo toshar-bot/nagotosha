@@ -9,6 +9,7 @@ import type {
   RefineChoice,
 } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
+import ExternalCandidateProvenanceV3 from './ExternalCandidateProvenanceV3';
 import styles from './decision-v3.module.css';
 
 type Props = {
@@ -102,6 +103,13 @@ function getSelectedConditionChips(
   }
 
   return chips;
+}
+
+function getExternalCandidateStatus(candidate: DecisionV3CandidateLookup['candidates'][number]) {
+  const reason = candidate.provenance?.reason;
+  if (!reason) return null;
+  const areaPrefix = `${candidate.area}・`;
+  return reason.startsWith(areaPrefix) ? reason.slice(areaPrefix.length) : reason;
 }
 
 export function CandidateListV3({
@@ -200,6 +208,7 @@ export function CandidateListV3({
             {candidates.map((candidate) => {
               const selected = compareIds.includes(candidate.id);
               const atLimit = compareIds.length >= 3 && !selected;
+              const externalStatus = getExternalCandidateStatus(candidate);
 
               return (
                 <article key={candidate.id} className={`${styles.candidateCard} ${styles.candidateHorizontalCard}`}>
@@ -218,9 +227,13 @@ export function CandidateListV3({
                           fallbackMessage="写真はまだ登録されていません"
                         />
                       </button>
+                      <ExternalCandidateProvenanceV3 candidate={candidate} density="card-footnote" />
                     </div>
                     <div className={`${styles.candidateBody} ${styles.candidateCardBody}`}>
                       <h2>{candidate.name}</h2>
+                      {externalStatus ? (
+                        <p className={styles.externalCandidateStatus}>{externalStatus}</p>
+                      ) : null}
                       <dl className={styles.candidateMetadata}>
                         <div>
                           <dt>

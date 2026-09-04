@@ -3,6 +3,7 @@ import type {
   BudgetChoice,
   CandidateSelectionResult,
   DecisionV3Candidate,
+  DecisionV3CandidateProvenance,
   DecisionV3Conditions,
   DecisionV3KnownBoolean,
   DecisionV3Price,
@@ -230,6 +231,44 @@ export function selectDecisionV3Candidates({
 
   const completeConditions = conditions as DecisionV3Conditions;
 
+  const formalCandidates = candidates.filter((candidate) => !isExternalCandidate(candidate));
+  const externalCandidates = candidates.filter(isExternalCandidate);
+  const formalResult = selectFormalCandidates(formalCandidates, completeConditions, preferences);
+  const formalMatches = formalResult.kind === 'matched' ? formalResult.candidateIds : [];
+
+  // Reviewed candidates always take precedence. Provider candidates can fill
+  // only unused result slots; their unknown party/mood facts are never treated
+  // as a complete match.
+  if (formalMatches.length >= 3 || externalCandidates.length === 0) return formalResult;
+
+  const externalMatches = selectExternalCandidates(
+    externalCandidates,
+    completeConditions,
+    3 - formalMatches.length,
+  );
+  if (externalMatches.candidateIds.length === 0) return formalResult;
+
+  const candidateIds = [...formalMatches, ...externalMatches.candidateIds].slice(0, 3);
+  const reasonsByCandidateId = {
+    ...(formalResult.kind === 'matched' ? formalResult.reasonsByCandidateId : {}),
+    ...externalMatches.reasonsByCandidateId,
+  };
+
+  return {
+    kind: 'matched',
+    candidateIds,
+    reasonsByCandidateId: Object.fromEntries(
+      candidateIds.map((candidateId) => [candidateId, reasonsByCandidateId[candidateId]]),
+    ),
+  };
+}
+
+function selectFormalCandidates(
+  candidates: DecisionV3Candidate[],
+  completeConditions: DecisionV3Conditions,
+  preferences: RefineChoice[],
+): CandidateSelectionResult {
+
   if (candidates.length === 0) {
     return {
       kind: 'data-unavailable',
@@ -271,4 +310,39 @@ export function selectDecisionV3Candidates({
     kind: 'no-match',
     relaxationHints: buildRelaxationHints(candidates, completeConditions, preferences),
   };
+}
+
+function selectExternalCandidates(
+  candidates: readonly DecisionV3Candidate[],
+  conditions: DecisionV3Conditions,
+  limit: number,
+) {
+  const candidateIds: string[] = [];
+  const reasonsByCandidateId: Record<string, string[]> = {};
+
+  for (const candidate of candidates) {
+    if (candidateIds.length >= limit || !isExternalCandidate(candidate)) continue;
+    if (candidate.provenance.businessStatus === 'closed') continue;
+    if (conditions.area !== 'any' && candidate.selection.area !== conditions.area) continue;
+    if (conditions.budget !== 'any') {
+      // Unknown/provider-variable prices must never be inferred as inexpensive.
+      if (candidate.selection.price.kind === 'variable') continue;
+      if (evaluatePrice(candidate.selection.price, conditions.budget).rejected) continue;
+    }
+
+    const reasons = [candidate.provenance.reason];
+    if (conditions.budget !== 'any') reasons.push(BUDGET_REASON[conditions.budget]);
+    reasons.push('人数／気分の適性は未確認');
+    candidateIds.push(candidate.id);
+    reasonsByCandidateId[candidate.id] = reasons.slice(0, 3);
+  }
+
+  return { candidateIds, reasonsByCandidateId };
+}
+
+function isExternalCandidate(
+  candidate: DecisionV3Candidate,
+): candidate is DecisionV3Candidate & { provenance: DecisionV3CandidateProvenance } {
+  return candidate.provenance?.kind === 'external-live-google'
+    || candidate.provenance?.kind === 'external-catalog-osm';
 }

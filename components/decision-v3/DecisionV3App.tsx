@@ -15,6 +15,7 @@ import { BrandHeader } from '@/components/common/BrandHeader';
 import { trackAnalyticsEvent } from '@/lib/analytics';
 import { isDecisionV3ActionDisplayable } from '@/lib/decision-v3-action-gate';
 import { createDecisionV3CandidateLookup } from '@/lib/decision-v3-candidate-lookup';
+import { getDecisionV3ExternalProviderActions } from '@/lib/decision-v3-external-actions';
 import { readDecisionV3HistoryState } from '@/lib/decision-v3-history';
 import {
   scrollDecisionV3ElementIntoView,
@@ -239,6 +240,18 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
   const conditionsReady = hasAllRequiredConditions(state.conditions);
   const compareReady = state.compareIds.length > 0;
   const detailCandidateId = state.detailId;
+  const candidateAnalyticsFields = useCallback((candidateId: string | null | undefined) => {
+    const candidate = candidateLookup.get(candidateId);
+    if (!candidate) return {};
+    if (candidateSource === 'demo') return { store_id: candidate.id };
+    if (!candidate.provenance) {
+      return { store_id: candidate.id, candidate_source: 'formal-reviewed' as const };
+    }
+    return {
+      candidate_source: candidate.provenance.provider === 'google-places' ? 'google' as const : 'osm' as const,
+    };
+  }, [candidateLookup, candidateSource]);
+
   const trackExternalAction = useCallback((event: MouseEvent<HTMLElement>) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -259,19 +272,23 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
     const action = candidate?.actions.find(
       (item) => isDecisionV3ActionDisplayable(item) && item.href === href,
     );
-    if (!action) return;
+    const providerAction = getDecisionV3ExternalProviderActions(candidate)
+      .find((item) => item.href === href);
+    if (!action && !providerAction) return;
+    const analyticsFields = candidateAnalyticsFields(candidateId);
 
-    if (action.type === 'access') {
-      trackAnalyticsEvent('map_click', { store_id: candidateId, surface });
-    } else if (action.type === 'official') {
-      trackAnalyticsEvent('official_click', { store_id: candidateId, surface });
+    if (action?.type === 'access' || providerAction?.kind === 'map') {
+      trackAnalyticsEvent('map_click', { surface, ...analyticsFields });
+    } else if (action?.type === 'official' || providerAction?.kind === 'website') {
+      trackAnalyticsEvent('official_click', { surface, ...analyticsFields });
     } else if (
-      action.type === 'phone'
-      || (action.type === 'reservation' && action.href?.startsWith('tel:'))
+      action?.type === 'phone'
+      || (action?.type === 'reservation' && action.href?.startsWith('tel:'))
+      || providerAction?.kind === 'phone'
     ) {
-      trackAnalyticsEvent('phone_click', { store_id: candidateId, surface });
+      trackAnalyticsEvent('phone_click', { surface, ...analyticsFields });
     }
-  }, [candidateLookup, state.chosenId, state.detailId, state.step]);
+  }, [candidateAnalyticsFields, candidateLookup, state.chosenId, state.detailId, state.step]);
 
   return (
     <main
@@ -359,8 +376,8 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
           }}
           onDetail={(candidateId) => navigate('detail', candidateId, () => {
             trackAnalyticsEvent('candidate_detail_view', {
-              store_id: candidateId,
               source: 'candidates',
+              ...candidateAnalyticsFields(candidateId),
             });
           })}
           onCompare={() => navigate('compare')}
@@ -434,9 +451,9 @@ export default function DecisionV3App({ candidateSource = 'formal', candidates =
               commitDecisionState(decidedState, 'push');
               deferDecisionV3Analytics(() => {
                 trackAnalyticsEvent('store_decided', {
-                  store_id: candidateId,
                   compare_count: state.compareIds.length,
                   party: chosenState.conditions.party,
+                  ...candidateAnalyticsFields(candidateId),
                 });
               });
             });

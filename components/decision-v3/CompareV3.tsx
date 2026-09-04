@@ -7,6 +7,7 @@ import { reorderDecisionV3Ids } from '@/lib/decision-v3-pointer-reorder';
 import { formatDecisionV3PartyDisplayText } from '@/lib/decision-v3-party-handoff';
 import type { CompareAxis } from '@/types/decision-v3';
 import { CandidatePhotoV3 } from './CandidatePhotoV3';
+import ExternalCandidateProvenanceV3 from './ExternalCandidateProvenanceV3';
 import styles from './decision-v3.module.css';
 
 const compareLabel = (index: number) => `候補${String.fromCharCode(65 + index)}`;
@@ -51,6 +52,7 @@ type PointerReorderSession = {
 };
 
 const POINTER_REORDER_THRESHOLD = 8;
+const COMPARE_REORDER_DRAG_TOKEN = 'decision-v3-compare-reorder';
 
 type Props = {
   compareOrder: string[];
@@ -220,19 +222,21 @@ export function CompareV3({
 
   const nearestPointerTargetId = (clientY: number) => {
     const rows = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-compare-candidate-id]'),
+      compareContentRef.current?.querySelectorAll<HTMLElement>('[data-compare-candidate-row]') ?? [],
     );
-    let targetId: string | null = null;
+    if (rows.length !== candidates.length) return null;
+    let targetIndex: number | null = null;
     let nearestDistance = Number.POSITIVE_INFINITY;
-    for (const row of rows) {
+    for (let index = 0; index < rows.length; index += 1) {
+      const row = rows[index];
       const rect = row.getBoundingClientRect();
       const distance = Math.abs(clientY - (rect.top + rect.height / 2));
       if (distance < nearestDistance) {
         nearestDistance = distance;
-        targetId = row.dataset.compareCandidateId ?? null;
+        targetIndex = index;
       }
     }
-    return targetId;
+    return targetIndex === null ? null : candidates[targetIndex]?.id ?? null;
   };
 
   const handleAxisTabKeyDown = (
@@ -330,7 +334,7 @@ export function CompareV3({
                 <article
                   key={candidate.id}
                   className={`${styles.compareVerticalCandidate} ${pointerDraggedId === candidate.id ? styles.compareVerticalCandidateDragging : ''}`}
-                  data-compare-candidate-id={candidate.id}
+                  data-compare-candidate-row="true"
                   data-pointer-reordering={pointerDraggedId === candidate.id ? 'true' : 'false'}
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={() => {
@@ -351,7 +355,7 @@ export function CompareV3({
                       aria-grabbed={grabbedId === candidate.id}
                       onDragStart={(event) => {
                         event.dataTransfer.effectAllowed = 'move';
-                        event.dataTransfer.setData('text/plain', candidate.id);
+                        event.dataTransfer.setData('text/plain', COMPARE_REORDER_DRAG_TOKEN);
                         setDraggedId(candidate.id);
                       }}
                       onDragEnd={() => setDraggedId(null)}
@@ -419,6 +423,7 @@ export function CompareV3({
                     </button>
                   </header>
 
+                  <ExternalCandidateProvenanceV3 candidate={candidate} density="compact" />
                   <div className={styles.compareVerticalCandidateBody}>
                     <CandidatePhotoV3 candidate={candidate} ratio="thumb" />
                     <div className={styles.compareVerticalValueBlock}>

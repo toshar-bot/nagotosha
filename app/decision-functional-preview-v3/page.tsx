@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import DecisionV3App from '@/components/decision-v3/DecisionV3App';
 import { getDecisionV3CandidatesForSource } from '@/lib/decision-v3-candidate-lookup';
+import {
+  EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG,
+  getExternalPreviewDecisionV3Candidates,
+} from '@/lib/external-candidate-pool';
+import type { AreaChoice } from '@/types/decision-v3';
 
 export const metadata: Metadata = {
   title: 'なごとしゃ Decision Functional Preview v3',
@@ -12,12 +17,29 @@ export const metadata: Metadata = {
 // opts into DEMO data explicitly; production has no DEMO fallback.
 export const dynamic = 'force-dynamic';
 
-export default function DecisionFunctionalPreviewV3Page() {
-  const demoAllowed = process.env.NODE_ENV === 'development'
-    || process.env.VERCEL_ENV === 'preview'
-    || process.env.VERCEL_ENV === 'development';
-  const candidateSource = demoAllowed ? 'demo' : 'formal';
-  const candidates = getDecisionV3CandidatesForSource(candidateSource);
+type Props = {
+  searchParams?: { externalArea?: string };
+};
 
-  return <DecisionV3App candidateSource={candidateSource} candidates={candidates} />;
+export default async function DecisionFunctionalPreviewV3Page({ searchParams }: Props) {
+  const demoAllowed = process.env.VERCEL_ENV !== 'production' && (
+    process.env.NODE_ENV === 'development'
+    || process.env.VERCEL_ENV === 'preview'
+    || process.env.VERCEL_ENV === 'development'
+  );
+  const externalArea = readExternalArea(searchParams?.externalArea);
+  const externalPoolEnabled = demoAllowed
+    && process.env[EXTERNAL_CANDIDATE_POOL_PREVIEW_FLAG] === 'true'
+    && externalArea !== null;
+  const candidateSource = demoAllowed ? 'demo' : 'formal';
+  const activeCandidateSource = externalPoolEnabled ? 'external-preview' : candidateSource;
+  const candidates = externalPoolEnabled
+    ? getExternalPreviewDecisionV3Candidates()
+    : getDecisionV3CandidatesForSource(candidateSource);
+
+  return <DecisionV3App candidateSource={activeCandidateSource} candidates={candidates} />;
+}
+
+function readExternalArea(value: string | undefined): Exclude<AreaChoice, 'any'> | null {
+  return value === 'meieki' || value === 'sakae' || value === 'osu' ? value : null;
 }
